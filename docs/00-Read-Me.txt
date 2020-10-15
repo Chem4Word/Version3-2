@@ -1,0 +1,3 @@
+The reason this folder must exist is due to someone experimenting with GitHub pages.
+
+At the moment it holds a single html file which will redirect users to our main site.
