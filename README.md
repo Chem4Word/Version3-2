@@ -2,7 +2,7 @@
 This project is Version 3.2 of the Chemistry for Word Add-In
 
 ## Getting Started
-1.	Installation process see $/doc/Chem4Word-Version3-1-Developer-SetUp.docx
+1.	Installation process see $/docs/Chem4Word-Version3-2-Developer-SetUp.docx
 2.	Software dependencies Office 2010/2013/2016/2019/365 (Installed on Desktop)
 3.	Latest releases
 
