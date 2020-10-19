@@ -1,0 +1,13 @@
+<cml:cml
+  xmlns:conventions="http://www.xml-cml.org/convention/"
+  xmlns:cml="http://www.xml-cml.org/schema"
+  xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/"
+  xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/"
+  xmlns:c4w="http://www.chem4word.com/cml"
+  conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:atomArray>
+      <cml:atom id="a1" elementType="C" x2="200.00" y2="200.0" />
+    </cml:atomArray>
+  </cml:molecule>
+</cml:cml>

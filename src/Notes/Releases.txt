@@ -1,0 +1,22 @@
+﻿# Set Build Numbers
+
+.\SetAssemblyVersion.ps1 -version 3.1.16 -name "Release 6" -released "31-Oct-2020" -path ..
+
+.\SetAssemblyVersion.ps1 -version 3.1.15 -name "Release 5" -released "17-Oct-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.14 -name "Release 4" -released "30-Sep-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.13 -name "Release 3" -released "17-Sep-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.12 -name "Release 2" -released "06-Sep-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.11 -name "Release 1" -released "02-Sep-2020" -path ..
+
+.\SetAssemblyVersion.ps1 -version 3.1.10 -name "Beta 10" -released "10-Jun-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.9 -name "Beta 9" -released "14-May-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.8 -name "Beta 8" -released "09-Apr-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.7 -name "Beta 7" -released "06-Mar-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.6 -name "Beta 6" -released "05-Mar-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.5 -name "Beta 5" -released "01-Feb-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.4 -name "Beta 4" -released "18-Jan-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.3 -name "Beta 3" -released "09-Jan-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.2 -name "Beta 2" -released "08-Jan-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.2 -name "Beta 2" -released "02-Jan-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.1 -name "Beta 1" -released "01-Jan-2020" -path ..
+.\SetAssemblyVersion.ps1 -version 3.1.0 -name "Alpha 1" -released "01-Jan-2019" -path ..

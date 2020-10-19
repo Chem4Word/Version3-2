@@ -1,0 +1,286 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:acme="clr-namespace:Chem4Word.ACME">
+    <x:Array x:Key="BondOptions" Type="acme:BondOption">
+
+        <acme:BondOption
+            Id="1"
+            Order="S"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M 0,7 h 25 Z</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Thickness="2" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="2"
+            Order="D"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M 0,9 h 25 Z M 0,5 h 25 Z</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Thickness="2" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="3"
+            Order="T"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M 0,10 h 25 Z M 0,4 h 25 Z M 0,7 h 25 Z</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Thickness="2" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="4"
+            Order="S"
+            Stereo="Wedge">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M 0,7 L 40,10 l 0 -7 Z</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Thickness="2" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="5"
+            Order="S"
+            Stereo="Hatch">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M 0,7 L 40,10 l 0 -7 Z</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Brush>
+                            <LinearGradientBrush MappingMode="Absolute" SpreadMethod="Repeat" StartPoint="50,0" EndPoint="50,3.5">
+                                <GradientStop Offset="0" Color="{x:Static SystemColors.WindowTextColor}" />
+                                <GradientStop Offset="0.2" Color="{x:Static SystemColors.WindowTextColor}" />
+                                <GradientStop Offset="0.2" Color="Transparent" />
+                                <GradientStop Offset="0.5" Color="Transparent" />
+                                <LinearGradientBrush.Transform>
+                                    <RotateTransform Angle="90" />
+                                </LinearGradientBrush.Transform>
+                            </LinearGradientBrush>
+                        </GeometryDrawing.Brush>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="6"
+            Order="partial01"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,5" EndPoint="40,5" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                DashCap="Flat"
+                                Thickness="1.5">
+                                <Pen.DashStyle>
+                                    <DashStyle Dashes="3,2" />
+                                </Pen.DashStyle>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="7"
+            Order="partial12"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,5" EndPoint="40,5" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                DashCap="Flat"
+                                Thickness="1.5">
+                                <Pen.DashStyle>
+                                    <DashStyle Dashes="3,2" />
+                                </Pen.DashStyle>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,9" EndPoint="40,9" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                EndLineCap="Flat"
+                                StartLineCap="Flat"
+                                Thickness="1.5" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="8"
+            Order="hbond"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,5" EndPoint="40,5" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                DashCap="Flat"
+                                Thickness="1.5">
+                                <Pen.DashStyle>
+                                    <DashStyle Dashes="1,1" />
+                                </Pen.DashStyle>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="9"
+            Order="partial23"
+            Stereo="None">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,5" EndPoint="40,5" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                DashCap="Flat"
+                                Thickness="1.5">
+                                <Pen.DashStyle>
+                                    <DashStyle Dashes="3,2" />
+                                </Pen.DashStyle>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,9" EndPoint="40,9" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                EndLineCap="Flat"
+                                StartLineCap="Flat"
+                                Thickness="1.5" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <LineGeometry StartPoint="0,13" EndPoint="40,13" />
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                EndLineCap="Flat"
+                                StartLineCap="Flat"
+                                Thickness="1.5" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="10"
+            Order="S"
+            Stereo="Indeterminate">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M15,0 Q5,5 15,10 25,15 15,20 5,25 15,30, 25,35, 15,40</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen
+                                Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                                EndLineCap="Flat"
+                                StartLineCap="Flat"
+                                Thickness="1.5" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <DrawingGroup.Transform>
+                        <RotateTransform Angle="90" />
+                    </DrawingGroup.Transform>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+
+        <acme:BondOption
+            Id="11"
+            Order="D"
+            Stereo="Indeterminate">
+            <acme:BondOption.BondGraphic>
+                <DrawingGroup>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>M 0,5 L 22,0 Z M 0,0 L 22,5 Z</PathGeometry>
+                        </GeometryDrawing.Geometry>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Thickness="2" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </acme:BondOption.BondGraphic>
+        </acme:BondOption>
+    </x:Array>
+</ResourceDictionary>

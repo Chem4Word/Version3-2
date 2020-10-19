@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A73732B0-FF0A-488E-B353-C238A9085C63}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Chem4Word.Renderer.OoXmlV4</RootNamespace>
+    <AssemblyName>Chem4Word.Renderer.OoXmlV4</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Setup|AnyCPU'">
+    <OutputPath>bin\Setup\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.11.3.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\DocumentFormat.OpenXml.2.11.3\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.IO.Packaging.4.7.0\lib\net46\System.IO.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CoordinateTool.cs" />
+    <Compile Include="Entities\Diagnostic\DiagnosticRectangle.cs" />
+    <Compile Include="Entities\GroupOfCharacters.cs" />
+    <Compile Include="Entities\InnerCircle.cs" />
+    <Compile Include="Entities\Diagnostic\DiagnosticLine.cs" />
+    <Compile Include="Entities\Diagnostic\Diagnostics.cs" />
+    <Compile Include="Entities\Diagnostic\DiagnosticSpot.cs" />
+    <Compile Include="Entities\OoXmlString.cs" />
+    <Compile Include="Entities\SimpleLine.cs" />
+    <Compile Include="Enums\BondLineStyle.cs" />
+    <Compile Include="GeometryTool.cs" />
+    <Compile Include="Entities\AtomLabelCharacter.cs" />
+    <Compile Include="Entities\BondLine.cs" />
+    <Compile Include="Entities\MoleculeExtents.cs" />
+    <Compile Include="OOXML\OoXmlFile.cs" />
+    <Compile Include="OOXML\OoXmlHelper.cs" />
+    <Compile Include="OOXML\OoXmlPositioner.cs" />
+    <Compile Include="OoXmlV4Options.cs" />
+    <Compile Include="OOXML\OoXmlRenderer.cs" />
+    <Compile Include="Entities\PositionerInputs.cs" />
+    <Compile Include="Entities\PositionerOutputs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer.cs" />
+    <Compile Include="OoXmlV4Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OoXmlV4Settings.Designer.cs">
+      <DependentUpon>OoXmlV4Settings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TTF\TtfCharacter.cs" />
+    <Compile Include="TTF\TtfContour.cs" />
+    <Compile Include="TTF\TtfPoint.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Arial.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OoXmlV4Settings.resx">
+      <DependentUpon>OoXmlV4Settings.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Chemistry\Chem4Word.Model2\Chem4Word.Model2.csproj">
+      <Project>{c69bab8f-4881-4d5f-9929-fc8470df1e48}</Project>
+      <Name>Chem4Word.Model2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Chem4Word.Core\Chem4Word.Core.csproj">
+      <Project>{2e7b1308-8149-4b03-9cb9-48e0b7151560}</Project>
+      <Name>Chem4Word.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Contracts\Chem4Word.Contracts.csproj">
+      <Project>{bdfee6c1-3f34-4200-9100-c543bf4c3783}</Project>
+      <Name>Chem4Word.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)" == "Vso-Ci" (
+rem
+) else (
+xcopy "$(TargetDir)$(TargetName).*" "$(SolutionDir)\Chem4Word.V3\$(OutDir)PlugIns\" /C /f /r /y /i
+)</PostBuildEvent>
+  </PropertyGroup>
+</Project>

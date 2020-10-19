@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        lists the colours for the standard elements
+        https://en.wikipedia.org/wiki/CPK_coloring
+    -->
+    <SolidColorBrush x:Key="HBrush" Color="Gray" />
+    <SolidColorBrush x:Key="CBrush" Color="Black" />
+    <SolidColorBrush x:Key="NBrush" Color="Blue" />
+    <SolidColorBrush x:Key="OBrush" Color="Red" />
+    <SolidColorBrush x:Key="FBrush" Color="#00C000" />
+    <SolidColorBrush x:Key="PBrush" Color="#FF8000" />
+    <SolidColorBrush x:Key="SBrush" Color="Olive" />
+    <SolidColorBrush x:Key="ClBrush" Color="#00C000" />
+    <SolidColorBrush x:Key="BrBrush" Color="#C04000" />
+
+    <SolidColorBrush x:Key="IBrush" Color="DarkViolet" />
+    <SolidColorBrush x:Key="BBrush" Color="Salmon" />
+    <SolidColorBrush x:Key="RBrush" Color="Black" />
+    <SolidColorBrush x:Key="NobleBrush" Color="Cyan" />
+    <SolidColorBrush x:Key="AlkaliBrush" Color="BlueViolet" />
+    <Brush x:Key="PTNonMetalBrush">#EEA5EE</Brush>
+    <Brush x:Key="PTNobleGasBrush">#87FFFF</Brush>
+    <Brush x:Key="PTHalogenBrush">#704FC0</Brush>
+    <Brush x:Key="PTActinideBrush">Pink</Brush>
+    <Brush x:Key="PTMetalBrush">PaleGreen</Brush>
+    <Brush x:Key="PTMetalloidBrush">GreenYellow</Brush>
+    <Brush x:Key="PTTransitionMetalBrush">#166616</Brush>
+    <Brush x:Key="PTAlkalineEarthBrush">#FFFF71</Brush>
+    <Brush x:Key="PTAlkaliBrush">DarkSalmon</Brush>
+    <Brush x:Key="PTOtherMetalBrush">Yellow</Brush>
+    <Brush x:Key="PTPseudoBrush">DarkOrange</Brush>
+    <Brush x:Key="PTOtherBrush">Gray</Brush>
+    <Brush x:Key="PTLanthanideBrush">LightPink</Brush>
+    <Brush x:Key="PTGridOverForeground">Black</Brush>
+    <Brush x:Key="PTGridOverBackground">Red</Brush>
+    <Brush x:Key="PTGridHalogenForeground">White</Brush>
+    <Brush x:Key="PTGridTMForeground">#DAEEDA</Brush>
+    <Brush x:Key="PRGridAEMForeground">#786200</Brush>
+    <Brush x:Key="PTGridAMForeground">White</Brush>
+    <Brush x:Key="PTGridOtherForeground">White</Brush>
+    <Brush x:Key="PTGridPseudoForeground">White</Brush>
+    <Brush x:Key="PTGridHighlightBackground">Red</Brush>
+</ResourceDictionary>

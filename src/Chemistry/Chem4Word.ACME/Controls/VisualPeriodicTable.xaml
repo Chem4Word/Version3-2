@@ -1,0 +1,237 @@
+﻿<UserControl
+    x:Class="Chem4Word.ACME.Controls.VisualPeriodicTable"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Chem4Word.ACME.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model2="clr-namespace:Chem4Word.Model2;assembly=Chem4Word.Model2"
+    Width="511.557"
+    Height="260.771"
+    FontFamily="Segoe UI"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <model2:PeriodicTable x:Key="PeriodicTable" />
+            <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ACMEResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="5,5,5,5">
+        <Grid.Resources>
+            <Style x:Key="ElementType" TargetType="Border">
+                <Setter Property="BorderThickness" Value="2" />
+                <Style.Triggers>
+
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="non_metal">
+                        <Setter Property="Background" Value="{StaticResource PTNonMetalBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="noble_gas">
+                        <Setter Property="Background" Value="{StaticResource PTNobleGasBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="halogen">
+                        <Setter Property="Background" Value="{StaticResource PTHalogenBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="actinide">
+                        <Setter Property="Background" Value="{StaticResource PTActinideBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="lanthanide">
+                        <Setter Property="Background" Value="{StaticResource PTLanthanideBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="metal">
+                        <Setter Property="Background" Value="{StaticResource PTMetalBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="metalloid">
+                        <Setter Property="Background" Value="{StaticResource PTMetalloidBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="transition_metal">
+                        <Setter Property="Background" Value="{StaticResource PTTransitionMetalBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="alkaline_earth_metal">
+                        <Setter Property="Background" Value="{StaticResource PTAlkalineEarthBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="alkali_metal">
+                        <Setter Property="Background" Value="{StaticResource PTAlkaliBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="other_metal">
+                        <Setter Property="Background" Value="{StaticResource PTOtherMetalBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="pseudo">
+                        <Setter Property="Background" Value="{StaticResource PTPseudoBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="other">
+                        <Setter Property="Background" Value="{StaticResource PTOtherBrush}" />
+                    </DataTrigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource PTGridHighlightBackground}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style
+                x:Key="ElementText"
+                BasedOn="{StaticResource LabelTextBlock}"
+                TargetType="TextBlock">
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridOverForeground}" />
+                        <Setter Property="Background" Value="{StaticResource PTGridOverBackground}" />
+                    </Trigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="halogen">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridHalogenForeground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="transition_metal">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridTMForeground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="alkaline_earth_metal">
+                        <Setter Property="Foreground" Value="{StaticResource PRGridAEMForeground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="alkali_metal">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridAMForeground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="other_metal">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridOverForeground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="pseudo">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridPseudoForeground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PTElementType}" Value="other">
+                        <Setter Property="Foreground" Value="{StaticResource PTGridOtherForeground}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+        <local:GridAwareItemsControl
+            x:Name="ElementGrid"
+            Background="{x:Static SystemColors.WindowBrush}"
+            ItemsSource="{Binding Source={StaticResource PeriodicTable}, Path=ElementsSource}">
+            <local:GridAwareItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </local:GridAwareItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Name="ElementSquare"
+                        Grid.Row="{Binding Path=PTRow}"
+                        Grid.Column="{Binding PTColumn}"
+                        Width="Auto"
+                        PreviewMouseLeftButtonDown="ElementSquare_OnPreviewMouseLeftButtonDown"
+                        Style="{StaticResource ElementType}"
+                        Tag="{Binding}">
+                        <Border.ToolTip>
+                            <ToolTip Background="{x:Static SystemColors.WindowBrush}" BorderBrush="{StaticResource Chem4WordBrush}">
+                                <Border
+                                    Background="{x:Static SystemColors.WindowBrush}"
+                                    BorderBrush="{StaticResource Chem4WordBrush}"
+                                    CornerRadius="2">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Margin="0,0,5,0"
+                                            Foreground="{StaticResource Chem4WordBrush}">
+                                            Name:
+                                        </TextBlock>
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            FontWeight="Bold"
+                                            Foreground="{StaticResource Chem4WordBrush}"
+                                            Text="{Binding Name}" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Margin="0,0,5,0"
+                                            Foreground="{StaticResource Chem4WordBrush}">
+                                            Symbol:
+                                        </TextBlock>
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            FontWeight="Bold"
+                                            Foreground="{StaticResource Chem4WordBrush}"
+                                            Text="{Binding Symbol}" />
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Margin="0,0,5,0"
+                                            Foreground="{StaticResource Chem4WordBrush}">
+                                            Atomic Number:
+                                        </TextBlock>
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            FontWeight="Bold"
+                                            Foreground="{StaticResource Chem4WordBrush}"
+                                            Text="{Binding AtomicNumber}" />
+                                    </Grid>
+                                </Border>
+                            </ToolTip>
+                        </Border.ToolTip>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock
+                                Name="ElementBlock"
+                                Style="{StaticResource ElementText}"
+                                Tag="{Binding}"
+                                Text="{Binding Symbol}" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </local:GridAwareItemsControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/"
+         xmlns:cml="http://www.xml-cml.org/schema"
+         xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/"
+         xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/"
+         xmlns:c4w="http://www.chem4word.com/cml"
+         conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:formula id="m1.f0" concise="C 60" />
+    <cml:formula id="m1.f1" convention="pubchem:Formula" inline="C60" concise="C 60" />
+    <cml:formula id="m1.f2" convention="pubchem:CanonicalSmiles" inline="C12=C3C4=C5C6=C1C7=C8C9=C1C%10=C%11C(=C29)C3=C2C3=C4C4=C5C5=C9C6=C7C6=C7C8=C1C1=C8C%10=C%10C%11=C2C2=C3C3=C4C4=C5C5=C%11C%12=C(C6=C95)C7=C1C1=C%12C5=C%11C4=C3C3=C5C(=C81)C%10=C23" concise="C 60" />
+    <cml:formula id="m1.f3" convention="pubchem:IsoSmiles" inline="C12=C3C4=C5C6=C1C7=C8C9=C1C%10=C%11C(=C29)C3=C2C3=C4C4=C5C5=C9C6=C7C6=C7C8=C1C1=C8C%10=C%10C%11=C2C2=C3C3=C4C4=C5C5=C%11C%12=C(C6=C95)C7=C1C1=C%12C5=C%11C4=C3C3=C5C(=C81)C%10=C23" concise="C 60" />
+    <cml:name id="m1.n1" dictRef="pubchem:Id">123591</cml:name>
+    <cml:name id="m1.n2" dictRef="pubchem:IupacOpenEyeName">[60]fullerene</cml:name>
+    <cml:name id="m1.n3" dictRef="pubchem:IupacCasName">(C\{60}-I\{h})[5,6]fullerene</cml:name>
+    <cml:name id="m1.n4" dictRef="pubchem:Name">(C\{60}-I\{h})[5,6]fullerene</cml:name>
+    <cml:name id="m1.n5" dictRef="pubchem:Systemic">(C\{60}-I\{h})[5,6]fullerene</cml:name>
+    <cml:name id="m1.n6" dictRef="pubchem:Traditional">buckminsterfullerene</cml:name>
+    <cml:name id="m1.n7" dictRef="pubchem:InchiKey">XMWRBQBLMFGWIX-UHFFFAOYSA-N</cml:name>
+    <cml:atomArray>
+      <cml:atom id="a1" elementType="C" x2="79.205020901588739" y2="126.86824591735312" formalCharge="0" />
+      <cml:atom id="a2" elementType="C" x2="67.544231902767621" y2="119.92777630742016" formalCharge="0" />
+      <cml:atom id="a3" elementType="C" x2="66.164138522118151" y2="128.60836365817204" formalCharge="0" />
+      <cml:atom id="a4" elementType="C" x2="102.20657724574696" y2="116.56754894583878" formalCharge="0" />
+      <cml:atom id="a5" elementType="C" x2="42.762555111104994" y2="114.70742308496338" formalCharge="0" />
+      <cml:atom id="a6" elementType="C" x2="83.365302396879954" y2="105.34678972055811" formalCharge="0" />
+      <cml:atom id="a7" elementType="C" x2="76.204817900176778" y2="120.06778578081938" formalCharge="0" />
+      <cml:atom id="a8" elementType="C" x2="41.502469850511972" y2="123.38801043571527" formalCharge="0" />
+      <cml:atom id="a9" elementType="C" x2="112.26725797714835" y2="107.98696836180062" formalCharge="0" />
+      <cml:atom id="a10" elementType="C" x2="104.78675182696121" y2="103.26664897291249" formalCharge="0" />
+      <cml:atom id="a11" elementType="C" x2="33.921956933611135" y2="94.9260846289873" formalCharge="0" />
+      <cml:atom id="a12" elementType="C" x2="29.761675438319912" y2="116.42753947243955" formalCharge="0" />
+      <cml:atom id="a13" elementType="C" x2="74.464700159357861" y2="85.4654444978683" formalCharge="0" />
+      <cml:atom id="a14" elementType="C" x2="57.763570118164708" y2="109.56707527587759" formalCharge="0" />
+      <cml:atom id="a15" elementType="C" x2="99.306381011048757" y2="109.72708610261955" formalCharge="0" />
+      <cml:atom id="a16" elementType="C" x2="36.302117981397942" y2="111.62721467018046" formalCharge="0" />
+      <cml:atom id="a17" elementType="C" x2="124.828107876393" y2="86.145490511521686" formalCharge="0" />
+      <cml:atom id="a18" elementType="C" x2="117.44760849291961" y2="81.325164355919824" formalCharge="0" />
+      <cml:atom id="a19" elementType="C" x2="49.803031487751689" y2="80.28509398209701" formalCharge="0" />
+      <cml:atom id="a20" elementType="C" x2="15.440706444913554" y2="84.42537412404549" formalCharge="0" />
+      <cml:atom id="a21" elementType="C" x2="12.880533217042036" y2="97.706272743629029" formalCharge="0" />
+      <cml:atom id="a22" elementType="C" x2="87.045551411945254" y2="63.623966647589363" formalCharge="0" />
+      <cml:atom id="a23" elementType="C" x2="62.343880033653605" y2="88.685662386050453" formalCharge="0" />
+      <cml:atom id="a24" elementType="C" x2="103.90669227988037" y2="88.945679979506153" formalCharge="0" />
+      <cml:atom id="a25" elementType="C" x2="19.360971700091834" y2="92.8059411746562" formalCharge="0" />
+      <cml:atom id="a26" elementType="C" x2="127.42828381095" y2="72.764585125224414" formalCharge="0" />
+      <cml:atom id="a27" elementType="C" x2="119.64775736062175" y2="74.364693392644114" formalCharge="0" />
+      <cml:atom id="a28" elementType="C" x2="108.6270116687685" y2="61.523824546601" formalCharge="0" />
+      <cml:atom id="a29" elementType="C" x2="47.142851493166432" y2="55.243399596978662" formalCharge="0" />
+      <cml:atom id="a30" elementType="C" x2="12.760525096985555" y2="59.263671618870674" formalCharge="0" />
+      <cml:atom id="a31" elementType="C" x2="7.6401786412425086" y2="85.865471564723222" formalCharge="0" />
+      <cml:atom id="a32" elementType="C" x2="70.14440783732465" y2="44.922701272121579" formalCharge="0" />
+      <cml:atom id="a33" elementType="C" x2="45.462737812375728" y2="69.964395657239933" formalCharge="0" />
+      <cml:atom id="a34" elementType="C" x2="85.365437731154572" y2="78.404966767878861" formalCharge="0" />
+      <cml:atom id="a35" elementType="C" x2="23.921280262237989" y2="72.0245350515428" formalCharge="0" />
+      <cml:atom id="a36" elementType="C" x2="124.80810652305027" y2="47.72289074010606" formalCharge="0" />
+      <cml:atom id="a37" elementType="C" x2="117.00757871937923" y2="49.202990887469284" formalCharge="0" />
+      <cml:atom id="a38" elementType="C" x2="113.18732023091467" y2="40.762419776830349" formalCharge="0" />
+      <cml:atom id="a39" elementType="C" x2="28.581595591097869" y2="44.70268638535137" formalCharge="0" />
+      <cml:atom id="a40" elementType="C" x2="7.5201705211860288" y2="47.462873146650352" formalCharge="0" />
+      <cml:atom id="a41" elementType="C" x2="4.9999999999999982" y2="60.823777179604875" formalCharge="0" />
+      <cml:atom id="a42" elementType="C" x2="74.724717752813547" y2="24.041288382294457" formalCharge="0" />
+      <cml:atom id="a43" elementType="C" x2="58.063590418305886" y2="48.142919160303727" formalCharge="0" />
+      <cml:atom id="a44" elementType="C" x2="82.705257736569322" y2="53.343271029417764" formalCharge="0" />
+      <cml:atom id="a45" elementType="C" x2="15.040679378058627" y2="52.263197948909472" formalCharge="0" />
+      <cml:atom id="a46" elementType="C" x2="119.56775194725074" y2="35.882089561200253" formalCharge="0" />
+      <cml:atom id="a47" elementType="C" x2="98.566330937367113" y2="38.702280382527476" formalCharge="0" />
+      <cml:atom id="a48" elementType="C" x2="96.206171242923048" y2="21.961147634648839" formalCharge="0" />
+      <cml:atom id="a49" elementType="C" x2="33.141904153244027" y2="23.921280262237971" formalCharge="0" />
+      <cml:atom id="a50" elementType="C" x2="20.121023127116182" y2="25.621395296371407" formalCharge="0" />
+      <cml:atom id="a51" elementType="C" x2="56.263468617458727" y2="13.560579230695403" formalCharge="0" />
+      <cml:atom id="a52" elementType="C" x2="49.1629881807838" y2="28.261573937613925" formalCharge="0" />
+      <cml:atom id="a53" elementType="C" x2="27.701536044017033" y2="30.32171333191679" formalCharge="0" />
+      <cml:atom id="a54" elementType="C" x2="102.68660972597287" y2="17.16082283238973" formalCharge="0" />
+      <cml:atom id="a55" elementType="C" x2="89.705731406530532" y2="18.920941926551404" formalCharge="0" />
+      <cml:atom id="a56" elementType="C" x2="90.985818020466311" y2="10.180350515771281" formalCharge="0" />
+      <cml:atom id="a57" elementType="C" x2="30.221706565203068" y2="17.040814712333251" formalCharge="0" />
+      <cml:atom id="a58" elementType="C" x2="66.304147995517383" y2="4.9999999999999982" formalCharge="0" />
+      <cml:atom id="a59" elementType="C" x2="64.94405596821062" y2="13.700588704094622" formalCharge="0" />
+      <cml:atom id="a60" elementType="C" x2="53.263265616046795" y2="6.7401177408189117" formalCharge="0" />
+    </cml:atomArray>
+    <cml:bondArray>
+      <cml:bond id="b1" atomRefs2="a1 a2" order="D" />
+      <cml:bond id="b2" atomRefs2="a1 a3" order="S" />
+      <cml:bond id="b3" atomRefs2="a1 a4" order="S" />
+      <cml:bond id="b4" atomRefs2="a2 a5" order="S" />
+      <cml:bond id="b5" atomRefs2="a2 a6" order="S" />
+      <cml:bond id="b6" atomRefs2="a7 a3" order="D" />
+      <cml:bond id="b7" atomRefs2="a3 a8" order="S" />
+      <cml:bond id="b8" atomRefs2="a9 a4" order="D" />
+      <cml:bond id="b9" atomRefs2="a10 a4" order="S" />
+      <cml:bond id="b10" atomRefs2="a5 a11" order="D" />
+      <cml:bond id="b11" atomRefs2="a5 a12" order="S" />
+      <cml:bond id="b12" atomRefs2="a10 a6" order="S" />
+      <cml:bond id="b13" atomRefs2="a6 a13" order="D" />
+      <cml:bond id="b14" atomRefs2="a7 a14" order="S" />
+      <cml:bond id="b15" atomRefs2="a7 a15" order="S" />
+      <cml:bond id="b16" atomRefs2="a8 a16" order="D" />
+      <cml:bond id="b17" atomRefs2="a8 a12" order="S" />
+      <cml:bond id="b18" atomRefs2="a17 a9" order="S" />
+      <cml:bond id="b19" atomRefs2="a9 a15" order="S" />
+      <cml:bond id="b20" atomRefs2="a18 a10" order="D" />
+      <cml:bond id="b21" atomRefs2="a19 a11" order="S" />
+      <cml:bond id="b22" atomRefs2="a11 a20" order="S" />
+      <cml:bond id="b23" atomRefs2="a12 a21" order="D" />
+      <cml:bond id="b24" atomRefs2="a19 a13" order="S" />
+      <cml:bond id="b25" atomRefs2="a22 a13" order="S" />
+      <cml:bond id="b26" atomRefs2="a23 a14" order="D" />
+      <cml:bond id="b27" atomRefs2="a14 a16" order="S" />
+      <cml:bond id="b28" atomRefs2="a24 a15" order="D" />
+      <cml:bond id="b29" atomRefs2="a16 a25" order="S" />
+      <cml:bond id="b30" atomRefs2="a26 a17" order="S" />
+      <cml:bond id="b31" atomRefs2="a17 a27" order="D" />
+      <cml:bond id="b32" atomRefs2="a26 a18" order="S" />
+      <cml:bond id="b33" atomRefs2="a18 a28" order="S" />
+      <cml:bond id="b34" atomRefs2="a29 a19" order="D" />
+      <cml:bond id="b35" atomRefs2="a30 a20" order="D" />
+      <cml:bond id="b36" atomRefs2="a20 a21" order="S" />
+      <cml:bond id="b37" atomRefs2="a21 a31" order="S" />
+      <cml:bond id="b38" atomRefs2="a28 a22" order="S" />
+      <cml:bond id="b39" atomRefs2="a22 a32" order="D" />
+      <cml:bond id="b40" atomRefs2="a23 a33" order="S" />
+      <cml:bond id="b41" atomRefs2="a23 a34" order="S" />
+      <cml:bond id="b42" atomRefs2="a27 a24" order="S" />
+      <cml:bond id="b43" atomRefs2="a24 a34" order="S" />
+      <cml:bond id="b44" atomRefs2="a35 a25" order="S" />
+      <cml:bond id="b45" atomRefs2="a25 a31" order="D" />
+      <cml:bond id="b46" atomRefs2="a36 a26" order="D" />
+      <cml:bond id="b47" atomRefs2="a37 a27" order="S" />
+      <cml:bond id="b48" atomRefs2="a38 a28" order="D" />
+      <cml:bond id="b49" atomRefs2="a29 a39" order="S" />
+      <cml:bond id="b50" atomRefs2="a29 a32" order="S" />
+      <cml:bond id="b51" atomRefs2="a39 a30" order="S" />
+      <cml:bond id="b52" atomRefs2="a30 a40" order="S" />
+      <cml:bond id="b53" atomRefs2="a41 a31" order="S" />
+      <cml:bond id="b54" atomRefs2="a42 a32" order="S" />
+      <cml:bond id="b55" atomRefs2="a43 a33" order="S" />
+      <cml:bond id="b56" atomRefs2="a33 a35" order="D" />
+      <cml:bond id="b57" atomRefs2="a44 a34" order="D" />
+      <cml:bond id="b58" atomRefs2="a35 a45" order="S" />
+      <cml:bond id="b59" atomRefs2="a36 a38" order="S" />
+      <cml:bond id="b60" atomRefs2="a36 a46" order="S" />
+      <cml:bond id="b61" atomRefs2="a46 a37" order="D" />
+      <cml:bond id="b62" atomRefs2="a37 a47" order="S" />
+      <cml:bond id="b63" atomRefs2="a38 a48" order="S" />
+      <cml:bond id="b64" atomRefs2="a49 a39" order="D" />
+      <cml:bond id="b65" atomRefs2="a50 a40" order="S" />
+      <cml:bond id="b66" atomRefs2="a40 a41" order="D" />
+      <cml:bond id="b67" atomRefs2="a45 a41" order="S" />
+      <cml:bond id="b68" atomRefs2="a48 a42" order="D" />
+      <cml:bond id="b69" atomRefs2="a42 a51" order="S" />
+      <cml:bond id="b70" atomRefs2="a43 a52" order="D" />
+      <cml:bond id="b71" atomRefs2="a43 a44" order="S" />
+      <cml:bond id="b72" atomRefs2="a47 a44" order="S" />
+      <cml:bond id="b73" atomRefs2="a53 a45" order="D" />
+      <cml:bond id="b74" atomRefs2="a46 a54" order="S" />
+      <cml:bond id="b75" atomRefs2="a47 a55" order="D" />
+      <cml:bond id="b76" atomRefs2="a48 a56" order="S" />
+      <cml:bond id="b77" atomRefs2="a49 a50" order="S" />
+      <cml:bond id="b78" atomRefs2="a49 a51" order="S" />
+      <cml:bond id="b79" atomRefs2="a57 a50" order="D" />
+      <cml:bond id="b80" atomRefs2="a58 a51" order="D" />
+      <cml:bond id="b81" atomRefs2="a52 a53" order="S" />
+      <cml:bond id="b82" atomRefs2="a52 a59" order="S" />
+      <cml:bond id="b83" atomRefs2="a57 a53" order="S" />
+      <cml:bond id="b84" atomRefs2="a54 a56" order="D" />
+      <cml:bond id="b85" atomRefs2="a54 a55" order="S" />
+      <cml:bond id="b86" atomRefs2="a55 a59" order="S" />
+      <cml:bond id="b87" atomRefs2="a56 a58" order="S" />
+      <cml:bond id="b88" atomRefs2="a57 a60" order="S" />
+      <cml:bond id="b89" atomRefs2="a58 a60" order="S" />
+      <cml:bond id="b90" atomRefs2="a59 a60" order="D" />
+    </cml:bondArray>
+  </cml:molecule>
+</cml:cml>

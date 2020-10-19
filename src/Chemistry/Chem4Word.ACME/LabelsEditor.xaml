@@ -1,0 +1,263 @@
+﻿<UserControl
+    x:Class="Chem4Word.ACME.LabelsEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:acme="clr-namespace:Chem4Word.ACME"
+    xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Chem4Word.ACME.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Loaded="LabelsEditor_OnLoaded"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter
+            x:Key="VisConverter"
+            FalseValue="Collapsed"
+            TrueValue="Visible" />
+        <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
+        <converters:TreeViewLineConverter x:Key="LineConverter" />
+        <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
+        <!--
+            https://social.msdn.microsoft.com/Forums/vstudio/en-US/30cb182c-9419-40bd-946e-87971515fb95/show-treeview-nodes-connected-with-dotted-lines
+            =================================================================
+            TreeViewItem
+            ==================================================================
+        -->
+        <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid
+                            Width="15"
+                            Height="13"
+                            Background="White">
+                            <Path
+                                x:Name="ExpandPath"
+                                Margin="1,1,1,1"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Data="M 4 0 L 8 4 L 4 8 Z"
+                                Fill="{StaticResource GlyphBrush}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ExpandPath" Property="Data" Value="M 0 4 L 8 4 L 4 8 Z" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="TreeViewItemFocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border>
+                            <Rectangle
+                                Margin="0,0,0,0"
+                                Opacity="0"
+                                Stroke="Black"
+                                StrokeDashArray="1 2"
+                                StrokeThickness="5" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="{x:Type TreeViewItem}" TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="HorizontalContentAlignment" Value="{Binding Path=HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+            <Setter Property="VerticalContentAlignment" Value="{Binding Path=VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+            <Setter Property="Padding" Value="1,0,0,0" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource TreeViewItemFocusVisual}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="19" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <!--  Connecting Lines  -->
+                            <Rectangle
+                                x:Name="HorLn"
+                                Height="1"
+                                Margin="10,0,0,0"
+                                SnapsToDevicePixels="true"
+                                Stroke="#8888" />
+                            <Rectangle
+                                x:Name="VerLn"
+                                Grid.RowSpan="2"
+                                Width="1"
+                                SnapsToDevicePixels="true"
+                                Stroke="#8888" />
+                            <ToggleButton
+                                x:Name="Expander"
+                                ClickMode="Press"
+                                IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                Style="{StaticResource ExpandCollapseToggleStyle}" />
+                            <Border
+                                Name="Bd"
+                                Grid.Column="1"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter
+                                    x:Name="PART_Header"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    ContentSource="Header" />
+                            </Border>
+                            <ItemsPresenter
+                                x:Name="ItemsHost"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <!--  This trigger changes the connecting lines if the item is the last in the list  -->
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LineConverter}}" Value="true">
+                                <Setter TargetName="VerLn" Property="Height" Value="6" />
+                                <Setter TargetName="VerLn" Property="VerticalAlignment" Value="Top" />
+                            </DataTrigger>
+                            <Trigger Property="IsExpanded" Value="false">
+                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="HasHeader" Value="false" />
+                                    <Condition Property="Width" Value="Auto" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PART_Header" Property="MinWidth" Value="75" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="HasHeader" Value="false" />
+                                    <Condition Property="Height" Value="Auto" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PART_Header" Property="MinHeight" Value="19" />
+                            </MultiTrigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="true" />
+                                    <Condition Property="IsSelectionActive" Value="false" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel
+            x:Name="OverallConciseFormulaPanel"
+            Grid.Row="0"
+            Height="Auto"
+            MinHeight="16"
+            Margin="5"
+            Orientation="Horizontal"
+            Visibility="{Binding Path=ShowTopPanel, Mode=TwoWay, Converter={StaticResource VisConverter}}" />
+        <Border
+            Grid.Row="1"
+            BorderBrush="{StaticResource Chem4WordBrush}"
+            BorderThickness="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="33*" MinWidth="100" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="66*" MinWidth="100" />
+                </Grid.ColumnDefinitions>
+                <Grid Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" MinHeight="100" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="*" MinHeight="100" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer
+                        Grid.Row="0"
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Auto">
+                        <TreeView x:Name="TreeView" SelectedItemChanged="TreeView_OnSelectedItemChanged" />
+                    </ScrollViewer>
+                    <Border
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        BorderBrush="DarkOrange"
+                        BorderThickness="3"
+                        CornerRadius="5">
+                        <acme:Display
+                            x:Name="Display"
+                            Margin="3"
+                            Background="White"
+                            HighlightActive="False"
+                            ShowAllCarbonAtoms="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=acme:LabelsEditor}, Path=ShowAllCarbonAtoms}"
+                            ShowAtomsInColour="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=acme:LabelsEditor}, Path=ShowAtomsInColour}"
+                            ShowImplicitHydrogens="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=acme:LabelsEditor}, Path=ShowImplicitHydrogens}"
+                            ShowMoleculeGrouping="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=acme:LabelsEditor}, Path=ShowMoleculeGrouping}" />
+                    </Border>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Height="5"
+                        HorizontalAlignment="Stretch"
+                        Background="Silver" />
+                </Grid>
+                <Grid Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="33*" MinHeight="100" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="33*" MinHeight="100" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="33*" MinHeight="100" />
+                    </Grid.RowDefinitions>
+                    <local:NamesEditor x:Name="NamesGrid" Grid.Row="0" />
+                    <local:NamesEditor x:Name="FormulaGrid" Grid.Row="2" />
+                    <local:NamesEditor x:Name="CaptionsGrid" Grid.Row="4" />
+                    <GridSplitter
+                        Grid.Row="1"
+                        Height="5"
+                        HorizontalAlignment="Stretch"
+                        Background="Silver" />
+                    <GridSplitter
+                        Grid.Row="3"
+                        Height="5"
+                        HorizontalAlignment="Stretch"
+                        Background="Silver" />
+                </Grid>
+                <GridSplitter
+                    Grid.Column="1"
+                    Width="5"
+                    HorizontalAlignment="Stretch"
+                    Background="Silver" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

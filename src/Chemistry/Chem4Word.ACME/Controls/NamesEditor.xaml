@@ -1,0 +1,115 @@
+﻿<UserControl
+    x:Class="Chem4Word.ACME.Controls.NamesEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="200"
+    d:DesignWidth="600"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
+        <SolidColorBrush x:Key="Chem4WordRed" Color="Red" />
+        <SolidColorBrush x:Key="Chem4WordGreen" Color="Green" />
+        <converters:EnabledConverter x:Key="EnabledConverter" />
+        <Style TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" Value="LightGray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border BorderBrush="{StaticResource Chem4WordBrush}" BorderThickness="2">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollViewer
+                x:Name="ScrollViewer"
+                Grid.Row="0"
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto">
+                <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding ListOfNames, Mode=TwoWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="3,3,3,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition
+                                        Width="*"
+                                        MinWidth="200"
+                                        SharedSizeGroup="A" />
+                                    <ColumnDefinition
+                                        Width="*"
+                                        MinWidth="200"
+                                        SharedSizeGroup="B" />
+                                </Grid.ColumnDefinitions>
+                                <Button
+                                    x:Name="DeleteRow"
+                                    Grid.Column="0"
+                                    Width="20"
+                                    Height="20"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0"
+                                    Click="OnDeleteRowClicked"
+                                    IsEnabled="{Binding CanBeDeleted}"
+                                    ToolTip="Delete this item">
+                                    <Viewbox
+                                        Width="16"
+                                        Height="16"
+                                        Stretch="UniformToFill">
+                                        <Path
+                                            Width="16"
+                                            Height="16"
+                                            Data="M3,0 C3.8,0,4.5,0.3,5.1,0.9 L16,11.7 26.9,0.9 C28.1,-0.3 30,-0.3 31.1,0.9 32.3,2.1 32.3,4 31.1,5.1 L20.2,16 31.1,26.9 C32.3,28.1 32.3,30 31.1,31.1 29.9,32.3 28,32.3 26.9,31.1 L16,20.2 5.1,31.1 C3.9,32.3 2,32.3 0.9,31.1 -0.3,29.9 -0.3,28 0.9,26.9 L11.8,16 0.9,5.1 C-0.3,3.9 -0.3,2 0.9,0.9 1.5,0.3 2.2,0 3,0z"
+                                            Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordRed}}"
+                                            Stretch="Fill" />
+                                    </Viewbox>
+                                </Button>
+                                <TextBox
+                                    Grid.Column="1"
+                                    Margin="3,0,0,0"
+                                    VerticalContentAlignment="Center"
+                                    IsReadOnly="True"
+                                    Text="{Binding Path=FullType}" />
+                                <TextBox
+                                    Grid.Column="2"
+                                    Margin="3,0,3,0"
+                                    VerticalContentAlignment="Center"
+                                    IsReadOnly="{Binding IsReadOnly}"
+                                    Text="{Binding Path=Value, Mode=TwoWay}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Button
+                x:Name="AddButton"
+                Grid.Row="1"
+                Width="Auto"
+                Height="20"
+                Margin="3">
+                <StackPanel Orientation="Horizontal">
+                    <Viewbox
+                        Width="16"
+                        Height="16"
+                        Margin="5,0,5,0"
+                        Stretch="UniformToFill">
+                        <Path
+                            Width="16"
+                            Height="16"
+                            Data="M12.1,0 L19.8,0 19.8,12.1 32,12.1 32,19.8 19.9,19.8 19.9,32 12.2,32 12.2,19.9 0,19.9 0,12.2 12.1,12.2z"
+                            Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordGreen}}"
+                            Stretch="Fill" />
+                    </Viewbox>
+                    <TextBlock x:Name="AddButtonCaption" VerticalAlignment="Center">Set at runtime</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

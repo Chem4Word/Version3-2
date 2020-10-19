@@ -1,0 +1,1082 @@
+﻿<UserControl
+    x:Class="Chem4Word.ACME.Editor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:acme="clr-namespace:Chem4Word.ACME"
+    xmlns:behaviors="clr-namespace:Chem4Word.ACME.Behaviors"
+    xmlns:control="clr-namespace:Chem4Word.ACME.Controls"
+    xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="AcmeControl"
+    Width="1024"
+    Height="768"
+    d:DataContext="{d:DesignInstance acme:EditViewModel}"
+    Loaded="ACMEControl_Loaded"
+    PreviewKeyDown="Editor_OnPreviewKeyDown"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Brushes.xaml" />
+                <ResourceDictionary Source="Resources/ControlStyles.xaml" />
+                <ResourceDictionary Source="Resources/ACMEResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:DoNothingConverter x:Key="DoNothing" />
+            <!--  styles  -->
+            <Style TargetType="{x:Type control:ZoomBox}">
+
+                <Style.Resources>
+
+                    <VisualBrush
+                        x:Key="AlphaBrush"
+                        Stretch="None"
+                        TileMode="Tile"
+                        Viewport="0,0,8,8"
+                        ViewportUnits="Absolute">
+                        <VisualBrush.Visual>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4" />
+                                    <ColumnDefinition Width="4" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="4" />
+                                    <RowDefinition Height="4" />
+                                </Grid.RowDefinitions>
+                                <Rectangle
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Fill="#EEE" />
+                                <Rectangle
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Fill="#AAA" />
+                                <Rectangle
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Fill="#AAA" />
+                                <Rectangle
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Fill="#EEE" />
+                            </Grid>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+
+                    <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
+                        <Setter Property="SnapsToDevicePixels" Value="true" />
+                        <Setter Property="OverridesDefaultStyle" Value="true" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border x:Name="Border" Background="{Binding RelativeSource={RelativeSource AncestorType=control:ChemistryCanvas}, Path=Background}">
+                                        <ContentPresenter />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Border" Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=control:ChemistryCanvas}, Path=Background}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                    <Style TargetType="Expander">
+                        <Setter Property="SnapsToDevicePixels" Value="true" />
+                        <Setter Property="OverridesDefaultStyle" Value="true" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Expander">
+                                    <DockPanel>
+                                        <ToggleButton
+                                            HorizontalContentAlignment="Left"
+                                            VerticalContentAlignment="Center"
+                                            DockPanel.Dock="Top"
+                                            IsChecked="{Binding Path=IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                            Style="{StaticResource ToggleButtonStyle}">
+                                            <ToggleButton.Content>
+                                                <Grid Margin="4">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="20" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Path
+                                                        Name="Arrow"
+                                                        Grid.Column="0"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Data="M 0 0 L 0 8 L 5 4 Z"
+                                                        Fill="{TemplateBinding Foreground}"
+                                                        RenderTransformOrigin="0.5,0.5"
+                                                        SnapsToDevicePixels="True"
+                                                        Stroke="{TemplateBinding Foreground}"
+                                                        StrokeThickness="0.5">
+                                                        <Path.RenderTransform>
+                                                            <RotateTransform Angle="0" />
+                                                        </Path.RenderTransform>
+                                                    </Path>
+                                                    <ContentPresenter
+                                                        Name="HeaderContent"
+                                                        Grid.Column="1"
+                                                        ContentSource="Header" />
+                                                </Grid>
+                                            </ToggleButton.Content>
+                                        </ToggleButton>
+                                        <Border Name="Content">
+                                            <Border.LayoutTransform>
+                                                <ScaleTransform ScaleY="0" />
+                                            </Border.LayoutTransform>
+                                            <ContentPresenter Content="{TemplateBinding Content}" />
+                                        </Border>
+                                    </DockPanel>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="Expander.IsExpanded" Value="True">
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="Content"
+                                                            Storyboard.TargetProperty="LayoutTransform.ScaleY"
+                                                            To="1"
+                                                            Duration="0:0:0.3" />
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="Content"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0:0:0.3" />
+                                                        <DoubleAnimation
+                                                            DecelerationRatio="1"
+                                                            Storyboard.TargetName="Arrow"
+                                                            Storyboard.TargetProperty="(FrameworkElement.RenderTransform).(RotateTransform.Angle)"
+                                                            To="90"
+                                                            Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="Content"
+                                                            Storyboard.TargetProperty="LayoutTransform.ScaleY"
+                                                            To="0"
+                                                            Duration="0:0:0.3" />
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="Content"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.3" />
+                                                        <DoubleAnimation
+                                                            AccelerationRatio="1"
+                                                            Storyboard.TargetName="Arrow"
+                                                            Storyboard.TargetProperty="(FrameworkElement.RenderTransform).(RotateTransform.Angle)"
+                                                            Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Style.Resources>
+
+                <Setter Property="SnapsToDevicePixels" Value="true" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type control:ZoomBox}">
+                            <Border
+                                Background="{Binding RelativeSource={RelativeSource AncestorType=control:ChemistryCanvas}, Path=Background}"
+                                BorderBrush="DimGray"
+                                BorderThickness="1"
+                                CornerRadius="1">
+                                <Expander Background="Transparent" IsExpanded="True">
+                                    <Border
+                                        Height="180"
+                                        Padding="0"
+                                        BorderBrush="DimGray"
+                                        BorderThickness="0,1,0,0">
+                                        <Grid>
+                                            <Canvas Name="PART_ZoomCanvas" Margin="5">
+                                                <Canvas.Background>
+                                                    <VisualBrush Stretch="Uniform" Visual="{Binding ElementName=DrawingArea, Path=Content}" />
+                                                </Canvas.Background>
+                                                <Thumb Name="PART_ZoomThumb" Cursor="SizeAll">
+                                                    <Thumb.Style>
+                                                        <Style TargetType="Thumb">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Thumb">
+                                                                        <Rectangle
+                                                                            Fill="Transparent"
+                                                                            Stroke="Black"
+                                                                            StrokeThickness="1" />
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </Thumb.Style>
+                                                </Thumb>
+                                            </Canvas>
+                                        </Grid>
+                                    </Border>
+                                    <Expander.Header>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Slider
+                                                Name="PART_ZoomSlider"
+                                                MinWidth="104"
+                                                MinHeight="21"
+                                                Margin="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                IsMoveToPointEnabled="False"
+                                                IsSnapToTickEnabled="True"
+                                                LargeChange="12.5"
+                                                Maximum="100"
+                                                Minimum="25"
+                                                SmallChange="12.5"
+                                                Ticks="12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100"
+                                                Value="100" />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="0,0,14,0"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding ElementName=PART_ZoomSlider, Path=Value}" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="1,0,2,0"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                Text="%" />
+                                        </Grid>
+                                    </Expander.Header>
+                                </Expander>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <converters:EnabledConverter x:Key="EnabledConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <KeyBinding
+            Key="Z"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UndoCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="Y"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.RedoCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="C"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CopyCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="X"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CutCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="V"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.PasteCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="G"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.GroupCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="U"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UnGroupCommand}"
+            Modifiers="Control" />
+    </UserControl.InputBindings>
+
+    <Grid Name="SelectorGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding ElementName=MainTray, Path=Height}" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <converters:BoolToVisibilityConverter
+                x:Key="VisConverter"
+                FalseValue="Collapsed"
+                TrueValue="Visible" />
+        </Grid.Resources>
+        <ToolBarTray
+            Name="MainTray"
+            DockPanel.Dock="Top"
+            IsLocked="True">
+            <ToolBarTray.Resources>
+                <Style TargetType="{x:Type Popup}">
+                    <Setter Property="StaysOpen" Value="False" />
+                </Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.MenuBrushKey}}" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Padding" Value="2" />
+                </Style>
+                <Style x:Key="ToolbarButtonStyle" TargetType="{x:Type RadioButton}">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="Width" Value="30" />
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value=".25" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style x:Key="CommandButtonStyle" TargetType="{x:Type Button}">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="Width" Value="30" />
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value=".25" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ToolBarTray.Resources>
+            <ToolBar x:Name="SelectorToolbar" Height="40">
+                <ComboBox
+                    x:Name="AtomCombo"
+                    Width="Auto"
+                    Height="Auto"
+                    MinWidth="60"
+                    MinHeight="25"
+                    FontFamily="Arial"
+                    FontSize="18"
+                    FontWeight="DemiBold"
+                    Foreground="{Binding Path=SelectedItem.Foreground, RelativeSource={RelativeSource Self}}"
+                    ItemsSource="{Binding ElementName=AcmeControl, Path=ActiveViewModel.AtomOptions}"
+                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveViewModel.SelectedElement, PresentationTraceSources.TraceLevel=None, Mode=TwoWay, Converter={StaticResource DoNothing}}"
+                    SelectedValuePath="Element"
+                    ToolTip="Current Atom Type">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Viewbox ToolTip="{Binding Path=Element, Mode=OneTime}">
+                                <ContentPresenter Content="{Binding Content}" />
+                            </Viewbox>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="FontSize" Value="18" />
+                            <Setter Property="FontWeight" Value="DemiBold" />
+                            <Setter Property="FontFamily" Value="Arial" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
+                <Button
+                    x:Name="PTPickerButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.PickElementCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Periodic Table">
+                    <StaticResource ResourceKey="PTPickerIcon" />
+                </Button>
+                <Separator />
+                <ComboBox
+                    x:Name="BondCombo"
+                    Width="60"
+                    Height="25"
+                    IsHitTestVisible="True"
+                    ItemsSource="{StaticResource BondOptions}"
+                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveViewModel.SelectedBondOptionId, Mode=TwoWay}"
+                    SelectedValuePath="Id"
+                    ToolTip="Current Bond Type">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Viewbox ToolTip="{Binding Path=Description, Mode=OneTime}">
+                                <Image
+                                    Width="40"
+                                    Height="14"
+                                    HorizontalAlignment="Left"
+                                    Stretch="None">
+                                    <Image.Source>
+                                        <DrawingImage Drawing="{Binding Path=BondGraphic}" />
+                                    </Image.Source>
+                                </Image>
+                            </Viewbox>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
+                <Separator Margin="5" />
+
+                <RadioButton
+                    x:Name="DrawButton"
+                    Click="ModeButton_OnChecked"
+                    GroupName="Actions"
+                    IsChecked="True"
+                    Style="{StaticResource ToolbarButtonStyle}"
+                    ToolTip="Draw">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Fill">
+                        <Image Source="{StaticResource PencilIcon}" />
+                    </Viewbox>
+                    <RadioButton.Tag>
+                        <behaviors:DrawBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                    </RadioButton.Tag>
+                </RadioButton>
+                <RadioButton
+                    x:Name="SelectionButton"
+                    Checked="ModeButton_OnChecked"
+                    GroupName="Actions"
+                    Style="{StaticResource ToolbarButtonStyle}"
+                    ToolTip="Select">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <StackPanel
+                            Name="SelectionPanel"
+                            Width="24"
+                            Height="24" />
+                    </Viewbox>
+                </RadioButton>
+                <Button
+                    Name="SelectionDropdownButton"
+                    Width="10"
+                    Click="SelectionDropdownButton_OnClick"
+                    ToolTip="Change Selection Mode">
+                    <Viewbox Stretch="Uniform">
+                        <Path Data="M -7.5,0 l 15,0 l -7.5, 7.5 Z" Fill="{StaticResource ResourceKey=Chem4WordBrush}" />
+                    </Viewbox>
+                </Button>
+                <Popup
+                    x:Name="SelectionPopup"
+                    PlacementTarget="{Binding ElementName=SelectionButton}"
+                    StaysOpen="False">
+                    <Border>
+                        <Grid Background="{x:Static SystemColors.WindowBrush}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Setters>
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="Height" Value="Auto" />
+                                        <EventSetter Event="Click" Handler="SelectionPopup_OnClick" />
+                                    </Style.Setters>
+                                </Style>
+                            </Grid.Resources>
+                            <Button
+                                Name="LassoButton"
+                                Grid.Column="0"
+                                Click="SelectionButton_OnClick"
+                                ToolTip="Lasso Mode">
+                                <Viewbox Width="24" Height="24">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="20" />
+                                        </Grid.RowDefinitions>
+                                        <Path
+                                            Grid.RowSpan="2"
+                                            Grid.ColumnSpan="2"
+                                            Margin="2.885,1.845,1.064,5.402"
+                                            Data="M16.492973,3.9081249 C4.9465812,3.4957538 3.7095744,12.979825 3.7095744,12.979825 L2.8844375,21.227865 3.2966993,30.712347 8.6576658,33.59937 12.369104,32.774543 16.905307,28.650721 19.379599,29.063103 29.68915,29.887867 34.637738,27.825956 36.700486,25.351878 37.937237,19.166306 32.57593,17.104261 28.452095,12.155676 23.916069,1.8463429 z"
+                                            Fill="{StaticResource ThumbFillBrush}"
+                                            Stretch="Fill"
+                                            Stroke="{StaticResource GrabHandleBorderBrush}"
+                                            StrokeDashArray="3,1"
+                                            StrokeThickness="2" />
+
+                                        <Viewbox
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            Stretch="Uniform">
+
+                                            <Path
+                                                Width="12.3333"
+                                                Height="20"
+                                                Data="F1 M 28.5,17.4167L 53.8333,44.3333L 43.5417,44.3333L 49.875,55.4167L 43.5417,58.5833L 37.2083,47.5L 28.5,55.4167L 28.5,17.4167 Z"
+                                                Fill="{Binding ElementName=SelectorToolbar, Path=Background}"
+                                                Stretch="Fill"
+                                                Stroke="{StaticResource Chem4WordBrush}"
+                                                StrokeThickness="1" />
+                                        </Viewbox>
+                                    </Grid>
+                                </Viewbox>
+                                <Button.Tag>
+                                    <behaviors:LassoBehaviour EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                                </Button.Tag>
+                            </Button>
+                            <Button
+                                Name="RectButton"
+                                Grid.Column="1"
+                                Click="SelectionButton_OnClick"
+                                ToolTip="Rect Mode">
+                                <Viewbox Width="24" Height="24">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="20" />
+                                        </Grid.RowDefinitions>
+                                        <Rectangle
+                                            Grid.RowSpan="2"
+                                            Grid.ColumnSpan="2"
+                                            Width="22"
+                                            Height="18"
+                                            Fill="{StaticResource ThumbFillBrush}"
+                                            Stroke="{StaticResource GrabHandleBorderBrush}"
+                                            StrokeDashArray="3,1"
+                                            StrokeThickness="2" />
+                                        <Viewbox
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            Stretch="Uniform">
+                                            <Path
+                                                Width="12.3333"
+                                                Height="20"
+                                                Data="F1 M 28.5,17.4167L 53.8333,44.3333L 43.5417,44.3333L 49.875,55.4167L 43.5417,58.5833L 37.2083,47.5L 28.5,55.4167L 28.5,17.4167 Z"
+                                                Fill="{Binding ElementName=SelectorToolbar, Path=Background}"
+                                                Stretch="Fill"
+                                                Stroke="{StaticResource Chem4WordBrush}"
+                                                StrokeThickness="1" />
+                                        </Viewbox>
+                                    </Grid>
+                                </Viewbox>
+                                <Button.Tag>
+                                    <behaviors:LassoBehaviour EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" RectMode="True" />
+                                </Button.Tag>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Popup>
+
+                <RadioButton
+                    Name="RingButton"
+                    Width="30"
+                    Height="30"
+                    Checked="ModeButton_OnChecked"
+                    GroupName="Actions"
+                    ToolTip="Insert a ring">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <StackPanel
+                            Name="RingPanel"
+                            Width="24"
+                            Height="24" />
+                    </Viewbox>
+                </RadioButton>
+                <Button
+                    Name="RingDropdownButton"
+                    Width="10"
+                    Click="RingDropdown_OnClick"
+                    ToolTip="Select Ring">
+                    <Viewbox Stretch="Uniform">
+                        <Path Data="M -7.5,0 l 15,0 l -7.5, 7.5 Z" Fill="{StaticResource ResourceKey=Chem4WordBrush}" />
+                    </Viewbox>
+                </Button>
+                <!--  Print Toggle Button Popup  -->
+                <Popup
+                    x:Name="RingPopup"
+                    PlacementTarget="{Binding ElementName=RingButton}"
+                    StaysOpen="False">
+                    <Border>
+                        <UniformGrid Background="{x:Static SystemColors.WindowBrush}">
+                            <UniformGrid.Resources>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Setters>
+                                        <Setter Property="Background" Value="Transparent" />
+
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="Height" Value="Auto" />
+                                        <EventSetter Event="Click" Handler="RingSelButton_OnClick" />
+                                    </Style.Setters>
+                                </Style>
+                            </UniformGrid.Resources>
+                            <Button Name="BenzeneButton" ToolTip="Benzene">
+                                <Viewbox>
+                                    <StaticResource ResourceKey="BenzenePath" />
+                                </Viewbox>
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="6"
+                                        Unsaturated="True" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Cyclohexane">
+                                <StaticResource ResourceKey="CyclohexanePath" />
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="6"
+                                        Unsaturated="False" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Cyclopentane">
+                                <StaticResource ResourceKey="CyclopentanePath" />
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="5"
+                                        Unsaturated="False" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Cyclopentadiene">
+                                <StaticResource ResourceKey="CyclopentadienePath" />
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="5"
+                                        Unsaturated="True" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Cycloheptane">
+                                <StaticResource ResourceKey="CycloheptanePath" />
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="7"
+                                        Unsaturated="False" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Cyclobutane">
+                                <Viewbox
+                                    Width="16"
+                                    Height="16"
+                                    Stretch="Uniform">
+                                    <Rectangle
+                                        Width="16"
+                                        Height="16"
+                                        Stroke="Black" />
+                                </Viewbox>
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="4"
+                                        Unsaturated="False" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Cyclopropane">
+                                <Viewbox Stretch="UniformToFill">
+                                    <Path Data="M0,15 L20,15 L10,-2.32 Z" Stroke="Black" />
+                                </Viewbox>
+                                <Button.Tag>
+                                    <behaviors:RingBehavior
+                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        RingSize="3"
+                                        Unsaturated="False" />
+                                </Button.Tag>
+                            </Button>
+                            <Button ToolTip="Variable">
+                                <Viewbox>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="2*" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse
+                                            Grid.Row="0"
+                                            Grid.RowSpan="3"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="3"
+                                            Width="20"
+                                            Height="20"
+                                            Margin="0,3"
+                                            Stroke="Black" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Margin="0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Top"
+                                            Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type Viewbox}}, Path=Background}"
+                                            FontSize="16"
+                                            Foreground="{StaticResource DrawBondBrush}"
+                                            Text="n"
+                                            TextAlignment="Center" />
+                                    </Grid>
+                                </Viewbox>
+                                <Button.Tag>
+                                    <behaviors:NRingBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                                </Button.Tag>
+                            </Button>
+                        </UniformGrid>
+                    </Border>
+                </Popup>
+                <RadioButton
+                    x:Name="ChainButton"
+                    Click="ModeButton_OnChecked"
+                    GroupName="Actions"
+                    ToolTip="Draw Chain">
+                    <Viewbox>
+                        <StaticResource ResourceKey="ChainPath" />
+                        <Viewbox.LayoutTransform>
+                            <RotateTransform Angle="180" />
+                        </Viewbox.LayoutTransform>
+                    </Viewbox>
+                    <RadioButton.Tag>
+                        <behaviors:ChainBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                    </RadioButton.Tag>
+                </RadioButton>
+                <!--  ReactionButton Hidden (Collapsed)  -->
+                <RadioButton
+                    x:Name="ReactionButton"
+                    GroupName="Actions"
+                    Style="{StaticResource ToolbarButtonStyle}"
+                    Visibility="Collapsed">
+                    <Viewbox Stretch="Uniform">
+                        <StackPanel>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontFamily="Arial"
+                                Foreground="{StaticResource ResourceKey=Chem4WordBrush}">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="LightGray" />
+                                </TextBlock.Effect>
+                                NH<Run BaselineAlignment="Subscript" FontSize="12">
+                                    3
+                                </Run>
+                            </TextBlock>
+                            <graphics:ArrowBase
+                                ArrowHeadLength="10"
+                                Fill="{StaticResource ResourceKey=Chem4WordBrush}"
+                                HeadAngle="35"
+                                IsArrowClosed="True"
+                                Stroke="{StaticResource ResourceKey=Chem4WordBrush}"
+                                StartPoint="0,5"
+                                EndPoint="45,5">
+                                <graphics:ArrowBase.Effect>
+                                    <DropShadowEffect Color="LightGray" />
+                                </graphics:ArrowBase.Effect>
+                            </graphics:ArrowBase>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontFamily="Arial"
+                                Foreground="{StaticResource ResourceKey=Chem4WordBrush}">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="LightGray" />
+                                </TextBlock.Effect>
+                                H<Run BaselineAlignment="Subscript" FontSize="12">
+                                    2
+                                </Run>
+                                O</TextBlock>
+                        </StackPanel>
+                    </Viewbox>
+                </RadioButton>
+                <RadioButton
+                    x:Name="DeleteButton"
+                    Click="ModeButton_OnChecked"
+                    FontSize="18"
+                    GroupName="Actions"
+                    Style="{StaticResource ToolbarButtonStyle}"
+                    ToolTip="Delete">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <Path Data="M16.24,3.56L21.19,8.5C21.97,9.29 21.97,10.55 21.19,11.34L12,20.53C10.44,22.09 7.91,22.09 6.34,20.53L2.81,17C2.03,16.21 2.03,14.95 2.81,14.16L13.41,3.56C14.2,2.78 15.46,2.78 16.24,3.56M4.22,15.58L7.76,19.11C8.54,19.9 9.8,19.9 10.59,19.11L14.12,15.58L9.17,10.63L4.22,15.58Z" Fill="DarkRed" />
+                    </Viewbox>
+                    <RadioButton.Tag>
+                        <behaviors:DeleteBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                    </RadioButton.Tag>
+                </RadioButton>
+                <Separator Margin="5" />
+
+                <Button
+                    x:Name="CutButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CutCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Cut">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <Path
+                            Data="F1 M 26,42C 27.1737,42 28.2799,42.3095 29.2514,42.8564L 33.538,38.5699L 36.9626,42.1932L 32.4905,46.6858C 32.8191,47.5548 33,48.5048 33,49.5C 33,53.6421 29.866,57 26,57C 22.134,57 19,53.6421 19,49.5C 19,45.3579 22.134,42 26,42 Z M 26,45C 23.7908,45 22,47.0147 22,49.5C 22,51.9853 23.7908,54 26,54C 28.2091,54 30,51.9853 30,49.5C 30,47.0147 28.2091,45 26,45 Z M 50,42C 53.866,42 57,45.3579 57,49.5C 57,53.6421 53.866,57 50,57C 46.134,57 43,53.6421 43,49.5C 43,48.5055 43.1807,47.5562 43.5087,46.6877C 37.4037,40.5816 31.3813,34.5251 28.1357,30.1361C 24.7905,25.6125 24.3953,22.8602 24,20.1079L 46.7486,42.8564C 47.7201,42.3095 48.8263,42 50,42 Z M 50,45C 47.7908,45 46,47.0147 46,49.5C 46,51.9853 47.7908,54 50,54C 52.2091,54 54,51.9853 54,49.5C 54,47.0147 52.2091,45 50,45 Z M 47.8643,30.1361C 46.4839,32.0028 44.6012,34.1712 42.4235,36.5166L 41.9416,36.0347C 43.8801,33.9052 45.5581,31.9333 46.8205,30.213C 49.9109,26.0015 50.51,23.7154 50.8952,21.2126L 52,20.1079C 51.6047,22.8602 51.2095,25.6125 47.8643,30.1361 Z M 39.0074,33.1005L 50.2564,21.8515C 49.8163,23.9301 48.9562,26.0005 46.4256,29.4492C 45.0997,31.2561 43.5411,33.3404 41.5003,35.5935L 39.0074,33.1005 Z M 35.8034,42.4922L 35.3653,42.0251L 31.9263,45.5067C 32.0391,45.6984 32.1441,45.8961 32.2406,46.099L 35.8034,42.4922 Z"
+                            Fill="Silver"
+                            Stretch="UniformToFill"
+                            Stroke="Black" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="CopyButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CopyCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Copy">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <Image Source="{StaticResource CopyIcon}" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="PasteButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.PasteCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Paste">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <Image Source="{StaticResource PasteIcon}" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="UndoButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UndoCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Undo">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="UniformToFill">
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Data="F1 M 52.7514,25.076C 53.4111,25.7534 54.0258,26.4933 54.5953, 27.296C 55.1649,28.0987 55.6564,28.9607 56.0698,29.8821C 56.4832,30.8035 56.8065,31.7766 57.0396,32.8014C 57.2727,33.8262 57.3892, 34.8883 57.3892,35.9878C 57.3892,37.0566 57.276,38.1517 57.0495,39.2733C 56.823,40.3948 56.4491,41.5394 55.928,42.7071C 55.4068, 43.8748 54.713,45.07 53.8465,46.2927C 52.9801,47.5154 51.9069,48.7601 50.6271,50.0267C 50.2137,50.4358 49.7431,50.902 49.2153, 51.4253C 48.6875,51.9487 48.1278,52.5029 47.5363,53.0878C 46.9447,53.6728 46.34,54.2742 45.722,54.8922C 45.1041,55.5101 44.4983, 56.1072 43.9045,56.6833C 42.5323,58.0424 41.1029,59.4586 39.6163,60.9319L 35.3545,56.6239C 36.8235,55.1638 38.2441,53.7542 39.6163, 52.3951C 40.1969,51.819 40.7994,51.2252 41.424,50.6139C 42.0485,50.0025 42.6565,49.4011 43.2481,48.8095C 43.8396,48.218 44.3993, 47.6605 44.9271,47.1371C 45.4549,46.6138 45.9255,46.1476 46.3389,45.7385C 48.0146,44.0584 49.2758,42.3904 50.1224,40.7345C 50.969, 39.0786 51.3924,37.4678 51.3924,35.9021C 51.3924,34.719 51.1516,33.5777 50.67,32.4781C 50.1884,31.3786 49.4528,30.3406 48.4632, 29.3642C 48.2169,29.1179 47.9112,28.8848 47.5462,28.6649C 47.1811,28.445 46.7688,28.2526 46.3092,28.0877C 45.8496,27.9227 45.3482, 27.7886 44.805,27.6852C 44.2619,27.5819 43.6868,27.5302 43.0799,27.5302C 42.4641,27.5302 41.8198,27.5929 41.1469,27.7182C 40.474, 27.8436 39.7933,28.0503 39.105,28.3384C 38.4167,28.6264 37.7218,29.0036 37.0203,29.4698C 36.3188,29.936 35.6316,30.5056 34.9587, 31.1785L 30.466,35.6976L 37.4986,42.75L 19,42.75L 19,24.5417L 25.9931,31.4094L 30.5056,26.8705C 31.5083,25.7446 32.5463, 24.8275 33.6194,24.1194C 34.6926,23.4113 35.7646,22.8616 36.8356,22.4701C 37.9065,22.0787 38.972,21.8148 40.0319, 21.6785C 41.0919,21.5421 42.1079,21.474 43.0799,21.474C 44.087,21.474 45.0579,21.563 45.9925,21.7411C 46.9271,21.9193 47.8068,22.17 48.6314,22.4932C 49.4561,22.8165 50.2148,23.198 50.9075,23.6378C 51.6002,24.0777 52.2148,24.5571 52.7514,25.076 Z"
+                            Fill="DarkCyan"
+                            Stretch="Fill" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="RedoButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.RedoCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Redo">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="UniformToFill">
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Data="F1 M 23.2486,25.076C 22.5889,25.7534 21.9742,26.4933 21.4047,27.296C 20.8351,28.0987 20.3436,28.9607 19.9302, 29.8821C 19.5168,30.8035 19.1935,31.7766 18.9604,32.8014C 18.7273,33.8262 18.6107,34.8883 18.6107,35.9878C 18.6107, 37.0566 18.724,38.1517 18.9505,39.2733C 19.177,40.3948 19.5508,41.5394 20.072,42.7071C 20.5932,43.8748 21.287, 45.07 22.1535,46.2927C 23.0199,47.5154 24.093,48.7601 25.3729,50.0267C 25.7863,50.4358 26.2569,50.902 26.7847,51.4253C 27.3125,51.9487 27.8721,52.5029 28.4637,53.0878C 29.0552,53.6728 29.66,54.2742 30.2779,54.8922C 30.8959,55.5101 31.5017, 56.1072 32.0955,56.6833C 33.4677,58.0424 34.8971,59.4586 36.3837,60.9319L 40.6455,56.6239C 39.1765,55.1638 37.7559,53.7542 36.3837,52.3951C 35.8031,51.819 35.2006,51.2252 34.576,50.6139C 33.9515,50.0025 33.3434,49.4011 32.7519,48.8095C 32.1603, 48.218 31.6007,47.6605 31.0729,47.1371C 30.5451,46.6138 30.0745,46.1476 29.6611,45.7385C 27.9854,44.0584 26.7242,42.3904 25.8776,40.7345C 25.0309,39.0786 24.6076,37.4678 24.6076,35.9021C 24.6076,34.719 24.8484,33.5777 25.33,32.4781C 25.8116, 31.3786 26.5472,30.3406 27.5368,29.3642C 27.7831,29.1179 28.0887,28.8848 28.4538,28.6649C 28.8188,28.445 29.2312,28.2526 29.6908,28.0877C 30.1504,27.9227 30.6518,27.7886 31.1949,27.6852C 31.7381,27.5819 32.3132,27.5302 32.9201,27.5302C 33.5359,27.5302 34.1802,27.5929 34.8531,27.7182C 35.526,27.8436 36.2066,28.0503 36.8949,28.3384C 37.5833,28.6264 38.2782,29.0036 38.9797,29.4698C 39.6812,29.936 40.3684,30.5056 41.0413,31.1785L 45.534,35.6976L 38.5014,42.75L 57,42.75L 57,24.5417L 50.0069,31.4094L 45.4944,26.8705C 44.4916,25.7446 43.4537,24.8275 42.3805,24.1194C 41.3074,23.4113 40.2353,22.8616 39.1644,22.4701C 38.0934,22.0787 37.028,21.8148 35.968,21.6785C 34.9081,21.5421 33.8921,21.474 32.9201,21.474C 31.9129,21.474 30.942,21.563 30.0074,21.7411C 29.0728,21.9193 28.1932,22.17 27.3686,22.4932C 26.5439,22.8165 25.7852,23.198 25.0925,23.6378C 24.3998,24.0777 23.7852,24.5571 23.2486,25.076 Z"
+                            Fill="DarkCyan"
+                            Stretch="Fill" />
+                    </Viewbox>
+                </Button>
+                <Separator Margin="5" />
+
+                <Button
+                    x:Name="FlipHorizontalButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.FlipHorizontalCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Mirror Vertical ([Shift-click] to Flip)">
+                    <Viewbox Width="24" Height="24">
+                        <Image Source="{StaticResource FlipHorizontalIcon}" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="FlipVerticalButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.FlipVerticalCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Mirror Horizontal ([Shift-click] to Flip)">
+                    <Viewbox Width="24" Height="24">
+                        <Image Source="{StaticResource FlipVerticalIcon}" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="AddHydrogensButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.AddHydrogensCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Add Explicit Hydrogens">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="Arial"
+                            Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBrush}}">
+                            <Run Foreground="Black">+</Run><Run Foreground="{StaticResource HBrush}">H</Run>
+                        </TextBlock>
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="RemoveHydrogensButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.RemoveHydrogensCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Remove Explicit Hydrogens">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Stretch="Uniform">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="Arial"
+                            Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBrush}}">
+                            <Run Foreground="Black">-</Run><Run Foreground="{StaticResource HBrush}">H</Run>
+                        </TextBlock>
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="FuseButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.FuseCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Fuse"
+                    Visibility="Collapsed">
+                    <Viewbox Width="24" Height="24">
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,0,0"
+                            Data="M9.8261027,14.856148C10.22809,14.856148 10.629084,14.856148 11.031085,14.957131 10.22809,17.265165 8.9231171,18.872173 8.4211259,19.474169L4.5061779,23.188221C3.8032012,23.790216,3.8032012,24.89423,4.4061885,25.497232L4.9071726,25.99922C5.5101752,26.701252,6.6141467,26.701252,7.3171391,26.099226L11.432081,22.284191C12.436063,21.481205 14.243026,20.67819 15.949009,19.875173 16.350996,21.682195 15.849004,23.690208 14.343031,25.09522L10.22809,28.910255C7.9191346,31.018276,4.3051924,31.018276,2.0972187,28.709265L1.5952277,28.207247C-0.61273084,25.898235,-0.51274154,22.385204,1.7962284,20.17617L5.9111547,16.262134C6.9151525,15.358136,8.4211259,14.856148,9.8261027,14.856148z M19.964938,10.239103C20.265944,10.239103 20.666937,10.33911 20.867924,10.640108 21.369915,11.142095 21.369915,12.046125 20.867924,12.548114L12.737053,20.076195C12.235062,20.578182 11.332077,20.578182 10.830085,20.076195 10.328094,19.574177 10.328094,18.671182 10.830085,18.169164L18.960955,10.540101C19.261961,10.33911,19.662957,10.239103,19.964938,10.239103z M25.886858,0C27.392832,2.1338451E-07,28.797808,0.60202569,29.901795,1.7060088L30.403786,2.2080271C32.611746,4.5170376,32.511755,8.0300691,30.202786,10.239103L26.087843,14.053132C24.681876,15.358136 22.674902,15.860154 20.867924,15.45915 21.168929,14.354129 21.67092,12.949118 23.276898,11.042088L27.392832,7.2270834C28.094817,6.6250579,28.094817,5.5210445,27.492821,4.9190495L26.99083,4.5170376C26.38885,3.8140287,25.284863,3.8140287,24.581871,4.4170311L20.566933,8.1310833C18.75997,9.3350732 17.253981,9.9381053 15.949009,10.33911 15.648003,8.5320871 16.249999,6.725065 17.655983,5.3200538L21.770909,1.4050113C22.975893,0.50201875,24.380869,2.1338451E-07,25.886858,0z"
+                            Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBrush}}"
+                            Stretch="Uniform" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="GroupButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.GroupCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Group fragments">
+                    <Viewbox Width="24" Height="24">
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,0,0"
+                            Data="M26.000001,26.000999L32.000001,26.000999 32.000001,32.000999 26.000001,32.000999z M0,26.000999L6,26.000999 6,32.000999 0,32.000999z M12.00001,12L12.00001,20.000001 20.001021,20.000001 20.001021,12z M0,0.00099805132L6,0.00099805132 6,6.0009981 0,6.0009981z M26.000009,0.00099471335L32.00001,0.00099471335 32.00001,6.0009947 26.000009,6.0009947z M8.0010204,0L22.001021,0 22.001021,10 32.000009,10 32.000009,24.000001 30.00001,24.000001 30.00001,12 22.001021,12 22.001021,22.000001 12.00001,22.000001 12.00001,30.000001 24.000009,30.000001 24.000009,32.000001 10.00001,32.000001 10.00001,22.000001 0.0010204315,22.000001 0.0010204315,8.0000001 2.0010204,8.0000001 2.0010204,20.000001 10.00001,20.000001 10.00001,10 20.001021,10 20.001021,1.9999999 8.0010204,1.9999999z"
+                            Fill="{StaticResource ThumbFillBrush}"
+                            Stretch="Uniform"
+                            Stroke="{StaticResource GrabHandleBorderBrush}" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="UngroupButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UnGroupCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Ungroup fragments">
+                    <Viewbox>
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,0,0"
+                            Data="M16.000001,13.998991L16.000001,16 14.001024,16 14.001024,26 16.000001,26 16.000001,27.998991 26.000001,27.998991 26.000001,26 28.001024,26 28.001024,15.999996 26.00001,15.999996 26.00001,13.998991z M26.00001,9.9999963L32.00001,9.9999963 32.00001,15.999996 30.001024,15.999996 30.001024,26 32.000001,26 32.000001,32 26.000001,32 26.000001,29.998991 16.000001,29.998991 16.000001,32 10,32 10,26 12.001024,26 12.001024,16 10,16 10,9.9999996 16.000001,9.9999996 16.000001,11.998992 26.00001,11.998992z M0,0L6,0 6,1.9990015 16.000001,1.9990015 16.000001,0 22.000001,0 22.000001,5.9999995 20.001021,5.9999995 20.001021,9.9990016 18.001021,9.9990016 18.001021,5.9999995 16.000001,5.9999995 16.000001,3.9990015 6,3.9990015 6,6 4.0010204,6 4.0010204,16 6,16 6,17.999002 10.001021,17.999002 10.001021,19.999002 6,19.999002 6,22 0,22 0,16 2.0010204,16 2.0010204,6 0,6z"
+                            Fill="{StaticResource ThumbFillBrush}"
+                            Stretch="Uniform"
+                            Stroke="{StaticResource GrabHandleBorderBrush}" />
+                    </Viewbox>
+                </Button>
+                <Separator Margin="5" />
+
+                <ComboBox
+                    x:Name="BondLengthSelector"
+                    Width="50"
+                    FontSize="16"
+                    ItemsSource="{StaticResource AllowedBondLengths}"
+                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CurrentBondLength, Mode=TwoWay}"
+                    SelectedValuePath="Content"
+                    Style="{StaticResource StandardCombo}"
+                    ToolTip="Change Bond Length" />
+                <Separator Margin="5" />
+
+                <Button
+                    x:Name="SettingsButton"
+                    Click="SettingsButton_OnClick"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Settings">
+                    <Viewbox>
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,0,0"
+                            Data="M16.000015,9.6000061C12.500012,9.6000061 9.5999844,12.5 9.5999844,16 9.5999844,19.5 12.500012,22.399994 16.000015,22.399994 19.500019,22.399994 22.400015,19.5 22.400015,16 22.400015,12.5 19.500019,9.6000061 16.000015,9.6000061z M14.199995,0L17.800005,0C18.199999,0,18.599993,0.29998779,18.599993,0.79998779L18.599993,4.7999878C19.900013,5.1000061,21.000019,5.6000061,22.099997,6.2999878L25.000023,3.3999939C25.099999,3.2999878 25.300011,3.1999817 25.500025,3.1999817 25.700007,3.1999817 25.900019,3.2999878 26.000025,3.3999939L28.600033,6C28.900021,6.2999878,28.900021,6.7999878,28.600033,7.1000061L25.700007,10C26.400019,11.100006,26.900019,12.299988,27.200007,13.5L31.20001,13.5C31.600037,13.5,31.999998,13.799988,31.999998,14.299988L31.999998,17.899994C31.999998,18.299988,31.700012,18.699982,31.20001,18.699982L27.200007,18.699982C26.900019,20,26.400019,21.100006,25.700007,22.199982L28.600033,25.100006C28.700009,25.199982 28.799984,25.399994 28.799984,25.600006 28.799984,25.799988 28.700009,26 28.600033,26.100006L26.000025,28.600006C25.900019,28.699982 25.700007,28.799988 25.500025,28.799988 25.300011,28.799988 25.099999,28.699982 25.000023,28.600006L22.099997,25.699982C21.000019,26.399994,19.800007,26.899994,18.599993,27.199982L18.599993,31.199982C18.599993,31.600006,18.300005,32,17.800005,32L14.199995,32C13.8,32,13.400006,31.699982,13.400006,31.199982L13.400006,27.199982C12.099987,26.899994,11.000011,26.399994,9.9000027,25.699982L7.0000064,28.600006C6.9000003,28.699982 6.6999881,28.799988 6.5000059,28.799988 6.2999937,28.799988 6.099981,28.699982 6.0000054,28.600006L3.3999967,26C3.0999784,25.699982,3.0999784,25.199982,3.3999967,24.899994L6.2999937,22C5.5999805,20.899994,5.0999801,19.699982,4.7999923,18.5L0.79998828,18.5C0.39999409,18.5,-1.933513E-07,18.199982,0,17.699982L0,14.100006C-1.933513E-07,13.699982,0.2999879,13.299988,0.79998828,13.299988L4.7999923,13.299988C5.0999801,12,5.5999805,10.899994,6.2999937,9.7999878L3.3999967,7C3.2999908,6.8999939 3.1999845,6.6999817 3.1999845,6.5 3.1999845,6.2999878 3.2999908,6.1000061 3.3999967,6L6.0000054,3.3999939C6.099981,3.2999878 6.2999937,3.1999817 6.5000059,3.1999817 6.6999881,3.1999817 6.9000003,3.2999878 7.0000064,3.3999939L9.9000027,6.2999878C11.000011,5.6000061,12.199993,5.1000061,13.400006,4.7999878L13.400006,0.79998779C13.400006,0.29998779,13.8,0,14.199995,0z"
+                            Fill="DarkGray"
+                            Stretch="Uniform"
+                            Stroke="Black" />
+                    </Viewbox>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid Grid.Row="1" Height="Auto">
+            <Grid.Resources>
+                <converters:DoNothingConverter x:Key="SnoopConverter" />
+            </Grid.Resources>
+            <!--  actual drawing area  -->
+            <ScrollViewer
+                Name="DrawingArea"
+                Width="Auto"
+                Height="Auto"
+                Background="White"
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto">
+                <control:EditorCanvas
+                    x:Name="ChemCanvas"
+                    MinWidth="2000"
+                    MinHeight="1500"
+                    Background="White"
+                    DisplayOverbondedAtoms="True" />
+            </ScrollViewer>
+            <control:ZoomBox
+                x:Name="ZoomBox"
+                Width="180"
+                Margin="0,5,25,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                ChemistryCanvas="{Binding ElementName=ChemCanvas}"
+                FontFamily="Segoe UI"
+                ScrollViewer="{Binding ElementName=DrawingArea}" />
+        </Grid>
+        <StatusBar
+            Name="FeedbackBar"
+            Grid.Row="2"
+            Height="25"
+            Background="{x:Static SystemColors.WindowBrush}"
+            Visibility="{Binding ElementName=AcmeControl, Path=ShowFeedback, Converter={StaticResource VisConverter}}">
+            <TextBlock
+                FontFamily="Segoe UI"
+                Foreground="Black"
+                Text="{Binding ElementName=AcmeControl, Path=ActiveViewModel.ActiveMode.CurrentStatus}" />
+        </StatusBar>
+    </Grid>
+</UserControl>

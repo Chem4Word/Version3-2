@@ -1,0 +1,360 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1E3FC1F1-06CC-44BD-8004-3EF0CE7EEAA7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Chem4Word.ACME</RootNamespace>
+    <AssemblyName>Chem4Word.ACME</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Setup|AnyCPU'">
+    <OutputPath>bin\Setup\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <ErrorReport>prompt</ErrorReport>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Vso-Ci|AnyCPU'">
+    <OutputPath>bin\Vso-Ci\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.7.1\lib\net461\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
+    <Compile Include="Commands\PickElementCommand.cs" />
+    <Compile Include="Controls\MoleculePropertyEditor.xaml.cs">
+      <DependentUpon>MoleculePropertyEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Adorners\Selectors\BaseSelectionAdorner.cs" />
+    <Compile Include="Adorners\Feedback\GroupHoverAdorner.cs" />
+    <Compile Include="Adorners\Selectors\GroupSelectionAdorner.cs" />
+    <Compile Include="Adorners\Selectors\MoleculeSelectionAdorner.cs" />
+    <Compile Include="Adorners\Selectors\MultiChemistryAdorner.cs" />
+    <Compile Include="Adorners\Selectors\SingleAtomSelectionAdorner.cs" />
+    <Compile Include="Adorners\Selectors\SingleChemistryAdorner.cs" />
+    <Compile Include="Converters\BoolToColorConverter.cs" />
+    <Compile Include="Converters\TreeViewLineConverter.cs" />
+    <Compile Include="Converters\ValueToStringConverter.cs" />
+    <Compile Include="Drawing\GroupVisual.cs" />
+    <Compile Include="Drawing\MoleculeLabelVisual.cs" />
+    <Compile Include="Drawing\MoleculeVisual.cs" />
+    <Compile Include="IHostedWpfEditor.cs" />
+    <Compile Include="LabelsEditor.xaml.cs">
+      <DependentUpon>LabelsEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NamesEditor.xaml.cs">
+      <DependentUpon>NamesEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Drawing\BondLayout.cs" />
+    <Compile Include="Drawing\DoubleBondLayout.cs" />
+    <Compile Include="Drawing\TripleBondLayout.cs" />
+    <Compile Include="Drawing\WedgeBondLayout.cs" />
+    <Compile Include="Enums\2Point5BondType.cs" />
+    <Compile Include="Adorners\Feedback\BondHoverAdorner.cs" />
+    <Compile Include="Adorners\Feedback\AtomHoverAdorner.cs" />
+    <Compile Include="Adorners\ChainAdorner.cs" />
+    <Compile Include="Adorners\DrawBondAdorner.cs" />
+    <Compile Include="Adorners\NRingAdorner.cs" />
+    <Compile Include="Adorners\FixedRingAdorner.cs" />
+    <Compile Include="Adorners\LassoAdorner.cs" />
+    <Compile Include="Adorners\PartialGhostAdorner.cs" />
+    <Compile Include="Adorners\RingDrawer.cs" />
+    <Compile Include="Controls\AtomOption.cs" />
+    <Compile Include="Behaviors\ChainBehavior.cs" />
+    <Compile Include="Behaviors\NRingBehavior.cs" />
+    <Compile Include="Behaviors\AdjustScaleToFitContentBehavior.cs" />
+    <Compile Include="Behaviors\BaseEditBehavior.cs" />
+    <Compile Include="Behaviors\DeleteBehavior.cs" />
+    <Compile Include="Behaviors\DrawBehavior.cs" />
+    <Compile Include="Behaviors\LassoBehaviour.cs" />
+    <Compile Include="Behaviors\RingBehavior.cs" />
+    <Compile Include="Controls\BondOption.cs" />
+    <Compile Include="Controls\FunctionalGroupBlock.cs" />
+    <Compile Include="Controls\GridAwareItemsControl.cs" />
+    <Compile Include="Controls\SettingsHost.xaml.cs">
+      <DependentUpon>SettingsHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AcmeSettings.xaml.cs">
+      <DependentUpon>AcmeSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VisualPeriodicTable.xaml.cs">
+      <DependentUpon>VisualPeriodicTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\ValueToForegroundColorConverter.cs" />
+    <Compile Include="Entities\ChargeValue.cs" />
+    <Compile Include="Entities\IsotopeValue.cs" />
+    <Compile Include="Enums\ArrowEnds.cs" />
+    <Compile Include="Enums\1Point5BondType.cs" />
+    <Compile Include="Enums\SelectionTypeCode.cs" />
+    <Compile Include="Models\BondAngle.cs" />
+    <Compile Include="Models\BondPropertiesModel.cs" />
+    <Compile Include="Models\AtomPropertiesModel.cs" />
+    <Compile Include="Commands\AddAtomCommand.cs" />
+    <Compile Include="Commands\AddHydrogensCommand.cs" />
+    <Compile Include="Commands\BaseCommand.cs" />
+    <Compile Include="Commands\CopyCommand.cs" />
+    <Compile Include="Commands\CutCommand.cs" />
+    <Compile Include="Commands\FlipCommand.cs" />
+    <Compile Include="Commands\FlipHorizontalCommand.cs" />
+    <Compile Include="Commands\FlipVerticalCommand.cs" />
+    <Compile Include="Commands\FuseCommand.cs" />
+    <Compile Include="Commands\GroupCommand.cs" />
+    <Compile Include="Commands\PasteCommand.cs" />
+    <Compile Include="Commands\RedoCommand.cs" />
+    <Compile Include="Commands\RemoveHydrogensCommand.cs" />
+    <Compile Include="Commands\SettingsCommand.cs" />
+    <Compile Include="Commands\UndoCommand.cs" />
+    <Compile Include="Commands\UnGroupCommand.cs" />
+    <Compile Include="Models\BaseDialogModel.cs" />
+    <Compile Include="Controls\BondPropertyEditor.xaml.cs">
+      <DependentUpon>BondPropertyEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EditorCanvas.cs" />
+    <Compile Include="Controls\AtomPropertyEditor.xaml.cs">
+      <DependentUpon>AtomPropertyEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Enums\DoubleBondType.cs" />
+    <Compile Include="Enums\SingleBondType.cs" />
+    <Compile Include="Converters\EnumToBooleanConverter.cs" />
+    <Compile Include="Drawing\FatArrowGeometry.cs" />
+    <Compile Include="Drawing\SuperscriptTextRunProperties.cs" />
+    <Compile Include="Drawing\SubscriptTextRunProperties.cs" />
+    <Compile Include="Drawing\LabelTextRunProperties.cs" />
+    <Compile Include="Drawing\FunctionalGroupTextSource.cs" />
+    <Compile Include="Drawing\LabelTextSourceRun.cs" />
+    <Compile Include="Drawing\FunctionalGroupVisual.cs" />
+    <Compile Include="Drawing\GenericTextParagraphProperties.cs" />
+    <Compile Include="Drawing\SuperscriptTextRunTypographyProperties.cs" />
+    <Compile Include="Drawing\SubscriptTextRunTypographyProperties.cs" />
+    <Compile Include="Drawing\LabelTextRunTypographyProperties.cs" />
+    <Compile Include="Models\MoleculePropertiesModel.cs" />
+    <Compile Include="Models\NamesModel.cs" />
+    <Compile Include="Models\SettingsModel.cs" />
+    <Compile Include="Models\NewAtomPlacement.cs" />
+    <Compile Include="AcmeOptions.cs" />
+    <Compile Include="Controls\PTPopup.xaml.cs">
+      <DependentUpon>PTPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Constants.cs" />
+    <Compile Include="UndoHandler.cs" />
+    <Compile Include="Utils\ClipboardMonitor.cs" />
+    <Compile Include="Utils\Common.cs" />
+    <Compile Include="Utils\CursorUtils.cs" />
+    <Compile Include="Utils\RegistryHelper.cs" />
+    <Compile Include="Utils\UIUtils.cs" />
+    <Compile Include="ViewModel.cs" />
+    <Compile Include="Drawing\AtomVisual.cs" />
+    <Compile Include="Drawing\BondGeometry.cs" />
+    <Compile Include="Drawing\BondVisual.cs" />
+    <Compile Include="Drawing\ChemicalVisual.cs" />
+    <Compile Include="Controls\ChemistryCanvas.cs" />
+    <Compile Include="Controls\ZoomBox.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="CmlEditor.xaml.cs">
+      <DependentUpon>CmlEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ModeButton.cs" />
+    <Compile Include="Converters\DoNothingConverter.cs" />
+    <Compile Include="Converters\ElementConverter.cs" />
+    <Compile Include="Converters\EnabledConverter.cs" />
+    <Compile Include="Converters\ModeConverter.cs" />
+    <Compile Include="Display.xaml.cs">
+      <DependentUpon>Display.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Drawing\GlyphText.cs" />
+    <Compile Include="Drawing\GlyphUtils.cs" />
+    <Compile Include="Editor.xaml.cs">
+      <DependentUpon>Editor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditViewModel.cs" />
+    <Compile Include="Graphics\Arc.cs" />
+    <Compile Include="Graphics\ArcArrow.cs" />
+    <Compile Include="Graphics\ArrowBase.cs" />
+    <Compile Include="Graphics\RegularPolygon.cs" />
+    <Compile Include="Graphics\Shapes.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\KeyboardUtils.cs" />
+    <Compile Include="Utils\Snapper.cs" />
+    <Compile Include="VisualTreeHelpers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\MoleculePropertyEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LabelsEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\NamesEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PTPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\BondOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CmlEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\BondPropertyEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AtomPropertyEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SettingsHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AcmeSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\VisualPeriodicTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Display.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Editor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="Resources\Brushes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\ControlStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\ZoomBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Chem4Word.Core\Chem4Word.Core.csproj">
+      <Project>{2e7b1308-8149-4b03-9cb9-48e0b7151560}</Project>
+      <Name>Chem4Word.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PlugIns\Contracts\Chem4Word.Contracts.csproj">
+      <Project>{BDFEE6C1-3F34-4200-9100-C543BF4C3783}</Project>
+      <Name>Chem4Word.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chem4Word.Model2\Chem4Word.Model2.csproj">
+      <Project>{c69bab8f-4881-4d5f-9929-fc8470df1e48}</Project>
+      <Name>Chem4Word.Model2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Resources\ACMEResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cursors\Eraser.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ms-word-16.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cursors\Pencil.cur" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

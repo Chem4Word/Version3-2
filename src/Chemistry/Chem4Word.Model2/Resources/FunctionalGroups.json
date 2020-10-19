@@ -1,0 +1,773 @@
+﻿[
+    {
+        "Comment": "This functional group should ONLY be used when indicating attachment points during a functional group expansion",
+        "Name": "*",
+        "Symbol": "*",
+        "Colour": "#ff0000",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R#",
+        "Symbol": "R{#}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R′",
+        "Symbol": "R′",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R″",
+        "Symbol": "R″",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R1",
+        "Symbol": "R{1}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R2",
+        "Symbol": "R{2}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R3",
+        "Symbol": "R{3}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R4",
+        "Symbol": "R{4}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R5",
+        "Symbol": "R{5}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R6",
+        "Symbol": "R{6}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R7",
+        "Symbol": "R{7}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R8",
+        "Symbol": "R{8}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R9",
+        "Symbol": "R{9}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R10",
+        "Symbol": "R{10}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R11",
+        "Symbol": "R{11}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R12",
+        "Symbol": "R{12}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R13",
+        "Symbol": "R{13}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R14",
+        "Symbol": "R{14}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R15",
+        "Symbol": "R{15}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "R16",
+        "Symbol": "R{16}",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "R",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Uut",
+        "Symbol": "Uut",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "Nh",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Uuq",
+        "Symbol": "Uuq",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "Fl",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Uup",
+        "Symbol": "Uup",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "Mc",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Uuh",
+        "Symbol": "Uuh",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "Lv",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Uus",
+        "Symbol": "Uus",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "Ts",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Uuo",
+        "Symbol": "Uuo",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "Og",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "OH",
+        "Symbol": "OH",
+        "Internal": "true",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "CH2",
+        "Symbol": "CH2",
+        "Internal": "true",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 2
+            }
+        ]
+    },
+    {
+        "Name": "CH3",
+        "Symbol": "CH3",
+        "Internal": "true",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 3
+            }
+        ]
+    },
+    {
+        "Name": "C2H5",
+        "Symbol": "C2H5",
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 2
+            },
+            {
+                "Component": "H",
+                "Count": 5
+            }
+        ],
+        "Expansion": {
+            "a": [
+                {
+                    "i": "a1",
+                    "x": 500.0,
+                    "y": 375.0,
+                    "l": "*"
+                },
+                {
+                    "i": "a2",
+                    "x": 517.32050807568874,
+                    "y": 365.0
+                },
+                {
+                    "i": "a3",
+                    "x": 534.64101615137747,
+                    "y": 375.0
+                }
+            ],
+            "b": [
+                {
+                    "i": "b1",
+                    "b": 0,
+                    "e": 1
+                },
+                {
+                    "i": "b2",
+                    "b": 1,
+                    "e": 2
+                }
+            ]
+        }
+    },
+    {
+        "Name": "Me",
+        "Symbol": "Me",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 2
+            }
+        ]
+    },
+    {
+        "Name": "Et",
+        "Symbol": "Et",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 2
+            },
+            {
+                "Component": "H",
+                "Count": 5
+            }
+        ]
+    },
+    {
+        "Name": "n-Pr",
+        "Symbol": "n-Pr",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 3
+            },
+            {
+                "Component": "H",
+                "Count": 7
+            }
+        ]
+    },
+    {
+        "Name": "i-Pr",
+        "Symbol": "i-Pr",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 3
+            },
+            {
+                "Component": "H",
+                "Count": 7
+            }
+        ]
+    },
+    {
+        "Name": "iPr",
+        "Symbol": "{i}Pr",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 3
+            },
+            {
+                "Component": "H",
+                "Count": 7
+            }
+        ]
+    },
+    {
+        "Name": "nBu",
+        "Symbol": "{n}Bu",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 4
+            },
+            {
+                "Component": "H",
+                "Count": 9
+            }
+        ]
+    },
+    {
+        "Name": "n-Bu",
+        "Symbol": "n-Bu",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 4
+            },
+            {
+                "Component": "H",
+                "Count": 9
+            }
+        ]
+    },
+    {
+        "Name": "tBu",
+        "Symbol": "{t}Bu",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "CH3",
+                "Count": 3
+            }
+        ]
+    },
+    {
+        "Name": "t-Bu",
+        "Symbol": "t-Bu",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "CH3",
+                "Count": 3
+            }
+        ]
+    },
+    {
+        "Name": "Ph",
+        "Symbol": "Ph",
+        "ShowAsSymbol": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 6
+            },
+            {
+                "Component": "H",
+                "Count": 9
+            }
+        ]
+    },
+    {
+        "Name": "CF3",
+        "Symbol": "CF3",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "F",
+                "Count": 3
+            }
+        ]
+    },
+    {
+        "Name": "CCl3",
+        "Symbol": "CCl3",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "Cl",
+                "Count": 3
+            }
+        ]
+    },
+    {
+        "Name": "C2F5",
+        "Symbol": "C2F5",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 2
+            },
+            {
+                "Component": "F",
+                "Count": 5
+            }
+        ]
+    },
+    {
+        "Name": "TMS",
+        "Symbol": "TMS",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "Si",
+                "Count": 1
+            },
+            {
+                "Component": "CH3",
+                "Count": 3
+            }
+        ]
+    },
+    {
+        "Name": "COOH",
+        "Symbol": "COOH",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "CO2H",
+        "Symbol": "CO2H",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "C",
+                "Count": 1
+            },
+            {
+                "Component": "O",
+                "Count": 2
+            },
+            {
+                "Component": "H",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "NO2",
+        "Symbol": "NO2",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "N",
+                "Count": 1
+            },
+            {
+                "Component": "O",
+                "Count": 2
+            }
+        ]
+    },
+    {
+        "Name": "NH2",
+        "Symbol": "NH2",
+        "Internal": "true",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "N",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 2
+            }
+        ]
+    },
+    {
+        "Name": "CH2OH",
+        "Symbol": "CH2OH",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "CH2",
+                "Count": 1
+            },
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "CH2CH2OH",
+        "Symbol": "CH2CH2OH",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "CH2",
+                "Count": 1
+            },
+            {
+                "Component": "CH2",
+                "Count": 1
+            },
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "CH2CH2CH2OH",
+        "Symbol": "CH2CH2CH2OH",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "CH2",
+                "Count": 3
+            },
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "H",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "OMe",
+        "Symbol": "OMe",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "Me",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "OEt",
+        "Symbol": "OEt",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "O",
+                "Count": 1
+            },
+            {
+                "Component": "Et",
+                "Count": 1
+            }
+        ]
+    },
+    {
+        "Name": "Bz",
+        "Symbol": "Bz",
+        "Flippable": true,
+        "Components": [
+            {
+                "Component": "Ph",
+                "Count": 1
+            },
+            {
+                "Component": "CH2",
+                "Count": 1
+            }
+        ]
+    }
+]

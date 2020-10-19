@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
+  <molecule id="m1">
+    <formula id="m1.f0" concise="C 3 H 9 N 1" />
+    <atomArray>
+      <atom id="a1" elementType="C" x2="482.679492" y2="390.0" />
+      <atom id="a2" elementType="N" x2="500.0" y2="380.0" />
+      <atom id="a3" elementType="C" x2="517.320508" y2="390.0" />
+      <atom id="a4" elementType="C" x2="500.0" y2="360.0" />
+    </atomArray>
+    <bondArray>
+      <bond id="b1" atomRefs2="a1 a2" order="S" />
+      <bond id="b2" atomRefs2="a2 a3" order="S" />
+      <bond id="b3" atomRefs2="a2 a4" order="S" />
+    </bondArray>
+  </molecule>
+</cml>

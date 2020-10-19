@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:formula id="m1.f0" concise="C 12 H 22" />
+    <cml:name id="m1.n1" dictRef="pubchem:Name">cyclohexylcyclohexane</cml:name>
+    <cml:atomArray>
+      <cml:atom id="a1" elementType="C" x2="489.9999" y2="375.0" />
+      <cml:atom id="a2" elementType="C" x2="510.0001" y2="375.0" />
+      <cml:atom id="a3" elementType="C" x2="479.9997" y2="357.6797" />
+      <cml:atom id="a4" elementType="C" x2="479.9997" y2="392.3203" />
+      <cml:atom id="a5" elementType="C" x2="520.0003" y2="392.3203" />
+      <cml:atom id="a6" elementType="C" x2="520.0003" y2="357.6797" />
+      <cml:atom id="a7" elementType="C" x2="459.9995" y2="357.6797" />
+      <cml:atom id="a8" elementType="C" x2="459.9995" y2="392.3203" />
+      <cml:atom id="a9" elementType="C" x2="540.0005" y2="392.3203" />
+      <cml:atom id="a10" elementType="C" x2="540.0005" y2="357.6797" />
+      <cml:atom id="a11" elementType="C" x2="449.9993" y2="375.0" />
+      <cml:atom id="a12" elementType="C" x2="550.0007" y2="375.0" />
+    </cml:atomArray>
+    <cml:bondArray>
+      <cml:bond id="b1" atomRefs2="a1 a2" order="D" />
+      <cml:bond id="b2" atomRefs2="a1 a3" order="S" />
+      <cml:bond id="b3" atomRefs2="a1 a4" order="S" />
+      <cml:bond id="b4" atomRefs2="a2 a5" order="S" />
+      <cml:bond id="b5" atomRefs2="a2 a6" order="S" />
+      <cml:bond id="b6" atomRefs2="a3 a7" order="S" />
+      <cml:bond id="b7" atomRefs2="a4 a8" order="S" />
+      <cml:bond id="b8" atomRefs2="a5 a9" order="S" />
+      <cml:bond id="b9" atomRefs2="a6 a10" order="S" />
+      <cml:bond id="b10" atomRefs2="a7 a11" order="S" />
+      <cml:bond id="b11" atomRefs2="a8 a11" order="S" />
+      <cml:bond id="b12" atomRefs2="a9 a12" order="S" />
+      <cml:bond id="b13" atomRefs2="a10 a12" order="S" />
+    </cml:bondArray>
+  </cml:molecule>
+</cml:cml>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/"
+         xmlns:cml="http://www.xml-cml.org/schema"
+         xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/"
+         xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/"
+         xmlns:c4w="http://www.chem4word.com/cml"
+         conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:formula id="m1.f0" concise="C 3 H 6" />
+    <cml:formula id="m1.f1" convention="chemspider:Smiles" inline="C1CC1" concise="C 3 H 6" />
+    <cml:formula id="m1.f2" convention="chemspider:Formula" inline="C3H6" concise="C 3 H 6" />
+    <cml:name id="m1.n1" dictRef="chemspider:Id">6111</cml:name>
+    <cml:name id="m1.n2" dictRef="chemspider:Synonym">Cyclopropane</cml:name>
+    <cml:name id="m1.n3" dictRef="chemspider:Inchikey">LVZWSLJZHVFIQJ-UHFFFAOYSA-N</cml:name>
+    <cml:atom id="a1" elementType="C" x2="347.5" y2="157.67949192431124" />
+    <cml:atom id="a2" elementType="C" x2="367.5" y2="192.32050807568876" />
+    <cml:atom id="a3" elementType="C" x2="327.5" y2="192.32050807568876" />
+    <cml:bond id="b1" atomRefs2="a1 a2" order="S" />
+    <cml:bond id="b2" atomRefs2="a3 a1" order="S" />
+    <cml:bond id="b3" atomRefs2="a2 a3" order="S" />
+  </cml:molecule>
+</cml:cml>

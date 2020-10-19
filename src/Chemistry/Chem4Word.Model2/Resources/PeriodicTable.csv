@@ -1,0 +1,125 @@
+﻿Symbol,Name,AtomicNumber,AddH,Colour,CovalentRadius,VdWRadius,Valency,Mass,Valences,Isotopes,Group,Row,PTRow,PTColumn,PTElementType,ElectronicConfiguration,C# Property - Copy into PeriodicTable.cs
+Du,Dummy,0,FALSE,#808080,0,0,0,0,0|1|2|3|4|5|6|7|8|9|10,,,,0,19,pseudo,,public Element Du { get; private set; } // Dummy - Atomic Number 0
+M,Metal,0,FALSE,#808080,0,0,0,0,0|1|2|3|4|5|6|7|8|9|10,,,,1,19,pseudo,,public Element M { get; private set; } // Metal - Atomic Number 0
+R,Residue,0,FALSE,#808080,0,0,0,0,0|1|2|3|4|5|6|7|8|9|10,,,,2,19,pseudo,,public Element R { get; private set; } // Residue - Atomic Number 0
+X,Halogen,0,FALSE,#808080,0,0,0,0,0|1|2|3|4|5|6|7|8|9|10,,,,3,19,pseudo,,public Element X { get; private set; } // Halogen - Atomic Number 0
+D,Deuterium,1,FALSE,#808080,0,0,0,2.014,1,,,,4,19,pseudo,,public Element D { get; private set; } // Deuterium - Atomic Number 1
+T,Tritium,1,FALSE,#808080,0,0,1,3.016,1,,,,5,19,pseudo,,public Element T { get; private set; } // Tritium - Atomic Number 1
+H,Hydrogen,1,FALSE,#808080,0.31,1.2,1,1.008,1,1|2|3,1,1,0,0,non_metal,1s1,public Element H { get; private set; } // Hydrogen - Atomic Number 1
+He,Helium,2,FALSE,#D9FFFF,0.28,1.4,0,4.002602,0,3|4,18,1,0,17,noble_gas,1s2,public Element He { get; private set; } // Helium - Atomic Number 2
+Li,Lithium,3,FALSE,#CC80FF,1.28,1.82,1,6.94,1,,1,2,1,0,alkali_metal,He 2s1,public Element Li { get; private set; } // Lithium - Atomic Number 3
+Be,Beryllium,4,FALSE,#C2FF00,0.96,0,2,9.012182,2,,2,2,1,1,alkaline_earth_metal,He 2s2,public Element Be { get; private set; } // Beryllium - Atomic Number 4
+B,Boron,5,TRUE,#FFB5B5,0.84,0,3,10.81,3,9|11,13,2,1,12,metalloid,He 2s2 2p1,public Element B { get; private set; } // Boron - Atomic Number 5
+C,Carbon,6,TRUE,,0.76,1.7,4,12.011,4,11|12|13|14,14,2,1,13,non_metal,He 2s2 2p2,public Element C { get; private set; } // Carbon - Atomic Number 6
+N,Nitrogen,7,TRUE,#3050F8,0.71,1.55,3,14.007,3|5,14|15,15,2,1,14,non_metal,He 2s2 2p3,public Element N { get; private set; } // Nitrogen - Atomic Number 7
+O,Oxygen,8,TRUE,#FF0D0D,0.66,1.52,2,15.999,2,16|17|18,16,2,1,15,non_metal,He 2s2 2p4,public Element O { get; private set; } // Oxygen - Atomic Number 8
+F,Fluorine,9,TRUE,#90E050,0.57,1.47,1,18.9984032,1,19,17,2,1,16,halogen,He 2s2 2p5,public Element F { get; private set; } // Fluorine - Atomic Number 9
+Ne,Neon,10,FALSE,#B3E3F5,0.58,1.54,0,20.1797,0,,18,2,1,17,noble_gas,He 2s2 2p6,public Element Ne { get; private set; } // Neon - Atomic Number 10
+Na,Sodium,11,FALSE,#AB5CF2,1.66,2.27,1,22.98976928,1,,1,3,2,0,alkali_metal,Ne 3s1,public Element Na { get; private set; } // Sodium - Atomic Number 11
+Mg,Magnesium,12,FALSE,#8AFF00,1.41,1.73,0,24.305,2,,2,3,2,1,alkaline_earth_metal,Ne 3s2,public Element Mg { get; private set; } // Magnesium - Atomic Number 12
+Al,Aluminum,13,FALSE,#BFA6A6,1.21,0,0,26.9815386,3,,13,3,2,12,other_metal,Ne 3s2 3p1,public Element Al { get; private set; } // Aluminum - Atomic Number 13
+Si,Silicon,14,TRUE,#F0C8A0,1.11,2.1,4,28.085,4,,14,3,2,13,metalloid,Ne 3s2 3p2,public Element Si { get; private set; } // Silicon - Atomic Number 14
+P,Phosphorus,15,TRUE,#FF8000,1.07,1.8,3,30.973762,3|5,,15,3,2,14,non_metal,Ne 3s2 3p3,public Element P { get; private set; } // Phosphorus - Atomic Number 15
+S,Sulfur,16,TRUE,#808000,1.05,1.8,2,32.06,2|4|6,,16,3,2,15,non_metal,Ne 3s2 3p4,public Element S { get; private set; } // Sulfur - Atomic Number 16
+Cl,Chlorine,17,TRUE,#1FF01F,1.02,1.75,1,35.45,1|3|5|7,35|37,17,3,2,16,halogen,Ne 3s2 3p5,public Element Cl { get; private set; } // Chlorine - Atomic Number 17
+Ar,Argon,18,FALSE,#80D1E3,1.06,1.88,0,39.948,0,,18,3,2,17,noble_gas,Ne 3s2 3p6,public Element Ar { get; private set; } // Argon - Atomic Number 18
+K,Potassium,19,FALSE,#8F40D4,2.03,2.75,0,39.0983,1,,1,4,3,0,alkali_metal,Ar 4s1,public Element K { get; private set; } // Potassium - Atomic Number 19
+Ca,Calcium,20,FALSE,#3DFF00,1.76,0,0,40.078,2,,2,4,3,1,alkaline_earth_metal,Ar 4s2,public Element Ca { get; private set; } // Calcium - Atomic Number 20
+Sc,Scandium,21,FALSE,#E6E6E6,1.7,0,0,44.955912,3,,3,4,3,2,transition_metal,Ar 3d1 4s2,public Element Sc { get; private set; } // Scandium - Atomic Number 21
+Ti,Titanium,22,FALSE,#BFC2C7,1.6,0,1,47.867,2|3|4,,4,4,3,3,transition_metal,Ar 3d2 4s2,public Element Ti { get; private set; } // Titanium - Atomic Number 22
+V,Vanadium,23,FALSE,#A6A6AB,1.53,0,1,50.9415,2|3|4|5,,5,4,3,4,transition_metal,Ar 3d3 4s2,public Element V { get; private set; } // Vanadium - Atomic Number 23
+Cr,Chromium,24,FALSE,#8A99C7,1.39,0,2,51.9961,2|3|6,,6,4,3,5,transition_metal,Ar 3d5 4s1,public Element Cr { get; private set; } // Chromium - Atomic Number 24
+Mn,Manganese,25,FALSE,#9C7AC7,1.39,0,3,54.938045,1|2|3|4|6|7,,7,4,3,6,transition_metal,Ar 3d5 4s2,public Element Mn { get; private set; } // Manganese - Atomic Number 25
+Fe,Iron,26,FALSE,#E06633,1.32,0,2,55.845,2|3|4|6,,8,4,3,7,transition_metal,Ar 3d6 4s2,public Element Fe { get; private set; } // Iron - Atomic Number 26
+Co,Cobalt,27,FALSE,#F090A0,1.26,0,1,58.933195,2|3,,9,4,3,8,transition_metal,Ar 3d7 4s2,public Element Co { get; private set; } // Cobalt - Atomic Number 27
+Ni,Nickel,28,FALSE,#50D050,1.24,1.63,1,58.6934,0|1|2|3,,10,4,3,9,transition_metal,Ar 3d8 4s2,public Element Ni { get; private set; } // Nickel - Atomic Number 28
+Cu,Copper,29,FALSE,#C88033,1.32,1.4,0,63.546,1|2,,11,4,3,10,transition_metal,Ar 3d10 4s1,public Element Cu { get; private set; } // Copper - Atomic Number 29
+Zn,Zinc,30,FALSE,#7D80B0,1.22,1.39,0,65.38,2,,12,4,3,11,transition_metal,Ar 3d10 4s2,public Element Zn { get; private set; } // Zinc - Atomic Number 30
+Ga,Gallium,31,FALSE,#C28F8F,1.22,1.87,0,69.723,2|3,,13,4,3,12,other_metal,Ar 3d10 4s2 4p1,public Element Ga { get; private set; } // Gallium - Atomic Number 31
+Ge,Germanium,32,FALSE,#668F8F,1.2,0,4,72.63,2|4,,14,4,3,13,metalloid,Ar 3d10 4s2 4p2,public Element Ge { get; private set; } // Germanium - Atomic Number 32
+As,Arsenic,33,TRUE,#BD80E3,1.19,1.85,3,74.9216,3|5,,15,4,3,14,metalloid,Ar 3d10 4s2 4p3,public Element As { get; private set; } // Arsenic - Atomic Number 33
+Se,Selenium,34,TRUE,#FFA100,1.2,1.9,2,78.96,2|4|6,,16,4,3,15,non_metal,Ar 3d10 4s2 4p4,public Element Se { get; private set; } // Selenium - Atomic Number 34
+Br,Bromine,35,TRUE,#A62929,1.2,1.85,1,79.904,1|3|5|7,,17,4,3,16,halogen,Ar 3d10 4s2 4p5,public Element Br { get; private set; } // Bromine - Atomic Number 35
+Kr,Krypton,36,FALSE,#5CB8D1,1.16,2.02,0,83.798,0,,18,4,3,17,noble_gas,Ar 3d10 4s2 4p6,public Element Kr { get; private set; } // Krypton - Atomic Number 36
+Rb,Rubidium,37,FALSE,#702EB0,2.2,0,0,85.4678,1|2|3|4,,1,5,4,0,alkali_metal,Kr 5s1,public Element Rb { get; private set; } // Rubidium - Atomic Number 37
+Sr,Strontium,38,FALSE,#00FF00,1.95,0,0,87.62,2,,2,5,4,1,alkaline_earth_metal,Kr 5s2,public Element Sr { get; private set; } // Strontium - Atomic Number 38
+Y,Yttrium,39,FALSE,#94FFFF,1.9,0,0,88.90585,3,,3,5,4,2,transition_metal,Kr 4d1 5s2,public Element Y { get; private set; } // Yttrium - Atomic Number 39
+Zr,Zirconium,40,FALSE,#94E0E0,1.75,0,0,91.224,2|3|4,,4,5,4,3,transition_metal,Kr 4d2 5s2,public Element Zr { get; private set; } // Zirconium - Atomic Number 40
+Nb,Niobium,41,FALSE,#73C2C9,1.64,0,1,92.90638,2|3|5,,5,5,4,4,transition_metal,Kr 4d4,public Element Nb { get; private set; } // Niobium - Atomic Number 41
+Mo,Molybdenum,42,FALSE,#54B5B5,1.54,0,2,95.96,2|3|6,,6,5,4,5,transition_metal,Kr 4d5 5s1,public Element Mo { get; private set; } // Molybdenum - Atomic Number 42
+Tc,Technetium,43,FALSE,#3B9E9E,1.47,0,3,97,2|4|5|6|7,,7,5,4,6,transition_metal,Kr 4d6 5s1,public Element Tc { get; private set; } // Technetium - Atomic Number 43
+Ru,Ruthenium,44,FALSE,#248F8F,1.46,0,2,101.07,1|2|3|4|5|6|7|8,,8,5,4,7,transition_metal,Kr 4d7 5s1,public Element Ru { get; private set; } // Ruthenium - Atomic Number 44
+Rh,Rhodium,45,FALSE,#0A7D8C,1.42,0,1,102.9055,2|3|4|5|6,,9,5,4,8,transition_metal,Kr 4d8 5s1,public Element Rh { get; private set; } // Rhodium - Atomic Number 45
+Pd,Palladium,46,FALSE,#006985,1.39,1.63,0,106.42,2|3|4,,10,5,4,9,transition_metal,Kr 4d10,public Element Pd { get; private set; } // Palladium - Atomic Number 46
+Ag,Silver,47,FALSE,#C0C0C0,1.45,1.72,0,107.8682,1|2,,11,5,4,10,transition_metal,Kr 4d10 5s1,public Element Ag { get; private set; } // Silver - Atomic Number 47
+Cd,Cadmium,48,FALSE,#FFD98F,1.44,1.58,0,112.411,2,,12,5,4,11,transition_metal,Kr 4d10 5s2,public Element Cd { get; private set; } // Cadmium - Atomic Number 48
+In,Indium,49,FALSE,#A67573,1.42,1.93,0,114.818,1|2|3,,13,5,4,12,other_metal,Kr 4d10 5s2 5p1,public Element In { get; private set; } // Indium - Atomic Number 49
+Sn,Tin,50,FALSE,#668080,1.39,2.17,4,118.71,2|4,,14,5,4,13,other_metal,Kr 4d10 5s2 5p2,public Element Sn { get; private set; } // Tin - Atomic Number 50
+Sb,Antimony,51,FALSE,#9E63B5,1.39,0,3,121.76,3|5,,15,5,4,14,metalloid,Kr 4d10 5s2 5p3,public Element Sb { get; private set; } // Antimony - Atomic Number 51
+Te,Tellurium,52,TRUE,#D47A00,1.38,2.06,2,127.6,2|4|6,,16,5,4,15,metalloid,Kr 4d10 5s2 5p4,public Element Te { get; private set; } // Tellurium - Atomic Number 52
+I,Iodine,53,TRUE,#940094,1.39,1.98,1,126.90447,1|3|5|7,,17,5,4,16,halogen,Kr 4d10 5s2 5p5,public Element I { get; private set; } // Iodine - Atomic Number 53
+Xe,Xenon,54,FALSE,#429EB0,1.4,2.16,0,131.293,0,,18,5,4,17,noble_gas,Kr 4d10 5s2 5p6,public Element Xe { get; private set; } // Xenon - Atomic Number 54
+Cs,Cesium,55,FALSE,#57178F,2.44,0,0,132.9054519,1,,1,6,5,0,alkali_metal,Xe 6s1,public Element Cs { get; private set; } // Cesium - Atomic Number 55
+Ba,Barium,56,FALSE,#00C900,2.15,0,0,137.327,2,,2,6,5,1,alkaline_earth_metal,Xe 6s2,public Element Ba { get; private set; } // Barium - Atomic Number 56
+La,Lanthanum,57,FALSE,#70D4FF,2.07,0,0,138.90547,3,,3,6,7,2,lanthanide,Xe 5d1 6s2,public Element La { get; private set; } // Lanthanum - Atomic Number 57
+Ce,Cerium,58,FALSE,#FFFFC7,2.04,0,0,140.116,3|4,,3,6,7,3,lanthanide,Xe 4f1 5d1 6s2,public Element Ce { get; private set; } // Cerium - Atomic Number 58
+Pr,Praseodymium,59,FALSE,#D9FFC7,2.03,0,0,140.90765,3,,3,6,7,4,lanthanide,Xe 4f3 6s2,public Element Pr { get; private set; } // Praseodymium - Atomic Number 59
+Nd,Neodymium,60,FALSE,#C7FFC7,2.01,0,0,144.242,3,,3,6,7,5,lanthanide,Xe 4f4 6s2,public Element Nd { get; private set; } // Neodymium - Atomic Number 60
+Pm,Promethium,61,FALSE,#A3FFC7,1.99,0,0,144.912749,3,,3,6,7,6,lanthanide,Xe 4f5 6s2,public Element Pm { get; private set; } // Promethium - Atomic Number 61
+Sm,Samarium,62,FALSE,#8FFFC7,1.98,0,0,150.36,2|3,,3,6,7,7,lanthanide,Xe 4f6 6s2,public Element Sm { get; private set; } // Samarium - Atomic Number 62
+Eu,Europium,63,FALSE,#61FFC7,1.98,0,0,151.964,2|3,,3,6,7,8,lanthanide,Xe 4f7 6s2,public Element Eu { get; private set; } // Europium - Atomic Number 63
+Gd,Gadolinium,64,FALSE,#45FFC7,1.96,0,0,157.25,3,,3,6,7,9,lanthanide,Xe 4f7 5d1 6s2,public Element Gd { get; private set; } // Gadolinium - Atomic Number 64
+Tb,Terbium,65,FALSE,#30FFC7,1.94,0,0,158.92535,3|4,,3,6,7,10,lanthanide,Xe 4f9 6s2,public Element Tb { get; private set; } // Terbium - Atomic Number 65
+Dy,Dysprosium,66,FALSE,#1FFFC7,1.92,0,0,162.5,3,,3,6,7,11,lanthanide,Xe 4f10 6s2,public Element Dy { get; private set; } // Dysprosium - Atomic Number 66
+Ho,Holmium,67,FALSE,#00FF9C,1.92,0,0,164.93032,3,,3,6,7,12,lanthanide,Xe 4f11 6s2,public Element Ho { get; private set; } // Holmium - Atomic Number 67
+Er,Erbium,68,FALSE,#00E675,1.89,0,0,167.259,3,,3,6,7,13,lanthanide,Xe 4f12 6s2,public Element Er { get; private set; } // Erbium - Atomic Number 68
+Tm,Thulium,69,FALSE,#00D452,1.9,0,0,168.93421,3,,3,6,7,14,lanthanide,Xe 4f13 6s2,public Element Tm { get; private set; } // Thulium - Atomic Number 69
+Yb,Ytterbium,70,FALSE,#00BF38,1.87,0,0,173.054,2|3,,3,6,7,15,lanthanide,Xe 4f14 6s2,public Element Yb { get; private set; } // Ytterbium - Atomic Number 70
+Lu,Lutetium,71,FALSE,#00AB24,1.87,0,0,174.9668,3,,3,6,5,2,transition_metal,Xe 4f14 5d1 6s2,public Element Lu { get; private set; } // Lutetium - Atomic Number 71
+Hf,Hafnium,72,FALSE,#4DC2FF,1.75,0,0,178.49,4,,4,6,5,3,transition_metal,Xe 4f14 5d2 6s2,public Element Hf { get; private set; } // Hafnium - Atomic Number 72
+Ta,Tantalum,73,FALSE,#4DA6FF,1.7,0,1,180.94788,3|5,,5,6,5,4,transition_metal,Xe 4f14 5d3 6s2,public Element Ta { get; private set; } // Tantalum - Atomic Number 73
+W,Tungsten,74,FALSE,#2194D6,1.62,0,2,183.84,2|3|4|5|6,,6,6,5,5,transition_metal,Xe 4f14 5d4 6s2,public Element W { get; private set; } // Tungsten - Atomic Number 74
+Re,Rhenium,75,FALSE,#267DAB,1.51,0,3,186.207,2|3|4|5|6|7,,7,6,5,6,transition_metal,Xe 4f14 5d5 6s2,public Element Re { get; private set; } // Rhenium - Atomic Number 75
+Os,Osmium,76,FALSE,#266696,1.44,0,2,190.23,0|3|4|6|8,,8,6,5,7,transition_metal,Xe 4f14 5d6 6s2,public Element Os { get; private set; } // Osmium - Atomic Number 76
+Ir,Iridium,77,FALSE,#175487,1.41,0,3,192.217,3,,9,6,5,8,transition_metal,Xe 4f14 5d7 6s2,public Element Ir { get; private set; } // Iridium - Atomic Number 77
+Pt,Platinum,78,FALSE,#D0D0E0,1.36,1.75,0,195.084,2|3|4,,10,6,5,9,transition_metal,Xe 4f14 5d9 6s1,public Element Pt { get; private set; } // Platinum - Atomic Number 78
+Au,Gold,79,FALSE,#FFD123,1.36,1.66,1,196.966569,1|3,,11,6,5,10,transition_metal,Xe 4f14 5d10 6s1,public Element Au { get; private set; } // Gold - Atomic Number 79
+Hg,Mercury,80,FALSE,#B8B8D0,1.32,1.55,0,200.592,1|2,,12,6,5,11,transition_metal,Xe 4f14 5d10 6s2,public Element Hg { get; private set; } // Mercury - Atomic Number 80
+Tl,Thallium,81,FALSE,#A6544D,1.45,1.96,0,204.38,1|3,,13,6,5,12,other_metal,Xe 4f14 5d10 6s2 6p1,public Element Tl { get; private set; } // Thallium - Atomic Number 81
+Pb,Lead,82,FALSE,#575961,1.46,2.02,4,207.2,2|4,,14,6,5,13,other_metal,Xe 4f14 5d10 6s2 6p2,public Element Pb { get; private set; } // Lead - Atomic Number 82
+Bi,Bismuth,83,FALSE,#9E4FB5,1.48,0,3,208.9804,3|5,,15,6,5,14,other_metal,Xe 4f14 5d10 6s2 6p3,public Element Bi { get; private set; } // Bismuth - Atomic Number 83
+Po,Polonium,84,FALSE,#AB5C00,1.4,0,2,209,0|2|4|6,,16,6,5,15,metalloid,Xe 4f14 5d10 6s2 6p4,public Element Po { get; private set; } // Polonium - Atomic Number 84
+At,Astatine,85,TRUE,#754F45,1.5,0,1,210,1|3|5|7,,17,6,5,16,halogen,Xe 4f14 5d10 6s2 6p5,public Element At { get; private set; } // Astatine - Atomic Number 85
+Rn,Radon,86,FALSE,#428296,1.5,0,0,222,0,,18,6,5,17,noble_gas,Xe 4f14 5d10 6s2 6p6,public Element Rn { get; private set; } // Radon - Atomic Number 86
+Fr,Francium,87,FALSE,#420066,2.6,0,0,223,1,,1,7,6,0,alkali_metal,Rn 7s1,public Element Fr { get; private set; } // Francium - Atomic Number 87
+Ra,Radium,88,FALSE,#007D00,2.21,0,0,226,2,,2,7,6,1,alkaline_earth_metal,Rn 7s2,public Element Ra { get; private set; } // Radium - Atomic Number 88
+Ac,Actinium,89,FALSE,#70ABFA,2.15,0,0,227,0|1|2|3|4|5|6|7|8|9|10,,3,7,8,2,actinide,Rn 6d1 7s2,public Element Ac { get; private set; } // Actinium - Atomic Number 89
+Th,Thorium,90,FALSE,#00BAFF,2.06,0,0,232.03806,4,,3,7,8,3,actinide,Rn 6d2 7s2,public Element Th { get; private set; } // Thorium - Atomic Number 90
+Pa,Protactinium,91,FALSE,#00A1FF,2,0,0,231.03588,4|5,,3,7,8,4,actinide,Rn 5f2 6d1 7s2,public Element Pa { get; private set; } // Protactinium - Atomic Number 91
+U,Uranium,92,FALSE,#008FFF,1.96,1.86,0,238.02891,2|3|4|5|6,232|233|234|235|236|238,3,7,8,5,actinide,Rn 5f3 6d1 7s2,public Element U { get; private set; } // Uranium - Atomic Number 92
+Np,Neptunium,93,FALSE,#0080FF,1.9,0,0,237,3|4|5|6,,3,7,8,6,actinide,Rn 5f4 6d1 7s2,public Element Np { get; private set; } // Neptunium - Atomic Number 93
+Pu,Plutonium,94,FALSE,#006BFF,1.87,0,0,244,3|4|5|6,,3,7,8,7,actinide,Rn 5f6 7s2,public Element Pu { get; private set; } // Plutonium - Atomic Number 94
+Am,Americium,95,FALSE,#545CF2,1.8,0,0,243,2|3|4|5|6,,3,7,8,8,actinide,Rn 5f7 7s2,public Element Am { get; private set; } // Americium - Atomic Number 95
+Cm,Curium,96,FALSE,#785CE3,1.69,0,0,247,3|4,,3,7,8,9,actinide,Rn 5f7 6d1 7s2,public Element Cm { get; private set; } // Curium - Atomic Number 96
+Bk,Berkelium,97,FALSE,#8A4FE3,0,0,0,247,3|4,,3,7,8,10,actinide,Rn 5f9 7s2,public Element Bk { get; private set; } // Berkelium - Atomic Number 97
+Cf,Californium,98,FALSE,#A136D4,0,0,0,251,0|1|2|3|4|5|6|7|8|9|10,,3,7,8,11,actinide,Rn 5f10 7s2,public Element Cf { get; private set; } // Californium - Atomic Number 98
+Es,Einsteinium,99,FALSE,#B31FD4,0,0,0,252,0|1|2|3|4|5|6|7|8|9|10,,3,7,8,12,actinide,Rn 5f11 7s2,public Element Es { get; private set; } // Einsteinium - Atomic Number 99
+Fm,Fermium,100,FALSE,#B31FBA,0,0,0,257,0|1|2|3|4|5|6|7|8|9|10,,3,7,8,13,actinide,Rn 5f12 7s2,public Element Fm { get; private set; } // Fermium - Atomic Number 100
+Md,Mendelevium,101,FALSE,#B30DA6,0,0,0,258,2|3,,3,7,8,14,actinide,Rn 5f13 7s2,public Element Md { get; private set; } // Mendelevium - Atomic Number 101
+No,Nobelium,102,FALSE,#BD0D87,0,0,0,259,0|1|2|3|4|5|6|7|8|9|10,,3,7,8,15,actinide,Rn 5f14 7s2,public Element No { get; private set; } // Nobelium - Atomic Number 102
+Lr,Lawrencium,103,FALSE,#C70066,0,0,0,262,3,,3,7,6,2,transition_metal,Rn 5f14 7s2 7p1,public Element Lr { get; private set; } // Lawrencium - Atomic Number 103
+Rf,Rutherfordium,104,FALSE,#CC0059,0,0,0,267,0|1|2|3|4|5|6|7|8|9|10,,4,7,6,3,transition_metal,Rn 5f14 6d2 7s2,public Element Rf { get; private set; } // Rutherfordium - Atomic Number 104
+Db,Dubnium,105,FALSE,#D1004F,0,0,0,270,0|1|2|3|4|5|6|7|8|9|10,,5,7,6,4,transition_metal,Rn 5f14 6d3 7s2,public Element Db { get; private set; } // Dubnium - Atomic Number 105
+Sg,Seaborgium,106,FALSE,#D90045,0,0,0,271,0|1|2|3|4|5|6|7|8|9|10,,6,7,6,5,transition_metal,,public Element Sg { get; private set; } // Seaborgium - Atomic Number 106
+Bh,Bohrium,107,FALSE,#E00038,0,0,0,270,0|1|2|3|4|5|6|7|8|9|10,,7,7,6,6,transition_metal,,public Element Bh { get; private set; } // Bohrium - Atomic Number 107
+Hs,Hassium,108,FALSE,#E6002E,0,0,0,277,0|1|2|3|4|5|6|7|8|9|10,,8,7,6,7,transition_metal,,public Element Hs { get; private set; } // Hassium - Atomic Number 108
+Mt,Meitnerium,109,FALSE,#EB0026,0,0,0,276,0|1|2|3|4|5|6|7|8|9|10,,9,7,6,8,transition_metal,,public Element Mt { get; private set; } // Meitnerium - Atomic Number 109
+Ds,Darmstadtium,110,FALSE,,0,0,0,281,0|1|2|3|4|5|6|7|8|9|10,,10,7,6,9,transition_metal,,public Element Ds { get; private set; } // Darmstadtium - Atomic Number 110
+Rg,Roentgenium,111,FALSE,,0,0,0,282,0|1|2|3|4|5|6|7|8|9|10,,11,7,6,10,transition_metal,,public Element Rg { get; private set; } // Roentgenium - Atomic Number 111
+Cn,Copernicium,112,FALSE,,0,0,0,285,0|1|2|3|4|5|6|7|8|9|10,,12,7,6,11,transition_metal,,public Element Cn { get; private set; } // Copernicium - Atomic Number 112
+Nh,Nihonium,113,FALSE,,0,0,0,285,0|1|2|3|4|5|6|7|8|9|10,,13,7,6,12,other,,public Element Nh { get; private set; } // Nihonium - Atomic Number 113
+Fl,Flerovium,114,FALSE,,0,0,0,289,0|1|2|3|4|5|6|7|8|9|10,,14,7,6,13,other,,public Element Fl { get; private set; } // Flerovium - Atomic Number 114
+Mc,Moscovium,115,FALSE,,0,0,0,289,0|1|2|3|4|5|6|7|8|9|10,,15,7,6,14,other,,public Element Mc { get; private set; } // Moscovium - Atomic Number 115
+Lv,Livermorium,116,FALSE,,0,0,0,293,0|1|2|3|4|5|6|7|8|9|10,,16,7,6,15,other,,public Element Lv { get; private set; } // Livermorium - Atomic Number 116
+Ts,Tennessine,117,FALSE,,0,0,0,294,0|1|2|3|4|5|6|7|8|9|10,,17,7,6,16,other,,public Element Ts { get; private set; } // Tennessine - Atomic Number 117
+Og,Oganesson,118,FALSE,,0,0,0,294,0|1|2|3|4|5|6|7|8|9|10,,18,7,6,17,other,,public Element Og { get; private set; } // Oganesson - Atomic Number 118

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:formula id="m1.f0" concise="C 8 H 13 N 1 O 1 S 1" />
+    <cml:atomArray>
+      <cml:atom id="a1" elementType="N" x2="491.33974596215563" y2="355" />
+      <cml:atom id="a2" elementType="C" x2="508.66025403784442" y2="365" />
+      <cml:atom id="a3" elementType="C" x2="508.66025403784442" y2="385" />
+      <cml:atom id="a4" elementType="C" x2="491.33974596215569" y2="395" />
+      <cml:atom id="a5" elementType="C" x2="474.0192378864669" y2="385" />
+      <cml:atom id="a6" elementType="C" x2="474.01923788646678" y2="365" />
+      <cml:atom id="a7" elementType="O" x2="525.98076211353327" y2="395" />
+      <cml:atom id="a8" elementType="C" x2="491.33974596215563" y2="335" />
+      <cml:atom id="a9" elementType="C" x2="508.66025403784442" y2="325" />
+      <cml:atom id="a10" elementType="S" x2="525.98076211353327" y2="335" />
+      <cml:atom id="a11" elementType="C" x2="525.98076211353327" y2="355" />
+    </cml:atomArray>
+    <cml:bondArray>
+      <cml:bond id="b1" atomRefs2="a1 a2" order="S" />
+      <cml:bond id="b2" atomRefs2="a2 a3" order="S" />
+      <cml:bond id="b3" atomRefs2="a3 a4" order="S" />
+      <cml:bond id="b4" atomRefs2="a4 a5" order="S" />
+      <cml:bond id="b5" atomRefs2="a5 a6" order="S" />
+      <cml:bond id="b6" atomRefs2="a6 a1" order="S" />
+      <cml:bond id="b7" atomRefs2="a3 a7" order="D" />
+      <cml:bond id="b8" atomRefs2="a1 a8" order="S" />
+      <cml:bond id="b9" atomRefs2="a8 a9" order="S" />
+      <cml:bond id="b10" atomRefs2="a9 a10" order="S" />
+      <cml:bond id="b11" atomRefs2="a10 a11" order="S" />
+      <cml:bond id="b12" atomRefs2="a11 a2" order="S" />
+    </cml:bondArray>
+  </cml:molecule>
+</cml:cml>

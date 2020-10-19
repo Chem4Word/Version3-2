@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:molecule id="m2">
+      <cml:formula id="m2.f0" concise="C 4 H 8" />
+      <cml:atomArray>
+        <cml:atom id="a1" elementType="C" x2="444.1764" y2="347.1079" />
+        <cml:atom id="a2" elementType="C" x2="458.3185" y2="332.9657" />
+        <cml:atom id="a3" elementType="C" x2="458.3185" y2="361.25" />
+        <cml:atom id="a4" elementType="C" x2="472.4607" y2="347.1079" />
+      </cml:atomArray>
+      <cml:bondArray>
+        <cml:bond id="b1" atomRefs2="a1 a2" order="S" />
+        <cml:bond id="b2" atomRefs2="a3 a1" order="S" />
+        <cml:bond id="b3" atomRefs2="a2 a4" order="S" />
+        <cml:bond id="b4" atomRefs2="a4 a3" order="S" />
+      </cml:bondArray>
+    </cml:molecule>
+    <cml:molecule id="m3">
+      <cml:formula id="m3.f0" concise="C 4 H 8" />
+      <cml:atomArray>
+        <cml:atom id="a5" elementType="C" x2="415.8921" y2="347.1079" />
+        <cml:atom id="a6" elementType="C" x2="401.75" y2="332.9657" />
+        <cml:atom id="a7" elementType="C" x2="401.75" y2="361.25" />
+        <cml:atom id="a8" elementType="C" x2="387.6079" y2="347.1079" />
+      </cml:atomArray>
+      <cml:bondArray>
+        <cml:bond id="b5" atomRefs2="a6 a5" order="S" />
+        <cml:bond id="b6" atomRefs2="a5 a7" order="S" />
+        <cml:bond id="b7" atomRefs2="a8 a6" order="S" />
+        <cml:bond id="b8" atomRefs2="a7 a8" order="S" />
+      </cml:bondArray>
+    </cml:molecule>
+  </cml:molecule>
+</cml:cml>

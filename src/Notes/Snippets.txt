@@ -1,0 +1,105 @@
+﻿//. Reflection
+private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+
+
+// Error Reporting
+string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+try
+{
+
+}
+catch (Exception ex)
+{
+    new ReportError(Telemetry, WordTopLeft, module, ex).ShowDialog();
+}
+
+// Error Reporting
+string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+try
+{
+
+}
+catch (Exception ex)
+{
+    using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
+}
+
+// Experimental code
+private void btnWpf_Click(object sender, RibbonControlEventArgs e)
+{
+    // Could this be from a list of supported PlugIns ???
+    string[] wpfChildren = new[] { "UserControl1", "UserControl2" };
+
+    Random r = new Random(DateTime.UtcNow.Millisecond);
+    int idx = r.Next(0, 2);
+    WpfHost host = new WpfHost(wpfChildren[idx]);
+    host.TopLeft = Globals.Chem4WordV3.WordTopLeft;
+    switch (idx)
+    {
+        case 0:
+            host.FormSize = new Size(350, 600);
+            break;
+
+        case 1:
+            host.FormSize = new Size(600, 350);
+            break;
+    }
+    host.InputValue = wpfChildren[idx];
+
+    DialogResult dr = host.ShowDialog();
+
+    if (dr == DialogResult.OK)
+    {
+        MessageBox.Show(host.OutputValue, "DialogResult.OK");
+    }
+}
+
+// Insert / Update Chemistry into document
+
+public static string InsertChemistry(in out ContentControl cc string cml, )
+
+// https://stackoverflow.com/questions/19147/what-is-the-correct-way-to-create-a-single-instance-application
+
+static class Program
+{
+    static Mutex mutex = new Mutex(true, "{4B428D7D-CE6B-4315-89D3-A5566EA97B8C}");
+    [STAThread]
+    static void Main() {
+        if(mutex.WaitOne(TimeSpan.Zero, true)) {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+            mutex.ReleaseMutex();
+        } 
+    }
+}
+
+app.config removals
+
+<!-- Commented out this Junk
+<sectionGroup name="Chem4Word">
+    <section name="plugins" type="Chem4Word.Model.Converters.ConverterSection, Chem4Word.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+</sectionGroup>
+<Chem4Word>
+    <plugins>
+        <converters>
+        <add name="CML" path="Chem4Word.Model.Converters.CMLConverter, Chem4Word.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        <add name="JSON" path="Chem4Word.Model.Converters.JSONConverter, Chem4Word.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        <add name="Molfile" path="Chem4Word.Model.Converters.MolfileConverter, Chem4Word.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        <add name="MDL" path="Chem4Word.Model.Converters.MDLConverter, Chem4Word.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        </converters>
+    </plugins>
+</Chem4Word>
+-->
+
+// Disable double Click
+if (Globals.Chem4WordV3.EventsEnabled)
+{
+    Globals.Chem4WordV3.EventsEnabled = false;
+
+    Globals.Chem4WordV3.EventsEnabled = true;
+}
+
+https://spin.atomicobject.com/2013/12/11/wpf-data-binding-debug/
+Debugging DataBinding

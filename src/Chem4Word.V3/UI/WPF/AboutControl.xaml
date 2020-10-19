@@ -1,0 +1,103 @@
+﻿<UserControl
+    x:Class="Chem4Word.UI.WPF.AboutControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Chem4Word.UI.WPF"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="420"
+    d:DesignWidth="500"
+    FontFamily="Tahoma"
+    FontSize="12"
+    FontWeight="Normal"
+    Foreground="Blue"
+    Loaded="AboutControl_Loaded"
+    mc:Ignorable="d">
+
+    <!--  Fixed format for hyperlinks  -->
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Hyperlink}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Blue" />
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="Blue" />
+            <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="grdAbout">
+        <Grid.Background>
+            <ImageBrush ImageSource="../../Resources/About Images/C4W Background 512.png" Stretch="UniformToFill" />
+        </Grid.Background>
+        <StackPanel Margin="5,5,5,5">
+            <TextBlock
+                Margin="5"
+                VerticalAlignment="Top"
+                FontSize="18"
+                FontWeight="Bold"
+                Text="Chemistry Add-In for Microsoft Word"
+                TextAlignment="Center"
+                TextWrapping="Wrap" />
+            <TextBlock
+                x:Name="Chem4WordVersion"
+                Margin="5"
+                VerticalAlignment="Top"
+                FontSize="18"
+                Foreground="Blue"
+                Text="Version..."
+                TextAlignment="Center"
+                TextWrapping="Wrap" />
+            <TextBlock
+                Margin="5"
+                FontSize="12"
+                Foreground="Black"
+                Text="The Chemistry Add-In for Word was developed jointly by Microsoft Research and the University of Cambridge in order to enable authorship of chemical information within Microsoft Office Word documents.  The Add-In is now being further developed by a small, independent project team spread across the world.  The Chem4Word Project aims to demonstrate how semantic information can be captured and retained as a part of document authoring in order to more accurately represent the chemical content, contribute to simpler pre-publication processes and richer information discovery scenarios, as well as to preserve chemical information for archival purposes using Chemical Markup Language - an open standard."
+                TextAlignment="Justify"
+                TextWrapping="Wrap" />
+            <DockPanel Margin="5" LastChildFill="True">
+                <TextBlock>
+                    <Hyperlink Click="OnChemDoodleClick" TextDecorations="None">
+                        <Image
+                            Height="30"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Source="/Chem4Word.V3;component/Resources/About Images/ChemDoodleWebBadge.png" />
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    Foreground="Black"
+                    Text="Chem4Word incorporates an on-line Open Source HTML5 Chemistry Editor - ChemDoodle Web Components"
+                    TextAlignment="Justify"
+                    TextWrapping="Wrap" />
+            </DockPanel>
+            <TextBlock Margin="5,0,0,0">
+                <Hyperlink Click="OnTeamsiteLinkClicked">Visit the Project web site</Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="5,0,0,0">
+                <Hyperlink Click="OnSourceCodeLinkClicked">Visit our GitHub repository to view the source code</Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="5,0,0,0">
+                <Hyperlink Click="OnYouTubeLinkClicked">See our tutorials on YouTube</Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="5,0,0,0">
+                <Hyperlink Click="OnSponsorLinkClicked">Visit our page on our sponsor's web site (The .NET Foundation)</Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="5,0,0,0">
+                <Hyperlink Click="OnCambridgeLinkClicked">Visit the University of Cambridge Chemistry Department</Hyperlink>
+            </TextBlock>
+            <TextBlock
+                Margin="5"
+                Foreground="Black"
+                Text="The Chemistry Add-In for Microsoft Word is available for free.  Your feedback is important to us. Join our Facebook group to let us know if you have any suggestions or problems using it."
+                TextAlignment="Justify"
+                TextWrapping="Wrap" />
+            <TextBlock Margin="5,0,0,0">
+                <Hyperlink Click="OnFacebookLinkClicked">Join our Facebook Group</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>
