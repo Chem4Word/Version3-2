@@ -9,8 +9,8 @@ namespace Chem4Word.Core.Helpers
 {
     public static class Constants
     {
-        public const string Chem4WordVersion = "3.1";
-        public const string Chem4WordVersionFiles = "files3-1";
+        public const string Chem4WordVersion = "3.2";
+        public const string Chem4WordVersionFiles = "files3-2";
         public const string ContentControlTitle = "Chemistry";
         public const string LegacyContentControlTitle = "chemistry";
         public const string NavigatorTaskPaneTitle = "Navigator";

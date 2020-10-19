@@ -22,7 +22,7 @@ namespace Chem4WordSetup
 {
     public partial class Setup : Form
     {
-        private const string VersionsFile = "files3-1/Chem4Word-Versions.xml";
+        private const string VersionsFile = "files3-2/Chem4Word-Versions.xml";
         private const string PrimaryDomain = "https://www.chem4word.co.uk";
         private static readonly string[] Domains = { "https://www.chem4word.co.uk", "http://www.chem4word.com", "https://chem4word.azurewebsites.net" };
         private const string VersionsFileMarker = "<Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>";
@@ -32,8 +32,8 @@ namespace Chem4WordSetup
         private const string DetectV2AddIn = @"Chemistry Add-in for Word\Chem4Word.AddIn.vsto";
         private const string DetectV3AddIn = @"Chem4Word V3\Chem4Word.V3.vsto";
 
-        private const string DefaultMsiFile = "https://www.chem4word.co.uk/files3-1/Chem4Word-Setup.3.1.16.Release.6.msi";
-        private const string VstoInstaller = "https://www.chem4word.co.uk/files3-1/vstor_redist.exe";
+        private const string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.1.16.Release.6.msi";
+        private const string VstoInstaller = "https://www.chem4word.co.uk/files3-2/vstor_redist.exe";
 
         private WebClient _webClient;
         private string _downloadedFile = string.Empty;
