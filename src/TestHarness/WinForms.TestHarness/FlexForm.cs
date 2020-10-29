@@ -68,8 +68,8 @@ namespace WinForms.TestHarness
                 Model model = null;
 
                 StringBuilder sb = new StringBuilder();
-                sb.Append("All molecule files (*.mol, *.sdf, *.cml)|*.mol;*.sdf;*.cml");
-                sb.Append("|CML molecule files (*.cml)|*.cml");
+                sb.Append("All molecule files (*.mol, *.sdf, *.cml, *.xml)|*.mol;*.sdf;*.cml;*.xml");
+                sb.Append("|CML molecule files (*.cml, *.xml)|*.cml;*.xml");
                 sb.Append("|MDL molecule files (*.mol, *.sdf)|*.mol;*.sdf");
 
                 openFileDialog1.Title = "Open Structure";
@@ -595,7 +595,7 @@ namespace WinForms.TestHarness
                 Model m = cmlConverter.Import(_lastCml);
                 m.CustomXmlPartGuid = "";
 
-                string filter = "CML molecule files (*.cml)|*.cml|MDL molecule files (*.mol, *.sdf)|*.mol;*.sdf";
+                string filter = "CML molecule files (*.cml, *.xml)|*.cml;*.xml|MDL molecule files (*.mol, *.sdf)|*.mol;*.sdf";
                 using (SaveFileDialog sfd = new SaveFileDialog { Filter = filter })
                 {
                     DialogResult dr = sfd.ShowDialog();
@@ -607,6 +607,7 @@ namespace WinForms.TestHarness
                         switch (fileType)
                         {
                             case ".cml":
+                            case ".xml":
                                 string temp = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                                               + Environment.NewLine
                                               + cmlConverter.Export(m);

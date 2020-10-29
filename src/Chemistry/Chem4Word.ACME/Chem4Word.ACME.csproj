@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
     <Compile Include="Commands\PickElementCommand.cs" />
+    <Compile Include="Controls\FormulaBlock.cs" />
     <Compile Include="Controls\MoleculePropertyEditor.xaml.cs">
       <DependentUpon>MoleculePropertyEditor.xaml</DependentUpon>
     </Compile>

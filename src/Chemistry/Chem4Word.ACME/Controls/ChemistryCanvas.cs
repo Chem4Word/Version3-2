@@ -826,7 +826,7 @@ namespace Chem4Word.ACME.Controls
             VisualTreeHelper.HitTest(this, null, ResultCallback, new PointHitTestParameters(p));
 
             // First try to get a GroupVisual
-            // HACK: What guarantees that the first one found is the "top level" group?
+            // HACK: [DCD] What guarantees that the first one found is the "top level" group?
             ChemicalVisual result = _visuals.FirstOrDefault(v => v is GroupVisual);
 
             // If not successful try to get an AtomVisual (should only ever be one!)

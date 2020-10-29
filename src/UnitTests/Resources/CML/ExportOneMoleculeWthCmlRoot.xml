@@ -1,0 +1,12 @@
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
+  <cml:molecule id="m1">
+    <cml:formula id="m1.f0" concise="C 2 H 6" />
+    <cml:atomArray>
+      <cml:atom id="a1" elementType="C" x2="0.0" y2="0.0" />
+      <cml:atom id="a2" elementType="C" x2="10.0" y2="10.0" />
+    </cml:atomArray>
+    <cml:bondArray>
+      <cml:bond id="b1" atomRefs2="a1 a2" order="S" />
+    </cml:bondArray>
+  </cml:molecule>
+</cml:cml>

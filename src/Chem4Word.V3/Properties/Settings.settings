@@ -1,9 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Chem4Word.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-    <Setting Name="Chem4Word_com_chemspider_www_InChI" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://www.chemspider.com/InChI.asmx</Value>
-    </Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>

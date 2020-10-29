@@ -139,17 +139,21 @@
         <File Id="Chem4WordUpdater.exe" Source="..\Chem4WordUpdater\bin\$(var.Configuration)\Chem4WordUpdater.exe" />
       </Component>
       <!-- Our Other Assemblies -->
-      <Component Id="IChem4Word.Contracts">
-        <File Id="IChem4Word.Contracts.dll" Source="$(var.Chem4Word.V3.TargetDir)IChem4Word.Contracts.dll" />
-        <File Id="IChem4Word.Contracts.pdb" Source="$(var.Chem4Word.V3.TargetDir)IChem4Word.Contracts.pdb" />
-      </Component>
       <Component Id="Chem4Word.ACME">
         <File Id="Chem4Word.ACME.dll" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.ACME.dll" />
         <File Id="Chem4Word.ACME.pdb" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.ACME.pdb" />
       </Component>
+      <Component Id="IChem4Word.Contracts">
+        <File Id="IChem4Word.Contracts.dll" Source="$(var.Chem4Word.V3.TargetDir)IChem4Word.Contracts.dll" />
+        <File Id="IChem4Word.Contracts.pdb" Source="$(var.Chem4Word.V3.TargetDir)IChem4Word.Contracts.pdb" />
+      </Component>
       <Component Id="Chem4Word.Core">
         <File Id="Chem4Word.Core.dll" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Core.dll" />
         <File Id="Chem4Word.Core.pdb" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Core.pdb" />
+      </Component>
+      <Component Id="Chem4Word.Libraries">
+        <File Id="Chem4Word.Libraries.dll" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Libraries.dll" />
+        <File Id="Chem4Word.Libraries.pdb" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Libraries.pdb" />
       </Component>
       <Component Id="Chem4Word.Model2">
         <File Id="Chem4Word.Model2.dll" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Model2.dll" />
@@ -158,6 +162,10 @@
       <Component Id="Chem4Word.Telemetry">
         <File Id="Chem4Word.Telemetry.dll" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Telemetry.dll" />
         <File Id="Chem4Word.Telemetry.pdb" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.Telemetry.pdb" />
+      </Component>
+      <Component Id="Chem4Word.WebServices">
+        <File Id="Chem4Word.WebServices.dll" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.WebServices.dll" />
+        <File Id="Chem4Word.WebServices.pdb" Source="$(var.Chem4Word.V3.TargetDir)Chem4Word.WebServices.pdb" />
       </Component>
     </ComponentGroup>
   </Fragment>

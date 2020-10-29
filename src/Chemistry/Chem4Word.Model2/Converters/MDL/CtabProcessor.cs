@@ -259,7 +259,7 @@ namespace Chem4Word.Model2.Converters.MDL
                     int atomMap = ParseInteger(line, 60, 3);
                     if (atomMap != 0)
                     {
-                        // ToDo: What to do here ???
+                        // ToDo: [DCD] What to do here ???
                     }
 
                     // inversion/retention flag

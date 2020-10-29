@@ -207,7 +207,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     DrawShape(extents, A.ShapeTypeValues.Ellipse, true, "00ff00");
                 }
 
-                // ToDo: MAW - Experimental code to add inner circles for aromatic rings
+                // ToDo: [MAW] - Experimental code to add inner circles for aromatic rings
                 foreach (var innerCircle in _positionerOutputs.InnerCircles)
                 {
                     var smallerCircle = new InnerCircle();

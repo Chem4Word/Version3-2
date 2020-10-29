@@ -190,13 +190,13 @@ namespace Chem4Word.Model2
         {
             get
             {
-                if (!(Parent is Molecule))
+                if (!(Parent is Molecule molecule))
                 {
                     return this;
                 }
                 else
                 {
-                    return ((Molecule)Parent).RootMolecule;
+                    return molecule.RootMolecule;
                 }
             }
         }

@@ -25,6 +25,7 @@ using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
+using Chem4Word.Libraries;
 using Chem4Word.Library;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
@@ -388,7 +389,13 @@ namespace Chem4Word
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var lib = new Database.Library();
+                var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                         new LibrarySettings{
+                                                                ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary});
                 LibraryNames = lib.GetLibraryNames();
             }
             catch (Exception exception)
@@ -1318,7 +1325,15 @@ namespace Chem4Word
                 {
                     TargetWord tw = JsonConvert.DeserializeObject<TargetWord>(ctrl.Tag);
 
-                    var lib = new Database.Library();
+                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                             new LibrarySettings
+                                                             {
+                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                             });
                     string cml = lib.GetChemistryById(tw.ChemistryId);
 
                     if (cml == null)

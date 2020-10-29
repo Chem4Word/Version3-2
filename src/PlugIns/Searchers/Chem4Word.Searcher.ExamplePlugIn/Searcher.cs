@@ -78,9 +78,9 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
             try
             {
-                // ToDo: Set any (extra) Properties required before calling this function
-                // ToDo: Set Cml property with search result
-                // ToDo: Return DialogResult.OK if operation not cancelled
+                // ToDo: [Implementer] Set any (extra) Properties required before calling this function
+                // ToDo: [Implementer] Set Cml property with search result
+                // ToDo: [Implementer] Return DialogResult.OK if operation not cancelled
 
                 _searcherOptions = new ExampleOptions(SettingsPath);
             }

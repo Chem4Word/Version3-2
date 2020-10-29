@@ -2676,7 +2676,7 @@ namespace Chem4Word.ACME
                 {
                     HashSet<Atom> atomGroup = new HashSet<Atom>();
 
-                    //TODO: sort out the grouping of atoms
+                    //ToDo: [DCD] sort out the grouping of atoms
                     var firstAtom = neighbours.First();
                     mol = firstAtom.Parent;
                     mol.TraverseBFS(firstAtom, a1 => { atomGroup.Add(a1); }, a2 => !atomGroup.Contains(a2), deleteBonds);

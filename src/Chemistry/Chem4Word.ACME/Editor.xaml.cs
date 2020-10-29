@@ -291,7 +291,7 @@ namespace Chem4Word.ACME
             //refresh the selection button
             SetSelectionMode(LassoButton);
 
-            //HACK: Need to do this to put the editor into the right mode after refreshing the ring button
+            //HACK: [DCD] Need to do this to put the editor into the right mode after refreshing the ring button
             ModeButton_OnChecked(DrawButton, new RoutedEventArgs());
         }
 

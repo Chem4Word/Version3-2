@@ -12,8 +12,7 @@ using System.Windows.Media;
 using Chem4Word.ACME.Adorners.Selectors;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.Model2;
-using static Chem4Word.ACME.Drawing.BondVisual;
-using static Chem4Word.Model2.Geometry.BasicGeometry;
+using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -132,7 +131,7 @@ namespace Chem4Word.ACME.Controls
                     if (atom.SymbolText != "")
                     {
                         EllipseGeometry atomCircle = new EllipseGeometry(newPosition, atomRadius, atomRadius);
-                        DrawGeometry(ghostContext, atomCircle);
+                        BasicGeometry.DrawGeometry(ghostContext, atomCircle);
                     }
                 }
                 foreach (Bond bond in bondSet)
@@ -141,13 +140,13 @@ namespace Chem4Word.ACME.Controls
                     var endAtomPosition = transformedPositions[bond.EndAtom];
                     var startAtomVisual = (AtomVisual)(chemicalVisuals[bond.StartAtom]);
                     var endAtomVisual = (AtomVisual)(chemicalVisuals[bond.EndAtom]);
-                    var descriptor = GetBondDescriptor(startAtomVisual, endAtomVisual, ViewModel.Model.XamlBondLength,
+                    var descriptor = BondVisual.GetBondDescriptor(startAtomVisual, endAtomVisual, ViewModel.Model.XamlBondLength,
                                                        bond.Stereo, startAtomPosition, endAtomPosition, bond.OrderValue,
                                                        bond.Placement, bond.Centroid, bond.SubsidiaryRing?.Centroid, ViewModel.Standoff);
                     descriptor.Start = startAtomPosition;
                     descriptor.End = endAtomPosition;
                     var bondgeom = descriptor.DefiningGeometry;
-                    DrawGeometry(ghostContext, bondgeom);
+                    BasicGeometry.DrawGeometry(ghostContext, bondgeom);
                 }
                 ghostContext.Close();
             }

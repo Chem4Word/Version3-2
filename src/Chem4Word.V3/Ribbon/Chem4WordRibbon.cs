@@ -19,6 +19,7 @@ using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
+using Chem4Word.Libraries;
 using Chem4Word.Library;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
@@ -770,7 +771,10 @@ namespace Chem4Word
                                         }
                                     }
 
-                                    int changedProperties = ChemistryHelper.CalculateProperties(newMolecules);
+                                    var pc = new WebServices.PropertyCalculator(Globals.Chem4WordV3.Telemetry,
+                                        Globals.Chem4WordV3.WordTopLeft,
+                                        Globals.Chem4WordV3.AddInInfo.AssemblyVersionNumber);
+                                    int changedProperties = pc.CalculateProperties(newMolecules);
 
                                     if (isNewDrawing)
                                     {
@@ -1376,7 +1380,15 @@ namespace Chem4Word
                                         Globals.Chem4WordV3.LoadNamesFromLibrary();
                                     }
 
-                                    var lib = new Database.Library();
+                                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                                             new LibrarySettings
+                                                                             {
+                                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                                             });
                                     var transaction = lib.StartTransaction();
                                     var done = lib.ImportCml(cml, transaction);
                                     lib.EndTransaction(transaction, !done);

@@ -20,7 +20,8 @@ using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Core.UI.Wpf;
-using Chem4Word.Database;
+using Chem4Word.Libraries;
+using Chem4Word.Libraries.Database;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using IChem4Word.Contracts;
@@ -403,7 +404,15 @@ namespace Chem4Word.UI.WPF
                         {
                             int fileCount = 0;
 
-                            var lib = new Database.Library();
+                            var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                                     new LibrarySettings
+                                                                     {
+                                                                         ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                         ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                         PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                         SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                         RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                                     });
                             var transaction = lib.StartTransaction();
 
                             try
@@ -427,7 +436,7 @@ namespace Chem4Word.UI.WPF
 
                                         var cml = File.ReadAllText(cmlFile);
 
-                                        // Set second parameter to true if properties are to be calculated on import
+                                        // ToDo: [MAW] Set second parameter to true if properties are to be calculated on import
                                         if (lib.ImportCml(cml, transaction, false))
                                         {
                                             fileCount++;
@@ -503,7 +512,15 @@ namespace Chem4Word.UI.WPF
                         }
                         if (doExport == Forms.DialogResult.Yes)
                         {
-                            Database.Library lib = new Database.Library();
+                            Libraries.Database.Library lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                                                            new LibrarySettings
+                                                                                            {
+                                                                                                ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                                                ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                                                PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                                                SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                                                RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                                                            });
 
                             int exported = 0;
                             int progress = 0;
@@ -581,7 +598,15 @@ namespace Chem4Word.UI.WPF
                     UserInteractions.AskUserYesNo(sb.ToString(), Forms.MessageBoxDefaultButton.Button2);
                 if (dr == Forms.DialogResult.Yes)
                 {
-                    var lib = new Database.Library();
+                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                             new LibrarySettings
+                                                             {
+                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                             });
 
                     lib.DeleteAllChemistry();
                     Globals.Chem4WordV3.CloseLibrary();

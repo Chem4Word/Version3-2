@@ -309,10 +309,6 @@
     </Compile>
     <Compile Include="AssemblyReflectionManager.cs" />
     <Compile Include="AssemblyReflectionProxy.cs" />
-    <Compile Include="Database\ChemistryDTO.cs" />
-    <Compile Include="Database\ChemistryTagDTO.cs" />
-    <Compile Include="Database\Library.cs" />
-    <Compile Include="Database\UserTagDTO.cs" />
     <Compile Include="Helpers\ChemistryHelper.cs" />
     <Compile Include="Helpers\ConfigWatcher.cs" />
     <Compile Include="Helpers\ReferenceKeeper.cs" />
@@ -322,10 +318,7 @@
     <Compile Include="Helpers\UpdateHelper.cs" />
     <Compile Include="Helpers\WordSettings.cs" />
     <Compile Include="Library\Chemistry.cs" />
-    <Compile Include="Library\ChemistryByTag.cs" />
-    <Compile Include="Library\LibraryValidation.cs" />
     <Compile Include="Library\NameValidationRule.cs" />
-    <Compile Include="Library\TagEditor.cs" />
     <Compile Include="Library\DefaultNameConverter.cs" />
     <Compile Include="Library\LibraryHost.cs">
       <SubType>UserControl</SubType>
@@ -342,23 +335,15 @@
       <DependentUpon>LibraryViewControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Library\LibraryViewModel.cs" />
-    <Compile Include="Library\TagBlock.xaml.cs">
-      <DependentUpon>TagBlock.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Library\UserTag.cs" />
     <Compile Include="Navigator\NavigatorSupport.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tags\TagBox.xaml.cs">
-      <DependentUpon>TagBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\CustomXMLPartHelper.cs" />
     <Compile Include="Helpers\C4wAddInInfo.cs" />
     <Compile Include="Helpers\Upgrader.cs" />
-    <Compile Include="Navigator\FormulaBlock.cs" />
     <Compile Include="Navigator\DoNothingConverter.cs" />
     <Compile Include="Navigator\NavigatorHost.cs">
       <SubType>UserControl</SubType>
@@ -441,21 +426,12 @@
     <Compile Include="UI\XmlViewer.Designer.cs">
       <DependentUpon>XmlViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Web References\com.chemspider.www\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
-    </Compile>
-    <Compile Include="WebServices\ChemicalProperties.cs" />
-    <Compile Include="WebServices\ChemicalServices.cs" />
-    <Compile Include="WebServices\ChemicalServicesResult.cs" />
     <None Include="Data\Chem4Word-Versions.xml" />
     <None Include="Data\CML.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Data\index.html" />
     <EmbeddedResource Include="Data\This-Version.xml" />
-    <Content Include="Library\14-tag.png" />
     <Resource Include="Resources\About Images\C4W Background 512.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -491,7 +467,6 @@
     <None Include="Data\Chem4Word-Versions.xsd">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="Data\Library.zip" />
     <None Include="Data\This-Version.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -556,11 +531,6 @@
       <DependentUpon>Chem4WordV3.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
-    <None Include="Web References\com.chemspider.www\InChI.wsdl" />
-    <None Include="Web References\com.chemspider.www\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="PlugIns\PlugIns-ReadMe.txt">
@@ -597,23 +567,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Resources\ms-word-16.ico" />
-    <None Include="Web References\com.chemspider.www\InChI.disco" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://www.chemspider.com/InChI.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\com.chemspider.www\</RelPath>
-      <UpdateFromURL>http://www.chemspider.com/InChI.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Chem4Word_com_chemspider_www_InChI</CachedSettingsPropName>
-    </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Chemistry\Chem4Word.ACME\Chem4Word.ACME.csproj">
@@ -628,9 +581,17 @@
       <Project>{2e7b1308-8149-4b03-9cb9-48e0b7151560}</Project>
       <Name>Chem4Word.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Telemetry\Chem4Word.Telemetry.csproj">
+    <ProjectReference Include="..\Common\Chem4Word.Libraries\Chem4Word.Libraries.csproj">
+      <Project>{2a5f1d74-ce8e-4874-a803-f3499bb3cfbc}</Project>
+      <Name>Chem4Word.Libraries</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Chem4Word.Telemetry\Chem4Word.Telemetry.csproj">
       <Project>{c89bc92a-4183-48a6-b039-ad76aa1df48f}</Project>
       <Name>Chem4Word.Telemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Chem4Word.WebServices\Chem4Word.WebServices.csproj">
+      <Project>{54f9d4a6-e151-4c65-9d68-16c620b7a6bc}</Project>
+      <Name>Chem4Word.WebServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\PlugIns\Contracts\Chem4Word.Contracts.csproj">
       <Project>{bdfee6c1-3f34-4200-9100-c543bf4c3783}</Project>
@@ -648,14 +609,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Library\LibraryViewControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Library\TagBlock.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Tags\TagBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

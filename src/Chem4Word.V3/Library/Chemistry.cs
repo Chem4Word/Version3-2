@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using Chem4Word.ACME.Annotations;
 using Chem4Word.Core.UI.Forms;
+using Chem4Word.Libraries;
 
 namespace Chem4Word.Library
 {
@@ -23,7 +24,6 @@ namespace Chem4Word.Library
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        public ObservableCollection<UserTag> Tags { get; }
         public bool Dirty { get; set; }
         public bool Initializing { get; set; }
 
@@ -101,8 +101,6 @@ namespace Chem4Word.Library
             {
                 OtherNames = new List<string>();
                 Dirty = false;
-                Tags = new ObservableCollection<UserTag>();
-                Tags.CollectionChanged += Tags_CollectionChanged;
                 HasOtherNames = false;
             }
             catch (Exception ex)
@@ -137,7 +135,15 @@ namespace Chem4Word.Library
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var lib = new Database.Library();
+                var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                         new LibrarySettings
+                                                         {
+                                                             ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                             ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                             PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                             SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                             RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                         });
                 lib.UpdateChemistry(ID, Name, XML, Formula);
                 Dirty = false;
             }

@@ -33,10 +33,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
                     case Bond b:
                         Debug.Assert(b.Parent != null);
-                        if (b != null)
-                        {
-                            OverallGeometry = new CombinedGeometry(GeometryCombineMode.Union, OverallGeometry, GetBondAdornerGeometry(b));
-                        }
+                        OverallGeometry = new CombinedGeometry(GeometryCombineMode.Union, OverallGeometry, GetBondAdornerGeometry(b));
                         break;
                 }
             }
@@ -55,19 +52,23 @@ namespace Chem4Word.ACME.Adorners.Selectors
             AtomVisual startAtomVisual = CurrentEditor.GetAtomVisual(bond.StartAtom);
             AtomVisual endAtomVisual = CurrentEditor.GetAtomVisual(bond.EndAtom);
 
+            Point? sp;
             //work out where the bond vector intersects the start and end points of the bond
-            if (!string.IsNullOrEmpty(bond.StartAtom.SymbolText))
+            if (!string.IsNullOrEmpty(bond.StartAtom.SymbolText)
+                && (sp = startAtomVisual.GetIntersection(bond.StartAtom.Position, bond.EndAtom.Position)) != null)
             {
-                startPoint = startAtomVisual.GetIntersection(bond.StartAtom.Position, bond.EndAtom.Position).Value;
+                startPoint = sp.Value;
             }
             else
             {
                 startPoint = bond.StartAtom.Position + unitVector * RenderRadius;
             }
 
-            if (!string.IsNullOrEmpty(bond.EndAtom.SymbolText))
+            Point? ep;
+            if (!string.IsNullOrEmpty(bond.EndAtom.SymbolText)
+                && (ep = endAtomVisual.GetIntersection(bond.StartAtom.Position, bond.EndAtom.Position)) != null)
             {
-                endPoint = endAtomVisual.GetIntersection(bond.StartAtom.Position, bond.EndAtom.Position).Value;
+                endPoint = ep.Value;
             }
             else
             {

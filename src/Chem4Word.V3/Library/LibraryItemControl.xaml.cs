@@ -14,6 +14,7 @@ using System.Windows.Input;
 using Chem4Word.ACME;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
+using Chem4Word.Libraries;
 using Microsoft.Office.Interop.Word;
 using static Chem4Word.Core.UserInteractions;
 using UserControl = System.Windows.Controls.UserControl;
@@ -63,7 +64,7 @@ namespace Chem4Word.Library
                         ActiveDocument = Globals.Chem4WordV3.Application.ActiveDocument;
                         if (ActiveDocument?.ActiveWindow?.Selection != null)
                         {
-                            TaskPaneHelper.InsertChemistry(true, ActiveDocument.Application, Display, true);
+                            TaskPaneHelper.InsertChemistry(true, ActiveDocument.Application, AcmeDisplay, true);
                         }
                     }
                     Globals.Chem4WordV3.EventsEnabled = true;
@@ -95,7 +96,15 @@ namespace Chem4Word.Library
             {
                 if (AskUserYesNo("Do you want to delete this structure from the Library?") == DialogResult.Yes)
                 {
-                    var lib = new Database.Library();
+                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
+                                                             new LibrarySettings
+                                                             {
+                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
+                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
+                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
+                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                                                             });
                     lib.DeleteChemistry(((Chemistry)this.DataContext).ID);
                     Globals.Chem4WordV3.LoadNamesFromLibrary();
                     ParentControl.MainGrid.DataContext = new LibraryViewModel();

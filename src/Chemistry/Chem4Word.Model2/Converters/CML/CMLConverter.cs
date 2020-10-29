@@ -66,68 +66,84 @@ namespace Chem4Word.Model2.Converters.CML
             return newModel;
         }
 
-        public string Export(Model model, bool compressed = false)
+        public string Export(Model model, bool compressed = false, bool cmlIsRoot = true)
         {
+            var rootIsCml = cmlIsRoot || model.Molecules.Count > 1;
+
             XDocument xd = new XDocument();
 
-            XElement root = new XElement(CMLNamespaces.cml + CMLConstants.TagCml,
-                new XAttribute(XNamespace.Xmlns + CMLConstants.TagConventions, CMLNamespaces.conventions),
-                new XAttribute(XNamespace.Xmlns + CMLConstants.TagCml, CMLNamespaces.cml),
-                new XAttribute(XNamespace.Xmlns + CMLConstants.TagCmlDict, CMLNamespaces.cmlDict),
-                new XAttribute(XNamespace.Xmlns + CMLConstants.TagNameDict, CMLNamespaces.nameDict),
-                new XAttribute(XNamespace.Xmlns + CMLConstants.TagC4W, CMLNamespaces.c4w),
-                new XAttribute(CMLConstants.TagConventions, CMLConstants.TagConventionMolecular)
-                );
+            XElement root = new XElement(CMLNamespaces.cml + (rootIsCml ? CMLConstants.TagCml : CMLConstants.TagMolecule));
 
             // Only export if set
-            if (!string.IsNullOrEmpty(model.CustomXmlPartGuid))
+            if (rootIsCml && !string.IsNullOrEmpty(model.CustomXmlPartGuid))
             {
                 XElement customXmlPartGuid = new XElement(CMLNamespaces.c4w + CMLConstants.TagXmlPartGuid, model.CustomXmlPartGuid);
                 root.Add(customXmlPartGuid);
             }
 
-            bool relabelRequired = false;
+            RelabelIfRequired();
 
-            // Handle case where id's are null
-            foreach (Molecule molecule in model.Molecules.Values)
+            if (rootIsCml)
             {
-                if (molecule.Id == null)
+                foreach (Molecule molecule in model.Molecules.Values)
                 {
-                    relabelRequired = true;
-                    break;
-                }
-
-                foreach (Atom atom in molecule.Atoms.Values)
-                {
-                    if (atom.Id == null)
-                    {
-                        relabelRequired = true;
-                        break;
-                    }
-                }
-
-                foreach (Bond bond in molecule.Bonds)
-                {
-                    if (bond.Id == null)
-                    {
-                        relabelRequired = true;
-                        break;
-                    }
+                    root.Add(GetMoleculeElement(molecule));
                 }
             }
-
-            if (relabelRequired)
+            else
             {
-                model.Relabel(false);
+                root = GetMoleculeElement(model.Molecules.Values.First());
             }
 
-            foreach (Molecule molecule in model.Molecules.Values)
-            {
-                root.Add(GetMoleculeElement(molecule));
-            }
+            root.Add(new XAttribute(XNamespace.Xmlns + CMLConstants.TagConventions, CMLNamespaces.conventions));
+            root.Add(new XAttribute(XNamespace.Xmlns + CMLConstants.TagCml, CMLNamespaces.cml));
+            root.Add(new XAttribute(XNamespace.Xmlns + CMLConstants.TagCmlDict, CMLNamespaces.cmlDict));
+            root.Add(new XAttribute(XNamespace.Xmlns + CMLConstants.TagNameDict, CMLNamespaces.nameDict));
+            root.Add(new XAttribute(XNamespace.Xmlns + CMLConstants.TagC4W, CMLNamespaces.c4w));
+            root.Add(new XAttribute(CMLConstants.TagConventions, CMLConstants.TagConventionMolecular));
+
             xd.Add(root);
 
             return compressed ? xd.ToString(SaveOptions.DisableFormatting) : xd.ToString();
+
+            // Local Function
+            void RelabelIfRequired()
+            {
+                bool relabelRequired = false;
+
+                // Handle case where id's are null
+                foreach (Molecule molecule in model.Molecules.Values)
+                {
+                    if (molecule.Id == null)
+                    {
+                        relabelRequired = true;
+                        break;
+                    }
+
+                    foreach (Atom atom in molecule.Atoms.Values)
+                    {
+                        if (atom.Id == null)
+                        {
+                            relabelRequired = true;
+                            break;
+                        }
+                    }
+
+                    foreach (Bond bond in molecule.Bonds)
+                    {
+                        if (bond.Id == null)
+                        {
+                            relabelRequired = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (relabelRequired)
+                {
+                    model.Relabel(false);
+                }
+            }
         }
 
         #region Export Helpers
@@ -181,7 +197,7 @@ namespace Chem4Word.Model2.Converters.CML
                     Atom firstAtom = bond.StartAtom;
                     Atom lastAtom = bond.EndAtom;
 
-                    // Hack: To find first and last atomRefs
+                    // Hack: [MAW] To find first and last atomRefs
                     foreach (var atomBond in bond.StartAtom.Bonds)
                     {
                         if (!bond.Id.Equals(atomBond.Id))
@@ -535,7 +551,7 @@ namespace Chem4Word.Model2.Converters.CML
                 molecule.Atoms.First().Value.ExplicitC = null;
 
                 // Remove invalid molecule properties
-                molecule.ShowMoleculeBrackets = false;
+                molecule.ShowMoleculeBrackets = null;
                 molecule.SpinMultiplicity = null;
                 molecule.FormalCharge = null;
                 molecule.Count = null;

@@ -21,25 +21,28 @@ namespace Chem4Word.Core.Helpers
             string fullName = string.Empty;
             int count = 0;
 
+            Debug.WriteLine($"Searching Assembly {assembly.FullName.Split(',')[0]}.dll for {resourceName}");
+
             string[] resources = assembly.GetManifestResourceNames();
-            foreach (var s in resources)
+            foreach (var resource in resources)
             {
-                if (s.EndsWith($".{resourceName}"))
+                if (resource.EndsWith($".{resourceName}"))
                 {
                     count++;
-                    fullName = s;
+                    fullName = resource;
                 }
-                //Debug.WriteLine(s);
+                //Debug.WriteLine($" Found resource {resource}")
             }
 
             if (!string.IsNullOrEmpty(fullName))
             {
+                //Debug.WriteLine($"  Reading {fullName}")
                 data = assembly.GetManifestResourceStream(fullName);
             }
 
             if (count != 1)
             {
-                Debug.WriteLine("Unique match not found");
+                Debug.WriteLine("*** Unique match not found ***");
 #if DEBUG
                 Debugger.Break();
 #endif
