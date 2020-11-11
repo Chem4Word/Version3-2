@@ -248,6 +248,7 @@ namespace Chem4Word.ACME.Controls
                 atom.Element = AtomPropertiesModel.Element;
                 atom.FormalCharge = AtomPropertiesModel.Charge;
                 atom.ExplicitC = AtomPropertiesModel.ExplicitC;
+                atom.ExplicitHPlacement = AtomPropertiesModel.HPlacement;
                 if (string.IsNullOrEmpty(AtomPropertiesModel.Isotope))
                 {
                     atom.IsotopeNumber = null;
@@ -306,6 +307,11 @@ namespace Chem4Word.ACME.Controls
                         break;
                 }
             }
+        }
+
+        private void PlacementButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            ShowPreview();
         }
     }
 }

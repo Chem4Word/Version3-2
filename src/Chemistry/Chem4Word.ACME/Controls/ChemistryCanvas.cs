@@ -458,8 +458,6 @@ namespace Chem4Word.ACME.Controls
 
         #region Fields
 
-        private ChemicalVisual _visualHit;
-
         private readonly List<ChemicalVisual> _visuals = new List<ChemicalVisual>();
 
         #endregion Fields
@@ -524,6 +522,10 @@ namespace Chem4Word.ACME.Controls
 
                 case FunctionalGroupVisual fv:
                     _highlightAdorner = new AtomHoverAdorner(this, fv);
+                    break;
+
+                case HydrogenVisual hv:
+                    _highlightAdorner = new HRotatorAdorner(this, hv);
                     break;
 
                 case AtomVisual av:
@@ -829,10 +831,16 @@ namespace Chem4Word.ACME.Controls
             // HACK: [DCD] What guarantees that the first one found is the "top level" group?
             ChemicalVisual result = _visuals.FirstOrDefault(v => v is GroupVisual);
 
+            //first try to see if we can locate the hydrogen visual
+            if (result == null)
+            {
+                result = _visuals.FirstOrDefault(v => v is HydrogenVisual);
+            }
+
             // If not successful try to get an AtomVisual (should only ever be one!)
             if (result == null)
             {
-                result = _visuals.FirstOrDefault(v => v is AtomVisual || v is FunctionalGroupVisual);
+                result = _visuals.FirstOrDefault(v => v is AtomVisual);
             }
 
             // Finally get first ChemicalVisual which ought to be a BondVisual
@@ -846,11 +854,13 @@ namespace Chem4Word.ACME.Controls
 
         private HitTestResultBehavior ResultCallback(HitTestResult result)
         {
-            _visualHit = result.VisualHit as ChemicalVisual;
-
-            if (_visualHit != null)
+            if (result.VisualHit is HydrogenVisual hv)
             {
-                _visuals.Add(_visualHit);
+                _visuals.Add(hv);
+            }
+            else if (result.VisualHit is ChemicalVisual cv)
+            {
+                _visuals.Add(cv);
             }
 
             return HitTestResultBehavior.Continue;

@@ -191,9 +191,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
-            foreach (var rectangle in _positionerOutputs.Diagnostics.Rectangles)
+            if (_options.ShowCharacterGroupBoundingBoxes)
             {
-                DrawBox(rectangle.BoundingBox, rectangle.Colour);
+                foreach (var rectangle in _positionerOutputs.Diagnostics.Rectangles)
+                {
+                    DrawBox(rectangle.BoundingBox, rectangle.Colour);
+                }
             }
 
             double spotSize = _medianBondLength * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE / 3;

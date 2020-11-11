@@ -651,6 +651,36 @@ namespace Chem4Word.ACME
             CheckModelIntegrity(module);
         }
 
+        public void SetExplicitHPlacement(Atom selAtom, CompassPoints? newPlacement)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            WriteTelemetry(module, "Debug", $"Atom: {selAtom}; Placement {newPlacement}");
+            UndoManager.BeginUndoBlock();
+            var oldPlacement = selAtom.ImplicitHPlacement;
+            Action undo = () =>
+                          {
+                              selAtom.ExplicitHPlacement = oldPlacement;
+                              selAtom.UpdateVisual();
+                              foreach (Bond selBond in selAtom.Bonds)
+                              {
+                                  selBond.UpdateVisual();
+                              }
+                          };
+            Action redo = () =>
+                          {
+                              ClearSelection();
+                              selAtom.ExplicitHPlacement = newPlacement;
+                              selAtom.UpdateVisual();
+                              foreach (Bond selBond in selAtom.Bonds)
+                              {
+                                  selBond.UpdateVisual();
+                              }
+                          };
+            UndoManager.RecordAction(undo, redo);
+            UndoManager.EndUndoBlock();
+            redo();
+        }
+
         private void SetBondOption()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -2676,7 +2706,6 @@ namespace Chem4Word.ACME
                 {
                     HashSet<Atom> atomGroup = new HashSet<Atom>();
 
-                    //ToDo: [DCD] sort out the grouping of atoms
                     var firstAtom = neighbours.First();
                     mol = firstAtom.Parent;
                     mol.TraverseBFS(firstAtom, a1 => { atomGroup.Add(a1); }, a2 => !atomGroup.Contains(a2), deleteBonds);
@@ -2967,16 +2996,19 @@ namespace Chem4Word.ACME
                 int? chargeBefore = atom.FormalCharge;
                 int? isotopeBefore = atom.IsotopeNumber;
                 bool? explicitCBefore = atom.ExplicitC;
+                CompassPoints? hPlacementBefore = atom.ExplicitHPlacement;
 
                 ElementBase elementBaseAfter = model.Element;
                 int? chargeAfter = null;
                 int? isotopeAfter = null;
                 bool? explicitCAfter = null;
+                CompassPoints? hPlacementAfter = null;
 
                 if (elementBaseAfter is Element)
                 {
                     chargeAfter = model.Charge;
                     explicitCAfter = model.ExplicitC;
+                    hPlacementAfter = model.HPlacement;
                     if (!string.IsNullOrEmpty(model.Isotope))
                     {
                         isotopeAfter = int.Parse(model.Isotope);
@@ -2989,6 +3021,7 @@ namespace Chem4Word.ACME
                                   atom.FormalCharge = chargeAfter;
                                   atom.IsotopeNumber = isotopeAfter;
                                   atom.ExplicitC = explicitCAfter;
+                                  atom.ExplicitHPlacement = hPlacementAfter;
                                   atom.Parent.UpdateVisual();
                                   //freshen any selection adorner
                                   if (SelectedItems.Contains(atom))
@@ -3004,6 +3037,7 @@ namespace Chem4Word.ACME
                                   atom.FormalCharge = chargeBefore;
                                   atom.IsotopeNumber = isotopeBefore;
                                   atom.ExplicitC = explicitCBefore;
+                                  atom.ExplicitHPlacement = hPlacementBefore;
                                   atom.Parent.UpdateVisual();
                                   //freshen any selection adorner
                                   if (SelectedItems.Contains(atom))
@@ -3623,6 +3657,30 @@ namespace Chem4Word.ACME
                 Telemetry?.Write(module, "Integrity", string.Join(Environment.NewLine, integrity));
             }
 #endif
+        }
+
+        public void RotateHydrogen(Atom parentAtom)
+        {
+            var oldPlacement = parentAtom.ImplicitHPlacement;
+
+            switch (oldPlacement)
+            {
+                case CompassPoints.North:
+                    SetExplicitHPlacement(parentAtom, CompassPoints.East);
+                    break;
+
+                case CompassPoints.East:
+                    SetExplicitHPlacement(parentAtom, CompassPoints.South);
+                    break;
+
+                case CompassPoints.South:
+                    SetExplicitHPlacement(parentAtom, CompassPoints.West);
+                    break;
+
+                case CompassPoints.West:
+                    SetExplicitHPlacement(parentAtom, CompassPoints.North);
+                    break;
+            }
         }
     }
 }

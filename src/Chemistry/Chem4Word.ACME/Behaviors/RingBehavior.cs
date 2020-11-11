@@ -111,7 +111,7 @@ namespace Chem4Word.ACME.Behaviors
 
             switch (CurrentEditor.ActiveVisual)
             {
-                case AtomVisual av:
+                case AtomVisual av when !(av is HydrogenVisual):
                     IdentifyPlacements(av.ParentAtom, xamlBondSize, out preferredPlacements, RingSize);
                     if (preferredPlacements != null)
                     {

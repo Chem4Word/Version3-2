@@ -151,7 +151,7 @@ namespace Chem4Word.ACME.Utils
                     screenPosition = GetDpiAwareScaledPosition(screenPosition, activeVisual);
 
                     // Did RightClick occur on an AtomVisual?
-                    if (activeVisual is AtomVisual av)
+                    if (activeVisual is AtomVisual av && !(activeVisual is HydrogenVisual))
                     {
                         var mode = Application.Current.ShutdownMode;
 
@@ -173,6 +173,7 @@ namespace Chem4Word.ACME.Utils
                             model.Charge = atom.FormalCharge ?? 0;
                             model.Isotope = atom.IsotopeNumber.ToString();
                             model.ExplicitC = atom.ExplicitC;
+                            model.HPlacement = atom.ExplicitHPlacement;
                         }
 
                         if (atom.Element is FunctionalGroup)
@@ -180,6 +181,8 @@ namespace Chem4Word.ACME.Utils
                             model.IsElement = false;
                             model.IsFunctionalGroup = true;
                         }
+
+                        model.IsNotSingleton = !atom.Singleton;
 
                         model.MicroModel = new Model();
 

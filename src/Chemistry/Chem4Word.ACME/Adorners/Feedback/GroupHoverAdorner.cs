@@ -6,36 +6,17 @@
 // ---------------------------------------------------------------------------
 
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
-using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {
-    public class GroupHoverAdorner : Adorner
+    public class GroupHoverAdorner : BaseHoverAdorner
     {
         private const double Spacing = 2.0;
-        private SolidColorBrush _solidColorBrush;
-        private Pen _bracketPen;
-        private GroupVisual _targetedVisual;
 
-        public GroupHoverAdorner([NotNull] UIElement adornedElement) : base(adornedElement)
+        public GroupHoverAdorner(UIElement adornedElement, GroupVisual targetedVisual) : base(adornedElement, targetedVisual)
         {
-            _solidColorBrush = new SolidColorBrush(Globals.HoverAdornerColor);
-
-            _bracketPen = new Pen(_solidColorBrush, Globals.HoverAdornerThickness);
-            _bracketPen.StartLineCap = PenLineCap.Round;
-            _bracketPen.EndLineCap = PenLineCap.Round;
-
-            var myAdornerLayer = AdornerLayer.GetAdornerLayer(adornedElement);
-            myAdornerLayer.Add(this);
-        }
-
-        public GroupHoverAdorner(UIElement adornedElement, GroupVisual targetedVisual) : this(adornedElement)
-        {
-            _targetedVisual = targetedVisual;
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -43,7 +24,7 @@ namespace Chem4Word.ACME.Adorners.Feedback
             base.OnRender(drawingContext);
             StreamGeometry sg = new StreamGeometry();
 
-            Rect atomBounds = _targetedVisual.ContentBounds;
+            Rect atomBounds = TargetedVisual.ContentBounds;
             atomBounds.Inflate(Spacing, Spacing);
             Vector twiddle = new Vector(3, 0.0);
             using (StreamGeometryContext sgc = sg.Open())
@@ -60,7 +41,7 @@ namespace Chem4Word.ACME.Adorners.Feedback
                 sgc.Close();
             }
 
-            drawingContext.DrawGeometry(_solidColorBrush, _bracketPen, sg);
+            drawingContext.DrawGeometry(BracketBrush, BracketPen, sg);
         }
     }
 }

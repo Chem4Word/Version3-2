@@ -94,15 +94,7 @@ namespace Chem4Word.ACME.Graphics
             if (SmallAngle)
             {
                 large = false;
-                double t = a1;
-                if ((a1 - a0) > Math.PI)
-                {
-                    d = SweepDirection.Counterclockwise;
-                }
-                else
-                {
-                    d = SweepDirection.Clockwise;
-                }
+                d = a1 - a0 > Math.PI ? SweepDirection.Counterclockwise : SweepDirection.Clockwise;
             }
             else
             {
@@ -114,7 +106,6 @@ namespace Chem4Word.ACME.Graphics
             List<PathSegment> segments = new List<PathSegment>(1);
             segments.Add(new ArcSegment(p1, new Size(Radius, Radius), 0.0, large, d, true));
 
-            List<PathFigure> figures = new List<PathFigure>(1);
             PathFigure pf = new PathFigure(p0, segments, false);
             pf.IsClosed = false;
             return pf;

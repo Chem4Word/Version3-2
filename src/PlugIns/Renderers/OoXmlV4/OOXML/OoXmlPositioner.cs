@@ -621,12 +621,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 // 2. Create other character groups
 
                 // 2.1 Determine position of implicit hydrogens if any
-                var orientation = CompassPoints.East;
-                if (!atom.Singleton)
-                {
-                    double angleFromNorth = Vector.AngleBetween(BasicGeometry.ScreenNorth, atom.BalancingVector(true));
-                    orientation = atom.Bonds.ToList().Count == 1 ? BasicGeometry.SnapTo2EW(angleFromNorth) : BasicGeometry.SnapTo4NESW(angleFromNorth);
-                }
+                var orientation = atom.ImplicitHPlacement;
 
                 // 2.2 Implicit Hydrogens
                 GroupOfCharacters hydrogens = null;
@@ -651,7 +646,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     switch (orientation)
                     {
                         case CompassPoints.North:
-                            hydrogens.AdjustPosition(main.NorthCentre - hydrogens.SouthCentre);
+                            hydrogens.AdjustPosition(main.BoundingBox.TopLeft - hydrogens.BoundingBox.BottomLeft);
                             break;
 
                         case CompassPoints.East:
@@ -659,7 +654,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             break;
 
                         case CompassPoints.South:
-                            hydrogens.AdjustPosition(main.SouthCentre - hydrogens.NorthCentre);
+                            hydrogens.AdjustPosition(main.BoundingBox.BottomLeft - hydrogens.BoundingBox.TopLeft);
                             break;
 
                         case CompassPoints.West:
@@ -743,7 +738,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     if (hydrogens == null)
                     {
                         isotope.AdjustPosition(main.BoundingBox.TopLeft - isotope.EastCentre);
-                        isotope.Nudge(CompassPoints.East);
+                        isotope.Nudge(CompassPoints.West);
                     }
                     else
                     {
@@ -779,7 +774,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 {
                     Outputs.AtomLabelCharacters.Add(character);
                 }
-                //Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(main.BoundingBox, "00e050"))
+
+                Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(main.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "00b050"));
 
                 if (hydrogens != null)
                 {
@@ -787,7 +783,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
-                    //Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(hydrogens.BoundingBox, "ff80ff"))
+
+                    Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(hydrogens.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "7030a0"));
                 }
 
                 if (charge != null)
@@ -796,7 +793,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
-                    //Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(charge.BoundingBox, "ff0000"))
+
+                    Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(charge.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "ff0000"));
                 }
 
                 if (isotope != null)
@@ -805,7 +803,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
-                    //Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(isotope.BoundingBox, "0070c0"))
+
+                    Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(isotope.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "0070c0"));
                 }
 
                 // 4 Generate Convex Hull
@@ -886,7 +885,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // 2. Position characters
             main.AdjustPosition(atom.Position - main.Centre);
-            //Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(main.BoundingBox, "00ff00"))
+            Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(main.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "00b050"));
 
             if (auxiliary.Characters.Any())
             {
@@ -903,7 +902,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         break;
                 }
 
-                //Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(auxiliary.BoundingBox, "ffff00"))
+                Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(auxiliary.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "ffc000"));
             }
 
             // 3. Transfer to output

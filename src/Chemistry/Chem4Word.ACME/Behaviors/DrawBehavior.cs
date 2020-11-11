@@ -29,7 +29,7 @@ namespace Chem4Word.ACME.Behaviors
         private readonly TranslateTransform _transform = new TranslateTransform();
 
         private AtomVisual _currentAtomVisual;
-        public bool IsDrawing { get; private set; }
+        private bool IsDrawing { get; set; }
 
         private Snapper _angleSnapper;
 
@@ -66,9 +66,6 @@ namespace Chem4Word.ACME.Behaviors
             }
         }
 
-        ///
-        /// what happens when we move the mouse
-        ///
         private void CurrentEditor_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             Bond existingBond = null;
@@ -81,7 +78,7 @@ namespace Chem4Word.ACME.Behaviors
             var targetedVisual = CurrentEditor.ActiveVisual;
             string bondOrder = EditViewModel.CurrentBondOrder;
             //check to see if we have already got an atom remembered
-            if (_currentAtomVisual != null)
+            if (_currentAtomVisual != null && !(_currentAtomVisual is HydrogenVisual))
             {
                 Point? lastPos;
 
@@ -94,7 +91,7 @@ namespace Chem4Word.ACME.Behaviors
                         CurrentEditor.Cursor = Cursors.No;
                         lastPos = null;
                     }
-                    else if (targetedVisual is AtomVisual atomUnderCursor)
+                    else if (!(targetedVisual is HydrogenVisual) && targetedVisual is AtomVisual atomUnderCursor)
                     {
                         CurrentEditor.Cursor = CursorUtils.Pencil;
                         //if so. snap to the atom's position
@@ -152,6 +149,11 @@ namespace Chem4Word.ACME.Behaviors
                     CurrentStatus = "Ungroup before attempting to draw.";
                     CurrentEditor.Cursor = Cursors.No;
                 }
+                else if (targetedVisual is HydrogenVisual hv)
+                {
+                    CurrentStatus = "Click to rotate hydrogen";
+                    CurrentEditor.Cursor = Cursors.Hand;
+                }
                 else if (targetedVisual is AtomVisual av)
                 {
                     CurrentEditor.Cursor = CursorUtils.Pencil;
@@ -172,15 +174,14 @@ namespace Chem4Word.ACME.Behaviors
             }
         }
 
-        /// <summary>
-        /// What happens when we release the mouse button
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void CurrentEditor_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             CurrentEditor.ReleaseMouseCapture();
             CurrentStatus = "";
+            if (_currentAtomVisual is HydrogenVisual) //just exit
+            {
+                return;
+            }
             if (IsDrawing)
             {
                 var newAtomPos = e.GetPosition(CurrentEditor);
@@ -189,6 +190,11 @@ namespace Chem4Word.ACME.Behaviors
                 var landedGroupVisual = CurrentEditor.GetTargetedVisual(newAtomPos) as GroupVisual;
                 var landedAtomVisual = CurrentEditor.GetTargetedVisual(newAtomPos) as AtomVisual;
                 var landedBondVisual = CurrentEditor.GetTargetedVisual(newAtomPos) as BondVisual;
+
+                if (landedAtomVisual is HydrogenVisual) //just exit
+                {
+                    return;
+                }
 
                 //check to see whether or not we've clicked and released on the same atom
                 bool sameAtom = landedAtomVisual == _currentAtomVisual;
@@ -207,10 +213,8 @@ namespace Chem4Word.ACME.Behaviors
                 {
                     //clicking on a stereo bond should just invert it
                     var parentBond = landedBondVisual.ParentBond;
-                    if (parentBond.Stereo == BondStereo.Hatch &
-                        EditViewModel.CurrentStereo == BondStereo.Hatch |
-                        parentBond.Stereo == BondStereo.Wedge &
-                        EditViewModel.CurrentStereo == BondStereo.Wedge)
+                    if (parentBond.Stereo == BondStereo.Hatch && EditViewModel.CurrentStereo == BondStereo.Hatch
+                        || parentBond.Stereo == BondStereo.Wedge && EditViewModel.CurrentStereo == BondStereo.Wedge)
                     {
                         EditViewModel.SwapBondDirection(parentBond);
                     }
@@ -543,15 +547,21 @@ namespace Chem4Word.ACME.Behaviors
         {
             var position = e.GetPosition(CurrentEditor);
             _currentAtomVisual = CurrentEditor.GetTargetedVisual(position) as AtomVisual;
-            if (_currentAtomVisual == null)
+
+            if (_currentAtomVisual is null)
             {
                 _angleSnapper = new Snapper(position, EditViewModel);
             }
-            else
+            else if (!(_currentAtomVisual is HydrogenVisual))
             {
                 Mouse.Capture(CurrentEditor);
                 _angleSnapper = new Snapper(_currentAtomVisual.ParentAtom.Position, EditViewModel);
                 _lastAtomVisual = _currentAtomVisual;
+            }
+            else //its a hydrogen visual
+            {
+                HydrogenVisual hv = (HydrogenVisual)_currentAtomVisual;
+                EditViewModel.RotateHydrogen(hv.ParentVisual.ParentAtom);
             }
             IsDrawing = true;
         }

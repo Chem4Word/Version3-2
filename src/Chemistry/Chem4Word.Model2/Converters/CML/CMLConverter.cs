@@ -370,6 +370,15 @@ namespace Chem4Word.Model2.Converters.CML
                 result.Add(new XAttribute(CMLNamespaces.c4w + CMLConstants.AttributeExplicit, atom.ExplicitC));
             }
 
+            if (atom.Element is Element && atom.ExplicitHPlacement != null)
+            {
+                result.Add(new XAttribute(CMLNamespaces.c4w + CMLConstants.AttributeHydrogenPlacement, atom.ExplicitHPlacement));
+            }
+
+            if (atom.Element is FunctionalGroup && atom.ExplicitFunctionalGroupPlacement != null)
+            {
+                result.Add(new XAttribute(CMLNamespaces.c4w + CMLConstants.AttributeFunctionalGroupPlacement, atom.ExplicitFunctionalGroupPlacement));
+            }
             return result;
         }
 
@@ -591,6 +600,8 @@ namespace Chem4Word.Model2.Converters.CML
                 atom.FormalCharge = CMLHelper.GetFormalCharge(cmlElement);
                 atom.IsotopeNumber = CMLHelper.GetIsotopeNumber(cmlElement);
                 atom.ExplicitC = CMLHelper.GetExplicit(cmlElement);
+                atom.ExplicitHPlacement = CMLHelper.GetExplicitHPlacement(cmlElement);
+                atom.ExplicitFunctionalGroupPlacement = CMLHelper.GetExplicitGroupPlacement(cmlElement);
             }
 
             return atom;

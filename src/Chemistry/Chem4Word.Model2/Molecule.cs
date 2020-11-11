@@ -1102,7 +1102,8 @@ namespace Chem4Word.Model2
                 a.FormalCharge = atom.FormalCharge;
                 a.IsotopeNumber = atom.IsotopeNumber;
                 a.ExplicitC = atom.ExplicitC;
-
+                a.ExplicitHPlacement = atom.ExplicitHPlacement;
+                a.ExplicitFunctionalGroupPlacement = atom.ExplicitFunctionalGroupPlacement;
                 copy.AddAtom(a);
                 a.Parent = copy;
                 aa.Add(a.Id, a);

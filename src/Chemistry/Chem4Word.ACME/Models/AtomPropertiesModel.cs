@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using Chem4Word.ACME.Entities;
 using Chem4Word.Model2;
+using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Models
 {
@@ -19,6 +20,7 @@ namespace Chem4Word.ACME.Models
         private bool? _explicitC;
         private bool _isFunctionalGroup;
         private bool _isElement;
+        private CompassPoints? _hPlacement;
 
         public ElementBase AddedElement { get; set; }
 
@@ -67,6 +69,16 @@ namespace Chem4Word.ACME.Models
             set
             {
                 _charge = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CompassPoints? HPlacement
+        {
+            get => _hPlacement;
+            set
+            {
+                _hPlacement = value;
                 OnPropertyChanged();
             }
         }
@@ -124,5 +136,7 @@ namespace Chem4Word.ACME.Models
                 return temp;
             }
         }
+
+        public object IsNotSingleton { get; set; }
     }
 }

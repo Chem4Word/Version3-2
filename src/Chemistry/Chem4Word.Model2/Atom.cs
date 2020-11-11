@@ -28,41 +28,110 @@ namespace Chem4Word.Model2
 
         #region Properties
 
-        public CompassPoints FunctionalGroupPlacement
+        /// <summary>
+        /// use this property to SET H placement
+        /// and to persist to XML
+        /// </summary>
+        public CompassPoints? ExplicitHPlacement
         {
             get
             {
-                if (Element is FunctionalGroup fg)
+                return _explicitHPlacement;
+            }
+            set
+            {
+                _explicitHPlacement = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ImplicitHPlacement));
+            }
+        }
+
+        /// <summary>
+        /// Use this property to DRAW H Placement
+        /// exclusively
+        /// </summary>
+        public CompassPoints ImplicitHPlacement
+        {
+            get
+            {
+                if (_explicitHPlacement is null)
                 {
-                    if (Bonds.Count() == 1)
-                    {
-                        var centroid = Parent.Centroid;
-                        var vector = Position - centroid;
-                        var angle = Vector.AngleBetween(BasicGeometry.ScreenNorth, vector);
-                        return angle < 0 ? CompassPoints.West : CompassPoints.East;
-                    }
-                    else if (Bonds.Count() > 1)
-                    {
-                        int leftBondCount = 0, rightBondCount = 0;
-                        foreach (Atom neighbour in Neighbours)
-                        {
-                            Vector tempBondVector = neighbour.Position - Position;
-                            double angle = Vector.AngleBetween(BasicGeometry.ScreenNorth, tempBondVector);
-                            if (angle >= 5.0 && angle <= 175.0)
-                            {
-                                rightBondCount++;
-                            }
-                            else
-                            {
-                                leftBondCount++;
-                            }
-                        }
-                        return rightBondCount > leftBondCount ? CompassPoints.West : CompassPoints.East;
-                    }
+                    return GetDefaultHOrientation();
                 }
 
-                return CompassPoints.East;
+                return _explicitHPlacement.Value;
             }
+        }
+
+        /// <summary>
+        /// Use this property to SET FG placement
+        /// and to persist to XML
+        /// </summary>
+        public CompassPoints? ExplicitFunctionalGroupPlacement
+        {
+            get
+            {
+                return _explicitFGPlacement;
+            }
+            set
+            {
+                _explicitFGPlacement = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FunctionalGroupPlacement));
+            }
+        }
+
+        /// <summary>
+        /// Use this property to DRAW FG placement
+        /// exclusively
+        /// </summary>
+        public CompassPoints? FunctionalGroupPlacement
+        {
+            get
+            {
+                if (_explicitFGPlacement is null)
+                {
+                    return GetDefaultFGPlacement();
+                }
+
+                return _explicitFGPlacement;
+            }
+        }
+
+        private CompassPoints GetDefaultFGPlacement()
+        {
+            if (Element is FunctionalGroup fg)
+            {
+                if (Bonds.Count() == 1)
+                {
+                    var centroid = Parent.Centroid;
+                    var vector = Position - centroid;
+                    var angle = Vector.AngleBetween(BasicGeometry.ScreenNorth, vector);
+                    return angle < 0 ? CompassPoints.West : CompassPoints.East;
+                }
+
+                if (Bonds.Count() > 1)
+                {
+                    int leftBondCount = 0, rightBondCount = 0;
+                    foreach (Atom neighbour in Neighbours)
+                    {
+                        Vector tempBondVector = neighbour.Position - Position;
+                        double angle = Vector.AngleBetween(BasicGeometry.ScreenNorth, tempBondVector);
+                        if (angle >= 5.0 && angle <= 175.0)
+                        {
+                            rightBondCount++;
+                        }
+                        else
+                        {
+                            leftBondCount++;
+                        }
+                    }
+
+                    return rightBondCount > leftBondCount ? CompassPoints.West : CompassPoints.East;
+                }
+            }
+
+            return CompassPoints.East;
         }
 
         public bool? ExplicitC { get; set; }
@@ -322,7 +391,7 @@ namespace Chem4Word.Model2
                 {
                     Vector shift = new Vector();
                     Rect hydrogenBox = baseAtomBox;
-                    switch (GetDefaultHOrientation())
+                    switch (ImplicitHPlacement)
                     {
                         case CompassPoints.East:
                             shift = BasicGeometry.ScreenEast * fontSize;
@@ -419,6 +488,9 @@ namespace Chem4Word.Model2
 
         private bool _doubletRadical;
         private Point _position;
+
+        private CompassPoints? _explicitHPlacement;
+        private CompassPoints? _explicitFGPlacement;
 
         public int ImplicitHydrogenCount
         {
@@ -535,11 +607,11 @@ namespace Chem4Word.Model2
                 }
             }
 
-            //Debug.WriteLine($"Atom {Id} Resultant Balancing Vector Angle is {Vector.AngleBetween(BasicGeometry.ScreenNorth, vsumVector)}");
+            //Debug.WriteLine($"Atom {Id} Resultant Balancing Vector Angle is {Vector.AngleBetween(BasicGeometry.ScreenNorth, vsumVector)}")
             return vsumVector;
         }
 
-        public List<Atom> UnprocessedNeighbours(Predicate<Atom> unprocessedTest)
+        private List<Atom> UnprocessedNeighbours(Predicate<Atom> unprocessedTest)
         {
             return Neighbours.Where(a => unprocessedTest(a)).ToList();
         }
@@ -596,7 +668,7 @@ namespace Chem4Word.Model2
             return null;
         }
 
-        public CompassPoints GetDefaultHOrientation()
+        private CompassPoints GetDefaultHOrientation()
         {
             var orientation = CompassPoints.East;
 

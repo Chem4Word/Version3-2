@@ -6,41 +6,23 @@
 // ---------------------------------------------------------------------------
 
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {
-    public class BondHoverAdorner : Adorner
+    public class BondHoverAdorner : BaseHoverAdorner
     {
-        private SolidColorBrush _solidColorBrush;
-        private Pen _bracketPen;
-        private BondVisual _targetedVisual;
-        private Bond _targetedBond;
+        private Bond TargetedBond { get; }
         public EditorCanvas CurrentEditor { get; }
 
-        public BondHoverAdorner([NotNull] UIElement adornedElement) : base(adornedElement)
+        public BondHoverAdorner(UIElement adornedElement, BondVisual targetedVisual) : base(adornedElement, targetedVisual)
         {
-            _solidColorBrush = new SolidColorBrush(Globals.HoverAdornerColor);
-
-            _bracketPen = new Pen(_solidColorBrush, Globals.HoverAdornerThickness);
-            _bracketPen.StartLineCap = PenLineCap.Round;
-            _bracketPen.EndLineCap = PenLineCap.Round;
-
-            var myAdornerLayer = AdornerLayer.GetAdornerLayer(adornedElement);
-            myAdornerLayer.Add(this);
-        }
-
-        public BondHoverAdorner(UIElement adornedElement, BondVisual targetedVisual) : this(adornedElement)
-        {
-            _targetedVisual = targetedVisual;
-            _targetedBond = _targetedVisual.ParentBond;
+            TargetedBond = targetedVisual.ParentBond;
         }
 
         /// <summary>
@@ -52,18 +34,18 @@ namespace Chem4Word.ACME.Adorners.Feedback
             base.OnRender(drawingContext);
             StreamGeometry sg = new StreamGeometry();
             double orderValue;
-            if (_targetedBond.OrderValue == null || _targetedBond.OrderValue < 1d)
+            if (TargetedBond.OrderValue == null || TargetedBond.OrderValue < 1d)
             {
                 orderValue = 1d;
             }
             else
             {
-                orderValue = _targetedBond.OrderValue.Value;
+                orderValue = TargetedBond.OrderValue.Value;
             }
-            double offset = Globals.BondOffsetPercentage * _targetedBond.BondLength * orderValue;
+            double offset = Globals.BondOffsetPercentage * TargetedBond.BondLength * orderValue;
 
             //this tells us how much to rotate the brackets at the end of the bond
-            double bondAngle = _targetedBond.Angle;
+            double bondAngle = TargetedBond.Angle;
 
             Vector offsetVector1 = new Vector(offset, 0d);
 
@@ -78,20 +60,22 @@ namespace Chem4Word.ACME.Adorners.Feedback
 
             using (StreamGeometryContext sgc = sg.Open())
             {
-                sgc.BeginFigure(_targetedBond.StartAtom.Position + offsetVector1 + twiddle, false, false);
-                sgc.LineTo(_targetedBond.StartAtom.Position + offsetVector1, true, true);
-                sgc.LineTo(_targetedBond.StartAtom.Position - offsetVector1, true, true);
-                sgc.LineTo(_targetedBond.StartAtom.Position - offsetVector1 + twiddle, true, true);
+                var startAtom = TargetedBond.StartAtom;
+                sgc.BeginFigure(startAtom.Position + offsetVector1 + twiddle, false, false);
+                sgc.LineTo(startAtom.Position + offsetVector1, true, true);
+                sgc.LineTo(startAtom.Position - offsetVector1, true, true);
+                sgc.LineTo(startAtom.Position - offsetVector1 + twiddle, true, true);
 
-                sgc.BeginFigure(_targetedBond.EndAtom.Position + offsetVector1 - twiddle, false, false);
-                sgc.LineTo(_targetedBond.EndAtom.Position + offsetVector1, true, true);
-                sgc.LineTo(_targetedBond.EndAtom.Position - offsetVector1, true, true);
-                sgc.LineTo(_targetedBond.EndAtom.Position - offsetVector1 - twiddle, true, true);
+                var endAtom = TargetedBond.EndAtom;
+                sgc.BeginFigure(endAtom.Position + offsetVector1 - twiddle, false, false);
+                sgc.LineTo(endAtom.Position + offsetVector1, true, true);
+                sgc.LineTo(endAtom.Position - offsetVector1, true, true);
+                sgc.LineTo(endAtom.Position - offsetVector1 - twiddle, true, true);
 
                 sgc.Close();
             }
 
-            drawingContext.DrawGeometry(_solidColorBrush, _bracketPen, sg);
+            drawingContext.DrawGeometry(BracketBrush, BracketPen, sg);
         }
     }
 }

@@ -43,7 +43,6 @@ namespace Chem4Word.ACME.Behaviors
         private Point _startpoint;
         private List<object> _lassoHits;
         public bool IsDragging { get; private set; }
-        public bool ClickedOnAtomOrBond { get; set; }
 
         public Point StartPoint { get; set; }
 
@@ -55,12 +54,6 @@ namespace Chem4Word.ACME.Behaviors
 
         public static readonly DependencyProperty RectModeProperty =
             DependencyProperty.Register("RectMode", typeof(bool), typeof(LassoBehaviour), new PropertyMetadata(default(bool)));
-
-        public LassoBehaviour() : this(false)
-        { }
-
-        public LassoBehaviour(bool isRectMode = false)
-        { }
 
         protected override void OnAttached()
         {
@@ -98,7 +91,7 @@ namespace Chem4Word.ACME.Behaviors
             Mouse.Capture(CurrentEditor);
             _mouseTrack.Add(_startpoint);
 
-            if (e.ClickCount == 2 & EditViewModel.SelectionType == SelectionTypeCode.Molecule)
+            if (e.ClickCount == 2 && EditViewModel.SelectionType == SelectionTypeCode.Molecule)
             {
                 DoMolSelect(e);
                 e.Handled = true;
@@ -206,8 +199,8 @@ namespace Chem4Word.ACME.Behaviors
             CurrentEditor.ReleaseMouseCapture();
 
             CurrentEditor.Focus();
-            var al = AdornerLayer.GetAdornerLayer(CurrentEditor);
-            al.Update();
+            var layer = AdornerLayer.GetAdornerLayer(CurrentEditor);
+            layer?.Update();
             CurrentStatus = DefaultText;
         }
 
@@ -235,29 +228,9 @@ namespace Chem4Word.ACME.Behaviors
             return HitTestResultBehavior.Continue;
         }
 
-        private object CurrentObject(MouseButtonEventArgs e)
-        {
-            var visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
-
-            object currentObject = null;
-            if (visual is AtomVisual av)
-            {
-                currentObject = av.ParentAtom;
-            }
-            else if (visual is BondVisual bv)
-            {
-                currentObject = bv.ParentBond;
-            }
-            else if (visual is GroupVisual gv)
-            {
-                currentObject = gv.ParentMolecule;
-            }
-
-            return currentObject;
-        }
-
         private void CurrentEditor_PreviewMouseMove(object sender, MouseEventArgs e)
         {
+            //TODO:  disable the hydrogen rotator selector
             var pos = Mouse.GetPosition(CurrentEditor);
             Vector shift; //how much we want to shift the objects by
 
@@ -311,11 +284,12 @@ namespace Chem4Word.ACME.Behaviors
                     }
                 }
             }
+
             //we're dragging an object around
-            if (MouseIsDown(e) & IsDragging)
+            if (MouseIsDown(e) && IsDragging)
             {
-                if (_initialTarget is Bond b &&
-                    EditViewModel.SelectionType == SelectionTypeCode.Bond
+                if (_initialTarget is Bond b
+                    && EditViewModel.SelectionType == SelectionTypeCode.Bond
                     && EditViewModel.SelectedItems.Count == 1) //i.e. we have one bond selected
                 {
                     CurrentStatus = "Drag bond to reposition.";
@@ -438,7 +412,7 @@ namespace Chem4Word.ACME.Behaviors
         private object CurrentObject(MouseEventArgs e)
         {
             var visual = CurrentEditor.GetTargetedVisual(GetCurrentMouseLocation(e));
-            //do a quick test to work out the
+
             object currentObject = null;
             if (visual is AtomVisual av)
             {
@@ -452,20 +426,50 @@ namespace Chem4Word.ACME.Behaviors
             return currentObject;
         }
 
+        private object CurrentObject(MouseButtonEventArgs e)
+        {
+            var visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
+
+            object currentObject = null;
+
+            if (visual is AtomVisual av)
+            {
+                currentObject = av.ParentAtom;
+            }
+            else if (visual is BondVisual bv)
+            {
+                currentObject = bv.ParentBond;
+            }
+            else if (visual is GroupVisual gv)
+            {
+                currentObject = gv.ParentMolecule;
+            }
+
+            return currentObject;
+        }
+
         private Point GetCurrentMouseLocation(MouseEventArgs e) => e.GetPosition(CurrentEditor);
 
         private void CurrentEditor_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var currentObject = CurrentObject(e);
-
-            if (!(currentObject != null | Utils.KeyboardUtils.HoldingDownShift()))
+            var visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
+            if (!(visual is HydrogenVisual hv))
             {
-                EditViewModel.ClearSelection();
+                var currentObject = CurrentObject(e);
+
+                if (!(currentObject != null | Utils.KeyboardUtils.HoldingDownShift()))
+                {
+                    EditViewModel.ClearSelection();
+                }
+
+                StartPoint = e.GetPosition(CurrentEditor);
+
+                _initialTarget = CurrentObject(e);
             }
-
-            StartPoint = e.GetPosition(CurrentEditor);
-
-            _initialTarget = CurrentObject(e);
+            else
+            {
+                EditViewModel.RotateHydrogen(hv.ParentVisual.ParentAtom);
+            }
         }
 
         private void DisposeLasso()
@@ -627,7 +631,7 @@ namespace Chem4Word.ACME.Behaviors
                 EditViewModel.AddToSelection(selGroup.ParentMolecule);
                 return HitTestResultBehavior.Continue;
             }
-            if (myShape != null && myShape is AtomVisual | myShape is BondVisual)
+            if (myShape != null && myShape is AtomVisual || myShape is BondVisual)
             {
                 switch (id)
                 {

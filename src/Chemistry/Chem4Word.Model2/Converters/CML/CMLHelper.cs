@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
+using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.CML
@@ -234,6 +235,30 @@ namespace Chem4Word.Model2.Converters.CML
             bool expl;
 
             if (bool.TryParse(cmlElement.Attribute(CMLNamespaces.c4w + CMLConstants.AttributeExplicit)?.Value, out expl))
+            {
+                return expl;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static CompassPoints? GetExplicitHPlacement(XElement cmlElement)
+        {
+            if (Enum.TryParse(cmlElement.Attribute(CMLNamespaces.c4w + CMLConstants.AttributeHydrogenPlacement)?.Value, out CompassPoints expl))
+            {
+                return expl;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static CompassPoints? GetExplicitGroupPlacement(XElement cmlElement)
+        {
+            if (Enum.TryParse(cmlElement.Attribute(CMLNamespaces.c4w + CMLConstants.AttributeFunctionalGroupPlacement)?.Value, out CompassPoints expl))
             {
                 return expl;
             }

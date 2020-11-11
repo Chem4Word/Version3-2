@@ -60,6 +60,10 @@ namespace Chem4Word.Renderer.OoXmlV4
 
         // Debugging
         [JsonProperty]
+        public bool ShowCharacterGroupBoundingBoxes { get; set; }
+
+        // Debugging
+        [JsonProperty]
         public bool ShowMoleculeBoundingBoxes { get; set; }
 
         // Debugging
@@ -202,6 +206,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             ShowHulls = options.ShowHulls;
             ShowBondClippingLines = options.ShowBondClippingLines;
             ShowBondDirection = options.ShowBondDirection;
+            ShowCharacterGroupBoundingBoxes = options.ShowCharacterGroupBoundingBoxes;
         }
 
         private string GetFileName(string path)
@@ -245,6 +250,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             ShowHulls = false;
             ShowBondClippingLines = false;
             ShowBondDirection = false;
+            ShowCharacterGroupBoundingBoxes = false;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             BuildAdornerCorner(ref BottomLeftHandle, Cursors.SizeNESW);
             BuildAdornerCorner(ref BottomRightHandle, Cursors.SizeNWSE);
 
-            BuildRotateThumb(ref RotateHandle, Cursors.Hand);
+            BuildRotateThumb(ref RotateHandle);
 
             SetCentroid();
             SetBoundingBox();
@@ -126,7 +126,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             DragYTravel = 0.0d;
         }
 
-        private void BuildRotateThumb(ref Thumb rotateThumb, Cursor hand)
+        private void BuildRotateThumb(ref Thumb rotateThumb)
         {
             rotateThumb = new Thumb();
 

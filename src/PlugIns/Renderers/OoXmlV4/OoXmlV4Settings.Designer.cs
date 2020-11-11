@@ -33,6 +33,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OoXmlV4Settings));
             this.tabControlEx = new Chem4Word.Core.UI.Controls.TabControlEx();
             this.tabRendering = new System.Windows.Forms.TabPage();
+            this.RenderCaptionsAsTextBox = new System.Windows.Forms.CheckBox();
             this.ShowAllCarbonAtoms = new System.Windows.Forms.CheckBox();
             this.ShowMoleculeCaptions = new System.Windows.Forms.CheckBox();
             this.ShowMoleculeGrouping = new System.Windows.Forms.CheckBox();
@@ -49,7 +50,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.ClipLines = new System.Windows.Forms.CheckBox();
             this.btnSetDefaults = new System.Windows.Forms.Button();
             this.btnOk = new System.Windows.Forms.Button();
-            this.RenderCaptionsAsTextBox = new System.Windows.Forms.CheckBox();
+            this.ShowCharacterGroupsBox = new System.Windows.Forms.CheckBox();
             this.tabControlEx.SuspendLayout();
             this.tabRendering.SuspendLayout();
             this.tabDebug.SuspendLayout();
@@ -84,6 +85,20 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.tabRendering.Size = new System.Drawing.Size(409, 169);
             this.tabRendering.TabIndex = 0;
             this.tabRendering.Text = "Rendering";
+            // 
+            // RenderCaptionsAsTextBox
+            // 
+            this.RenderCaptionsAsTextBox.AutoSize = true;
+            this.RenderCaptionsAsTextBox.Checked = true;
+            this.RenderCaptionsAsTextBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.RenderCaptionsAsTextBox.Location = new System.Drawing.Point(27, 137);
+            this.RenderCaptionsAsTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.RenderCaptionsAsTextBox.Name = "RenderCaptionsAsTextBox";
+            this.RenderCaptionsAsTextBox.Size = new System.Drawing.Size(161, 17);
+            this.RenderCaptionsAsTextBox.TabIndex = 26;
+            this.RenderCaptionsAsTextBox.Text = "Render Captions as TextBox";
+            this.RenderCaptionsAsTextBox.UseVisualStyleBackColor = true;
+            this.RenderCaptionsAsTextBox.CheckedChanged += new System.EventHandler(this.RenderCaptionsAsTextBox_CheckedChanged);
             // 
             // ShowAllCarbonAtoms
             // 
@@ -159,6 +174,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             // 
             this.tabDebug.BackColor = System.Drawing.SystemColors.Control;
             this.tabDebug.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tabDebug.Controls.Add(this.ShowCharacterGroupsBox);
             this.tabDebug.Controls.Add(this.ShowBondDirection);
             this.tabDebug.Controls.Add(this.ShowBondClippingLines);
             this.tabDebug.Controls.Add(this.ShowConvexHulls);
@@ -170,7 +186,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.tabDebug.Location = new System.Drawing.Point(0, 20);
             this.tabDebug.Name = "tabDebug";
             this.tabDebug.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDebug.Size = new System.Drawing.Size(409, 161);
+            this.tabDebug.Size = new System.Drawing.Size(409, 169);
             this.tabDebug.TabIndex = 1;
             this.tabDebug.Text = "Debug";
             // 
@@ -179,7 +195,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.ShowBondDirection.AutoSize = true;
             this.ShowBondDirection.Checked = true;
             this.ShowBondDirection.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowBondDirection.Location = new System.Drawing.Point(209, 87);
+            this.ShowBondDirection.Location = new System.Drawing.Point(209, 62);
             this.ShowBondDirection.Margin = new System.Windows.Forms.Padding(4);
             this.ShowBondDirection.Name = "ShowBondDirection";
             this.ShowBondDirection.Size = new System.Drawing.Size(123, 17);
@@ -193,7 +209,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.ShowBondClippingLines.AutoSize = true;
             this.ShowBondClippingLines.Checked = true;
             this.ShowBondClippingLines.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowBondClippingLines.Location = new System.Drawing.Point(209, 62);
+            this.ShowBondClippingLines.Location = new System.Drawing.Point(209, 37);
             this.ShowBondClippingLines.Margin = new System.Windows.Forms.Padding(4);
             this.ShowBondClippingLines.Name = "ShowBondClippingLines";
             this.ShowBondClippingLines.Size = new System.Drawing.Size(143, 17);
@@ -235,7 +251,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.ShowRingCentres.AutoSize = true;
             this.ShowRingCentres.Checked = true;
             this.ShowRingCentres.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowRingCentres.Location = new System.Drawing.Point(209, 117);
+            this.ShowRingCentres.Location = new System.Drawing.Point(206, 133);
             this.ShowRingCentres.Margin = new System.Windows.Forms.Padding(4);
             this.ShowRingCentres.Name = "ShowRingCentres";
             this.ShowRingCentres.Size = new System.Drawing.Size(169, 17);
@@ -263,7 +279,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.ShowMoleculeBox.AutoSize = true;
             this.ShowMoleculeBox.Checked = true;
             this.ShowMoleculeBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowMoleculeBox.Location = new System.Drawing.Point(7, 117);
+            this.ShowMoleculeBox.Location = new System.Drawing.Point(7, 133);
             this.ShowMoleculeBox.Margin = new System.Windows.Forms.Padding(4);
             this.ShowMoleculeBox.Name = "ShowMoleculeBox";
             this.ShowMoleculeBox.Size = new System.Drawing.Size(191, 17);
@@ -310,19 +326,19 @@ namespace Chem4Word.Renderer.OoXmlV4
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.Ok_Click);
             // 
-            // RenderCaptionsAsTextBox
+            // ShowCharacterGroupsBox
             // 
-            this.RenderCaptionsAsTextBox.AutoSize = true;
-            this.RenderCaptionsAsTextBox.Checked = true;
-            this.RenderCaptionsAsTextBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.RenderCaptionsAsTextBox.Location = new System.Drawing.Point(27, 137);
-            this.RenderCaptionsAsTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.RenderCaptionsAsTextBox.Name = "RenderCaptionsAsTextBox";
-            this.RenderCaptionsAsTextBox.Size = new System.Drawing.Size(161, 17);
-            this.RenderCaptionsAsTextBox.TabIndex = 26;
-            this.RenderCaptionsAsTextBox.Text = "Render Captions as TextBox";
-            this.RenderCaptionsAsTextBox.UseVisualStyleBackColor = true;
-            this.RenderCaptionsAsTextBox.CheckedChanged += new System.EventHandler(this.RenderCaptionsAsTextBox_CheckedChanged);
+            this.ShowCharacterGroupsBox.AutoSize = true;
+            this.ShowCharacterGroupsBox.Checked = true;
+            this.ShowCharacterGroupsBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowCharacterGroupsBox.Location = new System.Drawing.Point(7, 87);
+            this.ShowCharacterGroupsBox.Margin = new System.Windows.Forms.Padding(4);
+            this.ShowCharacterGroupsBox.Name = "ShowCharacterGroupsBox";
+            this.ShowCharacterGroupsBox.Size = new System.Drawing.Size(217, 17);
+            this.ShowCharacterGroupsBox.TabIndex = 25;
+            this.ShowCharacterGroupsBox.Text = "Show BoundingBox of Character Groups";
+            this.ShowCharacterGroupsBox.UseVisualStyleBackColor = true;
+            this.ShowCharacterGroupsBox.CheckedChanged += new System.EventHandler(this.ShowCharacterGroupsBox_CheckedChanged);
             // 
             // OoXmlV4Settings
             // 
@@ -371,5 +387,6 @@ namespace Chem4Word.Renderer.OoXmlV4
         private System.Windows.Forms.CheckBox ShowBondClippingLines;
         private System.Windows.Forms.CheckBox ShowBondDirection;
         private System.Windows.Forms.CheckBox RenderCaptionsAsTextBox;
+        private System.Windows.Forms.CheckBox ShowCharacterGroupsBox;
     }
 }

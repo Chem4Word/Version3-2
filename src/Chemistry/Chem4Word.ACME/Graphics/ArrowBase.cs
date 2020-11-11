@@ -22,7 +22,7 @@ namespace Chem4Word.ACME.Graphics
     {
         #region "Fields"
 
-        protected PathGeometry pathgeo;
+        private PathGeometry pathgeo;
 
         #endregion "Fields"
 
@@ -67,16 +67,6 @@ namespace Chem4Word.ACME.Graphics
         public static readonly DependencyProperty EndPointProperty =
             DependencyProperty.Register("EndPoint", typeof(Point), typeof(ArrowBase),
                                         new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsMeasure));
-
-        //readonly property for calculating arrow length
-        public double ArrowLength
-        {
-            get
-            {
-                Vector vect = EndPoint - StartPoint;
-                return vect.Length;
-            }
-        }
 
         /// <summary>
         ///     Identifies the ArrowEnds dependency property.
@@ -123,30 +113,33 @@ namespace Chem4Word.ACME.Graphics
 
         protected override System.Windows.Media.Geometry DefiningGeometry
         {
-            get
+            get { return GetArrowGeometry(); }
+        }
+
+        public Geometry GetArrowGeometry()
+        {
+            //draw the main line for the arrow
+
+            pathgeo = new PathGeometry();
+            pathgeo.Clear();
+            var mainline = ArrowLineFigure();
+            mainline.IsClosed = false;
+
+            pathgeo.Figures.Add(mainline);
+
+            // Draw the arrow at the start of the line.
+            if ((ArrowEnds & ArrowEnds.Start) == ArrowEnds.Start)
             {
-                //draw the main line for the arrow
-
-                pathgeo = new PathGeometry();
-                pathgeo.Clear();
-                var mainline = ArrowLineFigure();
-                mainline.IsClosed = false;
-                //mainline.IsClosed = true;
-                pathgeo.Figures.Add(mainline);
-
-                // Draw the arrow at the start of the line.
-                if ((ArrowEnds & ArrowEnds.Start) == ArrowEnds.Start)
-                {
-                    pathgeo.Figures.Add(ArrowHeadGeometry(mainline, true));
-                }
-
-                // Draw the arrow at the end of the line.
-                if ((ArrowEnds & ArrowEnds.End) == ArrowEnds.End)
-                {
-                    pathgeo.Figures.Add(ArrowHeadGeometry(mainline));
-                }
-                return pathgeo;
+                pathgeo.Figures.Add(ArrowHeadGeometry(mainline, true));
             }
+
+            // Draw the arrow at the end of the line.
+            if ((ArrowEnds & ArrowEnds.End) == ArrowEnds.End)
+            {
+                pathgeo.Figures.Add(ArrowHeadGeometry(mainline));
+            }
+
+            return pathgeo;
         }
 
         /// <summary>
@@ -181,7 +174,6 @@ namespace Chem4Word.ACME.Graphics
             var length = GetPathFigureLength(line);
 
             double progress = reverse ? (offset / length) : 1.0 - (offset / length);  //if we're going for the start or end of line
-            //Vector headVector = pt1 - pt2;
 
             //create a simple geometry so we can use a wpf trick to determine the length
 
@@ -193,20 +185,18 @@ namespace Chem4Word.ACME.Graphics
             //this is a really cool method to get the angle at the end of a line of any shape.
 
             //we need to get the actual angle at the very point the arrow line enters the head
-            tempPG.GetPointAtFractionLength(progress, out Point garbage, out tangent);
+            tempPG.GetPointAtFractionLength(progress, out _, out tangent);
 
             //and then the very last point on the line
             if (reverse)
             {
-                tempPG.GetPointAtFractionLength(0.0, out tempPoint, out garbage);
+                tempPG.GetPointAtFractionLength(0.0, out tempPoint, out _);
             }
             else
             {
-                tempPG.GetPointAtFractionLength(1.0, out tempPoint, out garbage);
+                tempPG.GetPointAtFractionLength(1.0, out tempPoint, out _);
             }
 
-            //chuck away the pathgeometry
-            tempPG = null;
             //the tangent is an X & Y coordinate that can be converted into a vector
             Vector headVector = new Vector(tangent.X, tangent.Y);
             //normalize the vector
@@ -214,48 +204,22 @@ namespace Chem4Word.ACME.Graphics
             //and invert it
             headVector *= -ArrowHeadLength;
 
-            LineSegment lineseg = line.Segments[0] as LineSegment;
-
             PolyLineSegment polyseg = new PolyLineSegment();
-            if (!IsArrowClosed)
-            {
-                polyseg.Points.Clear();
-                matx.Rotate(HeadAngle / 2);
-                var pointa = tempPoint + headVector * matx;
-                polyseg.Points.Add(pointa);
 
-                polyseg.Points.Add(tempPoint);
+            matx.Rotate(HeadAngle / 2);
+            var pointa = tempPoint + headVector * matx;
 
-                matx.Rotate(-HeadAngle);
-                var pointb = tempPoint + headVector * matx;
-                polyseg.Points.Add(pointb);
+            polyseg.Points.Add(tempPoint);
 
-                PathSegmentCollection psc = new PathSegmentCollection();
-                psc.Add(polyseg);
+            matx.Rotate(-HeadAngle);
+            var pointb = tempPoint + headVector * matx;
+            polyseg.Points.Add(pointb);
 
-                PathFigure pathfig = new PathFigure(tempPoint, psc, true);
-                return pathfig;
-            }
-            else
-            {
-                polyseg.Points.Clear();
+            PathSegmentCollection psc = new PathSegmentCollection();
+            psc.Add(polyseg);
 
-                polyseg.Points.Add(tempPoint);
-
-                matx.Rotate(HeadAngle / 2);
-                var pointa = tempPoint + headVector * matx;
-                polyseg.Points.Add(pointa);
-
-                matx.Rotate(-HeadAngle);
-                var pointb = tempPoint + headVector * matx;
-                polyseg.Points.Add(pointb);
-
-                PathSegmentCollection psc = new PathSegmentCollection();
-                psc.Add(polyseg);
-
-                PathFigure pathfig = new PathFigure(tempPoint, psc, true);
-                return pathfig;
-            }
+            PathFigure pathfig = new PathFigure(pointa, psc, IsArrowClosed);
+            return pathfig;
         }
 
         private static double GetPathFigureLength(PathFigure line)

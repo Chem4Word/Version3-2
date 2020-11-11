@@ -87,6 +87,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adorners\Feedback\BaseHoverAdorner.cs" />
+    <Compile Include="Adorners\Feedback\HRotatorAdorner.cs" />
     <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
     <Compile Include="Commands\PickElementCommand.cs" />
     <Compile Include="Controls\FormulaBlock.cs" />
@@ -101,11 +103,17 @@
     <Compile Include="Adorners\Selectors\SingleAtomSelectionAdorner.cs" />
     <Compile Include="Adorners\Selectors\SingleChemistryAdorner.cs" />
     <Compile Include="Converters\BoolToColorConverter.cs" />
+    <Compile Include="Converters\NullableEnumToBooleanConverter.cs" />
     <Compile Include="Converters\TreeViewLineConverter.cs" />
     <Compile Include="Converters\ValueToStringConverter.cs" />
+    <Compile Include="Drawing\ChargeVisual.cs" />
+    <Compile Include="Drawing\ChildTextVisual.cs" />
+    <Compile Include="Drawing\HydrogenVisual.cs" />
+    <Compile Include="Drawing\IsotopeVisual.cs" />
     <Compile Include="Drawing\GroupVisual.cs" />
     <Compile Include="Drawing\MoleculeLabelVisual.cs" />
     <Compile Include="Drawing\MoleculeVisual.cs" />
+    <Compile Include="Drawing\SubscriptedGroup.cs" />
     <Compile Include="IHostedWpfEditor.cs" />
     <Compile Include="LabelsEditor.xaml.cs">
       <DependentUpon>LabelsEditor.xaml</DependentUpon>

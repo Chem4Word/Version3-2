@@ -18,10 +18,17 @@ namespace Chem4Word.ACME.Drawing
     public class FunctionalGroupVisual : AtomVisual
     {
         private List<Point> _sortedOutline;
+        private List<Point> _hull;
         public FunctionalGroup ParentGroup { get; }
         public bool Flipped => ParentAtom.FunctionalGroupPlacement == CompassPoints.West;
 
-        public override List<Point> Hull { get; protected set; }
+        public override List<Point> Hull
+        {
+            get
+            {
+                return _hull;
+            }
+        }
 
         public FunctionalGroupVisual(Atom parent, bool showInColour)
             : base(parent, showInColour, true, true)
@@ -183,7 +190,7 @@ namespace Chem4Word.ACME.Drawing
                                           orderby p.X ascending, p.Y descending
                                           select p).ToList();
 
-                        Hull = Geometry<Point>.GetHull(_sortedOutline, p => p);
+                        _hull = Geometry<Point>.GetHull(_sortedOutline, p => p);
                         // Diag: Show Hulls or Atom centres
 #if DEBUG
 #if SHOWHULLS
@@ -212,17 +219,11 @@ namespace Chem4Word.ACME.Drawing
             }
         }
 
-        public override Geometry WidenedHullGeometry
-        {
-            get
-            {
-                return HullGeometry;
-            }
-        }
+        public override Geometry WidenedHullGeometry => HullGeometry;
 
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
-            if (this.HullGeometry.FillContains(hitTestParameters.HitPoint))
+            if (HullGeometry.FillContains(hitTestParameters.HitPoint))
             {
                 return new PointHitTestResult(this, hitTestParameters.HitPoint);
             }

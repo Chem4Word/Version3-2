@@ -205,6 +205,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             ShowMoleculeGrouping.Checked = RendererOptions.ShowMoleculeGrouping;
             ShowBondClippingLines.Checked = RendererOptions.ShowBondClippingLines;
             ShowBondDirection.Checked = RendererOptions.ShowBondDirection;
+            ShowCharacterGroupsBox.Checked = RendererOptions.ShowCharacterGroupBoundingBoxes;
         }
 
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -358,6 +359,21 @@ namespace Chem4Word.Renderer.OoXmlV4
             try
             {
                 RendererOptions.RenderCaptionsAsTextBox = RenderCaptionsAsTextBox.Checked;
+                _dirty = true;
+            }
+            catch (Exception ex)
+            {
+                new ReportError(Telemetry, TopLeft, module, ex).ShowDialog();
+            }
+        }
+
+        private void ShowCharacterGroupsBox_CheckedChanged(object sender, EventArgs e)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            try
+            {
+                RendererOptions.ShowCharacterGroupBoundingBoxes = ShowCharacterGroupsBox.Checked;
                 _dirty = true;
             }
             catch (Exception ex)

@@ -44,6 +44,8 @@ namespace Chem4Word.Model2.Converters.CML
         public const string AttributeFormalCharge = "formalCharge";
         public const string AttributeIsotopeNumber = "isotopeNumber";
         public const string AttributeExplicit = "explicit";
+        public const string AttributeHydrogenPlacement = "hydrogenPlacement";
+        public const string AttributeFunctionalGroupPlacement = "groupPlacement";
 
         // Bonds
         public const string TagBondArray = "bondArray";
