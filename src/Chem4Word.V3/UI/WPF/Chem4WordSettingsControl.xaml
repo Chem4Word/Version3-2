@@ -17,6 +17,11 @@
         This site should help
         https://www.codeproject.com/Tips/485099/Styling-WPF-TabControl-Borders
     -->
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="Chem4WordBlue">
+            <SolidColorBrush.Color>#2A579A</SolidColorBrush.Color>
+        </SolidColorBrush>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -36,6 +41,7 @@
                     </Grid.RowDefinitions>
                     <GroupBox
                         Grid.Row="0"
+                        BorderBrush="{StaticResource Chem4WordBlue}"
                         BorderThickness="2"
                         Header="Editor">
                         <DockPanel>
@@ -67,6 +73,7 @@
                     </GroupBox>
                     <GroupBox
                         Grid.Row="1"
+                        BorderBrush="{StaticResource Chem4WordBlue}"
                         BorderThickness="2"
                         Header="Renderer">
                         <DockPanel>
@@ -98,6 +105,7 @@
                     </GroupBox>
                     <GroupBox
                         Grid.Row="2"
+                        BorderBrush="{StaticResource Chem4WordBlue}"
                         BorderThickness="2"
                         Header="Searcher">
                         <DockPanel>
@@ -309,7 +317,10 @@
                         <RowDefinition Height="50" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
-                        <GroupBox BorderThickness="2" Header="Import">
+                        <GroupBox
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="2"
+                            Header="Import">
                             <DockPanel>
                                 <Button
                                     x:Name="ImportIntoLibrary"
@@ -337,7 +348,10 @@
                                     TextWrapping="Wrap" />
                             </DockPanel>
                         </GroupBox>
-                        <GroupBox BorderThickness="2" Header="Export">
+                        <GroupBox
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="2"
+                            Header="Export">
                             <DockPanel>
                                 <Button
                                     x:Name="ExportFromLibrary"
@@ -365,7 +379,10 @@
                                     TextWrapping="Wrap" />
                             </DockPanel>
                         </GroupBox>
-                        <GroupBox BorderThickness="2" Header="Clear">
+                        <GroupBox
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="2"
+                            Header="Clear">
                             <DockPanel>
                                 <Button
                                     x:Name="EraseLibrary"
@@ -411,7 +428,10 @@
                 <Grid Margin="5">
                     <StackPanel>
                         <Label Content="You should back up the contents of these folders regularily." />
-                        <GroupBox BorderThickness="2" Header="Settings">
+                        <GroupBox
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="2"
+                            Header="Settings">
                             <DockPanel>
                                 <Button
                                     x:Name="SettingsFolder"
@@ -439,7 +459,10 @@
                                     TextWrapping="Wrap" />
                             </DockPanel>
                         </GroupBox>
-                        <GroupBox BorderThickness="2" Header="Library">
+                        <GroupBox
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="2"
+                            Header="Library">
                             <DockPanel>
                                 <Button
                                     x:Name="LibraryFolder"
@@ -467,7 +490,10 @@
                                     TextWrapping="Wrap" />
                             </DockPanel>
                         </GroupBox>
-                        <GroupBox BorderThickness="2" Header="Plug-Ins">
+                        <GroupBox
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="2"
+                            Header="Plug-Ins">
                             <DockPanel>
                                 <Button
                                     x:Name="PlugInsFolder"

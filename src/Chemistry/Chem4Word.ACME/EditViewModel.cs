@@ -654,9 +654,9 @@ namespace Chem4Word.ACME
         public void SetExplicitHPlacement(Atom selAtom, CompassPoints? newPlacement)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            WriteTelemetry(module, "Debug", $"Atom: {selAtom}; Placement {newPlacement}");
-            UndoManager.BeginUndoBlock();
+            WriteTelemetry(module, "Debug", $"{selAtom}; Placement {newPlacement}");
             var oldPlacement = selAtom.ImplicitHPlacement;
+
             Action undo = () =>
                           {
                               selAtom.ExplicitHPlacement = oldPlacement;
@@ -676,8 +676,11 @@ namespace Chem4Word.ACME
                                   selBond.UpdateVisual();
                               }
                           };
+
+            UndoManager.BeginUndoBlock();
             UndoManager.RecordAction(undo, redo);
             UndoManager.EndUndoBlock();
+
             redo();
         }
 

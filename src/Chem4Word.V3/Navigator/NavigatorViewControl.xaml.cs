@@ -5,32 +5,34 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Runtime.InteropServices;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
 using Chem4Word.ACME;
+using Chem4Word.Core.UI.Forms;
+using Chem4Word.Core.UI.Wpf;
+using Chem4Word.Helpers;
 using Microsoft.Office.Interop.Word;
-using Application = Microsoft.Office.Interop.Word.Application;
+
+using Word = Microsoft.Office.Interop.Word;
 
 namespace Chem4Word.Navigator
 {
     /// <summary>
     /// Interaction logic for NavigatorView.xaml
     /// </summary>
-    public partial class NavigatorView : UserControl
+    public partial class NavigatorViewControl : UserControl
     {
-        private Application _activeApplication;
-        private Document _activeDoc;
+        private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+
         private AcmeOptions _options;
 
-        public NavigatorView()
+        public NavigatorViewControl()
         {
             InitializeComponent();
-            _options = new AcmeOptions();
-        }
-
-        public void SetOptions(AcmeOptions options)
-        {
-            _options = options;
         }
 
         public bool ShowAllCarbonAtoms => _options.ShowCarbons;
@@ -38,36 +40,141 @@ namespace Chem4Word.Navigator
         public bool ShowAtomsInColour => _options.ColouredAtoms;
         public bool ShowMoleculeGrouping => _options.ShowMoleculeGrouping;
 
-        public Application ActiveApplication
+        public void SetOptions(AcmeOptions options)
         {
-            get { return _activeApplication; }
-            set
+            _options = options;
+        }
+
+        public Document ActiveDocument { get; set; }
+
+        private void OnItemButtonClick(object sender, RoutedEventArgs e)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            try
             {
-                _activeApplication = value;
+                if (Globals.Chem4WordV3.EventsEnabled
+                    && e.OriginalSource is WpfEventArgs source)
+                {
+                    Globals.Chem4WordV3.Telemetry.Write(module, "Action", $"Source: {source.Button} Data: {source.OutputValue}");
+
+                    var parts = source.OutputValue.Split('=');
+                    var item = parts[1];
+
+                    if (DataContext is NavigatorViewModel viewModel)
+                    {
+                        var clicked = viewModel.NavigatorItems.FirstOrDefault(c => c.CustomControlTag == item);
+                        if (clicked != null)
+                        {
+                            Globals.Chem4WordV3.EventsEnabled = false;
+
+                            if (Globals.Chem4WordV3.Application.Documents.Count > 0
+                                && ActiveDocument?.ActiveWindow?.Selection != null)
+                            {
+                                switch (source.Button)
+                                {
+                                    case "Navigator|InsertCopy":
+                                        TaskPaneHelper.InsertChemistry(true, ActiveDocument.Application, clicked.Cml, false);
+                                        break;
+
+                                    case "Navigator|InsertLink":
+                                        TaskPaneHelper.InsertChemistry(false, ActiveDocument.Application, clicked.Cml, false);
+                                        break;
+
+                                    case "Navigator|Previous":
+                                        SelectPrevious(clicked.CustomControlTag);
+                                        break;
+
+                                    case "Navigator|Next":
+                                        SelectNext(clicked.CustomControlTag);
+                                        break;
+                                }
+                            }
+
+                            Globals.Chem4WordV3.EventsEnabled = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, exception))
+                {
+                    form.ShowDialog();
+                }
+            }
+            finally
+            {
+                Globals.Chem4WordV3.EventsEnabled = true;
             }
         }
 
-        public Document ActiveDocument
+        private void SelectNext(string tag)
         {
-            get { return _activeDoc; }
-            set
+            var currentSelPoint = ActiveDocument.ActiveWindow.Selection;
+            var linkedControls = (from Word.ContentControl cc in ActiveDocument.ContentControls
+                                  orderby cc.Range.Start
+                                  where CustomXmlPartHelper.GuidFromTag(cc.Tag) == tag
+                                  select cc).ToList();
+
+            // Grab current selection point
+            int current = currentSelPoint.Range.End;
+            foreach (Word.ContentControl cc in linkedControls)
             {
-                _activeDoc = value;
-                try
+                if (cc.Range.Start > current)
                 {
-                    if (_activeDoc != null)
-                    {
-                        NavigatorViewModel nvm = new NavigatorViewModel(_activeDoc);
-                        this.DataContext = nvm;
-                    }
-                    else
-                    {
-                        this.DataContext = null;
-                    }
+                    cc.Range.Select();
+                    ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    return;
                 }
-                catch (COMException) //document not open
+            }
+
+            // Rewind to Start of document
+            current = 0;
+            foreach (Word.ContentControl cc in linkedControls)
+            {
+                if (cc.Range.Start > current)
                 {
-                    this.DataContext = null;
+                    cc.Range.Select();
+                    ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    return;
+                }
+            }
+        }
+
+        private void SelectPrevious(string tag)
+        {
+            var currentSelPoint = ActiveDocument.ActiveWindow.Selection;
+            var linkedControls = (from Word.ContentControl cc in ActiveDocument.ContentControls
+                                  orderby cc.Range.Start descending
+                                  where CustomXmlPartHelper.GuidFromTag(cc.Tag) == tag
+                                  select cc).ToList();
+
+            // Grab current selection point
+            int current = currentSelPoint.Range.Start;
+            foreach (Word.ContentControl cc in linkedControls)
+            {
+                if (cc.Range.Start < current)
+                {
+                    cc.Range.Select();
+                    ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    return;
+                }
+            }
+
+            // Fast Forward to end of document
+            current = int.MaxValue;
+            foreach (Word.ContentControl cc in linkedControls)
+            {
+                if (cc.Range.Start < current)
+                {
+                    cc.Range.Select();
+                    ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    return;
                 }
             }
         }

@@ -14,6 +14,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Enums;
 using Chem4Word.ACME.Models;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;

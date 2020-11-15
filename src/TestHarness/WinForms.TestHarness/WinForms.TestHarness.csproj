@@ -111,11 +111,11 @@
     <Compile Include="EditorHost.Designer.cs">
       <DependentUpon>EditorHost.cs</DependentUpon>
     </Compile>
-    <Compile Include="FlexForm.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FlexForm.Designer.cs">
-      <DependentUpon>FlexForm.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HexViewer.cs">
       <SubType>Form</SubType>
@@ -141,8 +141,8 @@
     <EmbeddedResource Include="EditorHost.resx">
       <DependentUpon>EditorHost.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FlexForm.resx">
-      <DependentUpon>FlexForm.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HexViewer.resx">
       <DependentUpon>HexViewer.cs</DependentUpon>

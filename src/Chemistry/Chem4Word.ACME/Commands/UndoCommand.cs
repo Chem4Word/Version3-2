@@ -11,16 +11,11 @@ namespace Chem4Word.ACME.Commands
 {
     public class UndoCommand : BaseCommand
     {
-        //private EditViewModel _currentVM;
-
         public UndoCommand(EditViewModel vm) : base(vm)
         {
         }
 
-        public override bool CanExecute(object parameter)
-        {
-            return EditViewModel.UndoManager.CanUndo;
-        }
+        public override bool CanExecute(object parameter) => EditViewModel.UndoManager.CanUndo;
 
         public override void Execute(object parameter)
         {

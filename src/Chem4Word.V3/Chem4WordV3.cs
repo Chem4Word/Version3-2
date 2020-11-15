@@ -78,6 +78,7 @@ namespace Chem4Word
         public C4wAddInInfo AddInInfo;
         public SystemHelper Helper;
         public Chem4WordOptions SystemOptions;
+        public LibraryOptions LibraryOptions;
         public TelemetryWriter Telemetry;
 
         public List<IChem4WordEditor> Editors = new List<IChem4WordEditor>();
@@ -389,13 +390,7 @@ namespace Chem4Word
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
-                                                         new LibrarySettings{
-                                                                ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
-                                                                ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
-                                                                PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                                SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
-                                                                RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary});
+                var lib = new Libraries.Database.Library(Telemetry, LibraryOptions);
                 LibraryNames = lib.GetLibraryNames();
             }
             catch (Exception exception)
@@ -515,6 +510,15 @@ namespace Chem4Word
                     {
                         //
                     }
+
+                    LibraryOptions = new LibraryOptions
+                    {
+                        ParentTopLeft = WordTopLeft,
+                        ProgramDataPath = AddInInfo.ProgramDataPath,
+                        PreferredBondLength = SystemOptions.BondLength,
+                        SetBondLengthOnImport = SystemOptions.SetBondLengthOnImportFromLibrary,
+                        RemoveExplicitHydrogensOnImport = SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
+                    };
                 }
             }
             catch (Exception exception)
@@ -1199,9 +1203,9 @@ namespace Chem4Word
                     int ccCount = sel.ContentControls.Count;
 
                     var targets = (from Word.ContentControl ccs in doc.ContentControls
-                                  orderby ccs.Range.Start
-                                  where $"{ccs.Title}" == Constants.ContentControlTitle
-                                  select ccs).ToList();
+                                   orderby ccs.Range.Start
+                                   where $"{ccs.Title}" == Constants.ContentControlTitle
+                                   select ccs).ToList();
 
                     foreach (Word.ContentControl cc in targets)
                     {
@@ -1325,15 +1329,7 @@ namespace Chem4Word
                 {
                     TargetWord tw = JsonConvert.DeserializeObject<TargetWord>(ctrl.Tag);
 
-                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
-                                                             new LibrarySettings
-                                                             {
-                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
-                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
-                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
-                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
-                                                             });
+                    var lib = new Libraries.Database.Library(Telemetry, LibraryOptions);
                     string cml = lib.GetChemistryById(tw.ChemistryId);
 
                     if (cml == null)
@@ -1805,7 +1801,7 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        string taskdoc = ((Word.Window) taskPane.Window).Document.Name;
+                        string taskdoc = ((Word.Window)taskPane.Window).Document.Name;
                         if (doc.Name.Equals(taskdoc))
                         {
                             if (taskPane.Title.Equals(Constants.LibraryTaskPaneTitle))
@@ -1870,7 +1866,7 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        string taskdoc = ((Word.Window) taskPane.Window).Document.Name;
+                        string taskdoc = ((Word.Window)taskPane.Window).Document.Name;
                         if (doc.Name.Equals(taskdoc))
                         {
                             if (taskPane.Title.Equals(Constants.NavigatorTaskPaneTitle))

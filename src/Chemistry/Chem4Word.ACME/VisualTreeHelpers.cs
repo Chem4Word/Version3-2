@@ -31,7 +31,7 @@ namespace Chem4Word.ACME
                     return (T)current;
                 }
                 current = VisualTreeHelper.GetParent(current);
-            };
+            }
             return null;
         }
 
@@ -48,7 +48,7 @@ namespace Chem4Word.ACME
                     return (T)current;
                 }
                 current = VisualTreeHelper.GetParent(current);
-            };
+            }
             return null;
         }
 
@@ -73,7 +73,7 @@ namespace Chem4Word.ACME
                     return (T)current;
                 }
                 current = VisualTreeHelper.GetParent(current);
-            };
+            }
 
             return null;
         }

@@ -65,7 +65,7 @@ namespace Chem4Word.Helpers
 
                 if (doCheck)
                 {
-                    bool update = false;
+                    bool update;
                     using (new WaitCursor())
                     {
                         update = FetchUpdateInfo();
@@ -194,7 +194,6 @@ namespace Chem4Word.Helpers
                     {
                         Globals.Chem4WordV3.IsEndOfLife = false;
                     }
-
                 }
                 else
                 {
@@ -263,7 +262,7 @@ namespace Chem4Word.Helpers
                     {
                         var thisVersionNumber = version.Element("Number")?.Value;
                         DateTime thisVersionDate = SafeDate.Parse(version.Element("Released")?.Value);
-    
+
                         if (thisVersionDate > currentReleaseDate)
                         {
                             Globals.Chem4WordV3.VersionsBehind++;
@@ -330,7 +329,7 @@ namespace Chem4Word.Helpers
             bool foundOurXmlFile = false;
             foreach (var domain in Domains)
             {
-                using (HttpClient client = new HttpClient())
+                using (var client = new HttpClient())
                 {
                     string exceptionMessage;
 

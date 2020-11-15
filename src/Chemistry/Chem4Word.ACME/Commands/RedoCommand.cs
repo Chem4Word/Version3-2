@@ -9,21 +9,15 @@ namespace Chem4Word.ACME.Commands
 {
     public class RedoCommand : BaseCommand
     {
-        private EditViewModel _currentVM;
-
         public RedoCommand(EditViewModel vm) : base(vm)
         {
-            _currentVM = vm;
         }
 
-        public override bool CanExecute(object parameter)
-        {
-            return _currentVM.UndoManager.CanRedo;
-        }
+        public override bool CanExecute(object parameter) => EditViewModel.UndoManager.CanRedo;
 
         public override void Execute(object parameter)
         {
-            _currentVM.UndoManager.Redo();
+            EditViewModel.UndoManager.Redo();
         }
     }
 }

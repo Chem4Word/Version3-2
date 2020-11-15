@@ -11,8 +11,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
+using Chem4Word.ACME.Models;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
 using Chem4Word.Model2.Converters.CML;
@@ -22,33 +21,31 @@ using ContentControl = Microsoft.Office.Interop.Word.ContentControl;
 
 namespace Chem4Word.Navigator
 {
-    public class NavigatorViewModel : DependencyObject
+    public class NavigatorViewModel
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        //used for XAML data binding
-        public ObservableCollection<NavigatorItem> NavigatorItems { get; }
+        public ObservableCollection<ChemistryObject> NavigatorItems { get; }
 
         //references the custom XML parts in the document
-        private CustomXMLParts _parts { get; }
+        private CustomXMLParts Parts { get; }
 
         //local reference to the active document
-        private Document _doc;
+        private readonly Document _doc;
 
         public NavigatorViewModel()
         {
-            NavigatorItems = new ObservableCollection<NavigatorItem>();
+            NavigatorItems = new ObservableCollection<ChemistryObject>();
         }
 
         public NavigatorViewModel(Document doc) : this()
         {
             //get a reference to the document
             _doc = doc;
-            _parts = _doc.CustomXMLParts.SelectByNamespace(CMLNamespaces.cml.NamespaceName);
-            _parts.PartAfterAdd += OnPartAfterAdd;
-            _parts.PartAfterLoad += OnPartAfterLoad;
-            _parts.PartBeforeDelete += OnPartBeforeDelete;
+            Parts = _doc.CustomXMLParts.SelectByNamespace(CMLNamespaces.cml.NamespaceName);
+            Parts.PartAfterLoad += OnPartAfterLoad;
+            Parts.PartBeforeDelete += OnPartBeforeDelete;
 
             LoadModel();
         }
@@ -69,25 +66,28 @@ namespace Chem4Word.Navigator
                 }
                 if (_doc != null)
                 {
-                    Dictionary<string, int> added = new Dictionary<string, int>();
+                    var added = new Dictionary<string, int>();
 
                     var navItems = from ContentControl ccs in _doc.ContentControls
-                                   join CustomXMLPart part in _parts
+                                   join CustomXMLPart part in Parts
                                      on CustomXmlPartHelper.GuidFromTag(ccs?.Tag) equals CustomXmlPartHelper.GetCmlId(part)
                                    orderby ccs.Range.Start
                                    let chemModel = converter.Import(part.XML)
-                                   select new NavigatorItem { CMLId = ccs?.Tag, ChemicalStructure = part.XML, XMLPart = part, Name = chemModel.ConciseFormula };
+                                   select new ChemistryObject
+                                   {
+                                       CustomControlTag = ccs?.Tag,
+                                       Cml = part.XML,
+                                       Formula = chemModel.ConciseFormula
+                                   };
 
-                    foreach (NavigatorItem navigatorItem in navItems)
+                    foreach (ChemistryObject navigatorItem in navItems)
                     {
-                        string guid = CustomXmlPartHelper.GuidFromTag(navigatorItem.CMLId);
-                        if (!string.IsNullOrEmpty(guid))
+                        string guid = CustomXmlPartHelper.GuidFromTag(navigatorItem.CustomControlTag);
+                        if (!string.IsNullOrEmpty(guid)
+                            && !added.ContainsKey(guid))
                         {
-                            if (!added.ContainsKey(guid))
-                            {
-                                NavigatorItems.Add(navigatorItem);
-                                added.Add(guid, 1);
-                            }
+                            NavigatorItems.Add(navigatorItem);
+                            added.Add(guid, 1);
                         }
                     }
 
@@ -112,7 +112,8 @@ namespace Chem4Word.Navigator
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var oldPart = NavigatorItems.FirstOrDefault(ni => CustomXmlPartHelper.GetCmlId(ni.XMLPart) == CustomXmlPartHelper.GetCmlId(OldPart));
+                var oldPart = NavigatorItems.FirstOrDefault(ni
+                                                                => CustomXmlPartHelper.GuidFromTag(ni.CustomControlTag) == CustomXmlPartHelper.GetCmlId(OldPart));
                 NavigatorItems.Remove(oldPart);
             }
             catch (Exception ex)
@@ -137,13 +138,13 @@ namespace Chem4Word.Navigator
                 var converter = new CMLConverter();
                 //get the chemistry
                 var chemModel = converter.Import(NewPart.XML);
-                //find out which content control macthes the custom XML part
+                //find out which content control matches the custom XML part
                 try
                 {
                     // ReSharper disable once InconsistentNaming
                     var matchingCC = (from ContentControl cc in _doc.ContentControls
                                       orderby cc.Range.Start
-                                      where CustomXmlPartHelper.GuidFromTag(cc?.Tag) == CustomXmlPartHelper.GetCmlId(NewPart)
+                                      where CustomXmlPartHelper.GuidFromTag(cc.Tag) == CustomXmlPartHelper.GetCmlId(NewPart)
                                       select cc).First();
 
                     //get the ordinal position of the content control
@@ -158,12 +159,11 @@ namespace Chem4Word.Navigator
                     }
 
                     //insert the new navigator item at the ordinal position
-                    var newNavItem = new NavigatorItem()
+                    var newNavItem = new ChemistryObject
                     {
-                        CMLId = matchingCC?.Tag,
-                        ChemicalStructure = NewPart.XML,
-                        XMLPart = NewPart,
-                        Name = chemModel.ConciseFormula
+                        CustomControlTag = matchingCC?.Tag,
+                        Cml = NewPart.XML,
+                        Formula = chemModel.ConciseFormula
                     };
                     try
                     {
@@ -189,18 +189,5 @@ namespace Chem4Word.Navigator
                 }
             }
         }
-
-        private void OnPartAfterAdd(CustomXMLPart NewPart)
-        {
-        }
-
-        public ListBoxItem SelectedItem
-        {
-            get { return (ListBoxItem)GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
-        }
-
-        public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register("SelectedItem", typeof(ListBoxItem), typeof(NavigatorViewModel), new PropertyMetadata(null));
     }
 }

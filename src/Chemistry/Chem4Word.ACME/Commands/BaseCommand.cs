@@ -12,7 +12,7 @@ namespace Chem4Word.ACME.Commands
 {
     public abstract class BaseCommand : ICommand
     {
-        public EditViewModel EditViewModel { get; set; }
+        protected EditViewModel EditViewModel { get; }
 
         #region ICommand Implementation
 

@@ -16,7 +16,7 @@ using Microsoft.Office.Interop.Word;
 
 namespace Chem4Word.Helpers
 {
-    internal class TaskPaneHelper
+    internal static class TaskPaneHelper
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -59,7 +59,7 @@ namespace Chem4Word.Helpers
             {
                 try
                 {
-                    CMLConverter cmlConverter = new CMLConverter();
+                    var cmlConverter = new CMLConverter();
                     var model = cmlConverter.Import(display.Chemistry.ToString());
 
                     if (fromLibrary)
@@ -98,6 +98,87 @@ namespace Chem4Word.Helpers
             else
             {
                 UserInteractions.WarnUser($"You can't insert a chemistry object because {reason}");
+            }
+        }
+
+        public static void InsertChemistry(bool isCopy, Application app, string cml, bool fromLibrary)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            Document doc = app.ActiveDocument;
+            Selection sel = app.Selection;
+            ContentControl cc = null;
+
+            if (Globals.Chem4WordV3.SystemOptions == null)
+            {
+                Globals.Chem4WordV3.LoadOptions();
+            }
+
+            bool allowed = true;
+            string reason = "";
+
+            if (Globals.Chem4WordV3.ChemistryAllowed)
+            {
+                if (sel.ContentControls.Count > 0)
+                {
+                    cc = sel.ContentControls[1];
+                    if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
+                    {
+                        reason = "a chemistry object is selected";
+                        allowed = false;
+                    }
+                }
+            }
+            else
+            {
+                reason = Globals.Chem4WordV3.ChemistryProhibitedReason;
+                allowed = false;
+            }
+
+            if (allowed)
+            {
+                try
+                {
+                    var cmlConverter = new CMLConverter();
+                    var model = cmlConverter.Import(cml);
+
+                    if (fromLibrary)
+                    {
+                        if (Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary)
+                        {
+                            model.RemoveExplicitHydrogens();
+                        }
+
+                        var outcome = model.EnsureBondLength(Globals.Chem4WordV3.SystemOptions.BondLength,
+                                               Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary);
+                        if (!string.IsNullOrEmpty(outcome))
+                        {
+                            Globals.Chem4WordV3.Telemetry.Write(module, "Information", outcome);
+                        }
+                    }
+
+                    cc = ChemistryHelper.Insert2DChemistry(doc, cmlConverter.Export(model), isCopy);
+                }
+                catch (Exception ex)
+                {
+                    using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
+                    {
+                        form.ShowDialog();
+                    }
+                }
+                finally
+                {
+                    if (cc != null)
+                    {
+                        // Move selection point into the Content Control which was just edited or added
+                        app.Selection.SetRange(cc.Range.Start, cc.Range.End);
+                    }
+                }
+            }
+            else
+            {
+                UserInteractions.WarnUser($"You can't insert a chemistry object because {reason}");
+                Globals.Chem4WordV3.EventsEnabled = true;
             }
         }
     }

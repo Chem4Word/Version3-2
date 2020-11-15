@@ -19,7 +19,6 @@ using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
-using Chem4Word.Libraries;
 using Chem4Word.Library;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
@@ -714,8 +713,8 @@ namespace Chem4Word
                                 }
                                 else
                                 {
-                                    fullTag = cc?.Tag;
-                                    guidString = CustomXmlPartHelper.GuidFromTag(cc?.Tag);
+                                    fullTag = cc.Tag;
+                                    guidString = CustomXmlPartHelper.GuidFromTag(cc.Tag);
                                     if (string.IsNullOrEmpty(guidString))
                                     {
                                         guidString = Guid.NewGuid().ToString("N"); // No dashes
@@ -840,6 +839,7 @@ namespace Chem4Word
 
                                         if (!isNewDrawing)
                                         {
+                                            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Erasing old ContentControl {cc.ID}");
                                             // Erase old CC
                                             cc.LockContents = false;
                                             if (cc.Type == Word.WdContentControlType.wdContentControlPicture)
@@ -855,6 +855,7 @@ namespace Chem4Word
 
                                         // Insert a new CC
                                         cc = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {cc.ID} created");
 
                                         cc.Title = Constants.ContentControlTitle;
                                         if (isNewDrawing)
@@ -1380,15 +1381,7 @@ namespace Chem4Word
                                         Globals.Chem4WordV3.LoadNamesFromLibrary();
                                     }
 
-                                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
-                                                                             new LibrarySettings
-                                                                             {
-                                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
-                                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
-                                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
-                                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
-                                                                             });
+                                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
                                     var transaction = lib.StartTransaction();
                                     var done = lib.ImportCml(cml, transaction);
                                     lib.EndTransaction(transaction, !done);
@@ -1467,7 +1460,7 @@ namespace Chem4Word
                             if (custTaskPane == null)
                             {
                                 custTaskPane =
-                                    Globals.Chem4WordV3.CustomTaskPanes.Add(new NavigatorHost(app, app.ActiveDocument),
+                                    Globals.Chem4WordV3.CustomTaskPanes.Add(new NavigatorHost(app.ActiveDocument),
                                         Constants.NavigatorTaskPaneTitle, app.ActiveWindow);
 
                                 custTaskPane.Width = Globals.Chem4WordV3.WordWidth / 4;

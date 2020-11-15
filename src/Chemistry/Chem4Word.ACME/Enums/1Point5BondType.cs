@@ -5,7 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-namespace Chem4Word.ACME.Controls
+namespace Chem4Word.ACME.Enums
 {
     public enum OnePointFiveBondType
     {

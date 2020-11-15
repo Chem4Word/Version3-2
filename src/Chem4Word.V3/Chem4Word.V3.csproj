@@ -172,20 +172,20 @@
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=3.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.3.0.5\lib\net461\Microsoft.Azure.KeyVault.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Azure.Services.AppAuthentication, Version=1.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Services.AppAuthentication.1.5.0\lib\net461\Microsoft.Azure.Services.AppAuthentication.dll</HintPath>
+    <Reference Include="Microsoft.Azure.Services.AppAuthentication, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Services.AppAuthentication.1.6.0\lib\net461\Microsoft.Azure.Services.AppAuthentication.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=5.2.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.7.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.7.1\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.8.0\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.7.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.7.1\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.8.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.7.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.7.1\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.8.0\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -201,13 +201,13 @@
       <HintPath>C:\Program Files\Reference Assemblies\Microsoft\VSTO40\v4.0.Framework\Microsoft.Office.Tools.Word.v4.0.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.21\lib\net461\Microsoft.Rest.ClientRuntime.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.22\lib\net461\Microsoft.Rest.ClientRuntime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.3.3.19\lib\net461\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.ServiceBus.6.0.2\lib\net462\Microsoft.ServiceBus.dll</HintPath>
+      <HintPath>..\packages\WindowsAzure.ServiceBus.6.0.3\lib\net462\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Tools.Applications.Runtime, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -229,7 +229,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.113.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.113.1\lib\net46\System.Data.SQLite.dll</HintPath>
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\lib\net46\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite.EF6, Version=1.0.113.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.EF6.1.0.113.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
@@ -241,14 +241,14 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.7.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.7.1\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.8.0\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Packaging, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Packaging.4.7.0\lib\net46\System.IO.Packaging.dll</HintPath>
+    <Reference Include="System.IO.Packaging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.5.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -317,25 +317,18 @@
     <Compile Include="Helpers\TaskPaneHelper.cs" />
     <Compile Include="Helpers\UpdateHelper.cs" />
     <Compile Include="Helpers\WordSettings.cs" />
-    <Compile Include="Library\Chemistry.cs" />
-    <Compile Include="Library\NameValidationRule.cs" />
-    <Compile Include="Library\DefaultNameConverter.cs" />
     <Compile Include="Library\LibraryHost.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Library\LibraryHost.Designer.cs">
       <DependentUpon>LibraryHost.cs</DependentUpon>
     </Compile>
-    <Compile Include="Library\LibraryItem.cs" />
-    <Compile Include="Library\LibraryItemControl.xaml.cs">
-      <DependentUpon>LibraryItemControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Library\LibraryModel.cs" />
     <Compile Include="Library\LibraryViewControl.xaml.cs">
       <DependentUpon>LibraryViewControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Library\LibraryViewModel.cs" />
     <Compile Include="Navigator\NavigatorSupport.cs" />
+    <Compile Include="Navigator\NavigatorViewModel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -344,22 +337,15 @@
     <Compile Include="Helpers\CustomXMLPartHelper.cs" />
     <Compile Include="Helpers\C4wAddInInfo.cs" />
     <Compile Include="Helpers\Upgrader.cs" />
-    <Compile Include="Navigator\DoNothingConverter.cs" />
     <Compile Include="Navigator\NavigatorHost.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Navigator\NavigatorHost.Designer.cs">
       <DependentUpon>NavigatorHost.cs</DependentUpon>
     </Compile>
-    <Compile Include="Navigator\NavigatorItem.cs" />
-    <Compile Include="Navigator\NavigatorItemControl.xaml.cs">
-      <DependentUpon>NavigatorItemControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Navigator\NavigatorModel.cs" />
     <Compile Include="Navigator\NavigatorViewControl.xaml.cs">
       <DependentUpon>NavigatorViewControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Navigator\NavigatorViewModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Ribbon\Chem4WordRibbon.cs">
       <SubType>Component</SubType>
@@ -573,25 +559,25 @@
       <Project>{1e3fc1f1-06cc-44bd-8004-3ef0ce7eeaa7}</Project>
       <Name>Chem4Word.ACME</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Chemistry\Chem4Word.Libraries\Chem4Word.Libraries.csproj">
+      <Project>{2a5f1d74-ce8e-4874-a803-f3499bb3cfbc}</Project>
+      <Name>Chem4Word.Libraries</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Chemistry\Chem4Word.Model2\Chem4Word.Model2.csproj">
       <Project>{c69bab8f-4881-4d5f-9929-fc8470df1e48}</Project>
       <Name>Chem4Word.Model2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chemistry\Chem4Word.WebServices\Chem4Word.WebServices.csproj">
+      <Project>{54f9d4a6-e151-4c65-9d68-16c620b7a6bc}</Project>
+      <Name>Chem4Word.WebServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Chem4Word.Core\Chem4Word.Core.csproj">
       <Project>{2e7b1308-8149-4b03-9cb9-48e0b7151560}</Project>
       <Name>Chem4Word.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Chem4Word.Libraries\Chem4Word.Libraries.csproj">
-      <Project>{2a5f1d74-ce8e-4874-a803-f3499bb3cfbc}</Project>
-      <Name>Chem4Word.Libraries</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Common\Chem4Word.Telemetry\Chem4Word.Telemetry.csproj">
       <Project>{c89bc92a-4183-48a6-b039-ad76aa1df48f}</Project>
       <Name>Chem4Word.Telemetry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common\Chem4Word.WebServices\Chem4Word.WebServices.csproj">
-      <Project>{54f9d4a6-e151-4c65-9d68-16c620b7a6bc}</Project>
-      <Name>Chem4Word.WebServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\PlugIns\Contracts\Chem4Word.Contracts.csproj">
       <Project>{bdfee6c1-3f34-4200-9100-c543bf4c3783}</Project>
@@ -600,19 +586,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Page Include="Library\LibraryItemControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Library\LibraryResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Library\LibraryViewControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Navigator\NavigatorItemControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -701,8 +675,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
     <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.113.1\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.113.1\build\net46\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
   </Target>
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.113.1\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.113.1\build\net46\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
 </Project>

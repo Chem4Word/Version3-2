@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using Chem4Word.ACME;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace Chem4Word.Library
 {
@@ -45,9 +44,9 @@ namespace Chem4Word.Library
                 {
                     if (_libraryViewModel == null)
                     {
-                        _libraryViewModel = new LibraryViewModel();
+                        _libraryViewModel = new LibraryViewModel(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
                     }
-                    libraryView1.MainGrid.DataContext = _libraryViewModel;
+                    libraryView1.DataContext = _libraryViewModel;
                 }
             }
             catch (Exception ex)

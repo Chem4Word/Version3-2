@@ -167,8 +167,10 @@ namespace Chem4WordTests
             molecule1.AddAtom(atom2);
             atom2.Parent = molecule1;
 
-            var bond1 = new Bond(atom1, atom2);
-            bond1.Order = Globals.OrderSingle;
+            var bond1 = new Bond(atom1, atom2)
+                        {
+                            Order = Globals.OrderSingle
+                        };
             molecule1.AddBond(bond1);
             bond1.Parent = molecule1;
 
@@ -195,8 +197,10 @@ namespace Chem4WordTests
                             Element = Globals.PeriodicTable.C
                         };
 
-            var bond1 = new Bond(atom1, atom2);
-            bond1.Order = Globals.OrderSingle;
+            var bond1 = new Bond(atom1, atom2)
+                        {
+                            Order = Globals.OrderSingle
+                        };
 
             var molecule1 = new Molecule();
             molecule1.AddAtom(atom1);
@@ -218,8 +222,10 @@ namespace Chem4WordTests
                             Element = Globals.PeriodicTable.C
                         };
 
-            var bond2 = new Bond(atom3, atom4);
-            bond2.Order = Globals.OrderSingle;
+            var bond2 = new Bond(atom3, atom4)
+                        {
+                            Order = Globals.OrderSingle
+                        };
 
             var molecule2 = new Molecule();
             molecule2.AddAtom(atom3);

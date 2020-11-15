@@ -234,7 +234,7 @@ namespace Chem4Word.ACME.Behaviors
             var pos = Mouse.GetPosition(CurrentEditor);
             Vector shift; //how much we want to shift the objects by
 
-            if (MouseIsDown(e) & !IsDragging)
+            if (MouseIsDown(e) && !IsDragging)
             {
                 CurrentStatus = "Draw around atoms and bonds to select.";
                 if (_initialTarget == null)
@@ -267,6 +267,7 @@ namespace Chem4Word.ACME.Behaviors
                         _lassoAdorner = new LassoAdorner(CurrentEditor, outline);
                     }
 
+                    // ReSharper disable once PossibleUnintendedReferenceComparison
                     if (Mouse.Captured != CurrentEditor)
                     {
                         Mouse.Capture(CurrentEditor);
@@ -332,7 +333,7 @@ namespace Chem4Word.ACME.Behaviors
                 //now identify the connecting bond with the moving fragment
                 Bond connectingBond = null;
                 var staticAtomBonds = staticAtom.Bonds.ToArray();
-                for (var i = 0; (i < staticAtomBonds.Count()) & (connectingBond == null); i++)
+                for (var i = 0; i < staticAtomBonds.Length && connectingBond == null; i++)
                 {
                     var bond = staticAtomBonds[i];
                     var otherAtom = bond.OtherAtom(staticAtom);
@@ -345,41 +346,44 @@ namespace Chem4Word.ACME.Behaviors
                 //locate the static atom
                 var staticPoint = staticAtom.Position;
                 //identify the moving atom
-                var movingAtom = connectingBond.OtherAtom(staticAtom);
-                //get the location of the neighbour of the static atom that is going to move
-                var movingPoint = movingAtom.Position;
-                //now work out the separation between the current position and the moving atom
-                var fragmentSpan = StartPoint - movingPoint; //this gives us the span of the deforming fragment
-                var originalDistance = pos - staticPoint;
-                //now we need to work out how far away from the static atom the moving atom should be
-                var desiredDisplacement = originalDistance - fragmentSpan;
-                //then we snap it
-                var bondSnapper = new Snapper(staticPoint, EditViewModel, bondLength: _bondLength, lockAngle: 10);
-                var snappedBondVector = bondSnapper.SnapVector(connectingBond.Angle, desiredDisplacement);
-
-                //subtract the original bond vector to get the actual desired, snapped shift
-                var bondVector = movingPoint - staticPoint;
-                //now calculate the angle between the starting bond and the snapped vector
-                var rotation = Vector.AngleBetween(bondVector, snappedBondVector);
-
-                shift = snappedBondVector - bondVector;
-                //shift the atom and rotate the group around the new terminus
-                var pivot = staticPoint + snappedBondVector;
-                RotateTransform rt;
-                if (KeyboardUtils.HoldingDownAlt())
+                if (connectingBond != null)
                 {
-                    rt = new RotateTransform(rotation, pivot.X, pivot.Y);
-                }
-                else
-                {
-                    rt = new RotateTransform();
-                }
+                    var movingAtom = connectingBond.OtherAtom(staticAtom);
+                    //get the location of the neighbour of the static atom that is going to move
+                    var movingPoint = movingAtom.Position;
+                    //now work out the separation between the current position and the moving atom
+                    var fragmentSpan = StartPoint - movingPoint; //this gives us the span of the deforming fragment
+                    var originalDistance = pos - staticPoint;
+                    //now we need to work out how far away from the static atom the moving atom should be
+                    var desiredDisplacement = originalDistance - fragmentSpan;
+                    //then we snap it
+                    var bondSnapper = new Snapper(staticPoint, EditViewModel, bondLength: _bondLength, lockAngle: 10);
+                    var snappedBondVector = bondSnapper.SnapVector(connectingBond.Angle, desiredDisplacement);
 
-                var tg = new TransformGroup();
-                tg.Children.Add(new TranslateTransform(shift.X, shift.Y));
-                tg.Children.Add(rt);
+                    //subtract the original bond vector to get the actual desired, snapped shift
+                    var bondVector = movingPoint - staticPoint;
+                    //now calculate the angle between the starting bond and the snapped vector
+                    var rotation = Vector.AngleBetween(bondVector, snappedBondVector);
 
-                _shift = tg;
+                    shift = snappedBondVector - bondVector;
+                    //shift the atom and rotate the group around the new terminus
+                    var pivot = staticPoint + snappedBondVector;
+                    RotateTransform rt;
+                    if (KeyboardUtils.HoldingDownAlt())
+                    {
+                        rt = new RotateTransform(rotation, pivot.X, pivot.Y);
+                    }
+                    else
+                    {
+                        rt = new RotateTransform();
+                    }
+
+                    var tg = new TransformGroup();
+                    tg.Children.Add(new TranslateTransform(shift.X, shift.Y));
+                    tg.Children.Add(rt);
+
+                    _shift = tg;
+                }
             }
             else //moving an atom linked to two other neighbours
             {
@@ -457,7 +461,7 @@ namespace Chem4Word.ACME.Behaviors
             {
                 var currentObject = CurrentObject(e);
 
-                if (!(currentObject != null | Utils.KeyboardUtils.HoldingDownShift()))
+                if (!(currentObject != null || KeyboardUtils.HoldingDownShift()))
                 {
                     EditViewModel.ClearSelection();
                 }
@@ -631,7 +635,7 @@ namespace Chem4Word.ACME.Behaviors
                 EditViewModel.AddToSelection(selGroup.ParentMolecule);
                 return HitTestResultBehavior.Continue;
             }
-            if (myShape != null && myShape is AtomVisual || myShape is BondVisual)
+            if (myShape is AtomVisual || myShape is BondVisual)
             {
                 switch (id)
                 {

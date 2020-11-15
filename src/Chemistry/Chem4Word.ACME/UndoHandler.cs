@@ -75,11 +75,9 @@ namespace Chem4Word.ACME
 
         private int _transactionLevel = 0;
 
-        public int TransactionLevel => _transactionLevel;
         public bool CanRedo => _redoStack.Any(rr => rr.Level != 0);
 
         public bool CanUndo => _undoStack.Any(ur => ur.Level != 0);
-        public bool IsTopLevel => TransactionLevel == 1;
 
         public UndoHandler(EditViewModel vm, IChem4WordTelemetry telemetry)
         {
@@ -159,7 +157,6 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                //WriteTelemetry(module, "Debug", $"TransactionLevel: {_transactionLevel}");
                 //push a buffer record onto the stack
                 if (_transactionLevel == 0)
                 {
@@ -206,7 +203,6 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                //WriteTelemetry(module, "Debug", $"TransactionLevel: {_transactionLevel}");
                 _transactionLevel--;
 
                 if (_transactionLevel < 0)
@@ -237,7 +233,6 @@ namespace Chem4Word.ACME
                 WriteTelemetryException(module, exception);
             }
         }
-
 
         public void Undo()
         {

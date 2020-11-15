@@ -190,7 +190,7 @@ namespace Chem4Word.ACME.Controls
         /// <returns></returns>
         protected override Size MeasureOverride(Size constraint)
         {
-            Debug.WriteLine($"MeasureOverride({GetHashCode()})");
+            Debug.WriteLine($"MeasureOverride() #{GetHashCode()} {_viewModel?.Model.ConciseFormula}");
             var size = GetBoundingBox();
 
             if (_viewModel != null

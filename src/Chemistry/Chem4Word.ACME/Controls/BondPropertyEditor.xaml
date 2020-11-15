@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enums="clr-namespace:Chem4Word.ACME.Enums"
     xmlns:local="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Bond Properties"
@@ -296,7 +297,7 @@
                 Margin="0,5,0,0"
                 Visibility="{Binding Path=IsSingle, Mode=OneWay, Converter={StaticResource VisConverter}}">
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:SingleBondType.None}}" ToolTip="None">
+                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:SingleBondType.None}}" ToolTip="None">
                         <Canvas>
                             <Canvas.RenderTransform>
                                 <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -328,7 +329,7 @@
                                 Y2="38" />
                         </Canvas>
                     </RadioButton>
-                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:SingleBondType.Wedge}}" ToolTip="Wedge">
+                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:SingleBondType.Wedge}}" ToolTip="Wedge">
                         <Canvas>
                             <Canvas.RenderTransform>
                                 <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -360,7 +361,7 @@
                                 Stretch="Uniform" />
                         </Canvas>
                     </RadioButton>
-                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:SingleBondType.BackWedge}}" ToolTip="BackWedge">
+                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:SingleBondType.BackWedge}}" ToolTip="BackWedge">
                         <Canvas>
                             <Canvas.RenderTransform>
                                 <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -392,7 +393,7 @@
                                 Stretch="Uniform" />
                         </Canvas>
                     </RadioButton>
-                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:SingleBondType.Hatch}}" ToolTip="Hatch">
+                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:SingleBondType.Hatch}}" ToolTip="Hatch">
                         <Canvas>
                             <Canvas.RenderTransform>
                                 <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -473,7 +474,7 @@
                                 Y2="38" />
                         </Canvas>
                     </RadioButton>
-                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:SingleBondType.BackHatch}}" ToolTip="BackHatch">
+                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:SingleBondType.BackHatch}}" ToolTip="BackHatch">
                         <Canvas>
                             <Canvas.RenderTransform>
                                 <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -554,7 +555,7 @@
                                 Y2="38" />
                         </Canvas>
                     </RadioButton>
-                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:SingleBondType.Indeterminate}}" ToolTip="Indeterminate">
+                    <RadioButton IsChecked="{Binding Path=SingleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:SingleBondType.Indeterminate}}" ToolTip="Indeterminate">
                         <Canvas>
                             <Canvas.RenderTransform>
                                 <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -603,7 +604,7 @@
                 Margin="0,5,0,0"
                 Orientation="Horizontal"
                 Visibility="{Binding Path=IsDouble, Mode=OneWay, Converter={StaticResource VisConverter}}">
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Auto}}" ToolTip="Automatic">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Auto}}" ToolTip="Automatic">
                     <TextBlock
                         Margin="0,0,0,5"
                         HorizontalAlignment="Center"
@@ -613,7 +614,7 @@
                         A
                     </TextBlock>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Clockwise}}" ToolTip="Clockwise">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Clockwise}}" ToolTip="Clockwise">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -652,7 +653,7 @@
                             Y2="38" />
                     </Canvas>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Anticlockwise}}" ToolTip="Anticlockwise">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Anticlockwise}}" ToolTip="Anticlockwise">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -691,7 +692,7 @@
                             Y2="38" />
                     </Canvas>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.None}}" ToolTip="None">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.None}}" ToolTip="None">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -731,7 +732,7 @@
                     </Canvas>
                 </RadioButton>
                 <RadioButton
-                    IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Indeterminate}}"
+                    IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Indeterminate}}"
                     ToolTip="Indeterminate"
                     Visibility="{Binding Path=IsDouble, Mode=OneWay, Converter={StaticResource VisConverter}}">
                     <Canvas>
@@ -787,7 +788,7 @@
                 Margin="0,5,0,0"
                 Orientation="Horizontal"
                 Visibility="{Binding Path=Is1Point5, Mode=OneWay, Converter={StaticResource VisConverter}}">
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Auto}}" ToolTip="Automatic">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Auto}}" ToolTip="Automatic">
                     <TextBlock
                         Margin="0,0,0,5"
                         HorizontalAlignment="Center"
@@ -797,7 +798,7 @@
                         A
                     </TextBlock>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Clockwise}}" ToolTip="Clockwise">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Clockwise}}" ToolTip="Clockwise">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -837,7 +838,7 @@
                             Y2="38" />
                     </Canvas>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Anticlockwise}}" ToolTip="Anticlockwise">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Anticlockwise}}" ToolTip="Anticlockwise">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -892,7 +893,7 @@
                 Margin="0,5,0,0"
                 Orientation="Horizontal"
                 Visibility="{Binding Path=Is2Point5, Mode=OneWay, Converter={StaticResource VisConverter}}">
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Auto}}" ToolTip="Automatic">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Auto}}" ToolTip="Automatic">
                     <TextBlock
                         Margin="0,0,0,5"
                         HorizontalAlignment="Center"
@@ -902,7 +903,7 @@
                         A
                     </TextBlock>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Clockwise}}" ToolTip="Clockwise">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Clockwise}}" ToolTip="Clockwise">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />
@@ -949,7 +950,7 @@
                             Y2="38" />
                     </Canvas>
                 </RadioButton>
-                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:DoubleBondType.Anticlockwise}}" ToolTip="Anticlockwise">
+                <RadioButton IsChecked="{Binding Path=DoubleBondChoice, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:DoubleBondType.Anticlockwise}}" ToolTip="Anticlockwise">
                     <Canvas>
                         <Canvas.RenderTransform>
                             <RotateTransform Angle="{Binding Path=Angle}" CenterX="24" CenterY="24" />

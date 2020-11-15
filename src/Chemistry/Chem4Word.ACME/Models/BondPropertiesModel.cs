@@ -7,6 +7,7 @@
 
 using System;
 using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Enums;
 
 namespace Chem4Word.ACME.Models
 {

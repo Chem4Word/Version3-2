@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.elementHost = new System.Windows.Forms.Integration.ElementHost();
-            this.navigatorView1 = new Chem4Word.Navigator.NavigatorView();
+            this.navigatorView1 = new Chem4Word.Navigator.NavigatorViewControl();
             this.SuspendLayout();
             // 
             // elementHost
@@ -54,6 +54,6 @@
         #endregion
 
         private System.Windows.Forms.Integration.ElementHost elementHost;
-        public NavigatorView navigatorView1;
+        public NavigatorViewControl navigatorView1;
     }
 }

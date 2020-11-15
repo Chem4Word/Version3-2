@@ -195,7 +195,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 foreach (var rectangle in _positionerOutputs.Diagnostics.Rectangles)
                 {
-                    DrawBox(rectangle.BoundingBox, rectangle.Colour);
+                    DrawBox(rectangle.BoundingBox, rectangle.Colour, OoXmlHelper.ACS_LINE_WIDTH / 2);
                 }
             }
 

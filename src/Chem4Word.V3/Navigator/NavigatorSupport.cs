@@ -5,18 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Reflection;
 using Chem4Word.Core.Helpers;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools;
 
 namespace Chem4Word.Navigator
 {
-    internal class NavigatorSupport
+    public static class NavigatorSupport
     {
-        private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
-
         public static void SelectNavigatorItem(string guid)
         {
             CustomTaskPane custTaskPane = null;
@@ -28,20 +24,19 @@ namespace Chem4Word.Navigator
                     custTaskPane = taskPane;
                 }
 
-                if (custTaskPane != null)
+                if (custTaskPane != null
+                    && custTaskPane.Control is NavigatorHost navHost)
                 {
-                    var navHost = custTaskPane.Control as NavigatorHost;
-                    if (navHost != null)
+                    var navigatorControl = navHost.navigatorView1;
+                    if (navigatorControl.DataContext is NavigatorViewModel viewModel)
                     {
-                        var navigatorList = navHost.navigatorView1.NavigatorList;
                         int idx = 0;
-                        foreach (var item in navigatorList.Items)
+                        foreach (var item in viewModel.NavigatorItems)
                         {
-                            var navigatorItem = item as NavigatorItem;
-                            if (navigatorItem.CMLId.Equals(guid))
+                            if (item.CustomControlTag.Equals(guid))
                             {
-                                navigatorList.SelectedIndex = idx;
-                                navigatorList.ScrollIntoView(navigatorList.SelectedItem);
+                                navigatorControl.NavigatorList.SelectedIndex = idx;
+                                navigatorControl.NavigatorList.ScrollIntoView(navigatorControl.NavigatorList.SelectedItem);
                                 break;
                             }
                             idx++;

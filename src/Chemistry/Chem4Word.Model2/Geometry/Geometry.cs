@@ -111,11 +111,6 @@ namespace Chem4Word.Model2.Geometry
             double centerY = 0.0f;
             if (poly.Any())
             {
-                var minX = poly.Min(p => getPosition(p).X);
-                var maxX = poly.Max(p => getPosition(p).X);
-                var minY = poly.Min(p => getPosition(p).Y);
-                var maxY = poly.Max(p => getPosition(p).Y);
-
                 for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++)
                 {
                     double temp = getPosition(poly[i]).X * getPosition(poly[j]).Y
@@ -131,9 +126,7 @@ namespace Chem4Word.Model2.Geometry
                 }
 
                 accumulatedArea *= 3f;
-                var centroid = new Point(centerX / accumulatedArea, centerY / accumulatedArea);
-                //Debug.Assert(centroid.X >= minX & centroid.X <= maxX & centroid.Y >= minY & centroid.Y <= maxY);
-                return centroid;
+                return new Point(centerX / accumulatedArea, centerY / accumulatedArea);
             }
 
             return null;

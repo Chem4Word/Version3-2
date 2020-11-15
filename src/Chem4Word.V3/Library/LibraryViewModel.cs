@@ -10,16 +10,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Xml.Linq;
+using Chem4Word.ACME.Models;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Libraries;
 using Chem4Word.Libraries.Database;
 using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Telemetry;
 
 namespace Chem4Word.Library
 {
@@ -28,30 +26,49 @@ namespace Chem4Word.Library
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        private bool _initializing = false;
-
         //used for XAML data binding
-        public ObservableCollection<LibraryItem> LibraryItems { get; }
+        public ObservableCollection<ChemistryObject> ChemistryItems { get; }
 
-        public ObservableCollection<Chemistry> ChemistryItems { get; }
+        private bool _initializing;
+        private readonly TelemetryWriter _telemetry;
+        private readonly LibraryOptions _libraryOptions;
 
-        public LibraryViewModel(string filter = "")
+        public LibraryViewModel(TelemetryWriter telemetry, LibraryOptions libraryOptions)
+        {
+            _telemetry = telemetry;
+            _libraryOptions = libraryOptions;
+
+            ChemistryItems = new ObservableCollection<ChemistryObject>();
+            ChemistryItems.CollectionChanged += ChemistryItems_CollectionChanged;
+
+            LoadChemistryItems();
+        }
+
+        private void LoadChemistryItems()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
+                _initializing = true;
+                ChemistryItems.Clear();
 
-                ChemistryItems = new ObservableCollection<Chemistry>();
-                ChemistryItems.CollectionChanged += ChemistryItems_CollectionChanged;
+                var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
+                List<ChemistryDTO> dto = lib.GetAllChemistry();
 
-                LoadChemistryItems(filter);
+                foreach (var chemistryDto in dto)
+                {
+                    var obj = new ChemistryObject
+                    {
+                        Id = chemistryDto.Id,
+                        Cml = chemistryDto.Cml,
+                        Formula = chemistryDto.Formula,
+                        Name = chemistryDto.Name
+                    };
 
-                LibraryItems = new ObservableCollection<LibraryItem>();
+                    ChemistryItems.Add(obj);
+                }
 
-                sw.Stop();
-                Debug.WriteLine($"LibraryViewModel() took {sw.ElapsedMilliseconds}ms");
+                _initializing = false;
             }
             catch (Exception ex)
             {
@@ -100,18 +117,10 @@ namespace Chem4Word.Library
             {
                 if (!_initializing)
                 {
-                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
-                                                             new LibrarySettings
-                                                             {
-                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
-                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
-                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
-                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
-                                                             });
-                    foreach (Chemistry chemistry in eOldItems)
+                    var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
+                    foreach (ChemistryObject chemistry in eOldItems)
                     {
-                        lib.DeleteChemistry(chemistry.ID);
+                        lib.DeleteChemistry(chemistry.Id);
                     }
                 }
             }
@@ -131,19 +140,11 @@ namespace Chem4Word.Library
             {
                 if (!_initializing)
                 {
-                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
-                                                             new LibrarySettings
-                                                             {
-                                                                 ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
-                                                                 ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
-                                                                 PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                                 SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
-                                                                 RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
-                                                             });
-                    foreach (Chemistry chemistry in eNewItems)
+                    var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
+                    foreach (ChemistryObject chemistry in eNewItems)
                     {
                         var cmlConverter = new CMLConverter();
-                        chemistry.ID = lib.AddChemistry(cmlConverter.Import(chemistry.XML), chemistry.Name, chemistry.Formula);
+                        chemistry.Id = lib.AddChemistry(cmlConverter.Import(chemistry.Cml), chemistry.Name, chemistry.Formula);
                     }
                 }
             }
@@ -152,119 +153,6 @@ namespace Chem4Word.Library
                 using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
                 {
                     form.ShowDialog();
-                }
-            }
-        }
-
-
-        public void LoadChemistryItems(string filter)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                _initializing = true;
-                ChemistryItems.Clear();
-                var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry,
-                                                         new LibrarySettings
-                                                         {
-                                                             ParentTopLeft = Globals.Chem4WordV3.WordTopLeft,
-                                                             ProgramDataPath = Globals.Chem4WordV3.AddInInfo.ProgramDataPath,
-                                                             PreferredBondLength = Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                             SetBondLengthOnImport = Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromLibrary,
-                                                             RemoveExplicitHydrogensOnImport = Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromLibrary
-                                                         });
-                List<ChemistryDTO> dto = lib.GetAllChemistry(filter);
-                foreach (var chemistry in dto)
-                {
-                    var mol = new Chemistry();
-                    mol.Initializing = true;
-
-                    mol.ID = chemistry.Id;
-                    mol.XML = chemistry.Cml;
-                    mol.Name = chemistry.Name;
-                    mol.Formula = chemistry.Formula;
-
-                    ChemistryItems.Add(mol);
-                    LoadOtherNames(mol);
-
-                    mol.Initializing = false;
-                }
-
-                _initializing = false;
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-            }
-        }
-
-        private void LoadOtherNames(Chemistry mol)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                XName nameNodeName = CMLNamespaces.cml + "name";
-
-                var names = (from element in mol.CmlDoc.Descendants(nameNodeName)
-                             where element.Name == nameNodeName
-                             select element.Value).Distinct();
-
-                foreach (string name in names)
-                {
-                    mol.HasOtherNames = true;
-                    mol.OtherNames.Add(name);
-                }
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-            }
-        }
-
-        public ListBoxItem SelectedItem
-        {
-            get { return (ListBoxItem)GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
-        }
-
-        public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register("SelectedItem", typeof(ListBoxItem), typeof(LibraryViewModel), new PropertyMetadata(null));
-
-        public void SaveChanges()
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                SaveChemistryChanges();
-                //SaveTagChanges();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-            }
-        }
-
-        private void SaveTagChanges()
-        {
-            Debugger.Break();
-        }
-
-        private void SaveChemistryChanges()
-        {
-            foreach (Chemistry chemistryItem in ChemistryItems)
-            {
-                if (chemistryItem.Dirty)
-                {
-                    chemistryItem.Save();
                 }
             }
         }
