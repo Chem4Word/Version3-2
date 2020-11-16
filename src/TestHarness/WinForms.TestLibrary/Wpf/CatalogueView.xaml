@@ -264,11 +264,11 @@
                         Foreground="{StaticResource Chem4WordBlue}"
                         IsSnapToTickEnabled="True"
                         Maximum="500"
-                        Minimum="250"
+                        Minimum="200"
                         TickFrequency="50"
                         TickPlacement="BottomRight"
                         ValueChanged="Slider_OnValueChanged"
-                        Value="250" />
+                        Value="200" />
                 </GroupBox>
                 <GroupBox
                     Grid.Column="3"
@@ -414,7 +414,6 @@
         <Grid Grid.Row="1">
             <ListBox
                 Name="CatalogueItems"
-                Grid.ColumnSpan="3"
                 Grid.IsSharedSizeScope="True"
                 ItemContainerStyle="{StaticResource SimpleListBoxItem}"
                 ItemsSource="{Binding Mode=OneWay, Path=ChemistryItems}"

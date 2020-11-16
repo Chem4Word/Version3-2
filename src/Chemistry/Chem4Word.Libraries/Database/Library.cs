@@ -749,7 +749,7 @@ namespace Chem4Word.Libraries.Database
                 var sb = new StringBuilder();
                 sb.AppendLine("SELECT Id, Chemistry, Name, Formula, UserTag");
                 sb.AppendLine("FROM GetAllChemistryWithTags");
-                sb.AppendLine("ORDER BY NAME");
+                sb.AppendLine("ORDER BY Name");
 
                 var command = new SQLiteCommand(sb.ToString(), conn);
                 return command.ExecuteReader();

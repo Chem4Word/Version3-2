@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -132,7 +134,7 @@ namespace WinForms.TestLibrary.Wpf
 
         private void Slider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ItemSize = new Size(Slider.Value, Slider.Value + 30);
+            ItemSize = new Size(Slider.Value, Slider.Value + 50);
             DisplayWidth = Slider.Value - 25;
             DisplayHeight = Slider.Value - 25;
         }
@@ -178,6 +180,16 @@ namespace WinForms.TestLibrary.Wpf
             }
         }
 
+        private class ChemistryObjectComparer : IComparer<ChemistryObject>
+        {
+            #region Implementation of IComparer<in ChemistryObject>
+
+            public int Compare(ChemistryObject x, ChemistryObject y)
+                => string.CompareOrdinal(x?.Name, y?.Name);
+
+            #endregion
+        }
+
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -186,10 +198,18 @@ namespace WinForms.TestLibrary.Wpf
                 if (DataContext != null
                     && ComboBox.SelectedItem is ComboBoxItem selectedItem)
                 {
-                    var propertyName = selectedItem.Content.ToString();
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((NewCatalogueViewModel)DataContext).ChemistryItems);
+                    var view = (ListCollectionView) CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
                     view.SortDescriptions.Clear();
-                    view.SortDescriptions.Add(new SortDescription(propertyName, ListSortDirection.Ascending));
+
+                    var propertyName = selectedItem.Content.ToString();
+                    if (propertyName.Equals("Name"))
+                    {
+                        view.CustomSort = (IComparer)new ChemistryObjectComparer();
+                    }
+                    else
+                    {
+                        view.SortDescriptions.Add(new SortDescription(propertyName, ListSortDirection.Ascending));
+                    }
                 }
             }
             catch (Exception ex)
@@ -198,20 +218,22 @@ namespace WinForms.TestLibrary.Wpf
             }
         }
 
-    private void ClearButton_OnClick(object sender, RoutedEventArgs e)
+        private void ClearButton_OnClick(object sender, RoutedEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                ToggleButton.IsChecked = false;
                 SearchBox.Clear();
 
                 if (DataContext != null)
                 {
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((NewCatalogueViewModel) DataContext).ChemistryItems);
-                    view.SortDescriptions.Clear();
-                    view.SortDescriptions.Add(new SortDescription("Id", ListSortDirection.Ascending));
+                    //get the view from the listbox's source
+                    var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+
                     _filteredItems = 0;
                     view.Filter = null;
+
                     UpdateStatusBar();
                 }
             }
@@ -230,10 +252,11 @@ namespace WinForms.TestLibrary.Wpf
                 if (!string.IsNullOrWhiteSpace(SearchBox.Text)
                     && DataContext != null)
                 {
-                    _filteredItems = 0;
                     //get the view from the listbox's source
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((NewCatalogueViewModel) DataContext).ChemistryItems);
+                    var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+
                     //then try to match part of either its name or an alternative name to the string typed in
+                    _filteredItems = 0;
                     view.Filter = ci =>
                                   {
                                       var item = ci as ChemistryObject;
@@ -271,16 +294,19 @@ namespace WinForms.TestLibrary.Wpf
                 {
                     if (_filteredItems > 0)
                     {
+                        ToggleButton.IsChecked = false;
                         ClearButton_OnClick(null, null);
                     }
                     else
                     {
-                        _filteredItems = 0;
+                        ToggleButton.IsChecked = true;
                         SearchBox.Text = "";
 
                         //get the view from the listbox's source
-                        ICollectionView view = CollectionViewSource.GetDefaultView((CatalogueItems.DataContext as NewCatalogueViewModel).ChemistryItems);
+                        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+
                         //then try to match part of either its name or an alternative name to the string typed in
+                        _filteredItems = 0;
                         view.Filter = ci =>
                                       {
                                           var item = ci as ChemistryObject;

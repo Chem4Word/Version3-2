@@ -34,6 +34,14 @@
         <Style x:Key="NextButtonPath" TargetType="Path">
             <Setter Property="Data" Value="M0,0L25.194,16 0,32Z" />
         </Style>
+        <Style x:Key="SimpleListBoxItem" TargetType="ListBoxItem">
+            <!--
+                We need to define these two properties twice to fix binding errors see answer which I [Mike Williams] have commented on at
+                https://stackoverflow.com/questions/160391/listbox-with-grid-as-itemspaneltemplate-produces-weird-binding-errors
+            -->
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
         <converters:BoolToVisibilityConverter
             x:Key="BoolVisConverter"
             FalseValue="Collapsed"
@@ -43,6 +51,7 @@
     </UserControl.Resources>
     <Grid Margin="3">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -84,7 +93,19 @@
                         BorderBrush="Transparent"
                         BorderThickness="0"
                         Foreground="{StaticResource Chem4WordBlue}"
-                        ItemsSource="{Binding Path=OtherNames}" />
+                        ItemContainerStyle="{StaticResource SimpleListBoxItem}"
+                        ItemsSource="{Binding Path=OtherNames}">
+                        <ListBox.Resources>
+                            <Style TargetType="ListBoxItem">
+                                <!--
+                                    We need to define these two properties twice to fix binding errors see answer which I [Mike Williams] have commented on at
+                                    https://stackoverflow.com/questions/160391/listbox-with-grid-as-itemspaneltemplate-produces-weird-binding-errors
+                                -->
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="VerticalContentAlignment" Value="Top" />
+                            </Style>
+                        </ListBox.Resources>
+                    </ListBox>
                 </Expander>
             </Grid>
             <!--  Top Panel for Navigator Mode  -->
@@ -141,7 +162,19 @@
                         BorderBrush="Transparent"
                         BorderThickness="0"
                         Foreground="{StaticResource Chem4WordBlue}"
-                        ItemsSource="{Binding Path=OtherNames}" />
+                        ItemContainerStyle="{StaticResource SimpleListBoxItem}"
+                        ItemsSource="{Binding Path=OtherNames}">
+                        <ListBox.Resources>
+                            <Style TargetType="ListBoxItem">
+                                <!--
+                                    We need to define these two properties twice to fix binding errors see answer which I [Mike Williams] have commented on at
+                                    https://stackoverflow.com/questions/160391/listbox-with-grid-as-itemspaneltemplate-produces-weird-binding-errors
+                                -->
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="VerticalContentAlignment" Value="Top" />
+                            </Style>
+                        </ListBox.Resources>
+                    </ListBox>
                 </Expander>
             </Grid>
         </Grid>
@@ -152,7 +185,9 @@
                 Height="{Binding ElementName=AcmeChemistryItem, Path=DisplayHeight, FallbackValue=150}"
                 Margin="2"
                 HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Chemistry="{Binding Path=Cml}"
                 HighlightActive="False"
                 MouseDoubleClick="AcmeDisplay_OnMouseDoubleClick"
@@ -168,139 +203,159 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <!--  Bottom Panel for Library Mode  -->
-            <StackPanel
-                Grid.Row="0"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal"
-                Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Library}}">
-                <Button
-                    Width="32"
-                    Height="32"
-                    Click="OnItemButtonClick"
-                    Style="{StaticResource NavButtonStyle}"
-                    Tag="Library|InsertCopy">
-                    <Button.ToolTip>Insert a copy of the chemistry</Button.ToolTip>
-                    <Viewbox Stretch="Uniform">
-                        <Canvas
-                            Width="32"
-                            Height="32"
-                            ClipToBounds="True">
-                            <Path
-                                Canvas.Left="4"
-                                Canvas.Top="4"
-                                Width="24"
-                                Height="24"
-                                Fill="{StaticResource Chem4WordBlue}"
-                                Stretch="Fill"
-                                Style="{StaticResource CopyButtonPath}" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-            </StackPanel>
+            <Grid Grid.Row="0" Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Library}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0">Tags go here ...</TextBlock>
+                <StackPanel
+                    Grid.Row="1"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        Width="32"
+                        Height="32"
+                        Click="OnItemButtonClick"
+                        Style="{StaticResource NavButtonStyle}"
+                        Tag="Library|InsertCopy">
+                        <Button.ToolTip>Insert a copy of the chemistry</Button.ToolTip>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource CopyButtonPath}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
+            </Grid>
             <!--  Bottom for Navigator Mode  -->
-            <StackPanel
-                Grid.Row="1"
-                HorizontalAlignment="Left"
-                Orientation="Horizontal"
-                Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Navigator}}">
-                <Button
-                    Width="32"
-                    Height="32"
-                    Click="OnItemButtonClick"
-                    Style="{StaticResource NavButtonStyle}"
-                    Tag="Navigator|InsertCopy">
-                    <Button.ToolTip>Insert a copy of the chemistry</Button.ToolTip>
-                    <Viewbox Stretch="Uniform">
-                        <Canvas
-                            Width="32"
-                            Height="32"
-                            ClipToBounds="True">
-                            <Path
-                                Canvas.Left="4"
-                                Canvas.Top="4"
-                                Width="24"
-                                Height="24"
-                                Fill="{StaticResource Chem4WordBlue}"
-                                Stretch="Fill"
-                                Style="{StaticResource CopyButtonPath}" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-                <Button
-                    Width="32"
-                    Height="32"
-                    Click="OnItemButtonClick"
-                    Style="{StaticResource NavButtonStyle}"
-                    Tag="Navigator|InsertLink">
-                    <Button.ToolTip>Insert a link to the original chemistry</Button.ToolTip>
-                    <Viewbox Stretch="Uniform">
-                        <Canvas
-                            Width="32"
-                            Height="32"
-                            ClipToBounds="True">
-                            <Path
-                                Canvas.Left="4"
-                                Canvas.Top="4"
-                                Width="24"
-                                Height="24"
-                                Fill="{StaticResource Chem4WordBlue}"
-                                Stretch="Fill"
-                                Style="{StaticResource LinkButtonPath}" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-                <Button
-                    Width="32"
-                    Height="32"
-                    Click="OnItemButtonClick"
-                    Style="{StaticResource NavButtonStyle}"
-                    Tag="Navigator|Previous">
-                    <Button.ToolTip>Move to the previous linked structure</Button.ToolTip>
-                    <Viewbox Stretch="Uniform">
-                        <Canvas
-                            Width="32"
-                            Height="32"
-                            ClipToBounds="True">
-                            <Path
-                                Canvas.Left="4"
-                                Canvas.Top="4"
-                                Width="24"
-                                Height="24"
-                                Fill="{StaticResource Chem4WordBlue}"
-                                Stretch="Fill"
-                                Style="{StaticResource PrevButtonPath}" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-                <Button
-                    Width="32"
-                    Height="32"
-                    Click="OnItemButtonClick"
-                    Style="{StaticResource NavButtonStyle}"
-                    Tag="Navigator|Next">
-                    <Button.ToolTip>Move to the next linked structure</Button.ToolTip>
-                    <Viewbox Stretch="Uniform">
-                        <Canvas
-                            Width="32"
-                            Height="32"
-                            ClipToBounds="True">
-                            <Path
-                                Canvas.Left="4"
-                                Canvas.Top="4"
-                                Width="24"
-                                Height="24"
-                                Fill="{StaticResource Chem4WordBlue}"
-                                Stretch="Fill"
-                                Style="{StaticResource NextButtonPath}" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-            </StackPanel>
+            <Grid Grid.Row="1" Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Navigator}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel
+                    Grid.Row="0"
+                    HorizontalAlignment="Left"
+                    Orientation="Horizontal">
+                    <Button
+                        Width="32"
+                        Height="32"
+                        Click="OnItemButtonClick"
+                        Style="{StaticResource NavButtonStyle}"
+                        Tag="Navigator|InsertCopy">
+                        <Button.ToolTip>Insert a copy of the chemistry</Button.ToolTip>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource CopyButtonPath}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button
+                        Width="32"
+                        Height="32"
+                        Click="OnItemButtonClick"
+                        Style="{StaticResource NavButtonStyle}"
+                        Tag="Navigator|InsertLink">
+                        <Button.ToolTip>Insert a link to the original chemistry</Button.ToolTip>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource LinkButtonPath}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button
+                        Width="32"
+                        Height="32"
+                        Click="OnItemButtonClick"
+                        Style="{StaticResource NavButtonStyle}"
+                        Tag="Navigator|Previous">
+                        <Button.ToolTip>Move to the previous linked structure</Button.ToolTip>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource PrevButtonPath}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button
+                        Width="32"
+                        Height="32"
+                        Click="OnItemButtonClick"
+                        Style="{StaticResource NavButtonStyle}"
+                        Tag="Navigator|Next">
+                        <Button.ToolTip>Move to the next linked structure</Button.ToolTip>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource NextButtonPath}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
+            </Grid>
             <!--  Bottom Panel for Catalogue Mode  -->
-            <StackPanel
-                Grid.Row="2"
-                Orientation="Horizontal"
-                Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Catalogue}}" />
+            <Grid Grid.Row="2" Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Catalogue}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0">Tags go here ...</TextBlock>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
