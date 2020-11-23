@@ -102,7 +102,7 @@ namespace Chem4Word.Model2.Helpers
 
         public static BondStereo StereoFromString(string stereo)
         {
-            BondStereo result = BondStereo.None;
+            BondStereo result;
 
             switch (stereo)
             {

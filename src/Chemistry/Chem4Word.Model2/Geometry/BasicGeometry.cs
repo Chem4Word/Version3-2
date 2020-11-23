@@ -88,9 +88,7 @@ namespace Chem4Word.Model2.Geometry
         /// <returns>Point at which both lines intersect, null if otherwise</returns>
         public static Point? LineSegmentsIntersect(Point segment1Start, Point segment1End, Point segment2Start, Point segment2End)
         {
-            double t;
-            double u;
-            IntersectLines(segment1Start, segment1End, segment2Start, segment2End, out t, out u);
+            IntersectLines(segment1Start, segment1End, segment2Start, segment2End, out var t, out var u);
             if (t >= 0 && u >= 0 && t <= 1 && u <= 1) //voila, we have an intersection
             {
                 Vector vIntersect = (segment1End - segment1Start) * t;
@@ -263,17 +261,17 @@ namespace Chem4Word.Model2.Geometry
 
             foreach (var drawing in drawingGroup.Children)
             {
-                if (drawing is GeometryDrawing)
+                if (drawing is GeometryDrawing geometryDrawing)
                 {
-                    geometry.Children.Add(((GeometryDrawing)drawing).Geometry);
+                    geometry.Children.Add(geometryDrawing.Geometry);
                 }
-                else if (drawing is GlyphRunDrawing)
+                else if (drawing is GlyphRunDrawing runDrawing)
                 {
-                    geometry.Children.Add(((GlyphRunDrawing)drawing).GlyphRun.BuildGeometry());
+                    geometry.Children.Add(runDrawing.GlyphRun.BuildGeometry());
                 }
-                else if (drawing is DrawingGroup)
+                else if (drawing is DrawingGroup dg)
                 {
-                    geometry.Children.Add(CreateGeometry((DrawingGroup)drawing));
+                    geometry.Children.Add(CreateGeometry(dg));
                 }
             }
 
@@ -292,9 +290,9 @@ namespace Chem4Word.Model2.Geometry
 
             foreach (Drawing drawing in drawingCollection)
             {
-                if (drawing is DrawingGroup)
+                if (drawing is DrawingGroup dg)
                 {
-                    CombineGeometries((DrawingGroup)drawing, combineMode, ref combinedGeometry);
+                    CombineGeometries(dg, combineMode, ref combinedGeometry);
                 }
                 else if (drawing is GeometryDrawing)
                 {

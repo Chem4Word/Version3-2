@@ -34,31 +34,23 @@ namespace Chem4Word.ACME.Adorners.Feedback
 
             Vector baseVector = new Vector(0, -Math.Max(Bounds.Height, Bounds.Width) * 1.5);
 
-            var orientation = HydrogenVisual.ParentVisual.ParentAtom.ImplicitHPlacement;
-            Matrix rotator = new Matrix();
-            Point centroid = new Point((Bounds.Left + Bounds.Right) / 2,
-                                       (Bounds.Top + Bounds.Bottom) / 2);
+            var parentAtom = HydrogenVisual.ParentVisual.ParentAtom;
 
-            var newPlacementAngle = AngleMethods.ToDegrees(orientation) + 90;
-            rotator.Rotate(newPlacementAngle - 45);
-            Point startPoint = centroid + baseVector * rotator;
-            rotator.Rotate(-90);
-            Point firstArrowEnd = startPoint + 0.5 * baseVector * rotator;
-            rotator.Rotate(180);
-            Point secondArrowEnd = startPoint + 0.5 * baseVector * rotator;
+            var hloc = new Point((Bounds.Right + Bounds.Left) / 2, (Bounds.Top + Bounds.Bottom) / 2);
+            var radiusvector = hloc - parentAtom.Position;
+            var newPlacementAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth, radiusvector);
 
-            var rotator2 = new Matrix();
-            rotator2.Rotate(-45);
-            ArrowBase arrow1 = new ArrowBase()
+            Arrow arrow1 = new ArcArrow
             {
                 ArrowEnds = ArrowEnds.End,
-                ArrowHeadLength = baseVector.Length * 0.3,
-                StartPoint = firstArrowEnd,
-                EndPoint = secondArrowEnd,
-                IsArrowClosed = true
+                HeadLength = baseVector.Length * 0.2,
+                Center = parentAtom.Position,
+                StartAngle = newPlacementAngle + 30,
+                EndAngle = newPlacementAngle + 100,
+                Radius = radiusvector.Length,
+                ArrowHeadClosed = true
             };
-
-            drawingContext.DrawGeometry(BracketBrush, BracketPen, arrow1.GetArrowGeometry());
+            arrow1.DrawArrowGeometry(drawingContext, BracketPen, BracketBrush);
         }
     }
 }

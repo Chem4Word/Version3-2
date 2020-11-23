@@ -784,18 +784,18 @@
                                     3
                                 </Run>
                             </TextBlock>
-                            <graphics:ArrowBase
-                                ArrowHeadLength="10"
+                            <graphics:StraightArrow
+                                HeadLength="10"
                                 Fill="{StaticResource ResourceKey=Chem4WordBrush}"
                                 HeadAngle="35"
-                                IsArrowClosed="True"
+                                ArrowHeadClosed="True"
                                 Stroke="{StaticResource ResourceKey=Chem4WordBrush}"
                                 StartPoint="0,5"
                                 EndPoint="45,5">
-                                <graphics:ArrowBase.Effect>
+                                <graphics:Arrow.Effect>
                                     <DropShadowEffect Color="LightGray" />
-                                </graphics:ArrowBase.Effect>
-                            </graphics:ArrowBase>
+                                </graphics:Arrow.Effect>
+                            </graphics:StraightArrow>
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontFamily="Arial"

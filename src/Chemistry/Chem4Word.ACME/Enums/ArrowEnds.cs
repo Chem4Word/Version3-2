@@ -5,8 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
+
 namespace Chem4Word.ACME.Enums
 {
+    [Flags]
     public enum ArrowEnds
     {
         None = 0,

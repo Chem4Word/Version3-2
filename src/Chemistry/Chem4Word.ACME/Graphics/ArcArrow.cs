@@ -9,16 +9,20 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Graphics
 {
     /// <summary>
-    /// ArcArrow draws an arrow of a specifed radius,
+    /// ArcArrow draws an arrow of a specified radius,
     /// centered on a point, that has a start and end angle
     /// Designed to be used directly from XAML
     /// </summary>
-    internal class ArcArrow : ArrowBase
+    public class ArcArrow : Arrow
     {
+        /// <summary>
+        /// Point describing the center of the arc
+        /// </summary>
         public Point Center
         {
             get { return (Point)GetValue(CenterProperty); }
@@ -26,11 +30,13 @@ namespace Chem4Word.ACME.Graphics
         }
 
         public static readonly DependencyProperty CenterProperty =
-            DependencyProperty.Register("Center", typeof(Point), typeof(Arc),
-                                        new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsRender));
+            DependencyProperty.Register("Center", typeof(Point), typeof(ArcArrow),
+                                        new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsRender
+                                                                                                        | FrameworkPropertyMetadataOptions.AffectsArrange
+                                                                                                        | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         /// <summary>
-        /// Measured relative to Compass East
+        /// Measured relative to Compass North
         /// </summary>
         public double StartAngle
         {
@@ -39,11 +45,13 @@ namespace Chem4Word.ACME.Graphics
         }
 
         public static readonly DependencyProperty StartAngleProperty =
-            DependencyProperty.Register("StartAngle", typeof(double), typeof(Arc),
-                                        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
+            DependencyProperty.Register("StartAngle", typeof(double), typeof(ArcArrow),
+                                        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender
+                                                                           | FrameworkPropertyMetadataOptions.AffectsArrange
+                                                                           | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         /// <summary>
-        /// Measured relative to Compass East
+        /// Measured relative to Compass North
         /// </summary>
         public double EndAngle
         {
@@ -52,9 +60,14 @@ namespace Chem4Word.ACME.Graphics
         }
 
         public static readonly DependencyProperty EndAngleProperty =
-            DependencyProperty.Register("EndAngle", typeof(double), typeof(Arc),
-                                        new FrameworkPropertyMetadata(Math.PI / 2.0, FrameworkPropertyMetadataOptions.AffectsRender));
+            DependencyProperty.Register("EndAngle", typeof(double), typeof(ArcArrow),
+                                        new FrameworkPropertyMetadata(Math.PI / 2.0, FrameworkPropertyMetadataOptions.AffectsRender
+                                                                      | FrameworkPropertyMetadataOptions.AffectsArrange
+                                                                      | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
+        /// <summary>
+        /// Radius of the arc
+        /// </summary>
         public double Radius
         {
             get { return (double)GetValue(RadiusProperty); }
@@ -62,53 +75,56 @@ namespace Chem4Word.ACME.Graphics
         }
 
         public static readonly DependencyProperty RadiusProperty =
-            DependencyProperty.Register("Radius", typeof(double), typeof(Arc),
-                                        new FrameworkPropertyMetadata(10.0, FrameworkPropertyMetadataOptions.AffectsRender));
+            DependencyProperty.Register("Radius", typeof(double), typeof(ArcArrow),
+                                        new FrameworkPropertyMetadata(10.0, FrameworkPropertyMetadataOptions.AffectsRender
+                                                                            | FrameworkPropertyMetadataOptions.AffectsArrange
+                                                                            | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-        public bool SmallAngle
+        protected override PathFigure Shaft()
         {
-            get { return (bool)GetValue(SmallAngleProperty); }
-            set { SetValue(SmallAngleProperty, value); }
+            var startVector = BasicGeometry.ScreenNorth * Radius;
+            var endVector = startVector;
+
+            Matrix startRotator = new Matrix();
+            Matrix endRotator = new Matrix();
+            var startAngle = CorrectedAngle(StartAngle);
+            var endAngle = CorrectedAngle(EndAngle);
+
+            startRotator.Rotate(startAngle);
+            endRotator.Rotate(endAngle);
+
+            startVector = startVector * startRotator;
+            endVector = endVector * endRotator;
+
+            bool large = Math.Abs(endAngle - startAngle) > 180;
+
+            Point startPoint = Center + startVector;
+            Point endPoint = Center + endVector;
+
+            var sweep = startAngle < endAngle ? SweepDirection.Clockwise : SweepDirection.Counterclockwise;
+
+            List<PathSegment> segments = new List<PathSegment>
+            {
+                new ArcSegment(endPoint, new Size(Radius, Radius), 0.0, large, sweep, true)
+            };
+
+            PathFigure pf = new PathFigure(startPoint, segments, false) { IsClosed = false };
+            return pf;
         }
 
-        public static readonly DependencyProperty SmallAngleProperty =
-            DependencyProperty.Register("SmallAngle", typeof(bool), typeof(Arc),
-                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
-
-        protected override PathFigure ArrowLineFigure()
+        private double CorrectedAngle(double value)
         {
-            var startAngle = (StartAngle / 360) * 2 * Math.PI;
-            var endAngle = (EndAngle / 360) * 2 * Math.PI;
-
-            var a0 = startAngle < 0 ? startAngle + 2 * Math.PI : startAngle;
-            var a1 = endAngle < 0 ? endAngle + 2 * Math.PI : endAngle;
-
-            if (a1 < a0)
+            double result = value;
+            while (result > 360)
             {
-                a1 += Math.PI * 2;
+                result -= 360;
             }
 
-            SweepDirection d = SweepDirection.Counterclockwise;
-            bool large;
-
-            if (SmallAngle)
+            while (result < 0)
             {
-                large = false;
-                d = a1 - a0 > Math.PI ? SweepDirection.Counterclockwise : SweepDirection.Clockwise;
+                result += 360;
             }
-            else
-            {
-                large = (Math.Abs(a1 - a0) < Math.PI);
-            }
-            Point p0 = Center + new Vector(Math.Cos(a0), Math.Sin(a0)) * Radius;
-            Point p1 = Center + new Vector(Math.Cos(a1), Math.Sin(a1)) * Radius;
-
-            List<PathSegment> segments = new List<PathSegment>(1);
-            segments.Add(new ArcSegment(p1, new Size(Radius, Radius), 0.0, large, d, true));
-
-            PathFigure pf = new PathFigure(p0, segments, false);
-            pf.IsClosed = false;
-            return pf;
+            return result;
         }
     }
 }
