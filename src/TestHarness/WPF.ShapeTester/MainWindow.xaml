@@ -9,6 +9,8 @@
         <shapes:ArcArrow Center="300,100" Radius="40" StartAngle="270" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="False"  Stroke="Green" />
         <shapes:ArcArrow Center="400,100" Radius="40" StartAngle="30" HeadLength="5" HeadAngle="30" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True"  Stroke="Green" />
         <shapes:StraightArrow StartPoint="200,200" EndPoint="300,300" Stroke="Black" StrokeThickness="3"/>
-        <shapes:ArcArrow ArrowEnds="Both" HeadLength="20" Center="400,400" Radius="60" EndAngle="120" Fill="DarkOrange" HeadAngle="45" ArrowHeadClosed="True" StartAngle="0" Stroke="DarkOrange" StrokeThickness="3"></shapes:ArcArrow>
+        <shapes:QuadraticArrow StartPoint="400,200" FirstControlPoint="550,150" EndPoint="500,300" Stroke="OrangeRed" StrokeThickness="3" ArrowEnds="Both" ArrowHeadClosed="True" Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke }"/>
+        <shapes:BezierArrow StartPoint="100,500" FirstControlPoint="200,300" SecondControlPoint="300,700" EndPoint="400,500" Stroke="Teal" StrokeThickness="3" ArrowEnds="Both" ArrowHeadClosed="True" Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke }"/>
+        <shapes:ArcArrow ArrowEnds="Both" HeadLength="20" Center="400,400" Radius="60" EndAngle="120" Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke }" HeadAngle="45" ArrowHeadClosed="True" StartAngle="0" Stroke="#7FCA34" StrokeThickness="3"></shapes:ArcArrow>
         </Canvas>
 </Window>

@@ -294,9 +294,8 @@ namespace Chem4Word.Model2.Geometry
                 {
                     CombineGeometries(dg, combineMode, ref combinedGeometry);
                 }
-                else if (drawing is GeometryDrawing)
+                else if (drawing is GeometryDrawing geoDrawing)
                 {
-                    GeometryDrawing geoDrawing = drawing as GeometryDrawing;
                     combinedGeometry = new CombinedGeometry(combineMode, combinedGeometry, geoDrawing.Geometry);
                 }
             }

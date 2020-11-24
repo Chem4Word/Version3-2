@@ -120,6 +120,8 @@
     <Compile Include="Drawing\MoleculeVisual.cs" />
     <Compile Include="Enums\ChemistryItemMode.cs" />
     <Compile Include="Drawing\SubscriptedGroup.cs" />
+    <Compile Include="Graphics\BezierArrow.cs" />
+    <Compile Include="Graphics\QuadraticArrow.cs" />
     <Compile Include="Graphics\StraightArrow.cs" />
     <Compile Include="IHostedWpfEditor.cs" />
     <Compile Include="LabelsEditor.xaml.cs">

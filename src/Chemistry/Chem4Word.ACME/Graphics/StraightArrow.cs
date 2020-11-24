@@ -10,20 +10,30 @@ using System.Windows.Media;
 
 namespace Chem4Word.ACME.Graphics
 {
-    public class StraightArrow: Arrow
+    /// <summary>
+    /// Draws a simple arrow shape
+    /// </summary>
+    public class StraightArrow : Arrow
     {
+        /// <summary>
+        /// Where the arrow starts
+        /// </summary>
         public Point StartPoint
         {
             get { return (Point)GetValue(StartPointProperty); }
             set { SetValue(StartPointProperty, value); }
         }
 
+        
         public static readonly DependencyProperty StartPointProperty =
             DependencyProperty.Register("StartPoint", typeof(Point), typeof(Arrow),
                                         new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsRender
                                                                       | FrameworkPropertyMetadataOptions.AffectsArrange
                                                                       | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
+        /// <summary>
+        /// Where the arrow ends
+        /// </summary>
         public Point EndPoint
         {
             get { return (Point)GetValue(EndPointProperty); }
@@ -35,13 +45,17 @@ namespace Chem4Word.ACME.Graphics
                                         new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsRender
                                                                       | FrameworkPropertyMetadataOptions.AffectsArrange
                                                                       | FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        /// <summary>
+        /// Draws the shaft.  Override to draw a non-straight line
+        /// </summary>
+        /// <returns></returns>
         protected override PathFigure Shaft()
         {
-            PathFigure mainline = new PathFigure {StartPoint = StartPoint};
+            PathFigure mainline = new PathFigure { StartPoint = StartPoint };
             LineSegment ls = new LineSegment(EndPoint, true);
             mainline.Segments.Add(ls);
             return mainline;
         }
-       
     }
 }
