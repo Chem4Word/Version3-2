@@ -69,6 +69,8 @@ namespace WinForms.TestLibrary
                 libraryControl.DataContext = viewModel;
             }
 
+            _telemetry.Write(module, "Information", $"Library done at {sw.ElapsedMilliseconds}ms");
+
             if (CatalogueHost.Child is CatalogueView catalogueControl)
             {
                 var viewModel = new NewCatalogueViewModel(_telemetry, _libraryOptions);
@@ -76,6 +78,8 @@ namespace WinForms.TestLibrary
                 catalogueControl.DataContext = viewModel;
                 catalogueControl.UpdateStatusBar();
             }
+
+            _telemetry.Write(module, "Information", $"Catalogue done at {sw.ElapsedMilliseconds}ms");
 
             if (NavigatorHost.Child is NavigatorView navigatorControl)
             {
@@ -102,7 +106,7 @@ namespace WinForms.TestLibrary
             }
 
             sw.Stop();
-            _telemetry.Write(module, "Information", $"Fetch Took {sw.ElapsedMilliseconds}ms");
+            _telemetry.Write(module, "Information", $"Navigator done at {sw.ElapsedMilliseconds}ms");
         }
 
         private void FindLastItem_Click(object sender, EventArgs e)

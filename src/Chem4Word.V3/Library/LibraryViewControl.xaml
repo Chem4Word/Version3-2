@@ -158,6 +158,7 @@
                 Grid.IsSharedSizeScope="True"
                 ItemContainerStyle="{StaticResource SimpleListBoxItem}"
                 ItemsSource="{Binding Mode=OneWay, Path=ChemistryItems}"
+                PreviewMouseWheel="HandleScrollSpeed"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 VirtualizingStackPanel.IsVirtualizing="True">
                 <ListBox.Resources>

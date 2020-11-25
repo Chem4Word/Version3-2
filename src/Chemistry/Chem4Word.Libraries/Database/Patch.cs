@@ -7,17 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Chem4Word.Libraries.Database
 {
-    public class ChemistryDTO
+    public class Patch
     {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public string Formula { get; set; }
-        public string Cml { get; set; }
-
-        public List<UserTagDTO> Tags { get; set; }
+        public Version Version { get; set; }
+        public List<string> Scripts { get; set; }
     }
 }

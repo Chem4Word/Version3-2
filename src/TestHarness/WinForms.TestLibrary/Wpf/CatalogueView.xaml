@@ -100,7 +100,7 @@
         <StackPanel Grid.Row="0">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" MinWidth="250" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -417,8 +417,10 @@
                 Grid.IsSharedSizeScope="True"
                 ItemContainerStyle="{StaticResource SimpleListBoxItem}"
                 ItemsSource="{Binding Mode=OneWay, Path=ChemistryItems}"
+                ScrollViewer.CanContentScroll="True"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                VirtualizingStackPanel.IsVirtualizing="True">
+                VirtualizingStackPanel.IsVirtualizing="True"
+                VirtualizingStackPanel.ScrollUnit="Item">
                 <ListBox.Resources>
                     <Style TargetType="ListBoxItem">
                         <!--
@@ -433,6 +435,7 @@
                     <ItemsPanelTemplate>
                         <wpfToolkit:VirtualizingWrapPanel
                             ItemSize="{Binding ElementName=CatalogueViewControl, Path=ItemSize, Mode=OneWay}"
+                            MouseWheelDeltaItem="1"
                             ScrollUnit="Item"
                             SpacingMode="None" />
                     </ItemsPanelTemplate>

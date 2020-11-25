@@ -144,6 +144,16 @@ namespace Chem4Word.Core.Helpers
         }
 
         /// <summary>
+        /// "yyyy-MM-dd HH-mm-ss"
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static string ToIsoFilePrefix(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH-mm-ss", CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
         /// "MMddyyHHmm"
         /// </summary>
         /// <param name="dateTime"></param>

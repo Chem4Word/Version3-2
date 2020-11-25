@@ -90,6 +90,7 @@
     <Compile Include="Adorners\Feedback\BaseHoverAdorner.cs" />
     <Compile Include="Adorners\Feedback\HRotatorAdorner.cs" />
     <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
+    <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Commands\PickElementCommand.cs" />
     <Compile Include="Controls\ChemistryItem.xaml.cs">
       <DependentUpon>ChemistryItem.xaml</DependentUpon>

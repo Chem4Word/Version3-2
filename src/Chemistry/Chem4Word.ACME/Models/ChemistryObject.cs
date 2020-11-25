@@ -84,6 +84,13 @@ namespace Chem4Word.ACME.Models
         public double MolecularWeight { get; set; }
 
         /// <summary>
+        /// List of Tags
+        /// </summary>
+        public List<string> Tags { get; set; } = new List<string>();
+
+        public bool HasTags => Tags.Any();
+
+        /// <summary>
         /// List of Chemical Names for the structure (Library mode)
         /// </summary>
         public List<string> OtherNames { get; private set; } = new List<string>();

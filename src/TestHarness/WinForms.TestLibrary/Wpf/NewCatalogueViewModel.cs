@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using Chem4Word.ACME.Models;
 using Chem4Word.Libraries;
 using Chem4Word.Libraries.Database;
-using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Telemetry;
 
@@ -67,7 +67,8 @@ namespace WinForms.TestLibrary.Wpf
                         Cml = chemistryDto.Cml,
                         Formula = chemistryDto.Formula,
                         Name = chemistryDto.Name,
-                        MolecularWeight = weight
+                        MolecularWeight = weight,
+                        Tags = chemistryDto.Tags.Select(t => t.Text).ToList()
                     };
 
                     ChemistryItems.Add(obj);

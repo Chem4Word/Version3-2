@@ -10,7 +10,7 @@ namespace Chem4Word.Libraries.Database
     public class ChemistryTagDTO
     {
         public long Id { get; set; }
-        public long GalleryId { get; set; }
+        public long ChemistryId { get; set; }
         public long TagId { get; set; }
     }
 }

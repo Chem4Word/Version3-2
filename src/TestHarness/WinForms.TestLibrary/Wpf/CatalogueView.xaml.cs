@@ -134,9 +134,9 @@ namespace WinForms.TestLibrary.Wpf
 
         private void Slider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ItemSize = new Size(Slider.Value, Slider.Value + 50);
-            DisplayWidth = Slider.Value - 25;
-            DisplayHeight = Slider.Value - 25;
+            ItemSize = new Size(Slider.Value, Slider.Value + 65);
+            DisplayWidth = Slider.Value - 20;
+            DisplayHeight = Slider.Value - 20;
         }
 
         private void SearchBox_KeyDown(object sender, KeyEventArgs e)
@@ -180,36 +180,14 @@ namespace WinForms.TestLibrary.Wpf
             }
         }
 
-        private class ChemistryObjectComparer : IComparer<ChemistryObject>
-        {
-            #region Implementation of IComparer<in ChemistryObject>
-
-            public int Compare(ChemistryObject x, ChemistryObject y)
-                => string.CompareOrdinal(x?.Name, y?.Name);
-
-            #endregion
-        }
-
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                if (DataContext != null
-                    && ComboBox.SelectedItem is ComboBoxItem selectedItem)
+                if (DataContext != null)
                 {
-                    var view = (ListCollectionView) CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
-                    view.SortDescriptions.Clear();
-
-                    var propertyName = selectedItem.Content.ToString();
-                    if (propertyName.Equals("Name"))
-                    {
-                        view.CustomSort = (IComparer)new ChemistryObjectComparer();
-                    }
-                    else
-                    {
-                        view.SortDescriptions.Add(new SortDescription(propertyName, ListSortDirection.Ascending));
-                    }
+                    ApplySort();
                 }
             }
             catch (Exception ex)
@@ -228,12 +206,7 @@ namespace WinForms.TestLibrary.Wpf
 
                 if (DataContext != null)
                 {
-                    //get the view from the listbox's source
-                    var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
-
-                    _filteredItems = 0;
-                    view.Filter = null;
-
+                    ClearFilter();
                     UpdateStatusBar();
                 }
             }
@@ -252,26 +225,7 @@ namespace WinForms.TestLibrary.Wpf
                 if (!string.IsNullOrWhiteSpace(SearchBox.Text)
                     && DataContext != null)
                 {
-                    //get the view from the listbox's source
-                    var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
-
-                    //then try to match part of either its name or an alternative name to the string typed in
-                    _filteredItems = 0;
-                    view.Filter = ci =>
-                                  {
-                                      var item = ci as ChemistryObject;
-                                      var queryString = SearchBox.Text.ToUpper();
-                                      if (item != null
-                                          && (item.Name.ToUpper().Contains(queryString)
-                                              || item.OtherNames.Any(n => n.ToUpper().Contains(queryString))))
-                                      {
-                                          _filteredItems++;
-                                          return true;
-                                      }
-
-                                      return false;
-                                  };
-
+                    FilterByText();
                     UpdateStatusBar();
                 }
             }
@@ -292,36 +246,25 @@ namespace WinForms.TestLibrary.Wpf
             {
                 if (DataContext != null)
                 {
-                    if (_filteredItems > 0)
+                    if (ToggleButton.IsChecked != null && ToggleButton.IsChecked.Value)
                     {
-                        ToggleButton.IsChecked = false;
-                        ClearButton_OnClick(null, null);
+                        if (_checkedItems > 0)
+                        {
+                            SearchBox.Clear();
+                            FilterByChecked();
+                        }
+                        else
+                        {
+                            ToggleButton.IsChecked = false;
+                        }
                     }
                     else
                     {
-                        ToggleButton.IsChecked = true;
-                        SearchBox.Text = "";
-
-                        //get the view from the listbox's source
-                        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
-
-                        //then try to match part of either its name or an alternative name to the string typed in
-                        _filteredItems = 0;
-                        view.Filter = ci =>
-                                      {
-                                          var item = ci as ChemistryObject;
-                                          if (item != null
-                                              && item.IsChecked)
-                                          {
-                                              _filteredItems++;
-                                              return true;
-                                          }
-
-                                          return false;
-                                      };
-
-                        UpdateStatusBar();
+                        SearchBox.Clear();
+                        ClearFilter();
                     }
+
+                    UpdateStatusBar();
                 }
             }
             catch (Exception ex)
@@ -332,6 +275,86 @@ namespace WinForms.TestLibrary.Wpf
                 //    form.ShowDialog();
                 //}
             }
+        }
+
+        private class ChemistryObjectComparer : IComparer<ChemistryObject>
+        {
+            public int Compare(ChemistryObject x, ChemistryObject y)
+                => string.CompareOrdinal(x?.Name, y?.Name);
+        }
+
+        private void ApplySort()
+        {
+            if (ComboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+                view.SortDescriptions.Clear();
+
+                var propertyName = selectedItem.Content.ToString();
+                if (propertyName.Equals("Name"))
+                {
+                    view.CustomSort = (IComparer)new ChemistryObjectComparer();
+                }
+                else
+                {
+                    view.SortDescriptions.Add(new SortDescription(propertyName, ListSortDirection.Ascending));
+                }
+            }
+        }
+
+        private void ClearFilter()
+        {
+            //get the view from the listbox's source
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+
+            _filteredItems = 0;
+            view.Filter = null;
+        }
+
+        private void FilterByText()
+        {
+            //get the view from the listbox's source
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+
+            //then try to match part of either its name or an alternative name to the string typed in
+            _filteredItems = 0;
+            view.Filter = ci =>
+                          {
+                              var item = ci as ChemistryObject;
+                              var queryString = SearchBox.Text.ToUpper();
+                              if (item != null
+                                  && (item.Name.ToUpper().Contains(queryString)
+                                      || item.OtherNames.Any(n => n.ToUpper().Contains(queryString))
+                                      || item.Tags.Any(n => n.ToUpper().Contains(queryString)))
+                              )
+                              {
+                                  _filteredItems++;
+                                  return true;
+                              }
+
+                              return false;
+                          };
+        }
+
+        private void FilterByChecked()
+        {
+            //get the view from the listbox's source
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(CatalogueItems.ItemsSource);
+
+            //then try to match part of either its name or an alternative name to the string typed in
+            _filteredItems = 0;
+            view.Filter = ci =>
+                          {
+                              var item = ci as ChemistryObject;
+                              if (item != null
+                                  && item.IsChecked)
+                              {
+                                  _filteredItems++;
+                                  return true;
+                              }
+
+                              return false;
+                          };
         }
 
         private void AddButton_OnClick(object sender, RoutedEventArgs e)

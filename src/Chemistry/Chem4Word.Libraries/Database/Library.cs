@@ -21,19 +21,22 @@ using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
 using Chem4Word.Telemetry;
 using Ionic.Zip;
+using Newtonsoft.Json;
 
 namespace Chem4Word.Libraries.Database
 {
     public class Library
     {
-        private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static readonly string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+        private static readonly string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         private readonly TelemetryWriter _telemetry;
         private readonly LibraryOptions _options;
 
         private readonly SdFileConverter _sdFileConverter;
         private readonly CMLConverter _cmlConverter;
+
+        private readonly List<Patch> _patches;
 
         public Library(TelemetryWriter telemetry, LibraryOptions options)
         {
@@ -60,6 +63,12 @@ namespace Chem4Word.Libraries.Database
                     }
                 }
             }
+
+            // Read patches from resource
+            var resource = ResourceHelper.GetStringResource(Assembly.GetExecutingAssembly(), "Patches.json");
+            _patches = JsonConvert.DeserializeObject<List<Patch>>(resource);
+
+            Patch(_patches.Max(p => p.Version));
         }
 
         private SQLiteConnection LibraryConnection()
@@ -67,9 +76,205 @@ namespace Chem4Word.Libraries.Database
             string path = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
             // Source https://www.connectionstrings.com/sqlite/
             var conn = new SQLiteConnection($"Data Source={path};Synchronous=Full");
+
             return conn.OpenAndReturn();
         }
 
+        private void Patch(Version targetVersion)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            try
+            {
+                using (SQLiteConnection conn = LibraryConnection())
+                {
+                    bool patchTableExists = false;
+                    bool isLegacy = false;
+
+                    var currentVersion = Version.Parse("0.0.0");
+
+                    using (SQLiteDataReader tables = GetListOfTablesAndViews(conn))
+                    {
+                        if (tables != null)
+                        {
+                            while (tables.Read())
+                            {
+                                if (tables["Name"] is string name)
+                                {
+                                    var type = tables["Type"] as string;
+                                    Debug.WriteLine($"Found {type} '{name}'");
+
+                                    if (name.Equals("Patches"))
+                                    {
+                                        patchTableExists = true;
+                                    }
+
+                                    if (name.Equals("Gallery"))
+                                    {
+                                        isLegacy = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (patchTableExists)
+                    {
+                        // Read current patch level
+                        using (SQLiteDataReader patches = GetListOfPatches(conn))
+                        {
+                            if (patches != null)
+                            {
+                                while (patches.Read())
+                                {
+                                    if (patches["Version"] is string version)
+                                    {
+                                        var applied = patches["Applied"] as string;
+                                        Debug.WriteLine($"Patch {version} was applied on {applied}");
+
+                                        var thisVersion = Version.Parse(version);
+                                        if (thisVersion > currentVersion)
+                                        {
+                                            currentVersion = thisVersion;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (isLegacy && currentVersion < targetVersion)
+                    {
+                        // Backup before patching
+                        var database = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
+                        var backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.Now)} {Constants.LibraryFileName}");
+                        File.Copy(database, backup);
+
+                        if (!ApplyPatches(conn, currentVersion))
+                        {
+                            // If patching fails, revert to previous version
+                            File.Delete(database);
+                            File.Copy(backup, database);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception {ex.Message} in {module}");
+            }
+        }
+
+        private SQLiteDataReader GetListOfPatches(SQLiteConnection conn)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            SQLiteDataReader result = null;
+
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("SELECT Version, Applied");
+                sb.AppendLine("FROM Patches");
+
+                var command = new SQLiteCommand(sb.ToString(), conn);
+                result = command.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception {ex.Message} in {module}");
+            }
+
+            return result;
+        }
+
+        private SQLiteDataReader GetListOfTablesAndViews(SQLiteConnection conn)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            SQLiteDataReader result = null;
+
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("SELECT t.Name, t.Type");
+                sb.AppendLine("FROM sqlite_master t");
+                sb.AppendLine("WHERE t.Type IN ('table','view')");
+
+                var command = new SQLiteCommand(sb.ToString(), conn);
+                result = command.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception {ex.Message} in {module}");
+            }
+
+            return result;
+        }
+
+        private bool ApplyPatches(SQLiteConnection conn, Version currentVersion)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            bool result = true;
+
+            try
+            {
+                foreach (Patch patch in _patches)
+                {
+                    if (patch.Version > currentVersion)
+                    {
+                        foreach (string script in patch.Scripts)
+                        {
+                            Debug.WriteLine($"Applying patch '{script}'");
+                            var command = new SQLiteCommand(script, conn);
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                    AddPatchRecord(conn, patch.Version);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception {ex.Message} in {module}");
+                result = false;
+            }
+
+            return result;
+        }
+
+        private void AddPatchRecord(SQLiteConnection conn, Version version)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            try
+            {
+                var versionString = version.ToString(3);
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine("INSERT INTO Patches");
+                sb.AppendLine(" (Version, Applied)");
+                sb.AppendLine("VALUES");
+                sb.AppendLine(" (@version, @applied)");
+
+                var command = new SQLiteCommand(sb.ToString(), conn);
+                command.Parameters.Add("@version", DbType.String, versionString.Length).Value = versionString;
+                var applied = SafeDate.ToShortDate(DateTime.Today);
+                command.Parameters.Add("@applied", DbType.String, applied.Length).Value = applied;
+
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// This is called by LoadNamesFromLibrary in Add-In which happens on right click
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, int> GetLibraryNames()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -84,14 +289,13 @@ namespace Chem4Word.Libraries.Database
                 {
                     using (SQLiteDataReader names = GetAllNames(conn))
                     {
-                        while (names.Read())
+                        if (names != null)
                         {
-                            string name = names["Name"] as string;
-                            if (!string.IsNullOrEmpty(name) && name.Length > 3)
+                            while (names.Read())
                             {
-                                // Exclude any purely numeric names
-                                long numeric = -1;
-                                if (!long.TryParse(name, out numeric))
+                                var name = names["Name"] as string;
+                                // Exclude any names less than three characters
+                                if (!string.IsNullOrEmpty(name) && name.Length > 3)
                                 {
                                     int id = int.Parse(names["ChemistryId"].ToString());
                                     if (!allNames.ContainsKey(name))
@@ -117,6 +321,43 @@ namespace Chem4Word.Libraries.Database
             return allNames;
         }
 
+        private SQLiteDataReader GetAllNames(SQLiteConnection conn)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            SQLiteDataReader result;
+
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("SELECT DISTINCT Name, ChemistryId");
+                sb.AppendLine("FROM ChemicalNames");
+                sb.AppendLine("WHERE NOT (Namespace = 'chem4word' AND Tag = 'cev_freq')");
+                sb.AppendLine(" AND NOT (Namespace = 'pubchem' AND Tag = 'Id')");
+                sb.AppendLine(" AND NOT (Name = 'chemical compound')");
+                sb.AppendLine("UNION");
+                sb.AppendLine("SELECT DISTINCT Name, Id");
+                sb.AppendLine("FROM Gallery");
+
+                var command = new SQLiteCommand(sb.ToString(), conn);
+                result = command.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                {
+                    form.ShowDialog();
+                }
+
+                result = null;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// This is called by ...
+        /// </summary>
         public void DeleteAllChemistry()
         {
             using (SQLiteConnection conn = LibraryConnection())
@@ -125,6 +366,42 @@ namespace Chem4Word.Libraries.Database
             }
         }
 
+        private void DeleteAllChemistry(SQLiteConnection conn)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            try
+            {
+                var command1 = new SQLiteCommand("DELETE FROM ChemistryByTags", conn);
+                var command2 = new SQLiteCommand("DELETE FROM Gallery", conn);
+                var command3 = new SQLiteCommand("DELETE FROM ChemicalNames", conn);
+                var command4 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Gallery'", conn);
+                var command5 = new SQLiteCommand("VACUUM", conn);
+
+                using (SQLiteTransaction tr = conn.BeginTransaction())
+                {
+                    command1.ExecuteNonQuery();
+                    command2.ExecuteNonQuery();
+                    command3.ExecuteNonQuery();
+#if DEBUG
+                    command4.ExecuteNonQuery();
+#endif
+                    tr.Commit();
+                    command5.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                {
+                    form.ShowDialog();
+                }
+            }
+        }
+
+        /// <summary>
+        /// This is called by ...
+        /// </summary>
+        /// <returns></returns>
         public SQLiteTransaction StartTransaction()
         {
             var conn = LibraryConnection();
@@ -142,10 +419,18 @@ namespace Chem4Word.Libraries.Database
             {
                 transaction.Commit();
             }
+
             conn.Close();
             conn.Dispose();
         }
 
+        /// <summary>
+        /// This is called by ...
+        /// </summary>
+        /// <param name="cmlFile"></param>
+        /// <param name="transaction"></param>
+        /// <param name="calculateProperties"></param>
+        /// <returns></returns>
         public bool ImportCml(string cmlFile, SQLiteTransaction transaction, bool calculateProperties = false)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -160,6 +445,7 @@ namespace Chem4Word.Libraries.Database
                 {
                     model = _cmlConverter.Import(cmlFile);
                 }
+
                 if (cmlFile.Contains("M  END"))
                 {
                     model = _sdFileConverter.Import(cmlFile);
@@ -172,6 +458,7 @@ namespace Chem4Word.Libraries.Database
                     {
                         model.RemoveExplicitHydrogens();
                     }
+
                     if (!string.IsNullOrEmpty(outcome))
                     {
                         _telemetry.Write(module, "Information", outcome);
@@ -227,6 +514,13 @@ namespace Chem4Word.Libraries.Database
             return result;
         }
 
+        /// <summary>
+        /// This is called by ...
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="xml"></param>
+        /// <param name="formula"></param>
         public void UpdateChemistry(long id, string name, string xml, string formula)
         {
             using (SQLiteConnection conn = LibraryConnection())
@@ -268,6 +562,10 @@ namespace Chem4Word.Libraries.Database
             }
         }
 
+        /// <summary>
+        /// This is called by ...
+        /// </summary>
+        /// <param name="chemistryId"></param>
         public void DeleteChemistry(long chemistryId)
         {
             using (SQLiteConnection conn = LibraryConnection())
@@ -312,20 +610,27 @@ namespace Chem4Word.Libraries.Database
             }
         }
 
+        /// <summary>
+        /// This is called by Library Task Pane Import Button
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public string GetChemistryById(long id)
         {
             string result = null;
+
             using (SQLiteConnection conn = LibraryConnection())
             {
-                SQLiteDataReader chemistry = GetChemistryById(conn, id);
-                while (chemistry.Read())
+                using (SQLiteDataReader chemistry = GetChemistryById(conn, id))
                 {
-                    result = CmlFromBytes(chemistry["Chemistry"] as Byte[]);
-                    break;
+                    if (chemistry != null)
+                    {
+                        while (chemistry.Read())
+                        {
+                            result = CmlFromBytes((byte[])chemistry["Chemistry"]);
+                        }
+                    }
                 }
-
-                chemistry.Close();
-                chemistry.Dispose();
             }
 
             return result;
@@ -334,17 +639,19 @@ namespace Chem4Word.Libraries.Database
         private SQLiteDataReader GetChemistryById(SQLiteConnection conn, long id)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            SQLiteDataReader result;
+
             try
             {
                 var sb = new StringBuilder();
                 sb.AppendLine("SELECT Id, Chemistry, Name, Formula");
                 sb.AppendLine("FROM Gallery");
                 sb.AppendLine("WHERE ID = @id");
-                sb.AppendLine("ORDER BY NAME");
 
                 var command = new SQLiteCommand(sb.ToString(), conn);
                 command.Parameters.Add("@id", DbType.Int64).Value = id;
-                return command.ExecuteReader();
+                result = command.ExecuteReader();
             }
             catch (Exception ex)
             {
@@ -352,11 +659,20 @@ namespace Chem4Word.Libraries.Database
                 {
                     form.ShowDialog();
                 }
-                return null;
+
+                result = null;
             }
+
+            return result;
         }
 
-        // Called by LibraryVieModel.AddNewChemistry()
+        /// <summary>
+        /// This is called by LibraryVieModel.AddNewChemistry()
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="chemistryName"></param>
+        /// <param name="formula"></param>
+        /// <returns></returns>
         public long AddChemistry(Model model, string chemistryName, string formula)
         {
             long result;
@@ -368,7 +684,14 @@ namespace Chem4Word.Libraries.Database
             return result;
         }
 
-        // Called by ImportCml(), ImportCml()
+        /// <summary>
+        /// This is called by ImportCml(), ImportCml()
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="model"></param>
+        /// <param name="chemistryName"></param>
+        /// <param name="formula"></param>
+        /// <returns></returns>
         private long AddChemistry(SQLiteConnection conn, Model model, string chemistryName, string formula)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -403,6 +726,7 @@ namespace Chem4Word.Libraries.Database
                 {
                     form.ShowDialog();
                 }
+
                 return -1;
             }
         }
@@ -439,11 +763,6 @@ namespace Chem4Word.Libraries.Database
 
                 deleteCommand.ExecuteNonQuery();
                 insertCommand.ExecuteNonQuery();
-
-                // This is how to get the last inserted row's Id if we need to
-                //string sql = "SELECT last_insert_rowid()"
-                //var cmd = new SQLiteCommand(sql, conn)
-                //lastID = (Int64)cmd.ExecuteScalar()
             }
             catch (Exception ex)
             {
@@ -451,64 +770,6 @@ namespace Chem4Word.Libraries.Database
                 {
                     form.ShowDialog();
                 }
-            }
-        }
-
-        private void DeleteAllChemistry(SQLiteConnection conn)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var command1 = new SQLiteCommand("DELETE FROM ChemistryByTags", conn);
-                var command2 = new SQLiteCommand("DELETE FROM Gallery", conn);
-                var command3 = new SQLiteCommand("DELETE FROM ChemicalNames", conn);
-                var command4 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Gallery'", conn);
-                var command5 = new SQLiteCommand("VACUUM", conn);
-
-                using (SQLiteTransaction tr = conn.BeginTransaction())
-                {
-                    command1.ExecuteNonQuery();
-                    command2.ExecuteNonQuery();
-                    command3.ExecuteNonQuery();
-#if DEBUG
-                    command4.ExecuteNonQuery();
-#endif
-                    tr.Commit();
-                    command5.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-            }
-        }
-
-        private SQLiteDataReader GetAllNames(SQLiteConnection conn)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-
-            try
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("SELECT DISTINCT Name, ChemistryId");
-                sb.AppendLine("FROM ChemicalNames");
-                sb.AppendLine(" UNION");
-                sb.AppendLine("SELECT DISTINCT Name, Id");
-                sb.AppendLine("FROM Gallery");
-
-                var command = new SQLiteCommand(sb.ToString(), conn);
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
             }
         }
 
@@ -527,28 +788,94 @@ namespace Chem4Word.Libraries.Database
 
             using (SQLiteConnection conn = LibraryConnection())
             {
-                SQLiteDataReader chemistry = GetAllChemistry(conn);
-                while (chemistry.Read())
+                using (SQLiteDataReader chemistry = GetAllChemistry(conn))
                 {
-                    var dto = new ChemistryDTO
-                              {
-                                  Id = (long) chemistry["ID"],
-                                  Cml = CmlFromBytes(chemistry["Chemistry"] as Byte[]),
-                                  Name = chemistry["name"] as string,
-                                  Formula = chemistry["formula"] as string
-                              };
+                    if (chemistry != null)
+                    {
+                        while (chemistry.Read())
+                        {
+                            var id = (long)chemistry["ID"];
+                            var dto = new ChemistryDTO
+                            {
+                                Id = id,
+                                Cml = CmlFromBytes((byte[])chemistry["Chemistry"]),
+                                Name = chemistry["name"] as string,
+                                Formula = chemistry["formula"] as string,
+                                Tags = FetchTags(id)
+                            };
 
-                    results.Add(dto);
+                            results.Add(dto);
+                        }
+                    }
                 }
-
-                chemistry.Close();
-                chemistry.Dispose();
             }
 
             sw.Stop();
             _telemetry.Write(module, "Timing", $"Reading {results.Count} structures took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
 
             return results;
+        }
+
+        private SQLiteDataReader GetAllChemistry(SQLiteConnection conn)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            SQLiteDataReader result = null;
+
+            try
+            {
+                var sb = new StringBuilder();
+
+                sb.AppendLine("SELECT Id, Chemistry, Name, Formula");
+                sb.AppendLine("FROM Gallery");
+                sb.AppendLine("ORDER BY Name");
+
+                var command = new SQLiteCommand(sb.ToString(), conn);
+                result = command.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                {
+                    form.ShowDialog();
+                }
+
+                result = null;
+            }
+
+            return result;
+        }
+
+        private readonly List<string> _animals = new List<string>
+                                                 {
+                                                     "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig", "Bat", "Cat"
+                                                 };
+
+        private readonly Random _random = new Random(Environment.TickCount);
+
+        private List<UserTagDTO> FetchTags(long id)
+        {
+            var result = new List<UserTagDTO>();
+            int count = _random.Next((int)(id % 8));
+
+            var shuffled = _animals.OrderBy(i => Guid.NewGuid()).ToList();
+
+            while (count > 0)
+            {
+                int index = _random.Next(shuffled.Count);
+                var name = shuffled[index];
+                shuffled.RemoveAt(index);
+
+                var tag = new UserTagDTO
+                          {
+                              Text = name
+                          };
+                result.Add(tag);
+
+                count--;
+            }
+
+            return result;
         }
 
         private string CmlFromBytes(byte[] byteArray)
@@ -568,225 +895,6 @@ namespace Chem4Word.Libraries.Database
             }
 
             return null;
-        }
-
-        public List<UserTagDTO> GetAllUserTags()
-        {
-            var results = new List<UserTagDTO>();
-            using (SQLiteConnection conn = LibraryConnection())
-            {
-                SQLiteDataReader allTags = GetAllUserTags(conn);
-
-                while (allTags.Read())
-                {
-                    var tag = new UserTagDTO
-                              {
-                                  Id = (long) allTags["ID"],
-                                  Text = (string) allTags["UserTag"],
-                                  Lock = (long) allTags["Lock"]
-                              };
-                    results.Add(tag);
-                }
-
-                allTags.Close();
-                allTags.Dispose();
-            }
-
-            return results;
-        }
-
-        public List<UserTagDTO> GetAllUserTags(int chemistryID)
-        {
-            var results = new List<UserTagDTO>();
-            using (SQLiteConnection conn = LibraryConnection())
-            {
-                SQLiteDataReader allTags = GetAllUserTags(conn, chemistryID);
-
-                while (allTags.Read())
-                {
-                    var tag = new UserTagDTO
-                              {
-                                  Id = (long)allTags["ID"],
-                                  Text = (string)allTags["UserTag"],
-                                  Lock = (long)allTags["Lock"]
-                              };
-                    results.Add(tag);
-                }
-
-                allTags.Close();
-                allTags.Dispose();
-            }
-
-            return results;
-        }
-
-        private SQLiteDataReader GetAllUserTags(SQLiteConnection conn)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("SELECT Id, UserTag, Lock");
-                sb.AppendLine("FROM UserTags");
-
-                var command = new SQLiteCommand(sb.ToString(), conn);
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
-            }
-        }
-
-        private SQLiteDataReader GetAllUserTags(SQLiteConnection conn, int chemistryId)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("SELECT Id, UserTag, Lock");
-                sb.AppendLine("FROM UserTags");
-                sb.AppendLine("WHERE ID IN");
-                sb.AppendLine(" (SELECT TagID");
-                sb.AppendLine("  FROM ChemistryByTags");
-                sb.AppendLine("  WHERE GalleryID = @id)");
-
-                SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
-                command.Parameters.Add("@id", DbType.Int64).Value = chemistryId;
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
-            }
-        }
-
-        public List<ChemistryTagDTO> GetChemistryByTags()
-        {
-            var results = new List<ChemistryTagDTO>();
-            using (SQLiteConnection conn = LibraryConnection())
-            {
-                SQLiteDataReader allTags = GetChemistryByTags(conn);
-                while (allTags.Read())
-                {
-                    var dto = new ChemistryTagDTO
-                              {
-                                  Id = (long)allTags["ID"],
-                                  GalleryId = (long)allTags["GalleryID"],
-                                  TagId = (long)allTags["TagID"]
-                              };
-
-                    results.Add(dto);
-                }
-
-                allTags.Close();
-                allTags.Dispose();
-            }
-
-            return results;
-        }
-
-        private SQLiteDataReader GetChemistryByTags(SQLiteConnection conn)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("SELECT Id, GalleryID, TagID");
-                sb.AppendLine("FROM ChemistryByTags");
-                sb.AppendLine("ORDER BY GalleryID, TagID");
-
-                var command = new SQLiteCommand(sb.ToString(), conn);
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
-            }
-        }
-
-        private SQLiteDataReader GetAllChemistry(SQLiteConnection conn)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var sb = new StringBuilder();
-
-                sb.AppendLine("SELECT Id, Chemistry, Name, Formula");
-                sb.AppendLine("FROM Gallery");
-                sb.AppendLine("ORDER BY Name");
-
-                var command = new SQLiteCommand(sb.ToString(), conn);
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
-            }
-        }
-
-        private SQLiteDataReader GetAllChemistryWithTags(SQLiteConnection conn)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("SELECT Id, Chemistry, Name, Formula, UserTag");
-                sb.AppendLine("FROM GetAllChemistryWithTags");
-                sb.AppendLine("ORDER BY Name");
-
-                var command = new SQLiteCommand(sb.ToString(), conn);
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
-            }
-        }
-
-        private SQLiteDataReader GetChemicalNames(SQLiteConnection conn, int id)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("SELECT ChemicalNameID, Name, Namespace, Tag");
-                sb.AppendLine("FROM ChemicalNames");
-                sb.AppendLine("WHERE ChemistryID = @id");
-                sb.AppendLine("ORDER BY Name");
-
-                var command = new SQLiteCommand(sb.ToString(), conn);
-                command.Parameters.Add("@id", DbType.Int64).Value = id;
-                return command.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
-                {
-                    form.ShowDialog();
-                }
-                return null;
-            }
         }
     }
 }

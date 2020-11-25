@@ -6,6 +6,17 @@
 PRAGMA foreign_keys = off;
 BEGIN TRANSACTION;
 
+-- Table: Gallery
+CREATE TABLE Gallery (
+    Id        INTEGER NOT NULL
+                      PRIMARY KEY AUTOINCREMENT
+                      UNIQUE,
+    Chemistry BLOB    NOT NULL,
+    Name      TEXT    NOT NULL,
+    Formula   TEXT
+);
+
+
 -- Table: ChemicalNames
 CREATE TABLE ChemicalNames (
     ChemicalNameId INTEGER NOT NULL,
@@ -38,17 +49,6 @@ CREATE TABLE ChemistryByTags (
         TagId
     )
     REFERENCES UserTags (Id) 
-);
-
-
--- Table: Gallery
-CREATE TABLE Gallery (
-    Id        INTEGER NOT NULL
-                      PRIMARY KEY AUTOINCREMENT
-                      UNIQUE,
-    Chemistry BLOB    NOT NULL,
-    Name      TEXT    NOT NULL,
-    Formula   TEXT
 );
 
 

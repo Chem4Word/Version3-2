@@ -1,0 +1,25 @@
+[
+  {
+    "version": "3.2.1",
+    "scripts": [
+      "CREATE TABLE Patches (Version STRING NOT NULL PRIMARY KEY, Applied STRING NOT NULL);",
+      "DROP VIEW GetUserTags;",
+      "DROP VIEW GetAllChemistryWithTags;",
+      "DROP VIEW UserTag;",
+      "DROP TABLE UserTags;"
+    ]
+  },
+  {
+    "version": "3.2.2",
+    "scripts": [
+      "CREATE TABLE Tags (Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, Tag STRING NOT NULL UNIQUE);"
+    ]
+  },
+  {
+    "version": "3.2.3",
+    "scripts": [
+      "DROP TABLE ChemistryByTags;",
+      "CREATE TABLE TaggedChemistry (Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ChemistryId INTEGER NOT NULL, TagId INTEGER NOT NULL, FOREIGN KEY (ChemistryId) REFERENCES Gallery (Id), FOREIGN KEY (TagId) REFERENCES Tags (Id));"
+    ]
+  }
+]

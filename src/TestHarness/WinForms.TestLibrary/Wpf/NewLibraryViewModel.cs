@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using Chem4Word.ACME.Models;
@@ -62,7 +63,8 @@ namespace WinForms.TestLibrary.Wpf
                         Id = chemistryDto.Id,
                         Cml = chemistryDto.Cml,
                         Formula = chemistryDto.Formula,
-                        Name = chemistryDto.Name
+                        Name = chemistryDto.Name,
+                        Tags = chemistryDto.Tags.Select(t => t.Text).ToList()
                     };
 
                     ChemistryItems.Add(obj);

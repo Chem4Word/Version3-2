@@ -128,6 +128,7 @@ namespace WinForms.TestLibrary
             this.Controls.Add(this.LayoutPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Library Testbed";
             this.LayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
