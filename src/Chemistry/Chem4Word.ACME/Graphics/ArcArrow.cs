@@ -120,7 +120,7 @@ namespace Chem4Word.ACME.Graphics
                 result -= 360;
             }
 
-            while (result < 0)
+            while (result < -360)
             {
                 result += 360;
             }

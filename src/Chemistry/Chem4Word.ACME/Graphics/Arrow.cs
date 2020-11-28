@@ -6,7 +6,6 @@
 // ---------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -151,11 +150,7 @@ namespace Chem4Word.ACME.Graphics
                 fraction = (length - offset) / length;
             }
 
-            Debug.WriteLine($"Fraction:{fraction}");
-            //compensate for the head angle
-
             //create a simple geometry so we can use a wpf trick to determine the length
-
             PathGeometry tempPG = new PathGeometry();
             tempPG.Figures.Add(line);
 
