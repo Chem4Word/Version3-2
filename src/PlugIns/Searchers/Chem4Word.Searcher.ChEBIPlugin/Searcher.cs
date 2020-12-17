@@ -105,11 +105,14 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
                 using (new WaitCursor())
                 {
-                    var searcher = new SearchChEBI();
-                    searcher.TopLeft = TopLeft;
-                    searcher.Telemetry = Telemetry;
-                    searcher.SettingsPath = SettingsPath;
-                    searcher.UserOptions = _searcherOptions;
+                    var searcher = new SearchChEBI
+                                   {
+                                       TopLeft = TopLeft,
+                                       Telemetry = Telemetry,
+                                       SettingsPath = SettingsPath,
+                                       UserOptions = _searcherOptions
+                                   };
+
                     using (new WaitCursor(Cursors.Default))
                     {
                         DialogResult dr = searcher.ShowDialog();

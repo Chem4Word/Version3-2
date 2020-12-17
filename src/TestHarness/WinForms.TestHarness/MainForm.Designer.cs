@@ -47,13 +47,16 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.EditLabels = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ChangeOoXmlSettings = new System.Windows.Forms.Button();
             this.ChangeAcmeSettings = new System.Windows.Forms.Button();
             this.ShowCml = new System.Windows.Forms.Button();
             this.SaveStructure = new System.Windows.Forms.Button();
             this.ClearChemistry = new System.Windows.Forms.Button();
             this.LayoutStructure = new System.Windows.Forms.Button();
             this.RenderOoXml = new System.Windows.Forms.Button();
-            this.ChangeOoXmlSettings = new System.Windows.Forms.Button();
+            this.SearchOpsin = new System.Windows.Forms.Button();
+            this.SearchPubChem = new System.Windows.Forms.Button();
+            this.SearchChEBI = new System.Windows.Forms.Button();
             this.LayoutPanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -188,15 +191,18 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.SearchOpsin);
             this.groupBox1.Controls.Add(this.EditLabels);
+            this.groupBox1.Controls.Add(this.SearchChEBI);
+            this.groupBox1.Controls.Add(this.SearchPubChem);
             this.groupBox1.Controls.Add(this.EditWithAcme);
             this.groupBox1.Controls.Add(this.EditCml);
-            this.groupBox1.Location = new System.Drawing.Point(1036, 477);
+            this.groupBox1.Location = new System.Drawing.Point(952, 477);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(89, 105);
+            this.groupBox1.Size = new System.Drawing.Size(173, 105);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Edit ...";
+            this.groupBox1.Text = "Edit / Search ...";
             // 
             // EditLabels
             // 
@@ -221,6 +227,18 @@
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Settings ...";
+            // 
+            // ChangeOoXmlSettings
+            // 
+            this.ChangeOoXmlSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ChangeOoXmlSettings.Location = new System.Drawing.Point(15, 48);
+            this.ChangeOoXmlSettings.Name = "ChangeOoXmlSettings";
+            this.ChangeOoXmlSettings.Size = new System.Drawing.Size(75, 23);
+            this.ChangeOoXmlSettings.TabIndex = 13;
+            this.ChangeOoXmlSettings.Text = "OoXml";
+            this.ChangeOoXmlSettings.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ChangeOoXmlSettings.UseVisualStyleBackColor = true;
+            this.ChangeOoXmlSettings.Click += new System.EventHandler(this.ChangeOoXmlSettings_Click);
             // 
             // ChangeAcmeSettings
             // 
@@ -298,17 +316,38 @@
             this.RenderOoXml.UseVisualStyleBackColor = true;
             this.RenderOoXml.Click += new System.EventHandler(this.RenderOoXml_Click);
             // 
-            // ChangeOoXmlSettings
+            // SearchOpsin
             // 
-            this.ChangeOoXmlSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ChangeOoXmlSettings.Location = new System.Drawing.Point(15, 48);
-            this.ChangeOoXmlSettings.Name = "ChangeOoXmlSettings";
-            this.ChangeOoXmlSettings.Size = new System.Drawing.Size(75, 23);
-            this.ChangeOoXmlSettings.TabIndex = 13;
-            this.ChangeOoXmlSettings.Text = "OoXml";
-            this.ChangeOoXmlSettings.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ChangeOoXmlSettings.UseVisualStyleBackColor = true;
-            this.ChangeOoXmlSettings.Click += new System.EventHandler(this.ChangeOoXmlSettings_Click);
+            this.SearchOpsin.Location = new System.Drawing.Point(87, 77);
+            this.SearchOpsin.Name = "SearchOpsin";
+            this.SearchOpsin.Size = new System.Drawing.Size(75, 23);
+            this.SearchOpsin.TabIndex = 5;
+            this.SearchOpsin.Text = "OPSIN";
+            this.SearchOpsin.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SearchOpsin.UseVisualStyleBackColor = true;
+            this.SearchOpsin.Click += new System.EventHandler(this.SearchOpsin_Click);
+            // 
+            // SearchPubChem
+            // 
+            this.SearchPubChem.Location = new System.Drawing.Point(87, 19);
+            this.SearchPubChem.Name = "SearchPubChem";
+            this.SearchPubChem.Size = new System.Drawing.Size(75, 23);
+            this.SearchPubChem.TabIndex = 4;
+            this.SearchPubChem.Text = "PubChem";
+            this.SearchPubChem.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SearchPubChem.UseVisualStyleBackColor = true;
+            this.SearchPubChem.Click += new System.EventHandler(this.SearchPubChem_Click);
+            // 
+            // SearchChEBI
+            // 
+            this.SearchChEBI.Location = new System.Drawing.Point(87, 48);
+            this.SearchChEBI.Name = "SearchChEBI";
+            this.SearchChEBI.Size = new System.Drawing.Size(75, 23);
+            this.SearchChEBI.TabIndex = 3;
+            this.SearchChEBI.Text = "ChEBI";
+            this.SearchChEBI.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SearchChEBI.UseVisualStyleBackColor = true;
+            this.SearchChEBI.Click += new System.EventHandler(this.SearchChEBI_Click);
             // 
             // FlexForm
             // 
@@ -367,6 +406,9 @@
         private System.Windows.Forms.Button LayoutStructure;
         private System.Windows.Forms.Button RenderOoXml;
         private System.Windows.Forms.Button ChangeOoXmlSettings;
+        private System.Windows.Forms.Button SearchChEBI;
+        private System.Windows.Forms.Button SearchOpsin;
+        private System.Windows.Forms.Button SearchPubChem;
     }
 }
 

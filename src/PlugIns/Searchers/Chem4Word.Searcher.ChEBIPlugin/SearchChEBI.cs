@@ -189,11 +189,13 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
             using (new WaitCursor())
             {
+                Cml = string.Empty;
+
                 CMLConverter conv = new CMLConverter();
 
                 var expModel = _lastModel;
 
-                if (_lastModel != null)
+                if (expModel != null && expModel.TotalAtomsCount > 0)
                 {
                     expModel.Relabel(true);
 
@@ -269,8 +271,11 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                             itemUnderCursor.Selected = true;
                             EnableImport();
                             ImportStructure();
-                            this.DialogResult = DialogResult.OK;
-                            Close();
+                            if (!string.IsNullOrEmpty(Cml))
+                            {
+                                DialogResult = DialogResult.OK;
+                                Close();
+                            }
                         }
                     }
                 }
@@ -366,49 +371,52 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             {
                 var tag = ResultsListView.SelectedItems[0]?.Tag;
 
-                LiteEntity le = (LiteEntity)tag;
-                var chemStructure = GetChemStructure(le);
-
-                if (!string.IsNullOrEmpty(chemStructure))
+                if (tag is LiteEntity le && !string.IsNullOrEmpty(le.chebiId))
                 {
-                    _lastMolfile = ConvertToWindows(chemStructure);
-                    SdFileConverter sdConverter = new SdFileConverter();
-                    _lastModel = sdConverter.Import(chemStructure);
-
-                    if (_lastModel.AllWarnings.Count > 0 || _lastModel.AllErrors.Count > 0)
-                    {
-                        Telemetry.Write(module, "Exception(Data)", chemStructure);
-                        List<string> lines = new List<string>();
-                        if (_lastModel.AllErrors.Count > 0)
-                        {
-                            Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllErrors));
-                            lines.Add("Errors(s)");
-                            lines.AddRange(_lastModel.AllErrors);
-                        }
-                        if (_lastModel.AllWarnings.Count > 0)
-                        {
-                            Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllWarnings));
-                            lines.Add("Warnings(s)");
-                            lines.AddRange(_lastModel.AllWarnings);
-                        }
-                        ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
-                    }
                     ChebiId = le.chebiId;
 
-                    var copy = _lastModel.Copy();
-                    copy.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
-                    display1.Chemistry = copy;
-                }
-                else
-                {
-                    _lastMolfile = string.Empty;
-                    CMLConverter cmlConverter = new CMLConverter();
-                    _lastModel = cmlConverter.Import(EmptyCml);
-                    display1.Clear();
-                    ErrorsAndWarnings.Text = "No structure available.";
-                }
+                    var chemStructure = GetChemStructure(le);
 
-                EnableImport();
+                    if (!string.IsNullOrEmpty(chemStructure))
+                    {
+                        _lastMolfile = ConvertToWindows(chemStructure);
+                        var sdConverter = new SdFileConverter();
+                        _lastModel = sdConverter.Import(chemStructure);
+
+                        if (_lastModel.AllWarnings.Count > 0 || _lastModel.AllErrors.Count > 0)
+                        {
+                            Telemetry.Write(module, "Exception(Data)", chemStructure);
+                            var lines = new List<string>();
+                            if (_lastModel.AllErrors.Count > 0)
+                            {
+                                Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllErrors));
+                                lines.Add("Errors(s)");
+                                lines.AddRange(_lastModel.AllErrors);
+                            }
+                            if (_lastModel.AllWarnings.Count > 0)
+                            {
+                                Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllWarnings));
+                                lines.Add("Warnings(s)");
+                                lines.AddRange(_lastModel.AllWarnings);
+                            }
+                            ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
+                        }
+
+                        var copy = _lastModel.Copy();
+                        copy.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
+                        display1.Chemistry = copy;
+                    }
+                    else
+                    {
+                        _lastMolfile = string.Empty;
+                        var cmlConverter = new CMLConverter();
+                        _lastModel = cmlConverter.Import(EmptyCml);
+                        display1.Clear();
+                        ErrorsAndWarnings.Text = "No structure available.";
+                    }
+
+                    EnableImport();
+                }
             }
         }
 

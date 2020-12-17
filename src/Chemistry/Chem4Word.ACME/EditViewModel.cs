@@ -1196,7 +1196,7 @@ namespace Chem4Word.ACME
                 }
                 else
                 {
-                    WriteTelemetry(module, "Exception", $"Molecule: {mol.Path} StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, "Warning", $"Molecule: {mol.Path}{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
                 }
             }
             catch (Exception exception)
@@ -1478,6 +1478,7 @@ namespace Chem4Word.ACME
 
                     tempModel.RescaleForCml();
                     string export = converter.Export(tempModel);
+                    Clipboard.Clear();
                     IDataObject ido = new DataObject();
                     ido.SetData(FormatCML, export);
                     string header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";

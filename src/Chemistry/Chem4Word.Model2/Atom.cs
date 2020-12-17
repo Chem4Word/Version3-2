@@ -636,7 +636,7 @@ namespace Chem4Word.Model2
         /// </summary>
         public string InternalId { get; }
 
-        public bool Singleton => Parent.Atoms.Count == 1 && Parent.Atoms.Values.First() == this;
+        public bool Singleton => Parent?.Atoms.Count == 1 && Parent?.Atoms.Values.First() == this;
 
         #endregion Constructors
 

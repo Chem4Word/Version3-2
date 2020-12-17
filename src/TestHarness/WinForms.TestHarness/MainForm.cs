@@ -23,6 +23,9 @@ using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
 using Chem4Word.Model2.Helpers;
 using Chem4Word.Renderer.OoXmlV4;
+using Chem4Word.Searcher.ChEBIPlugin;
+using Chem4Word.Searcher.OpsinPlugIn;
+using Chem4Word.Searcher.PubChemPlugIn;
 using Chem4Word.Telemetry;
 using Newtonsoft.Json;
 
@@ -285,17 +288,7 @@ namespace WinForms.TestHarness
                     editorHost.ShowDialog(this);
                     if (editorHost.DialogResult == DialogResult.OK)
                     {
-                        CMLConverter cc = new CMLConverter();
-                        var clone = cc.Import(_lastCml);
-                        Debug.WriteLine(
-                            $"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength.ToString("#,##0.00")} onto Stack");
-                        _undoStack.Push(clone);
-
-                        Model m = cc.Import(editorHost.OutputValue);
-                        m.Relabel(true);
-                        _lastCml = cc.Export(m);
-
-                        ShowChemistry($"Edited {m.ConciseFormula}", m);
+                        HandleChangedCml(editorHost.OutputValue, "Labels Editor result");
                     }
                 }
                 TopMost = true;
@@ -327,26 +320,7 @@ namespace WinForms.TestHarness
                     editorHost.ShowDialog(this);
                     if (editorHost.DialogResult == DialogResult.OK)
                     {
-                        CMLConverter cc = new CMLConverter();
-                        if (_lastCml != EmptyCml)
-                        {
-                            var clone = cc.Import(_lastCml);
-                            Debug.WriteLine(
-                                $"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength.ToString("#,##0.00")} onto Stack");
-                            _undoStack.Push(clone);
-                        }
-
-                        Model m = cc.Import(editorHost.OutputValue);
-                        m.Relabel(true);
-                        _lastCml = cc.Export(m);
-
-                        // Cause re-read of settings (in case they have changed)
-                        _editorOptions = new AcmeOptions(null);
-                        SetDisplayOptions();
-                        RedoStack.SetOptions(_editorOptions);
-                        UndoStack.SetOptions(_editorOptions);
-
-                        ShowChemistry($"Edited {m.ConciseFormula}", m);
+                        HandleChangedCml(editorHost.OutputValue, "ACME result");
                     }
                 }
                 TopMost = true;
@@ -540,17 +514,7 @@ namespace WinForms.TestHarness
                         editorHost.ShowDialog(this);
                         if (editorHost.DialogResult == DialogResult.OK)
                         {
-                            CMLConverter cc = new CMLConverter();
-                            var clone = cc.Import(_lastCml);
-                            Debug.WriteLine(
-                                $"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength.ToString("#,##0.00")} onto Stack");
-                            _undoStack.Push(clone);
-
-                            Model m = cc.Import(editorHost.OutputValue);
-                            m.Relabel(true);
-                            _lastCml = cc.Export(m);
-
-                            ShowChemistry($"Edited {m.ConciseFormula}", m);
+                            HandleChangedCml(editorHost.OutputValue, "CML Editor result");
                         }
                     }
                     TopMost = true;
@@ -679,7 +643,7 @@ namespace WinForms.TestHarness
         {
             OoXmlV4Settings settings = new OoXmlV4Settings();
             settings.Telemetry = _telemetry;
-            settings.TopLeft = new System.Windows.Point(Left, Top);
+            settings.TopLeft = new System.Windows.Point(Left + 24, Top + 24);
 
             var tempOptions = _renderOptions.Clone();
             settings.RendererOptions = tempOptions;
@@ -698,7 +662,7 @@ namespace WinForms.TestHarness
         {
             AcmeSettingsHost settings = new AcmeSettingsHost();
             settings.Telemetry = _telemetry;
-            settings.TopLeft = new System.Windows.Point(Left, Top);
+            settings.TopLeft = new System.Windows.Point(Left + 24, Top + 24);
 
             var tempOptions = _editorOptions.Clone();
             settings.EditorOptions = tempOptions;
@@ -825,7 +789,7 @@ namespace WinForms.TestHarness
         {
             var renderer = new Renderer();
             renderer.Telemetry = _telemetry;
-            renderer.TopLeft = new System.Windows.Point(Left, Top);
+            renderer.TopLeft = new System.Windows.Point(Left + 24, Top + 24);
             renderer.Cml = _lastCml;
             renderer.Properties = new Dictionary<string, string>();
             renderer.Properties.Add("Guid", Guid.NewGuid().ToString("N"));
@@ -838,6 +802,91 @@ namespace WinForms.TestHarness
             {
                 Process.Start(file);
             }
+        }
+
+        private void SearchChEBI_Click(object sender, EventArgs e)
+        {
+            using (var searcher = new SearchChEBI())
+            {
+                searcher.Telemetry = _telemetry;
+                searcher.UserOptions = new ChEBIOptions();
+                searcher.TopLeft = new System.Windows.Point(Left + 24, Top + 24);
+
+                DialogResult result = searcher.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    HandleChangedCml(searcher.Cml, "ChEBI Search result");
+                }
+            }
+
+            TopMost = true;
+            TopMost = false;
+            Activate();
+        }
+
+        private void SearchPubChem_Click(object sender, EventArgs e)
+        {
+            using (var searcher = new SearchPubChem())
+            {
+                searcher.Telemetry = _telemetry;
+                searcher.UserOptions = new PubChemOptions();
+                searcher.TopLeft = new System.Windows.Point(Left + 24, Top + 24);
+
+                DialogResult result = searcher.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    HandleChangedCml(searcher.Cml, "PubChem Search result");
+                }
+            }
+
+            TopMost = true;
+            TopMost = false;
+            Activate();
+        }
+
+        private void SearchOpsin_Click(object sender, EventArgs e)
+        {
+            using (var searcher = new SearchOpsin())
+            {
+                searcher.Telemetry = _telemetry;
+                searcher.UserOptions = new SearcherOptions();
+                searcher.TopLeft = new System.Windows.Point(Left + 24, Top + 24);
+
+                DialogResult result = searcher.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    HandleChangedCml(searcher.Cml, "ChEBI Search result");
+                }
+            }
+
+            TopMost = true;
+            TopMost = false;
+            Activate();
+        }
+
+        private void HandleChangedCml(string cml, string captionPrefix)
+        {
+            var cc = new CMLConverter();
+            if (_lastCml != EmptyCml)
+            {
+                var clone = cc.Import(_lastCml);
+                Debug.WriteLine(
+                    $"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength.ToString("#,##0.00")} onto Stack");
+                _undoStack.Push(clone);
+            }
+
+            Model m = cc.Import(cml);
+            m.Relabel(true);
+            m.EnsureBondLength(20, false);
+            _lastCml = cc.Export(m);
+
+            // Cause re-read of settings (in case they have changed)
+            _editorOptions = new AcmeOptions(null);
+            SetDisplayOptions();
+            RedoStack.SetOptions(_editorOptions);
+            UndoStack.SetOptions(_editorOptions);
+
+            ShowChemistry($"{captionPrefix} {m.ConciseFormula}", m);
         }
     }
 }
