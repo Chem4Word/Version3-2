@@ -902,13 +902,11 @@ namespace Chem4Word.Libraries.Database
             sb.AppendLine("FROM Tags t");
             sb.AppendLine("ORDER BY Frequency DESC");
 
-            //sb.AppendLine("SELECT MAX(t.Tag) AS Tag, tc.TagId, COUNT(1) AS Frequency");
-            //sb.AppendLine("FROM TaggedChemistry tc");
-            //sb.AppendLine("JOIN Tags t ON t.Id = tc.TagId");
-            //sb.AppendLine("GROUP BY tc.TagId");
-            //sb.AppendLine("ORDER BY COUNT(1) DESC");
-
-            var x = sb.ToString();
+            //sb.AppendLine("SELECT MAX(t.Tag) AS Tag, tc.TagId, COUNT(1) AS Frequency")
+            //sb.AppendLine("FROM TaggedChemistry tc")
+            //sb.AppendLine("JOIN Tags t ON t.Id = tc.TagId")
+            //sb.AppendLine("GROUP BY tc.TagId")
+            //sb.AppendLine("ORDER BY COUNT(1) DESC")
 
             var command = new SQLiteCommand(sb.ToString(), conn);
 
