@@ -506,7 +506,7 @@ namespace Chem4Word.UI.WPF
                             int exported = 0;
                             int progress = 0;
 
-                            List<ChemistryDTO> dto = lib.GetAllChemistry();
+                            List<ChemistryDataObject> dto = lib.GetAllChemistry();
                             int total = dto.Count;
                             if (total > 0)
                             {

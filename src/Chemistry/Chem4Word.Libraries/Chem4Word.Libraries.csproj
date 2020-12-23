@@ -68,11 +68,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\ChemistryDTO.cs" />
-    <Compile Include="Database\ChemistryTagDTO.cs" />
+    <Compile Include="Database\ChemistryDataObject.cs" />
+    <Compile Include="Database\ChemistryTagDataObject.cs" />
     <Compile Include="Database\Library.cs" />
     <Compile Include="Database\Patch.cs" />
-    <Compile Include="Database\UserTagDTO.cs" />
+    <Compile Include="Database\LibraryTagDataObject.cs" />
     <Compile Include="LibraryOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -105,7 +105,7 @@
     <EmbeddedResource Include="Resources\Patches.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Database\Schema.sql" />
+    <Content Include="Database\V3.1-Schema.sql" />
     <Content Include="Ionic.Zip.xml" />
   </ItemGroup>
   <ItemGroup />

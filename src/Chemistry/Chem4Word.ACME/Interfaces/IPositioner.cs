@@ -5,19 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Chem4Word.Libraries.Database
+namespace Chem4Word.ACME.Interfaces
 {
-    public class ChemistryDTO
+    public interface IPositioner
     {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public string Formula { get; set; }
-        public string Cml { get; set; }
+        double Delta { get; set; }
+        double StartX { get; set; }
+        double StartY { get; set; }
 
-        public List<UserTagDTO> Tags { get; set; }
+        bool GetNextPoint(out double x, out double y);
     }
 }

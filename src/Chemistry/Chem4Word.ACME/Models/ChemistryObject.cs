@@ -5,18 +5,45 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
+using Chem4Word.Libraries;
+using Chem4Word.Libraries.Database;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Converters.CML;
+using IChem4Word.Contracts;
 
 namespace Chem4Word.ACME.Models
 {
     public class ChemistryObject : INotifyPropertyChanged
     {
+        private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+
+        private readonly IChem4WordTelemetry _telemetry;
+        private readonly LibraryOptions _libraryOptions;
+
+        public bool Initializing { get; set; }
+
+        public ChemistryObject()
+        {
+            // Required for WPF XAML Designer
+        }
+
+        public ChemistryObject(IChem4WordTelemetry telemetry, LibraryOptions libraryOptions)
+        {
+            _telemetry = telemetry;
+            _libraryOptions = libraryOptions;
+            Initializing = true;
+        }
+
         private string _cml;
 
         /// <summary>
@@ -29,7 +56,29 @@ namespace Chem4Word.ACME.Models
             {
                 _cml = value;
                 LoadOtherNames(value);
+                if (!Initializing)
+                {
+                    Save();
+                }
                 OnPropertyChanged();
+            }
+        }
+
+        private void Save()
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            try
+            {
+                if (_libraryOptions != null)
+                {
+                    var lib = new Library(_telemetry, _libraryOptions);
+                    lib.UpdateChemistry(Id, Name, Cml, Formula);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debugger.Break();
             }
         }
 
@@ -49,6 +98,10 @@ namespace Chem4Word.ACME.Models
             set
             {
                 _name = value;
+                if (!Initializing)
+                {
+                    Save();
+                }
                 OnPropertyChanged();
             }
         }
@@ -83,12 +136,25 @@ namespace Chem4Word.ACME.Models
         /// </summary>
         public double MolecularWeight { get; set; }
 
+        public string MolecularWeightAsString => $"{MolecularWeight:N3}";
+
+        List<string> _tags = new List<string>();
+
         /// <summary>
         /// List of Tags
         /// </summary>
-        public List<string> Tags { get; set; } = new List<string>();
-
-        public bool HasTags => Tags.Any();
+        public List<string> Tags
+        {
+            get
+            {
+                return _tags;
+            }
+            set
+            {
+                _tags = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// List of Chemical Names for the structure (Library mode)
@@ -101,6 +167,10 @@ namespace Chem4Word.ACME.Models
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null)
+            {
+                Debug.WriteLine($"OnPropertyChanged invoked for {propertyName} from {this}");
+            }
         }
 
         private void LoadOtherNames(string cml)

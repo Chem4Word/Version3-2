@@ -10,6 +10,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Models;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 

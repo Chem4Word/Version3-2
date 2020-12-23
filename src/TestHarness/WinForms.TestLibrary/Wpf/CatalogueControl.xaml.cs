@@ -1,44 +1,68 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Chem4Word.ACME;
+using Chem4Word.ACME.Annotations;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Entities;
 using Chem4Word.ACME.Models;
+using Chem4Word.ACME.Models.Chem4Word.Controls.TagControl;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Wpf;
+using Chem4Word.Libraries;
+using Chem4Word.Libraries.Database;
+using IChem4Word.Contracts;
+using Newtonsoft.Json;
+using Size = System.Windows.Size;
 
 namespace WinForms.TestLibrary.Wpf
 {
     /// <summary>
-    /// Interaction logic for CatalogueView.xaml
+    /// Interaction logic for CatalogueControl.xaml
     /// </summary>
-    public partial class CatalogueView : UserControl
+    public partial class CatalogueControl : UserControl
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        private AcmeOptions _options;
+        private IChem4WordTelemetry _telemetry;
+        private LibraryOptions _libraryOptions;
+        private AcmeOptions _acmeOptions;
+        private Library _library;
 
         private int _filteredItems;
         private int _checkedItems;
         private int _itemCount;
 
-        public CatalogueView()
+        private List<string> _lastTags = new List<string>();
+
+        private const string UserTagsFileName = "MyTags.json";
+        private SortedDictionary<string, long> _userTags = new SortedDictionary<string, long>();
+
+        public Point TopLeft { get; set; }
+
+        public CatalogueControl()
         {
             InitializeComponent();
         }
 
-        public bool ShowAllCarbonAtoms => _options.ShowCarbons;
-        public bool ShowImplicitHydrogens => _options.ShowHydrogens;
-        public bool ShowAtomsInColour => _options.ColouredAtoms;
-        public bool ShowMoleculeGrouping => _options.ShowMoleculeGrouping;
+        public bool ShowAllCarbonAtoms => _acmeOptions.ShowCarbons;
+        public bool ShowImplicitHydrogens => _acmeOptions.ShowHydrogens;
+        public bool ShowAtomsInColour => _acmeOptions.ColouredAtoms;
+        public bool ShowMoleculeGrouping => _acmeOptions.ShowMoleculeGrouping;
 
         public Size ItemSize
         {
@@ -48,7 +72,7 @@ namespace WinForms.TestLibrary.Wpf
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ItemSizeProperty =
-            DependencyProperty.Register("ItemSize", typeof(Size), typeof(CatalogueView),
+            DependencyProperty.Register("ItemSize", typeof(Size), typeof(CatalogueControl),
                                         new FrameworkPropertyMetadata(Size.Empty,
                                                                       FrameworkPropertyMetadataOptions.AffectsRender
                                                                       | FrameworkPropertyMetadataOptions.AffectsArrange
@@ -62,7 +86,7 @@ namespace WinForms.TestLibrary.Wpf
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DisplayWidthProperty =
-            DependencyProperty.Register("DisplayWidth", typeof(double), typeof(CatalogueView),
+            DependencyProperty.Register("DisplayWidth", typeof(double), typeof(CatalogueControl),
                                         new FrameworkPropertyMetadata(double.NaN,
                                                                       FrameworkPropertyMetadataOptions.AffectsRender
                                                                       | FrameworkPropertyMetadataOptions.AffectsArrange
@@ -76,33 +100,57 @@ namespace WinForms.TestLibrary.Wpf
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DisplayHeightProperty =
-            DependencyProperty.Register("DisplayHeight", typeof(double), typeof(CatalogueView),
+            DependencyProperty.Register("DisplayHeight", typeof(double), typeof(CatalogueControl),
                                         new FrameworkPropertyMetadata(double.NaN,
                                                                       FrameworkPropertyMetadataOptions.AffectsRender
                                                                       | FrameworkPropertyMetadataOptions.AffectsArrange
                                                                       | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-        public void SetOptions(AcmeOptions options)
+        public void SetOptions(IChem4WordTelemetry telemetry, AcmeOptions acmeOptions, LibraryOptions libraryOptions)
         {
-            _options = options;
+            _acmeOptions = acmeOptions;
+            _telemetry = telemetry;
+            _libraryOptions = libraryOptions;
+            _library = new Library(_telemetry, _libraryOptions);
         }
 
         private void OnChemistryItemButtonClick(object sender, RoutedEventArgs e)
         {
-            if (e.OriginalSource is WpfEventArgs source)
+            if (e.OriginalSource is WpfEventArgs source
+                && DataContext is CatalogueViewModel viewModel)
             {
                 Debug.WriteLine($"{_class} -> {source.Button} {source.OutputValue}");
 
-                if (source.Button.StartsWith("CheckBox")
-                    && DataContext is NewCatalogueViewModel viewModel)
+                if (source.Button.StartsWith("CheckBox"))
                 {
                     _itemCount = viewModel.ChemistryItems.Count;
                     _checkedItems = viewModel.ChemistryItems.Count(i => i.IsChecked);
 
                     TrashButton.IsEnabled = _checkedItems > 0;
-                    ToggleButton.IsEnabled = _checkedItems > 0;
+                    CheckedFilterButton.IsEnabled = _checkedItems > 0;
 
                     UpdateStatusBar();
+                }
+
+                if (source.Button.StartsWith("DisplayDoubleClick"))
+                {
+                    var id = long.Parse(source.OutputValue.Split('=')[1]);
+                    var item = viewModel.ChemistryItems.FirstOrDefault(o => o.Id == id);
+                    if (item != null)
+                    {
+                        var topLeft = new Point(TopLeft.X + Constants.TopLeftOffset, TopLeft.Y + Constants.TopLeftOffset);
+                        var result = UIUtils.ShowSketcher(_acmeOptions, _telemetry, topLeft, item.Cml);
+                        if (result.IsDirty)
+                        {
+                            _library.UpdateChemistry(id, item.Name, result.Cml, result.Formua);
+
+                            item.Cml = result.Cml;
+                            item.Formula = result.Formua;
+                            item.MolecularWeight = result.MolecularWeight;
+
+                            viewModel.SelectedChemistryObject = item;
+                        }
+                    }
                 }
             }
         }
@@ -111,7 +159,7 @@ namespace WinForms.TestLibrary.Wpf
         {
             var sb = new StringBuilder();
             if (_itemCount == 0
-                && DataContext is NewCatalogueViewModel viewModel)
+                && DataContext is CatalogueViewModel viewModel)
             {
                 _itemCount = viewModel.ChemistryItems.Count;
             }
@@ -201,7 +249,7 @@ namespace WinForms.TestLibrary.Wpf
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                ToggleButton.IsChecked = false;
+                CheckedFilterButton.IsChecked = false;
                 SearchBox.Clear();
 
                 if (DataContext != null)
@@ -221,7 +269,7 @@ namespace WinForms.TestLibrary.Wpf
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                ToggleButton.IsChecked = false;
+                CheckedFilterButton.IsChecked = false;
                 if (!string.IsNullOrWhiteSpace(SearchBox.Text)
                     && DataContext != null)
                 {
@@ -239,14 +287,14 @@ namespace WinForms.TestLibrary.Wpf
             }
         }
 
-        private void ToggleButton_OnClick(object sender, RoutedEventArgs e)
+        private void CheckedFilterButton_OnClick(object sender, RoutedEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
                 if (DataContext != null)
                 {
-                    if (ToggleButton.IsChecked != null && ToggleButton.IsChecked.Value)
+                    if (CheckedFilterButton.IsChecked != null && CheckedFilterButton.IsChecked.Value)
                     {
                         if (_checkedItems > 0)
                         {
@@ -255,7 +303,7 @@ namespace WinForms.TestLibrary.Wpf
                         }
                         else
                         {
-                            ToggleButton.IsChecked = false;
+                            CheckedFilterButton.IsChecked = false;
                         }
                     }
                     else
@@ -274,6 +322,26 @@ namespace WinForms.TestLibrary.Wpf
                 //{
                 //    form.ShowDialog();
                 //}
+            }
+        }
+
+        public event EventHandler<WpfEventArgs> OnSelectionChange;
+
+        private void OnSelectionItemChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.OriginalSource is ListBox source
+                && source.SelectedItem is ChemistryObject selected
+                && source.DataContext is CatalogueViewModel context)
+            {
+                context.SelectedChemistryObject = selected;
+                _lastTags = context.SelectedChemistryObject.Tags;
+
+                var args = new WpfEventArgs
+                           {
+                               Button = "CatalogueView|SelectedItemChanged",
+                               OutputValue = $"Id={selected.Id}"
+                           };
+                OnSelectionChange?.Invoke(this, args);
             }
         }
 
@@ -385,6 +453,166 @@ namespace WinForms.TestLibrary.Wpf
         {
             // ToDo: Implement
             Debug.WriteLine($"{_class} -> Export Button Clicked");
+        }
+
+        private void TagControlModelOnTagRemoved(object sender, WpfEventArgs e)
+        {
+            if (sender is TagControlModel tcm)
+            {
+                UpdateTags(tcm);
+            }
+        }
+
+        public FrequencyTable<WordGroup> Words;
+        private WordCloudData _wordcloudControlDataContext;
+        private WordCloudData _wordCloudData;
+
+        public WordCloudData WordCloudData
+        {
+            get { return _wordCloudData; }
+            set
+            {
+                _wordCloudData = value;
+                OnPropertyChanged(nameof(WordCloudData));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnSelectedItemChanged(object sender, DataTransferEventArgs e)
+        {
+            if (DataContext is CatalogueViewModel dc
+                && dc.SelectedChemistryObject != null)
+            {
+                // ToDo: Handle null SettingsPath
+                var userTagsFile = Path.Combine(_acmeOptions.SettingsPath, UserTagsFileName);
+                if (File.Exists(userTagsFile))
+                {
+                    var json = File.ReadAllText(userTagsFile);
+                    _userTags = JsonConvert.DeserializeObject<SortedDictionary<string, long>>(json);
+                }
+
+                var userTags = _userTags.Select(t => t.Key).ToList();
+                var databaseTagsDto = _library.GetAllTags();
+                var databaseTags = databaseTagsDto.Select(t => t.Text).ToList();
+
+                var structureTags = new List<string>(dc.SelectedChemistryObject.Tags);
+                var availableTags = databaseTags.Union(userTags).Except(structureTags).ToList();
+
+                TaggingControl.TagControlModel = new TagControlModel(new ObservableCollection<string>(availableTags),
+                                                                     new ObservableCollection<string>(structureTags),
+                                                                     _userTags);
+                TaggingControl.DataContext = TaggingControl.TagControlModel;
+
+                TaggingControl.TagControlModel.OnTagRemoved -= TagControlModelOnTagRemoved;
+                TaggingControl.TagControlModel.OnTagRemoved += TagControlModelOnTagRemoved;
+
+                var cloudTags = _userTags;
+                foreach (var tag in databaseTagsDto)
+                {
+                    var frequency = Math.Max(1, tag.Frequency);
+                    if (cloudTags.ContainsKey(tag.Text))
+                    {
+                        cloudTags[tag.Text] = Math.Max(cloudTags[tag.Text], frequency);
+                    }
+                    else
+                    {
+                        cloudTags.Add(tag.Text, frequency);
+                    }
+                }
+
+                var wordlist = new List<FrequencyTableRow<WordGroup>>();
+                long count = 0;
+                foreach (var kvp in cloudTags.OrderByDescending(x => x.Value))
+                {
+                    //Debug.WriteLine($"Adding: '{kvp.Key}' Frequency: {kvp.Value}")
+                    wordlist.Add(new FrequencyTableRow<WordGroup>(new WordGroup(kvp.Key), kvp.Value));
+                    count += kvp.Value;
+                }
+
+                WordCloudControl.Reset();
+
+                if (count > 0)
+                {
+                    Words = new FrequencyTable<WordGroup>(wordlist, count);
+                    _wordcloudControlDataContext = new WordCloudData(Words);
+                    WordCloudControl.DataContext = _wordcloudControlDataContext;
+
+                    WordCloudControl.AddWords(_wordcloudControlDataContext);
+                    int failures = WordCloudControl.Failures;
+                    if (failures > 0)
+                    {
+                        Debug.WriteLine($"Failed to place {failures} words");
+                    }
+                }
+            }
+        }
+
+        private void TaggingControl_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            if (sender is TaggingControl tc
+                && tc.DataContext is TagControlModel tcm)
+            {
+                UpdateTags(tcm);
+            }
+        }
+
+        // Save the Tags to the database and update the used frequencies
+        private void UpdateTags(TagControlModel tcm)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            // Collate new tags for database
+            List<string> tags = new List<string>();
+            foreach (var tag in tcm.CurrentTags.OfType<TagItem>())
+            {
+                tags.Add(tag.ItemLabel.Content as string);
+            }
+
+            // Prevent the database and files being written any more than necessary
+            string lt = string.Join(",", _lastTags);
+            string tt = string.Join(",", tags);
+            if (!lt.Equals(tt))
+            {
+                // Save the updated user file
+                // ToDo: Handle _acmeOptions.SettingsPath is null
+                var userTagsFile = Path.Combine(_acmeOptions.SettingsPath, UserTagsFileName); 
+                var jsonOut = JsonConvert.SerializeObject(_userTags, Formatting.Indented);
+                File.WriteAllText(userTagsFile, jsonOut);
+
+                // Update the database
+                var sw = new Stopwatch();
+                sw.Start();
+
+                var dc = DataContext as CatalogueViewModel;
+                _library.AddTags(dc.SelectedChemistryObject.Id, tags);
+
+                sw.Stop();
+                _telemetry.Write(module, "Timing", $"Writing {tags.Count} tags took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
+
+                // Update the grid view
+                dc.SelectedChemistryObject.Tags = tags;
+
+                _lastTags = tags;
+            }
+        }
+
+        private void CatalogueControl_OnWordSelected(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is string word)
+            {
+                Debug.WriteLine($"Clicked on '{word}'");
+                TaggingControl.TagControlModel.AddTag(word);
+                UpdateTags(TaggingControl.TagControlModel);
+            }
         }
     }
 }

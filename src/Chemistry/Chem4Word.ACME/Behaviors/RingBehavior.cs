@@ -13,6 +13,7 @@ using System.Windows.Media;
 using Chem4Word.ACME.Adorners;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Models;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Core;
 using Chem4Word.Model2;

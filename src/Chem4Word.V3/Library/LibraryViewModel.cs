@@ -27,7 +27,7 @@ namespace Chem4Word.Library
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         //used for XAML data binding
-        public ObservableCollection<ChemistryObject> ChemistryItems { get; }
+        public ObservableCollection<ACME.Models.ChemistryObject> ChemistryItems { get; }
 
         private bool _initializing;
         private readonly TelemetryWriter _telemetry;
@@ -38,7 +38,7 @@ namespace Chem4Word.Library
             _telemetry = telemetry;
             _libraryOptions = libraryOptions;
 
-            ChemistryItems = new ObservableCollection<ChemistryObject>();
+            ChemistryItems = new ObservableCollection<ACME.Models.ChemistryObject>();
             ChemistryItems.CollectionChanged += ChemistryItems_CollectionChanged;
 
             LoadChemistryItems();
@@ -53,11 +53,11 @@ namespace Chem4Word.Library
                 ChemistryItems.Clear();
 
                 var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
-                List<ChemistryDTO> dto = lib.GetAllChemistry();
+                List<ChemistryDataObject> dto = lib.GetAllChemistry();
 
                 foreach (var chemistryDto in dto)
                 {
-                    var obj = new ChemistryObject
+                    var obj = new ACME.Models.ChemistryObject
                     {
                         Id = chemistryDto.Id,
                         Cml = chemistryDto.Cml,
@@ -118,7 +118,7 @@ namespace Chem4Word.Library
                 if (!_initializing)
                 {
                     var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
-                    foreach (ChemistryObject chemistry in eOldItems)
+                    foreach (ACME.Models.ChemistryObject chemistry in eOldItems)
                     {
                         lib.DeleteChemistry(chemistry.Id);
                     }
@@ -141,7 +141,7 @@ namespace Chem4Word.Library
                 if (!_initializing)
                 {
                     var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
-                    foreach (ChemistryObject chemistry in eNewItems)
+                    foreach (ACME.Models.ChemistryObject chemistry in eNewItems)
                     {
                         var cmlConverter = new CMLConverter();
                         chemistry.Id = lib.AddChemistry(cmlConverter.Import(chemistry.Cml), chemistry.Name, chemistry.Formula);

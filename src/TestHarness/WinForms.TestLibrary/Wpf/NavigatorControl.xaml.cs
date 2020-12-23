@@ -11,16 +11,16 @@ using Chem4Word.Core.UI.Wpf;
 namespace WinForms.TestLibrary.Wpf
 {
     /// <summary>
-    /// Interaction logic for NavigatorView.xaml
+    /// Interaction logic for NavigatorControl.xaml
     /// </summary>
-    public partial class NavigatorView : UserControl
+    public partial class NavigatorControl : UserControl
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         private AcmeOptions _options;
 
-        public NavigatorView()
+        public NavigatorControl()
         {
             InitializeComponent();
         }
@@ -41,7 +41,6 @@ namespace WinForms.TestLibrary.Wpf
         {
             if (e.OriginalSource is WpfEventArgs source)
             {
-                // ToDo: Implement
                 Debug.WriteLine($"{_class} -> {source.Button} {source.OutputValue}");
 
                 var parts = source.OutputValue.Split('=');

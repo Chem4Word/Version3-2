@@ -2,7 +2,7 @@
 
 namespace WinForms.TestLibrary
 {
-    partial class MainForm
+    partial class ThreeLists
     {
         /// <summary>
         /// Required designer variable.
@@ -30,14 +30,14 @@ namespace WinForms.TestLibrary
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CatalogueMode));
             this.LayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LibraryHost = new System.Windows.Forms.Integration.ElementHost();
-            this.libraryView1 = new WinForms.TestLibrary.Wpf.LibraryView();
+            this.libraryView1 = new WinForms.TestLibrary.Wpf.LibraryControl();
             this.CatalogueHost = new System.Windows.Forms.Integration.ElementHost();
-            this._catalogueView1 = new WinForms.TestLibrary.Wpf.CatalogueView();
+            this._catalogueView1 = new WinForms.TestLibrary.Wpf.CatalogueControl();
             this.NavigatorHost = new System.Windows.Forms.Integration.ElementHost();
-            this.navigatorView1 = new WinForms.TestLibrary.Wpf.NavigatorView();
+            this.navigatorView1 = new WinForms.TestLibrary.Wpf.NavigatorControl();
             this.LoadData = new System.Windows.Forms.Button();
             this.FindLastItem = new System.Windows.Forms.Button();
             this.LayoutPanel.SuspendLayout();
@@ -127,7 +127,7 @@ namespace WinForms.TestLibrary
             this.Controls.Add(this.LoadData);
             this.Controls.Add(this.LayoutPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MainForm";
+            this.Name = "CatalogueMode";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Library Testbed";
             this.LayoutPanel.ResumeLayout(false);
@@ -141,9 +141,9 @@ namespace WinForms.TestLibrary
         private System.Windows.Forms.Integration.ElementHost LibraryHost;
         private System.Windows.Forms.Integration.ElementHost CatalogueHost;
         private System.Windows.Forms.Integration.ElementHost NavigatorHost;
-        private LibraryView libraryView1;
-        private CatalogueView _catalogueView1;
-        private NavigatorView navigatorView1;
+        private LibraryControl libraryView1;
+        private CatalogueControl _catalogueView1;
+        private NavigatorControl navigatorView1;
         private System.Windows.Forms.Button LoadData;
         private System.Windows.Forms.Button FindLastItem;
     }

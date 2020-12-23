@@ -26,7 +26,7 @@ namespace Chem4Word.Editor.ACME
 
         public AcmeOptions EditorOptions { get; set; }
 
-        private AcmeSettings _acmeSettings;
+        private Settings _acmeSettings;
 
         public AcmeSettingsHost()
         {
@@ -41,7 +41,7 @@ namespace Chem4Word.Editor.ACME
                 Top = (int)TopLeft.Y;
             }
 
-            _acmeSettings = new AcmeSettings();
+            _acmeSettings = new Settings();
             _acmeSettings.AcmeOptions = EditorOptions;
             _acmeSettings.Telemetry = Telemetry;
             _acmeSettings.TopLeft = TopLeft;
@@ -67,7 +67,7 @@ namespace Chem4Word.Editor.ACME
 
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (elementHost1.Child is AcmeSettings us
+            if (elementHost1.Child is Settings us
                 && us.AcmeOptions.Dirty)
             {
                 StringBuilder sb = new StringBuilder();

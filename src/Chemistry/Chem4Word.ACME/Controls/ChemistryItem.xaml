@@ -264,8 +264,7 @@
                         MinHeight="15"
                         Foreground="{StaticResource Chem4WordBlue}"
                         ItemsSource="{Binding Path=Tags}"
-                        Style="{StaticResource TagListStyle}"
-                        Visibility="{Binding Path=HasTags, Converter={StaticResource BoolVisConverter}}">
+                        Style="{StaticResource TagListStyle}">
                         <i:Interaction.Behaviors>
                             <behaviors:IgnoreMouseWheelBehavior />
                         </i:Interaction.Behaviors>
@@ -416,8 +415,7 @@
                     MaxWidth="{Binding ElementName=CatalogueTopGrid, Path=ActualWidth}"
                     Foreground="{StaticResource Chem4WordBlue}"
                     ItemsSource="{Binding Path=Tags}"
-                    Style="{StaticResource TagListStyle}"
-                    Visibility="{Binding Path=HasTags, Converter={StaticResource BoolVisConverter}}">
+                    Style="{StaticResource TagListStyle}">
                     <i:Interaction.Behaviors>
                         <behaviors:IgnoreMouseWheelBehavior />
                     </i:Interaction.Behaviors>

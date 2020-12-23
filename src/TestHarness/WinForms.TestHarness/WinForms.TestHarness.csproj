@@ -212,7 +212,7 @@
       <Name>Chem4Word.Searcher.OpsinPlugIn</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\PlugIns\Searchers\Chem4Word.Searcher.PubChemPlugIn\Chem4Word.Searcher.PubChemPlugIn.csproj">
-      <Project>{1049E49F-753E-4C98-ACAF-BE4250C2DC3D}</Project>
+      <Project>{1049e49f-753e-4c98-acaf-be4250c2dc3d}</Project>
       <Name>Chem4Word.Searcher.PubChemPlugIn</Name>
     </ProjectReference>
   </ItemGroup>

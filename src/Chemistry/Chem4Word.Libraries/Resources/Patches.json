@@ -21,5 +21,12 @@
       "DROP TABLE ChemistryByTags;",
       "CREATE TABLE TaggedChemistry (Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ChemistryId INTEGER NOT NULL, TagId INTEGER NOT NULL, FOREIGN KEY (ChemistryId) REFERENCES Gallery (Id), FOREIGN KEY (TagId) REFERENCES Tags (Id));"
     ]
+  },
+  {
+    "version": "3.2.4",
+    "scripts": [
+      "DROP TABLE TaggedChemistry;",
+      "CREATE TABLE TaggedChemistry (ChemistryId INTEGER NOT NULL, TagId INTEGER NOT NULL, Sequence INTEGER NOT NULL, FOREIGN KEY (ChemistryId) REFERENCES Gallery (Id), FOREIGN KEY (TagId) REFERENCES Tags (Id));"
+    ]
   }
 ]

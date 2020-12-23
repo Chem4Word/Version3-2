@@ -7,7 +7,7 @@ This project is Version 3.2 of the Chemistry for Word Add-In
 3.	Latest releases
 
 ## Build and Test
-The Chemistry for Word Add-in (Chem4Word) is contained within a single Visual Studio solution located at src/Chem4Word.V3-1.sln
+The Chemistry for Word Add-in (Chem4Word) is contained within a single Visual Studio solution located at src/Chem4Word.V3-2.sln
 This solution has two main projects (use Set as Start Up then run the project), from time to time there may be other utility or PoC projects.
 1. Chem4Word.V3 is the Add-In
 2. WinForms.TestHarness this allows testing of a the Editing subset of operations without starting MS Word
@@ -18,6 +18,7 @@ All unit tests are written with XUnit
 | Package | Version | Licence |
 |--|--|--|
 |DocumentFormat.OpenXml|2.11.3|MIT|
+|DotNetProjects.WpfToolkit.Input|6.0.85|MS-PL|
 |EntityFramework|6.4.4|Apache-2.0|
 |Jacobslusser.ScintillaNET|3.6.3|MIT|
 |Microsoft.Azure.KeyVault.Core|3.0.5|MIT|

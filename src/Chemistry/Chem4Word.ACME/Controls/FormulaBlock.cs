@@ -22,32 +22,34 @@ namespace Chem4Word.ACME.Controls
 
         public static readonly DependencyProperty FormulaProperty =
             DependencyProperty.Register("Formula", typeof(string), typeof(FormulaBlock),
-                                        new FrameworkPropertyMetadata("", 
+                                        new FrameworkPropertyMetadata("",
                                                                       FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure,
                                                                       FormulaChangedCallback));
 
         private static void FormulaChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs args)
         {
-            FormulaBlock fb = d as FormulaBlock;
-
-            string newFormula = (string)args.NewValue;
-
-            var parts = FormulaHelper.ParseFormulaIntoParts(newFormula);
-
-            foreach (MoleculeFormulaPart formulaPart in parts)
+            if (d is FormulaBlock formulaBlock)
             {
-                //add in the new element
+                string newFormula = (string)args.NewValue;
 
-                Run atom = new Run(formulaPart.Element);
-                fb.Inlines.Add(atom);
+                formulaBlock.Text = string.Empty;
+                formulaBlock.Inlines.Clear();
 
-                if (formulaPart.Count > 1)
+                var parts = FormulaHelper.ParseFormulaIntoParts(newFormula);
+                foreach (MoleculeFormulaPart formulaPart in parts)
                 {
-                    Run subs = new Run(formulaPart.Count.ToString());
+                    //add in the new element
+                    Run atom = new Run(formulaPart.Element);
+                    formulaBlock.Inlines.Add(atom);
 
-                    subs.BaselineAlignment = BaselineAlignment.Subscript;
-                    subs.FontSize = subs.FontSize - 2;
-                    fb.Inlines.Add(subs);
+                    if (formulaPart.Count > 1)
+                    {
+                        Run subs = new Run(formulaPart.Count.ToString());
+
+                        subs.BaselineAlignment = BaselineAlignment.Subscript;
+                        subs.FontSize = subs.FontSize - 2;
+                        formulaBlock.Inlines.Add(subs);
+                    }
                 }
             }
         }

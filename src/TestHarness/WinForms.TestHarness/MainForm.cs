@@ -31,7 +31,7 @@ using Newtonsoft.Json;
 
 namespace WinForms.TestHarness
 {
-    public partial class MainForm : Form
+    public partial class FlexForm : Form
     {
         private Stack<Model> _undoStack = new Stack<Model>();
         private Stack<Model> _redoStack = new Stack<Model>();
@@ -49,7 +49,7 @@ namespace WinForms.TestHarness
         private OoXmlV4Options _renderOptions;
         private ConfigWatcher _configWatcher;
 
-        public MainForm()
+        public FlexForm()
         {
             InitializeComponent();
 

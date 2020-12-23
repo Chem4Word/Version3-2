@@ -15,16 +15,16 @@ using Chem4Word.Core.UI.Wpf;
 namespace WinForms.TestLibrary.Wpf
 {
     /// <summary>
-    /// Interaction logic for LibraryView.xaml
+    /// Interaction logic for LibraryControl.xaml
     /// </summary>
-    public partial class LibraryView : UserControl
+    public partial class LibraryControl : UserControl
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         private AcmeOptions _options;
 
-        public LibraryView()
+        public LibraryControl()
         {
             InitializeComponent();
         }
@@ -89,7 +89,7 @@ namespace WinForms.TestLibrary.Wpf
 
                 if (DataContext != null)
                 {
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((NewLibraryViewModel) DataContext).ChemistryItems);
+                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryViewModel)DataContext).ChemistryItems);
                     view.Filter = null;
                 }
             }
@@ -108,7 +108,7 @@ namespace WinForms.TestLibrary.Wpf
                     && DataContext != null)
                 {
                     //get the view from the listbox's source
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((NewLibraryViewModel) DataContext).ChemistryItems);
+                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryViewModel)DataContext).ChemistryItems);
                     //then try to match part of either its name or an alternative name to the string typed in
                     view.Filter = ci =>
                                   {

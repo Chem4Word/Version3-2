@@ -23,9 +23,9 @@ using UserControl = System.Windows.Controls.UserControl;
 namespace Chem4Word.ACME.Controls
 {
     /// <summary>
-    ///     Interaction logic for UserSettings.xaml
+    ///     Interaction logic for Settings.xaml
     /// </summary>
-    public partial class AcmeSettings : UserControl, INotifyPropertyChanged
+    public partial class Settings : UserControl, INotifyPropertyChanged
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -82,7 +82,7 @@ namespace Chem4Word.ACME.Controls
 
         private bool _loading;
 
-        public AcmeSettings()
+        public Settings()
         {
             _loading = true;
             InitializeComponent();
@@ -154,10 +154,13 @@ namespace Chem4Word.ACME.Controls
             }
         }
 
-        private void UserSettings_OnLoaded(object sender, RoutedEventArgs e)
+        private void AcmeSettings_OnLoaded(object sender, RoutedEventArgs e)
         {
             _loading = false;
-            AcmeOptions.Dirty = false;
+            if (AcmeOptions != null)
+            {
+                AcmeOptions.Dirty = false;
+            }
         }
 
         private void ShowAtomsInColour_OnClick(object sender, RoutedEventArgs e)

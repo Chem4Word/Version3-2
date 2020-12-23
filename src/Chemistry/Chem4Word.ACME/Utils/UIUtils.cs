@@ -25,23 +25,35 @@ namespace Chem4Word.ACME.Utils
 {
     public static class UIUtils
     {
-        public static bool? ShowDialog(Window dialog, object parent)
+        public static void ShowDialog(Window dialog, object parent)
         {
             HwndSource source = (HwndSource)HwndSource.FromVisual((Visual)parent);
             if (source != null)
             {
                 new WindowInteropHelper(dialog).Owner = source.Handle;
             }
-            return dialog.ShowDialog();
+
+            dialog.ShowDialog();
         }
 
         public static void ShowAcmeSettings(EditorCanvas currentEditor, AcmeOptions options, IChem4WordTelemetry telemetry, Point topLeft)
         {
             var mode = Application.Current.ShutdownMode;
             Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
             var pe = new SettingsHost(options, telemetry, topLeft);
             ShowDialog(pe, currentEditor);
+
             Application.Current.ShutdownMode = mode;
+        }
+
+        public static (bool IsDirty, string Cml, string Formua, double MolecularWeight) ShowSketcher(AcmeOptions options, IChem4WordTelemetry telemetry, Point topLeft, string cml)
+        {
+            var host = new SketcherHost(options, telemetry, topLeft);
+            host.Sketcher.SetProperties(cml, null, options);
+            host.ShowDialog();
+
+            return (host.Sketcher.IsDirty, host.Sketcher.Cml, host.Sketcher.EditedModel.ConciseFormula, host.Sketcher.EditedModel.MolecularWeight);
         }
 
         public static Point GetOffScreenPoint()

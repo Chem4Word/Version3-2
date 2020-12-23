@@ -334,6 +334,21 @@ namespace Chem4Word.Model2
             }
         }
 
+        public double MolecularWeight
+        {
+            get
+            {
+                double weight = 0;
+
+                foreach (var atom in GetAllAtoms())
+                {
+                    weight += atom.Element.AtomicWeight;
+                }
+
+                return weight;
+            }
+        }
+
         /// <summary>
         /// Bond length used in Xaml
         /// </summary>

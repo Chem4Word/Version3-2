@@ -4,23 +4,23 @@
         xmlns:shapes="clr-namespace:Chem4Word.ACME.Graphics;assembly=Chem4Word.ACME"
         Title="MainWindow" Height="600" Width="800">
     <Canvas>
-        <!-- H Rotators -->
+        <!-- H Rotators +30 to +100 -->
         <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="30" EndAngle="100" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
         <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="120" EndAngle="190" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
-        <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="-150" EndAngle="-80" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" Fill="Green"/>
+        <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="210" EndAngle="280" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" Fill="Green"/>
         <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="-60" EndAngle="10" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Blue" Fill="Blue"/>
 
-        <!-- Reversed H Rotators -->
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="100" EndAngle="30" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="190" EndAngle="120" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="-80" EndAngle="-150" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" Fill="Green"/>
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="10" EndAngle="-60" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Blue" Fill="Blue"/>
+        <!-- Reversed H Rotators -30 to -100 -->
+        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="-30" EndAngle="-100" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
+        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="60" EndAngle="-10" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
+        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="150" EndAngle="80" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" Fill="Green"/>
+        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="-120" EndAngle="-190" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Blue" Fill="Blue"/>
 
         <!-- Other random stuff -->
         <shapes:ArcArrow Center="100,100" Radius="40" StartAngle="-90" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
         <shapes:ArcArrow Center="200,100" Radius="40" StartAngle="90" EndAngle="270" HeadAngle="35" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
         <shapes:ArcArrow Center="300,100" Radius="40" StartAngle="270" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="False" Stroke="Green" />
-        <shapes:ArcArrow Center="400,100" Radius="40" StartAngle="30" HeadLength="5" HeadAngle="30" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True"  Stroke="Green" />
+        <shapes:ArcArrow Center="400,100" Radius="40" StartAngle="30" HeadLength="5" HeadAngle="30" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" />
 
         <!-- Lines and Curves -->
         <shapes:StraightArrow StartPoint="200,200" EndPoint="300,300" Stroke="Black" StrokeThickness="3"/>

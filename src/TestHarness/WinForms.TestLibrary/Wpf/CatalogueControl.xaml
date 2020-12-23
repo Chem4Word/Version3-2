@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="WinForms.TestLibrary.Wpf.CatalogueView"
+    x:Class="WinForms.TestLibrary.Wpf.CatalogueControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Chem4Word.ACME.Controls;assembly=Chem4Word.ACME"
@@ -9,8 +9,8 @@
     xmlns:wpfToolkit="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
     Name="CatalogueViewControl"
     controls:ChemistryItem.ChemistryItemButtonClick="OnChemistryItemButtonClick"
-    d:DesignHeight="400"
-    d:DesignWidth="700"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
         <SolidColorBrush x:Key="Chem4WordBlue">
@@ -59,6 +59,9 @@
         </Style>
         <Style x:Key="CheckedButtonPath" TargetType="Path">
             <Setter Property="Data" Value="M25.085272,8.2189964C25.59701,8.2189963 26.108748,8.4142508 26.499243,8.8047599 27.280232,9.5857784 27.280232,10.852797 26.499243,11.632808L13.201567,24.926997 5.6967307,17.474881C4.9127519,16.696884 4.9087237,15.430873 5.6867214,14.646833 6.4647191,13.862824 7.7306819,13.857819 8.5146611,14.636854L13.191558,19.28091 23.671303,8.8047599C24.061797,8.4142508,24.573534,8.2189963,25.085272,8.2189964z M2,2L2,29.999999 30,29.999999 30,2z M0,0L32,0 32,31.999999 0,31.999999z" />
+        </Style>
+        <Style x:Key="InfoPath" TargetType="Path">
+            <Setter Property="Data" Value="M11.331985,10.669 C11.137986,10.669 10.976986,10.731 10.852986,10.855999 10.728987,10.981 10.665987,11.141 10.665987,11.335 L10.665987,14.668 C10.665987,14.862 10.727986,15.021999 10.852986,15.146999 10.977986,15.271999 11.136986,15.334 11.331985,15.334 L13.331984,15.334 13.331984,22 11.331985,22 C11.137986,22 10.976986,22.063 10.852986,22.188 10.728987,22.313 10.665987,22.471999 10.665987,22.667 L10.665987,26 C10.665987,26.195 10.727986,26.354 10.852986,26.479 10.977986,26.604 11.136986,26.667 11.331985,26.667 L20.665975,26.667 C20.860975,26.667 21.019974,26.604 21.144974,26.479 21.269974,26.354 21.332974,26.193999 21.332974,26 L21.330974,26.002 21.330974,22.667999 C21.330974,22.474 21.267974,22.313999 21.143974,22.188999 21.019974,22.063999 20.859975,22.002 20.664975,22.002 L18.665977,22.002 18.665977,11.335C18.665977,11.141 18.602977,10.981 18.477977,10.855999 18.352978,10.731 18.192978,10.669 17.998978,10.669Z M13.999983,3.3329997 C13.805983,3.3329997 13.646983,3.3959994 13.520984,3.5209994 13.394983,3.6459994 13.332984,3.8049994 13.332984,3.9999995 L13.332984,7.3329997 C13.332984,7.5269995 13.395984,7.6879995 13.520984,7.8119993 13.645983,7.9359996 13.805983,7.9989996 13.999983,7.9989996 L17.999978,7.9989996 C18.194978,7.9989996 18.353978,7.9369996 18.478977,7.8119993 18.603977,7.6869996 18.666977,7.5269995 18.666977,7.3329997 L18.666977,3.9999995 C18.666977,3.8049994 18.603977,3.6459994 18.478977,3.5209994 18.353978,3.3959994 18.193978,3.3329997 17.999978,3.3329997Z M15.99998,0 C18.902977,0 21.579974,0.7149992 24.030971,2.1459999 26.481968,3.5769997 28.422966,5.5179996 29.853964,7.9689994 L29.855964,7.9689994 C31.285962,10.42 32.000961,13.097 32.000961,16 32.000961,18.901999 31.285962,21.58 29.854964,24.030999 28.423966,26.482 26.482968,28.424 24.031971,29.854 21.579974,31.285 18.901977,32 15.99998,32 13.097983,32 10.419987,31.285 7.9689894,29.854 5.517992,28.423 3.5769958,26.482 2.1459961,24.030999 0.71499825,21.58 0,18.901999 0,16 0,13.098 0.71499825,10.421 2.1459961,7.9689994 3.5769958,5.5169997 5.517992,3.5769997 7.9689894,2.1459999 10.419987,0.7149992 13.096984,0 15.99998,0Z" />
         </Style>
         <Style x:Key="SimpleListBoxItem" TargetType="ListBoxItem">
             <!--
@@ -201,12 +204,12 @@
                             </Button.Content>
                         </Button>
                         <ToggleButton
-                            Name="ToggleButton"
+                            Name="CheckedFilterButton"
                             Grid.Column="3"
                             Width="32"
                             Height="32"
                             Margin="0,1"
-                            Click="ToggleButton_OnClick"
+                            Click="CheckedFilterButton_OnClick"
                             IsEnabled="False"
                             Style="{StaticResource ToggleButtonStyle}"
                             ToolTip="Show Checked Items">
@@ -412,13 +415,21 @@
             </Grid>
         </StackPanel>
         <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
             <ListBox
                 Name="CatalogueItems"
+                Grid.Column="0"
+                MinWidth="225"
                 Grid.IsSharedSizeScope="True"
                 ItemContainerStyle="{StaticResource SimpleListBoxItem}"
                 ItemsSource="{Binding Mode=OneWay, Path=ChemistryItems}"
+                KeyboardNavigation.DirectionalNavigation="Cycle"
                 ScrollViewer.CanContentScroll="True"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                SelectionChanged="OnSelectionItemChanged"
                 VirtualizingStackPanel.IsVirtualizing="True"
                 VirtualizingStackPanel.ScrollUnit="Item">
                 <ListBox.Resources>
@@ -472,6 +483,138 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <Expander
+                Name="Expander"
+                Grid.Column="1"
+                ExpandDirection="Right"
+                IsExpanded="True">
+                <Expander.Header>
+                    <TextBlock Foreground="{StaticResource Chem4WordBlue}" Text="Structure Details">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="-90" />
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </Expander.Header>
+                <Grid Width="250" Background="White">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource InfoPath}" />
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock
+                            Grid.Column="1"
+                            Margin="5"
+                            FontSize="24"
+                            Foreground="{StaticResource Chem4WordBlue}">
+                            Structure Details
+                        </TextBlock>
+                    </Grid>
+                    <Grid Grid.Row="1" IsSharedSizeScope="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="5"
+                            Foreground="{StaticResource Chem4WordBlue}">
+                            Name
+                        </TextBlock>
+                        <TextBox
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="5"
+                            Foreground="{StaticResource Chem4WordBlue}"
+                            Text="{Binding Mode=TwoWay, Path=SelectedChemistryObject.Name}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="5"
+                            Foreground="{StaticResource Chem4WordBlue}">
+                            Formula
+                        </TextBlock>
+                        <controls:FormulaBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="5"
+                            Foreground="{StaticResource Chem4WordBlue}"
+                            Formula="{Binding Path=SelectedChemistryObject.Formula}" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="5"
+                            Foreground="{StaticResource Chem4WordBlue}">
+                            Mol. Weight
+                        </TextBlock>
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="5"
+                            Foreground="{StaticResource Chem4WordBlue}"
+                            TargetUpdated="OnSelectedItemChanged"
+                            Text="{Binding Path=SelectedChemistryObject.MolecularWeightAsString, NotifyOnTargetUpdated=True}" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Padding="5"
+                            Foreground="{StaticResource Chem4WordBlue}">
+                            Tags
+                        </TextBlock>
+                        <Border
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="3"
+                            Padding="3"
+                            BorderBrush="{StaticResource Chem4WordBlue}"
+                            BorderThickness="1">
+                            <controls:TaggingControl
+                                Name="TaggingControl"
+                                Height="Auto"
+                                VerticalAlignment="Top"
+                                LostFocus="TaggingControl_OnLostFocus"
+                                LostKeyboardFocus="TaggingControl_OnLostFocus" />
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <!--<TextBlock>Word Cloud goes here ...</TextBlock>-->
+                        <controls:WordCloud
+                            Name="WordCloudControl"
+                            Height="250"
+                            DataContext="{Binding WordCloudData}"
+                            WordSelected="CatalogueControl_OnWordSelected" />
+                    </Grid>
+                </Grid>
+            </Expander>
         </Grid>
         <StackPanel Grid.Row="2">
             <StatusBar Height="25">

@@ -56,7 +56,11 @@ namespace Chem4Word.ACME.Controls
         {
             Left = _topLeft.X;
             Top = _topLeft.Y;
-            UcSettings.TopLeft = new Point(_topLeft.X + Core.Helpers.Constants.TopLeftOffset, _topLeft.Y + Core.Helpers.Constants.TopLeftOffset);
+
+            if (UcSettings != null)
+            {
+                UcSettings.TopLeft = new Point(_topLeft.X + Core.Helpers.Constants.TopLeftOffset, _topLeft.Y + Core.Helpers.Constants.TopLeftOffset);
+            }
         }
 
         private void SettingsHost_OnClosing(object sender, CancelEventArgs e)
@@ -88,7 +92,10 @@ namespace Chem4Word.ACME.Controls
 
         private void SettingsHost_OnContentRendered(object sender, EventArgs e)
         {
-            UcSettings.AcmeOptions.Dirty = false;
+            if (UcSettings?.AcmeOptions != null)
+            {
+                UcSettings.AcmeOptions.Dirty = false;
+            }
         }
     }
 }

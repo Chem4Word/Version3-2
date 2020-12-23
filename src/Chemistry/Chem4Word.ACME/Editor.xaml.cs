@@ -114,6 +114,24 @@ namespace Chem4Word.ACME
             }
         }
 
+        public string Cml
+        {
+            get
+            {
+                if (ActiveViewModel == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    CMLConverter cc = new CMLConverter();
+                    Model model = ActiveViewModel.Model.Copy();
+                    model.RescaleForCml();
+                    return cc.Export(model);
+                }
+            }
+        }
+
         public Model EditedModel
         {
             get

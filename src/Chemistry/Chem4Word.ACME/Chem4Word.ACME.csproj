@@ -44,6 +44,9 @@
     <OutputPath>bin\Vso-Ci\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetProjects.Input.Toolkit, Version=6.0.85.0, Culture=neutral, PublicKeyToken=79778c5f2eed289b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DotNetProjects.WpfToolkit.Input.6.0.85\lib\net40\DotNetProjects.Input.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
@@ -95,7 +98,13 @@
     <Compile Include="Controls\ChemistryItem.xaml.cs">
       <DependentUpon>ChemistryItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CloudSpace.cs" />
+    <Compile Include="Models\CryptoRandomizer.cs" />
     <Compile Include="Controls\FormulaBlock.cs" />
+    <Compile Include="Entities\FrequencyTable.cs" />
+    <Compile Include="Entities\FrequencyTableRow.cs" />
+    <Compile Include="Interfaces\IPositioner.cs" />
+    <Compile Include="Interfaces\IRandomizer.cs" />
     <Compile Include="Controls\MoleculePropertyEditor.xaml.cs">
       <DependentUpon>MoleculePropertyEditor.xaml</DependentUpon>
     </Compile>
@@ -106,6 +115,26 @@
     <Compile Include="Adorners\Selectors\MultiChemistryAdorner.cs" />
     <Compile Include="Adorners\Selectors\SingleAtomSelectionAdorner.cs" />
     <Compile Include="Adorners\Selectors\SingleChemistryAdorner.cs" />
+    <Compile Include="Controls\SketcherHost.xaml.cs">
+      <DependentUpon>SketcherHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SpiralPositioner.cs" />
+    <Compile Include="Controls\TaggingControl.xaml.cs">
+      <DependentUpon>TaggingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TagItem.xaml.cs">
+      <DependentUpon>TagItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WordCloud.xaml.cs">
+      <DependentUpon>WordCloud.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WordCloudData.cs" />
+    <Compile Include="Entities\WordCloudEntry.cs" />
+    <Compile Include="Entities\WordCloudTheme.cs" />
+    <Compile Include="Entities\WordCloudThemes.cs" />
+    <Compile Include="Enums\WordCloudThemeWordRotation.cs" />
+    <Compile Include="Models\WordDrawing.cs" />
+    <Compile Include="Models\WordGroup.cs" />
     <Compile Include="Converters\BoolToColorConverter.cs" />
     <Compile Include="Converters\DefaultNameConverter.cs" />
     <Compile Include="Converters\EnumToVisibilityConverter.cs" />
@@ -160,8 +189,8 @@
     <Compile Include="Controls\SettingsHost.xaml.cs">
       <DependentUpon>SettingsHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AcmeSettings.xaml.cs">
-      <DependentUpon>AcmeSettings.xaml</DependentUpon>
+    <Compile Include="Controls\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VisualPeriodicTable.xaml.cs">
       <DependentUpon>VisualPeriodicTable.xaml</DependentUpon>
@@ -172,7 +201,6 @@
     <Compile Include="Enums\ArrowEnds.cs" />
     <Compile Include="Enums\1Point5BondType.cs" />
     <Compile Include="Enums\SelectionTypeCode.cs" />
-    <Compile Include="Models\BondAngle.cs" />
     <Compile Include="Models\BondPropertiesModel.cs" />
     <Compile Include="Models\AtomPropertiesModel.cs" />
     <Compile Include="Commands\AddAtomCommand.cs" />
@@ -222,6 +250,7 @@
     <Compile Include="Controls\PTPopup.xaml.cs">
       <DependentUpon>PTPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\TagControlModel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -278,6 +307,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\SketcherHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TaggingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TagItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\WordCloud.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LabelsEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -310,7 +355,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\AcmeSettings.xaml">
+    <Page Include="Controls\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -387,5 +432,9 @@
   <ItemGroup>
     <None Include="Cursors\Pencil.cur" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\RemoveTag.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

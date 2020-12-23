@@ -5,12 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-namespace Chem4Word.Libraries.Database
+namespace Chem4Word.ACME.Interfaces
 {
-    public class ChemistryTagDTO
+    public interface IRandomizer
     {
-        public long Id { get; set; }
-        public long ChemistryId { get; set; }
-        public long TagId { get; set; }
+        int RandomInt(int max);
+
+        int RandomInt(int min, int max);
     }
 }

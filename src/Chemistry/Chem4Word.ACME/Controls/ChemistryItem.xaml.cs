@@ -136,7 +136,7 @@ namespace Chem4Word.ACME.Controls
                     Button = button.Tag.ToString()
                 };
 
-                if (chemistryObject.Id == 0)
+                if (ItemMode == ChemistryItemMode.Navigator)
                 {
                     wpfEventArgs.OutputValue = $"Tag={chemistryObject.CustomControlTag}";
                 }

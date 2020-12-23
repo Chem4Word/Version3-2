@@ -37,13 +37,17 @@ namespace Chem4Word.ACME.Controls
 
         private static void FunctionalGroupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var tb = (FunctionalGroupBlock)d;
-            tb.BuildTextBlock((FunctionalGroup)e.NewValue);
+            if (d is FunctionalGroupBlock functionalGroupBlock)
+            {
+                functionalGroupBlock.Text = string.Empty;
+                functionalGroupBlock.Inlines.Clear();
+                functionalGroupBlock.BuildTextBlock((FunctionalGroup)e.NewValue);
+            }
         }
 
-        public void BuildTextBlock(FunctionalGroup fg)
+        public void BuildTextBlock(FunctionalGroup functionalGroup)
         {
-            foreach (var term in fg.ExpandIntoTerms())
+            foreach (var term in functionalGroup.ExpandIntoTerms())
             {
                 foreach (var part in term.Parts)
                 {

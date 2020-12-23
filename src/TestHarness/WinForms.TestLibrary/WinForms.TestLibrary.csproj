@@ -60,6 +60,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.Office.Tools.Word.v4.0.Utilities, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Office, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -83,6 +86,24 @@
     <Reference Include="System.IO.Packaging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.IO.Packaging.5.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -101,28 +122,38 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\CustomXMLPartHelper.cs" />
-    <Compile Include="Wpf\CatalogueView.xaml.cs">
-      <DependentUpon>CatalogueView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Wpf\LibraryView.xaml.cs">
-      <DependentUpon>LibraryView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="CatalogueMode.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="CatalogueMode.designer.cs">
+      <DependentUpon>CatalogueMode.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wpf\NavigatorView.xaml.cs">
-      <DependentUpon>NavigatorView.xaml</DependentUpon>
+    <Compile Include="Wpf\CatalogueControl.xaml.cs">
+      <DependentUpon>CatalogueControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Wpf\LibraryControl.xaml.cs">
+      <DependentUpon>LibraryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ThreeLists.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ThreeLists.Designer.cs">
+      <DependentUpon>ThreeLists.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Wpf\NavigatorControl.xaml.cs">
+      <DependentUpon>NavigatorControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Wpf\NewCatalogueViewModel.cs" />
-    <Compile Include="Wpf\NewLibraryViewModel.cs" />
-    <Compile Include="Wpf\NewNavigatorViewModel.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Wpf\CatalogueViewModel.cs" />
+    <Compile Include="Wpf\LibraryViewModel.cs" />
+    <Compile Include="Wpf\NavigatorViewModel.cs" />
+    <Compile Include="Wpf\UserTag.cs" />
+    <EmbeddedResource Include="CatalogueMode.resx">
+      <DependentUpon>CatalogueMode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThreeLists.resx">
+      <DependentUpon>ThreeLists.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -148,15 +179,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Wpf\CatalogueView.xaml">
+    <Page Include="Wpf\CatalogueControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Wpf\LibraryView.xaml">
+    <Page Include="Wpf\LibraryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Wpf\NavigatorView.xaml">
+    <Page Include="Wpf\NavigatorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -181,6 +212,10 @@
     <ProjectReference Include="..\..\Common\Chem4Word.Telemetry\Chem4Word.Telemetry.csproj">
       <Project>{C89BC92A-4183-48A6-B039-AD76AA1DF48F}</Project>
       <Name>Chem4Word.Telemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PlugIns\Contracts\Chem4Word.Contracts.csproj">
+      <Project>{BDFEE6C1-3F34-4200-9100-C543BF4C3783}</Project>
+      <Name>Chem4Word.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

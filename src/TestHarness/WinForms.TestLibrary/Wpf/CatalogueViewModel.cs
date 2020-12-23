@@ -9,37 +9,63 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using Chem4Word.ACME.Models;
 using Chem4Word.Libraries;
 using Chem4Word.Libraries.Database;
+using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Converters.CML;
-using Chem4Word.Telemetry;
+using IChem4Word.Contracts;
 
 namespace WinForms.TestLibrary.Wpf
 {
-    public class NewCatalogueViewModel : DependencyObject
+    public class CatalogueViewModel : DependencyObject, INotifyPropertyChanged
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        private readonly TelemetryWriter _telemetry;
+        private readonly IChem4WordTelemetry _telemetry;
         private readonly LibraryOptions _libraryOptions;
 
-        public NewCatalogueViewModel(TelemetryWriter telemetry, LibraryOptions libraryOptions)
+        public CatalogueViewModel(IChem4WordTelemetry telemetry, LibraryOptions libraryOptions)
         {
             _telemetry = telemetry;
             _libraryOptions = libraryOptions;
-            ChemistryItems = new ObservableCollection<ChemistryObject>();
+            ChemistryItems = new ObservableCollection<Chem4Word.ACME.Models.ChemistryObject>();
             LoadChemistryItems();
             ChemistryItems.CollectionChanged += ChemistryItems_CollectionChanged;
         }
 
         //used for XAML data binding
         public ObservableCollection<ChemistryObject> ChemistryItems { get; }
+
+        private ChemistryObject _selectedChemistryObject;
+
+        public ChemistryObject SelectedChemistryObject
+        {
+            get
+            {
+                return _selectedChemistryObject;
+            }
+            set
+            {
+                _selectedChemistryObject = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         private void LoadChemistryItems()
         {
@@ -49,27 +75,25 @@ namespace WinForms.TestLibrary.Wpf
                 ChemistryItems.Clear();
 
                 var lib = new Library(_telemetry, _libraryOptions);
-                List<ChemistryDTO> dto = lib.GetAllChemistry();
+                List<ChemistryDataObject> dto = lib.GetAllChemistry();
 
                 var cmlCoverter = new CMLConverter();
 
                 foreach (var chemistryDto in dto)
                 {
                     var model = cmlCoverter.Import(chemistryDto.Cml);
-                    double weight = 0;
-                    foreach (var atom in model.GetAllAtoms())
-                    {
-                        weight += atom.Element.AtomicWeight;
-                    }
-                    var obj = new ChemistryObject
+
+                    var obj = new ChemistryObject(_telemetry, _libraryOptions)
                     {
                         Id = chemistryDto.Id,
                         Cml = chemistryDto.Cml,
                         Formula = chemistryDto.Formula,
                         Name = chemistryDto.Name,
-                        MolecularWeight = weight,
+                        MolecularWeight = model.MolecularWeight,
                         Tags = chemistryDto.Tags.Select(t => t.Text).ToList()
                     };
+
+                    obj.Initializing = false;
 
                     ChemistryItems.Add(obj);
                 }

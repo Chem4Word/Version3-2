@@ -5,24 +5,18 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-namespace Chem4Word.ACME.Models
+using System.Windows.Controls;
+
+namespace Chem4Word.ACME.Controls
 {
-    public class BondAngle
+    /// <summary>
+    /// Interaction logic for TagItem.xaml
+    /// </summary>
+    public partial class TagItem : UserControl
     {
-        public double Value { get; private set; }
-
-        public string Display { get; private set; }
-
-        public BondAngle(double value)
+        public TagItem()
         {
-            Value = value;
-            Display = $"{value:N2}";
-        }
-
-        public BondAngle(double value, string display)
-        {
-            Value = value;
-            Display = display;
+            InitializeComponent();
         }
     }
 }

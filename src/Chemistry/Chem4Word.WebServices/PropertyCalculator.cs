@@ -15,6 +15,7 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
 using Chem4Word.Telemetry;
+using IChem4Word.Contracts;
 
 namespace Chem4Word.WebServices
 {
@@ -23,11 +24,11 @@ namespace Chem4Word.WebServices
         private static readonly string Product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static readonly string Class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        private readonly TelemetryWriter _telemetry;
+        private readonly IChem4WordTelemetry _telemetry;
         private readonly Point _parentTopLeft;
         private readonly string _version;
 
-        public PropertyCalculator(TelemetryWriter telemetry, Point wordTopLeft, string version)
+        public PropertyCalculator(IChem4WordTelemetry telemetry, Point wordTopLeft, string version)
         {
             _telemetry = telemetry;
             _parentTopLeft = wordTopLeft;

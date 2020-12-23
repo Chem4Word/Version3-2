@@ -785,10 +785,10 @@
                                 </Run>
                             </TextBlock>
                             <graphics:StraightArrow
-                                HeadLength="10"
+                                ArrowHeadClosed="True"
                                 Fill="{StaticResource ResourceKey=Chem4WordBrush}"
                                 HeadAngle="35"
-                                ArrowHeadClosed="True"
+                                HeadLength="10"
                                 Stroke="{StaticResource ResourceKey=Chem4WordBrush}"
                                 StartPoint="0,5"
                                 EndPoint="45,5">

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Forms;
 using Chem4Word.ACME;
 using Chem4Word.ACME.Models;
@@ -13,7 +14,7 @@ using WinForms.TestLibrary.Wpf;
 
 namespace WinForms.TestLibrary
 {
-    public partial class MainForm : Form
+    public partial class ThreeLists : Form
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -23,7 +24,7 @@ namespace WinForms.TestLibrary
         private LibraryOptions _libraryOptions;
         private AcmeOptions _acmeOptions;
 
-        public MainForm()
+        public ThreeLists()
         {
             InitializeComponent();
 
@@ -34,7 +35,7 @@ namespace WinForms.TestLibrary
             var path = Path.GetDirectoryName(location);
 
             // Use either path or null below
-            _acmeOptions = new AcmeOptions(null);
+            _acmeOptions = new AcmeOptions(path);
 
             // Values for testing of binding
             //_acmeOptions.ColouredAtoms = false;
@@ -43,13 +44,18 @@ namespace WinForms.TestLibrary
 
             _libraryOptions = new LibraryOptions
             {
-                ParentTopLeft = new System.Windows.Point(0, 0),
+                ParentTopLeft = new Point(Left, Top),
                 ProgramDataPath = @"C:\ProgramData\Chem4Word.V3",
                 Chem4WordVersion = _helper.AssemblyVersionNumber,
                 PreferredBondLength = 20,
                 SetBondLengthOnImport = true,
                 RemoveExplicitHydrogensOnImport = true
             };
+
+            if (CatalogueHost.Child is CatalogueControl catalogueControl)
+            {
+                catalogueControl.Expander.IsExpanded = false;
+            }
         }
 
         private void LoadData_Click(object sender, EventArgs e)
@@ -62,31 +68,32 @@ namespace WinForms.TestLibrary
             sw.Start();
 
             // This code belongs in the TaskPane Hosting Control
-            if (LibraryHost.Child is LibraryView libraryControl)
+            if (LibraryHost.Child is LibraryControl libraryControl)
             {
-                var viewModel = new NewLibraryViewModel(_telemetry, _libraryOptions);
+                var viewModel = new LibraryViewModel(_telemetry, _libraryOptions);
                 libraryControl.SetOptions(_acmeOptions);
                 libraryControl.DataContext = viewModel;
             }
 
             _telemetry.Write(module, "Information", $"Library done at {sw.ElapsedMilliseconds}ms");
 
-            if (CatalogueHost.Child is CatalogueView catalogueControl)
+            if (CatalogueHost.Child is CatalogueControl catalogueControl)
             {
-                var viewModel = new NewCatalogueViewModel(_telemetry, _libraryOptions);
-                catalogueControl.SetOptions(_acmeOptions);
+                var viewModel = new CatalogueViewModel(_telemetry, _libraryOptions);
+                catalogueControl.TopLeft = new Point(Left, Top);
+                catalogueControl.SetOptions(_telemetry, _acmeOptions, _libraryOptions);
                 catalogueControl.DataContext = viewModel;
                 catalogueControl.UpdateStatusBar();
             }
 
             _telemetry.Write(module, "Information", $"Catalogue done at {sw.ElapsedMilliseconds}ms");
 
-            if (NavigatorHost.Child is NavigatorView navigatorControl)
+            if (NavigatorHost.Child is NavigatorControl navigatorControl)
             {
-                var viewModel = new NewNavigatorViewModel();
+                var viewModel = new NavigatorViewModel();
 
                 var lib = new Library(_telemetry, _libraryOptions);
-                List<ChemistryDTO> dto = lib.GetAllChemistry();
+                List<ChemistryDataObject> dto = lib.GetAllChemistry();
 
                 foreach (var chemistryDto in dto)
                 {
@@ -111,7 +118,7 @@ namespace WinForms.TestLibrary
 
         private void FindLastItem_Click(object sender, EventArgs e)
         {
-            if (NavigatorHost.Child is NavigatorView navigatorControl
+            if (NavigatorHost.Child is NavigatorControl navigatorControl
                 && !string.IsNullOrEmpty(navigatorControl.SelectedNavigatorItem))
             {
                 int idx = 0;

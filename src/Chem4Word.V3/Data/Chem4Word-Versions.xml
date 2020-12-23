@@ -4,8 +4,8 @@
     <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
     <Version>
         <Number>3.2.0 Alpha 0</Number>
-        <IsBeta>false</IsBeta>
-        <Released>01-Nov-2020</Released>
+        <IsBeta>true</IsBeta>
+        <Released>01-Jan-2021</Released>
         <Changes>
             <Change>...</Change>
             <Change>...</Change>

@@ -5,19 +5,18 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.ObjectModel;
-using System.Windows;
-using Chem4Word.ACME.Models;
+using System.Windows.Media;
 
-namespace WinForms.TestLibrary.Wpf
+namespace Chem4Word.ACME.Entities
 {
-    public class NewNavigatorViewModel : DependencyObject
+    public class WordCloudEntry
     {
-        public ObservableCollection<ChemistryObject> NavigatorItems { get; }
+        public int Angle { get; set; }
 
-        public NewNavigatorViewModel()
-        {
-            NavigatorItems = new ObservableCollection<ChemistryObject>();
-        }
+        public SolidColorBrush Brush { get; set; }
+
+        public long Weight { get; set; }
+
+        public string Word { get; set; }
     }
 }

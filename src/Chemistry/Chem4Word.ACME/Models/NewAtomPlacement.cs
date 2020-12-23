@@ -8,7 +8,7 @@
 using System.Windows;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME
+namespace Chem4Word.ACME.Models
 {
     public class NewAtomPlacement
     {
