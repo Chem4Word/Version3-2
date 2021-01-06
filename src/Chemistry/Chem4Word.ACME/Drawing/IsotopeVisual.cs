@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
@@ -14,7 +15,9 @@ namespace Chem4Word.ACME.Drawing
 {
     public class IsotopeVisual : ChildTextVisual
     {
-        public IsotopeVisual(AtomVisual parent, DrawingContext drawingContext, AtomTextMetrics mainAtomMetrics,
+        public IsotopeVisual(AtomVisual parent,
+                             DrawingContext drawingContext,
+                             AtomTextMetrics mainAtomMetrics,
                              AtomTextMetrics hMetrics)
         {
             ParentVisual = parent;
@@ -30,19 +33,44 @@ namespace Chem4Word.ACME.Drawing
             string isoLabel = ParentVisual.Isotope.ToString();
             var isotopeText = new IsotopeLabelText(isoLabel, PixelsPerDip(), ParentVisual.SuperscriptSize);
 
-            Vector isotopeOffsetVector = BasicGeometry.ScreenNorth * ParentVisual.SymbolSize;
-            Matrix rotator = new Matrix();
-            double angle = -60;
-            //avoid overlap of label and hydrogens
-            if (HydrogenMetrics != null && ParentVisual.ParentAtom.ImplicitHPlacement == CompassPoints.West)
-            {
-                angle = -35;
-            }
-
-            rotator.Rotate(angle);
-            isotopeOffsetVector = isotopeOffsetVector * rotator;
-            Point isoCenter = ParentVisual.Position + isotopeOffsetVector;
+            //first position the isotope label at  the center
+            Point isoCenter = ParentVisual.Position;
+            var parentBoundingBox = ParentMetrics.TotalBoundingBox;
             isotopeText.MeasureAtCenter(isoCenter);
+            //now do some adjustments
+            //if we have no hydrogens, then adjust
+            var ibb = isotopeText.TextMetrics.TotalBoundingBox;
+
+            if (HydrogenMetrics is null)
+            {
+                isoCenter.Y -= parentBoundingBox.Height / 2;
+                isoCenter.X -= (ibb.Width + parentBoundingBox.Width) / 2;
+            }
+            else //we do have hydrogens
+            {
+                var hbb = HydrogenMetrics.TotalBoundingBox;
+
+                switch (ParentVisual.HydrogenOrientation)
+                {
+                    case CompassPoints.North:
+                        isoCenter.Y -= parentBoundingBox.Height / 2;
+                        isoCenter.X -= (ibb.Width + Math.Max(parentBoundingBox.Width, hbb.Width)) / 2;
+                        break;
+
+                    case CompassPoints.West:
+                        isoCenter.Y -= (parentBoundingBox.Height + ibb.Height) / 2;
+                        isoCenter.X -= (parentBoundingBox.Width) / 2;
+                        break;
+
+                    default:
+                        isoCenter.Y -= parentBoundingBox.Height / 2;
+                        isoCenter.X -= (ibb.Width + parentBoundingBox.Width) / 2;
+                        break;
+                }
+            }
+            //measure again with adjustments
+            isotopeText.MeasureAtCenter(isoCenter);
+
             isotopeText.Fill = ParentVisual.Fill;
             isotopeText.DrawAtBottomLeft(isotopeText.TextMetrics.BoundingBox.BottomLeft, Context);
             Metrics = isotopeText.TextMetrics;

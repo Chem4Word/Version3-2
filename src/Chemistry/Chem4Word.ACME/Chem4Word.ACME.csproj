@@ -262,6 +262,7 @@
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Utils\CursorUtils.cs" />
     <Compile Include="Utils\RegistryHelper.cs" />
+    <Compile Include="Utils\TextUtils.cs" />
     <Compile Include="Utils\TriggerTracing.cs" />
     <Compile Include="Utils\UIUtils.cs" />
     <Compile Include="ViewModel.cs" />

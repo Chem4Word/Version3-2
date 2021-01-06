@@ -19,7 +19,7 @@ namespace Chem4Word.Model2.Helpers
 
         public static string CarbonSymbol = "C";
         public static string AllenicCarbonSymbol = "•";
-
+        public const string EnDashSymbol = "\u2013";
         #endregion Strings
 
         #region Geometry Stuff

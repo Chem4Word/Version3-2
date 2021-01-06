@@ -138,27 +138,34 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             _boundingBox.Offset(adjust);
         }
 
-        public void Nudge(CompassPoints direction)
+        public void Nudge(CompassPoints direction, double pixels = 0)
         {
+            double moveBy = pixels;
+            if (pixels == 0)
+            {
+                moveBy = _bondLength / 16;
+            }
+            
             var destination = Centre;
             switch (direction)
             {
                 case CompassPoints.North:
-                    destination = new Point(Centre.X, Centre.Y - _bondLength / 16);
+                    destination = new Point(Centre.X, Centre.Y - moveBy);
                     break;
 
                 case CompassPoints.East:
-                    destination = new Point(Centre.X + _bondLength / 16, Centre.Y);
+                    destination = new Point(Centre.X + moveBy, Centre.Y);
                     break;
 
                 case CompassPoints.South:
-                    destination = new Point(Centre.X, Centre.Y + _bondLength / 16);
+                    destination = new Point(Centre.X, Centre.Y + moveBy);
                     break;
 
                 case CompassPoints.West:
-                    destination = new Point(Centre.X - _bondLength / 16, Centre.Y);
+                    destination = new Point(Centre.X - moveBy, Centre.Y);
                     break;
             }
+            
             AdjustPosition(destination - Centre);
         }
 

@@ -21,10 +21,6 @@ namespace Chem4Word.ACME.Graphics
 
     public abstract class Arrow : Shape
     {
-        #region "Fields"
-
-        #endregion "Fields"
-
         #region "Constructors"
 
         protected Arrow()

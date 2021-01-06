@@ -36,7 +36,7 @@ namespace Chem4Word.ACME.Controls
 
         public ChemistryCanvas()
         {
-            chemicalVisuals = new Dictionary<object, DrawingVisual>();
+            ChemicalVisuals = new Dictionary<object, DrawingVisual>();
             MouseMove += Canvas_MouseMove;
         }
 
@@ -95,7 +95,7 @@ namespace Chem4Word.ACME.Controls
                 }
                 else
                 {
-                    ActiveVisual = (chemicalVisuals[(value)] as ChemicalVisual);
+                    ActiveVisual = (ChemicalVisuals[(value)] as ChemicalVisual);
                 }
             }
         }
@@ -291,11 +291,11 @@ namespace Chem4Word.ACME.Controls
 
         private void RedrawMolecule(Molecule molecule, Rect? boundingBox = null)
         {
-            if (chemicalVisuals.ContainsKey(molecule))
+            if (ChemicalVisuals.ContainsKey(molecule))
             {
-                var doomed = chemicalVisuals[molecule];
+                var doomed = ChemicalVisuals[molecule];
                 DeleteVisual(doomed);
-                chemicalVisuals.Remove(molecule);
+                ChemicalVisuals.Remove(molecule);
             }
 
             bool showBrackets = molecule.ShowMoleculeBrackets.HasValue && molecule.ShowMoleculeBrackets.Value
@@ -304,11 +304,11 @@ namespace Chem4Word.ACME.Controls
                                 || molecule.SpinMultiplicity.HasValue && molecule.SpinMultiplicity.Value > 1;
 
             var groupKey = molecule.GetGroupKey();
-            if (chemicalVisuals.ContainsKey(groupKey)) //it's already in the list
+            if (ChemicalVisuals.ContainsKey(groupKey)) //it's already in the list
             {
-                var doomed = chemicalVisuals[groupKey];
+                var doomed = ChemicalVisuals[groupKey];
                 DeleteVisual(doomed);
-                chemicalVisuals.Remove(groupKey);
+                ChemicalVisuals.Remove(groupKey);
             }
 
             var footprint = GetExtents(molecule);
@@ -317,9 +317,9 @@ namespace Chem4Word.ACME.Controls
             {
                 //we may be passing in a null bounding box here
 
-                chemicalVisuals[groupKey] = new GroupVisual(molecule, ShowAtomsInColour, footprint);
-                var gv = (GroupVisual)chemicalVisuals[groupKey];
-                gv.ChemicalVisuals = chemicalVisuals;
+                ChemicalVisuals[groupKey] = new GroupVisual(molecule, ShowAtomsInColour, footprint);
+                var gv = (GroupVisual)ChemicalVisuals[groupKey];
+                gv.ChemicalVisuals = ChemicalVisuals;
                 gv.Render();
                 AddVisual(gv);
             }
@@ -332,7 +332,7 @@ namespace Chem4Word.ACME.Controls
             {
                 boundingBox.Value.Union(footprint);
                 var mv = new MoleculeVisual(molecule, footprint);
-                chemicalVisuals[molecule] = mv;
+                ChemicalVisuals[molecule] = mv;
                 mv.Render();
                 AddVisual(mv);
                 boundingBox.Value.Union(mv.ContentBounds);
@@ -342,34 +342,34 @@ namespace Chem4Word.ACME.Controls
         private void RedrawBond(Bond bond)
         {
             int refCount = 1;
-            BondVisual bv = null;
-            if (chemicalVisuals.ContainsKey(bond))
+            BondVisual bv;
+            if (ChemicalVisuals.ContainsKey(bond))
             {
-                bv = (BondVisual)chemicalVisuals[bond];
+                bv = (BondVisual)ChemicalVisuals[bond];
                 refCount = bv.RefCount;
                 BondRemoved(bond);
             }
 
             BondAdded(bond);
 
-            bv = (BondVisual)chemicalVisuals[bond];
+            bv = (BondVisual)ChemicalVisuals[bond];
             bv.RefCount = refCount;
         }
 
         private void RedrawAtom(Atom atom)
         {
             int refCount = 1;
-            AtomVisual av = null;
-            if (chemicalVisuals.ContainsKey(atom))
+            AtomVisual av;
+            if (ChemicalVisuals.ContainsKey(atom))
             {
-                av = (AtomVisual)chemicalVisuals[atom];
+                av = (AtomVisual)ChemicalVisuals[atom];
                 refCount = av.RefCount;
                 AtomRemoved(atom);
             }
 
             AtomAdded(atom);
 
-            av = (AtomVisual)chemicalVisuals[atom];
+            av = (AtomVisual)ChemicalVisuals[atom];
             av.RefCount = refCount;
         }
 
@@ -484,7 +484,7 @@ namespace Chem4Word.ACME.Controls
 
             try
             {
-                foreach (DrawingVisual element in chemicalVisuals.Values)
+                foreach (DrawingVisual element in ChemicalVisuals.Values)
                 {
                     var bounds = element.ContentBounds;
                     currentbounds.Union(bounds);
@@ -545,13 +545,13 @@ namespace Chem4Word.ACME.Controls
         //overrides
         protected override Visual GetVisualChild(int index)
         {
-            return chemicalVisuals.ElementAt(index).Value;
+            return ChemicalVisuals.ElementAt(index).Value;
         }
 
-        protected override int VisualChildrenCount => chemicalVisuals.Count;
+        protected override int VisualChildrenCount => ChemicalVisuals.Count;
 
         //bookkeeping collection
-        protected Dictionary<object, DrawingVisual> chemicalVisuals { get; }
+        protected Dictionary<object, DrawingVisual> ChemicalVisuals { get; }
 
         /// <summary>
         /// Draws the chemistry
@@ -574,12 +574,12 @@ namespace Chem4Word.ACME.Controls
 
         public void Clear()
         {
-            foreach (var visual in chemicalVisuals.Values)
+            foreach (var visual in ChemicalVisuals.Values)
             {
                 DeleteVisual(visual);
             }
 
-            chemicalVisuals.Clear();
+            ChemicalVisuals.Clear();
         }
 
         private void DeleteVisual(DrawingVisual visual)
@@ -600,7 +600,7 @@ namespace Chem4Word.ACME.Controls
 
             foreach (var m in molecule.Molecules.Values)
             {
-                if (chemicalVisuals.TryGetValue(m.GetGroupKey(), out DrawingVisual molVisual))
+                if (ChemicalVisuals.TryGetValue(m.GetGroupKey(), out DrawingVisual molVisual))
                 {
                     GroupVisual gv = (GroupVisual)molVisual;
                     bb.Union(gv.ContentBounds);
@@ -621,12 +621,12 @@ namespace Chem4Word.ACME.Controls
 
             foreach (var atom in molecule.Atoms.Values)
             {
-                var mv = (AtomVisual)chemicalVisuals[atom];
+                var mv = (AtomVisual)ChemicalVisuals[atom];
                 var contentBounds = mv.ContentBounds;
                 bb.Union(contentBounds);
             }
 
-            if (chemicalVisuals.TryGetValue(molecule, out DrawingVisual molvisual))
+            if (ChemicalVisuals.TryGetValue(molecule, out DrawingVisual molvisual))
             {
                 bb.Union(molvisual.ContentBounds);
             }
@@ -663,19 +663,19 @@ namespace Chem4Word.ACME.Controls
         private void MoleculeRemoved(Molecule molecule)
         {
             //get rid of the molecule visual if any
-            if (chemicalVisuals.TryGetValue(molecule, out DrawingVisual mv))
+            if (ChemicalVisuals.TryGetValue(molecule, out DrawingVisual mv))
             {
                 DeleteVisual((MoleculeVisual)mv);
-                chemicalVisuals.Remove(molecule);
+                ChemicalVisuals.Remove(molecule);
             }
             //do the group visual, if any
             if (molecule.IsGrouped
-                && chemicalVisuals.TryGetValue(molecule.GetGroupKey(), out DrawingVisual dv))
+                && ChemicalVisuals.TryGetValue(molecule.GetGroupKey(), out DrawingVisual dv))
             {
                 var gv = (GroupVisual)dv;
 
                 DeleteVisual(gv);
-                chemicalVisuals.Remove(molecule.GetGroupKey());
+                ChemicalVisuals.Remove(molecule.GetGroupKey());
             }
 
             foreach (Atom moleculeAtom in molecule.Atoms.Values)
@@ -696,25 +696,25 @@ namespace Chem4Word.ACME.Controls
 
         private void AtomAdded(Atom atom)
         {
-            if (!chemicalVisuals.ContainsKey(atom)) //it's not already in the list
+            if (!ChemicalVisuals.ContainsKey(atom)) //it's not already in the list
             {
                 if (atom.Element is FunctionalGroup)
                 {
-                    chemicalVisuals[atom] = new FunctionalGroupVisual(atom, ShowAtomsInColour);
+                    ChemicalVisuals[atom] = new FunctionalGroupVisual(atom, ShowAtomsInColour);
                 }
                 else
                 {
-                    chemicalVisuals[atom] = new AtomVisual(atom, ShowAtomsInColour, ShowImplicitHydrogens, ShowAllCarbonAtoms);
+                    ChemicalVisuals[atom] = new AtomVisual(atom, ShowAtomsInColour, ShowImplicitHydrogens, ShowAllCarbonAtoms);
                 }
             }
 
-            var cv = chemicalVisuals[atom];
+            var cv = ChemicalVisuals[atom];
 
             if (cv is FunctionalGroupVisual fgv)
             {
                 if (fgv.RefCount == 0) // it hasn't been added before
                 {
-                    fgv.ChemicalVisuals = chemicalVisuals;
+                    fgv.ChemicalVisuals = ChemicalVisuals;
 
                     fgv.BackgroundColor = Background;
                     fgv.SymbolSize = ViewModel.SymbolSize;
@@ -732,7 +732,7 @@ namespace Chem4Word.ACME.Controls
             {
                 if (av.RefCount == 0) // it hasn't been added before
                 {
-                    av.ChemicalVisuals = chemicalVisuals;
+                    av.ChemicalVisuals = ChemicalVisuals;
                     av.SymbolSize = ViewModel.SymbolSize;
                     av.SubscriptSize = ViewModel.SymbolSize * ViewModel.ScriptScalingFactor;
                     av.SuperscriptSize = ViewModel.SymbolSize * ViewModel.ScriptScalingFactor;
@@ -749,14 +749,14 @@ namespace Chem4Word.ACME.Controls
 
         private void AtomRemoved(Atom atom)
         {
-            if (chemicalVisuals.TryGetValue(atom, out DrawingVisual dv))
+            if (ChemicalVisuals.TryGetValue(atom, out DrawingVisual dv))
             {
                 var av = (AtomVisual)dv;
 
                 if (av.RefCount == 1) //removing this atom will remove the last visual
                 {
                     DeleteVisual(av);
-                    chemicalVisuals.Remove(atom);
+                    ChemicalVisuals.Remove(atom);
                 }
                 else
                 {
@@ -767,16 +767,16 @@ namespace Chem4Word.ACME.Controls
 
         private void BondAdded(Bond bond)
         {
-            if (!chemicalVisuals.ContainsKey(bond)) //it's already in the list
+            if (!ChemicalVisuals.ContainsKey(bond)) //it's already in the list
             {
-                chemicalVisuals[bond] = new BondVisual(bond);
+                ChemicalVisuals[bond] = new BondVisual(bond);
             }
 
-            BondVisual bv = (BondVisual)chemicalVisuals[bond];
+            BondVisual bv = (BondVisual)ChemicalVisuals[bond];
 
             if (bv.RefCount == 0) // it hasn't been added before
             {
-                bv.ChemicalVisuals = chemicalVisuals;
+                bv.ChemicalVisuals = ChemicalVisuals;
                 bv.BondThickness = Globals.BondThickness;
                 bv.Standoff = ViewModel.Standoff;
                 bv.Render();
@@ -788,14 +788,14 @@ namespace Chem4Word.ACME.Controls
 
         private void BondRemoved(Bond bond)
         {
-            if (chemicalVisuals.TryGetValue(bond, out DrawingVisual dv))
+            if (ChemicalVisuals.TryGetValue(bond, out DrawingVisual dv))
             {
                 var bv = (BondVisual)dv;
 
                 if (bv.RefCount == 1) //removing this atom will remove the last visual
                 {
                     DeleteVisual(bv);
-                    chemicalVisuals.Remove(bond);
+                    ChemicalVisuals.Remove(bond);
                 }
                 else
                 {

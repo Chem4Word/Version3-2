@@ -529,8 +529,8 @@ namespace Chem4Word.Model2
                 }
             }
 
-            // Join using Bullet character <Alt>0183
-            return string.Join(" · ", strings);
+            // Join using Bullet character
+            return string.Join(" • ", strings);
         }
 
         private void GatherFormulas(List<Molecule> molecules)

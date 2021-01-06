@@ -19,7 +19,7 @@ namespace Chem4Word.ACME.Drawing
     /// <summary>
     /// DrawingVisual based class for rendering an Atom label
     /// </summary>
-    public partial class AtomVisual : ChemicalVisual
+    public class AtomVisual : ChemicalVisual
     {
         public HydrogenVisual HydrogenChildVisual { get; set; }
         private ChargeVisual ChargeChildVisual { get; set; }
@@ -65,6 +65,7 @@ namespace Chem4Word.ACME.Drawing
         public int? Charge { get; set; }
         public int? Isotope { get; set; }
         public int ImplicitHydrogenCount { get; set; }
+        public CompassPoints HydrogenOrientation { get; set; }
 
         protected List<Point> CoreHull { get; set; }
 
@@ -139,7 +140,7 @@ namespace Chem4Word.ACME.Drawing
             }
         }
 
-        private void RenderAtomSymbol(DrawingContext drawingContext)
+        private void RenderAsSymbol(DrawingContext drawingContext)
         {
             //renders the atom complete with charges, hydrogens and labels.
             //this code is *complex* - alter it at your own risk!
@@ -174,9 +175,9 @@ namespace Chem4Word.ACME.Drawing
             //if we have implicit hydrogens and we have an explicit label, draw them
             if (ShowImplicitHydrogens && ImplicitHydrogenCount > 0 && AtomSymbol != "")
             {
-                var defaultHOrientation = ParentAtom.ImplicitHPlacement;
+                HydrogenOrientation = ParentAtom.ImplicitHPlacement;
 
-                HydrogenChildVisual = new HydrogenVisual(this, mainAtomMetrics, ImplicitHydrogenCount, SymbolSize, defaultHOrientation, drawingContext);
+                HydrogenChildVisual = new HydrogenVisual(this, mainAtomMetrics, ImplicitHydrogenCount, SymbolSize, drawingContext);
                 HydrogenChildVisual.Render();
                 AddVisualChild(HydrogenChildVisual);
                 children.Add(HydrogenChildVisual);
@@ -185,7 +186,10 @@ namespace Chem4Word.ACME.Drawing
             //stage 6:  draw an isotope label if needed
             if (Isotope != null)
             {
-                IsotopeChildVisual = new IsotopeVisual(this, drawingContext, mainAtomMetrics, HydrogenChildVisual?.Metrics);
+                IsotopeChildVisual = new IsotopeVisual(this,
+                                                       drawingContext,
+                                                       mainAtomMetrics,
+                                                       HydrogenChildVisual?.Metrics);
                 IsotopeChildVisual.Render();
                 AddVisualChild(IsotopeChildVisual);
                 children.Add(IsotopeChildVisual);
@@ -194,7 +198,7 @@ namespace Chem4Word.ACME.Drawing
             //stage7:  draw any charges
             if ((Charge ?? 0) != 0)
             {
-                ChargeChildVisual = new ChargeVisual(drawingContext, mainAtomMetrics, this, ParentAtom.ImplicitHPlacement);
+                ChargeChildVisual = new ChargeVisual(this, drawingContext, mainAtomMetrics, HydrogenChildVisual?.Metrics);
                 ChargeChildVisual.Render();
                 AddVisualChild(ChargeChildVisual);
                 children.Add(ChargeChildVisual);
@@ -291,18 +295,11 @@ namespace Chem4Word.ACME.Drawing
                     if (atomSymbol == "")
                     {
                         //draw an empty circle for hit testing purposes
-                        EllipseGeometry eg = new EllipseGeometry(ParentAtom.Position, Globals.AtomRadius, Globals.AtomRadius);
-
-                        dc.DrawGeometry(Brushes.Transparent, new Pen(Brushes.Transparent, 1.0), eg);
-                        //very simple hull definition
-                        CoreHull = new List<Point>();
-
-                        CoreHull.AddRange(new[] { eg.Bounds.BottomLeft, eg.Bounds.TopLeft, eg.Bounds.TopRight, eg.Bounds.BottomRight });
-                        dc.Close();
+                        RenderAsVertex(dc);
                     }
                     else
                     {
-                        RenderAtomSymbol(dc);
+                        RenderAsSymbol(dc);
 #if DEBUG
 #if SHOWHULLS
                         // Diag: Show the convex hull
@@ -318,6 +315,23 @@ namespace Chem4Word.ACME.Drawing
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Renders a 'vertex' carbon atom
+        /// (draws a transparent circle around it for hit testing)
+        /// </summary>
+        /// <param name="dc">DrawingContext to render the atom to</param>
+        private void RenderAsVertex(DrawingContext dc)
+        {
+            EllipseGeometry eg = new EllipseGeometry(ParentAtom.Position, Globals.AtomRadius, Globals.AtomRadius);
+
+            dc.DrawGeometry(Brushes.Transparent, new Pen(Brushes.Transparent, 1.0), eg);
+            //very simple hull definition
+            CoreHull = new List<Point>();
+
+            CoreHull.AddRange(new[] { eg.Bounds.BottomLeft, eg.Bounds.TopLeft, eg.Bounds.TopRight, eg.Bounds.BottomRight });
+            dc.Close();
         }
 
         #endregion Rendering

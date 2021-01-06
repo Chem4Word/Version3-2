@@ -15,17 +15,14 @@ namespace Chem4Word.ACME.Drawing
 {
     public class HydrogenVisual : ChildTextVisual
     {
-        public CompassPoints DefaultHOrientation { get; }
-
         /// <summary>
         /// Draws a subscripted hydrogen visual separately from the main atom visual
         /// </summary>
-        public HydrogenVisual(AtomVisual parent, AtomTextMetrics mainAtomMetrics, int implicitHydrogenCount, double symbolSize, CompassPoints defaultHOrientation, DrawingContext dc)
+        public HydrogenVisual(AtomVisual parent, AtomTextMetrics mainAtomMetrics, int implicitHydrogenCount, double symbolSize, DrawingContext dc)
         {
             ParentVisual = parent;
             ImplicitHydrogenCount = implicitHydrogenCount;
             SymbolSize = symbolSize;
-            DefaultHOrientation = defaultHOrientation;
             Context = dc;
             ParentMetrics = mainAtomMetrics;
             Fill = ParentVisual.Fill;
@@ -59,7 +56,7 @@ namespace Chem4Word.ACME.Drawing
         public override void Render()
         {
             var subscriptedGroup = new SubscriptedGroup(ImplicitHydrogenCount, "H", SymbolSize);
-            Metrics = subscriptedGroup.Measure(ParentMetrics, DefaultHOrientation, ParentVisual.PixelsPerDip());
+            Metrics = subscriptedGroup.Measure(ParentMetrics, ParentVisual.HydrogenOrientation, ParentVisual.PixelsPerDip());
             subscriptedGroup.DrawSelf(Context, Metrics, ParentVisual.PixelsPerDip(), Fill);
 
             CoreHull = FlattenedPath;

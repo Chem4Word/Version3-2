@@ -100,7 +100,7 @@ namespace Chem4Word.Model2
 
         private CompassPoints GetDefaultFGPlacement()
         {
-            if (Element is FunctionalGroup fg)
+            if (Element is FunctionalGroup)
             {
                 if (Bonds.Count() == 1)
                 {
@@ -569,7 +569,7 @@ namespace Chem4Word.Model2
                         double order = bond.OrderValue.Value;
                         if (order > 0.1)
                         {
-                            v = v * bond.OrderValue.Value;
+                            v *= bond.OrderValue.Value;
                         }
                     }
 
@@ -620,6 +620,14 @@ namespace Chem4Word.Model2
         /// How many atoms we haven't 'done' yet when we're traversing the graph
         /// </summary>
         public int UnprocessedDegree(Predicate<Atom> unprocessedTest) => UnprocessedNeighbours(unprocessedTest).Count;
+
+        public int UnprocessedDegree(Predicate<Atom> unprocessedTest, HashSet<Bond> excludeBonds)
+        {
+            var unproc = from a in UnprocessedNeighbours(unprocessedTest)
+                         where !excludeBonds.Contains(this.BondBetween(a)) && unprocessedTest(a)
+                         select a;
+            return unproc.Count();
+        }
 
         #endregion Properties
 
@@ -674,10 +682,19 @@ namespace Chem4Word.Model2
 
             if (ImplicitHydrogenCount >= 1 && Bonds.Any())
             {
-                double angleFromNorth = Vector.AngleBetween(BasicGeometry.ScreenNorth, BalancingVector(true));
-                orientation = Bonds.Count() == 1 ? BasicGeometry.SnapTo2EW(angleFromNorth) : BasicGeometry.SnapTo4NESW(angleFromNorth);
+                orientation = GetEmptySpaceForHs();
             }
 
+            return orientation;
+        }
+
+        public CompassPoints GetEmptySpaceForHs()
+        {
+            CompassPoints orientation;
+            double angleFromNorth = Vector.AngleBetween(BasicGeometry.ScreenNorth, BalancingVector(true));
+            orientation = Bonds.Count() == 1
+                ? BasicGeometry.SnapTo2EW(angleFromNorth)
+                : BasicGeometry.SnapTo4NESW(angleFromNorth);
             return orientation;
         }
 
@@ -723,14 +740,6 @@ namespace Chem4Word.Model2
         public void SendDummyNotif()
         {
             OnPropertyChanged(nameof(SymbolText));
-        }
-
-        public int UnprocessedDegree(Predicate<Atom> unprocessedTest, HashSet<Bond> excludeBonds)
-        {
-            var unproc = from a in UnprocessedNeighbours(unprocessedTest)
-                         where !excludeBonds.Contains(this.BondBetween(a)) && unprocessedTest(a)
-                         select a;
-            return unproc.Count();
         }
 
         public bool Equals(Atom other)

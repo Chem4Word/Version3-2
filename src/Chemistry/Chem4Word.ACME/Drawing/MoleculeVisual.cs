@@ -7,6 +7,7 @@
 
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;
 
@@ -58,7 +59,7 @@ namespace Chem4Word.ACME.Drawing
                 dc.DrawGeometry(bracketBrush, bracketPen, sg);
 
                 //now draw the charges and radicals
-                string chargeString = AtomHelpers.GetChargeString(_molecule.FormalCharge);
+                string chargeString = TextUtils.GetChargeString(_molecule.FormalCharge);
 
                 if (_molecule.SpinMultiplicity.HasValue && _molecule.SpinMultiplicity.Value > 1)
                 {

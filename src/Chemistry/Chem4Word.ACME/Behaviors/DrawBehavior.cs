@@ -553,9 +553,9 @@ namespace Chem4Word.ACME.Behaviors
                 _angleSnapper = new Snapper(position, EditViewModel);
             }
             else if (!(_currentAtomVisual is HydrogenVisual))
-            {
-                Mouse.Capture(CurrentEditor);
+            { 
                 _angleSnapper = new Snapper(_currentAtomVisual.ParentAtom.Position, EditViewModel);
+                Mouse.Capture(CurrentEditor);
                 _lastAtomVisual = _currentAtomVisual;
             }
             else //its a hydrogen visual

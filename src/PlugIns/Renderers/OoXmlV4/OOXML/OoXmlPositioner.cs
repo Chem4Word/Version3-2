@@ -35,6 +35,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         private PositionerOutputs Outputs { get; } = new PositionerOutputs();
 
         private const double EPSILON = 1e-4;
+        private TtfCharacter _hydrogenCharacter;
 
         public OoXmlPositioner(PositionerInputs inputs) => Inputs = inputs;
 
@@ -49,6 +50,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <returns>PositionerOutputs a class to hold all of the required output types</returns>
         public PositionerOutputs Position()
         {
+            _hydrogenCharacter = Inputs.TtfCharacterSet['H'];
+            
             int moleculeNo = 0;
 
             foreach (Molecule mol in Inputs.Model.Molecules.Values)
@@ -313,8 +316,6 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
             thisMoleculeExtents.SetMoleculeBracketExtents(rect);
 
-            TtfCharacter hydrogenCharacter = Inputs.TtfCharacterSet['H'];
-
             string characters = string.Empty;
 
             if (mol.FormalCharge.HasValue && mol.FormalCharge.Value != 0)
@@ -348,7 +349,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 var point = new Point(thisMoleculeExtents.MoleculeBracketsExtents.Right
                                       + OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE * Inputs.MeanBondLength,
                                       thisMoleculeExtents.MoleculeBracketsExtents.Top
-                                      + OoXmlHelper.ScaleCsTtfToCml(hydrogenCharacter.Height, Inputs.MeanBondLength) / 2);
+                                      + OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Height, Inputs.MeanBondLength) / 2);
                 PlaceString(characters, point, mol.Path);
             }
 
@@ -358,7 +359,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 var point = new Point(thisMoleculeExtents.MoleculeBracketsExtents.Right
                                       + OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE * Inputs.MeanBondLength,
                                       thisMoleculeExtents.MoleculeBracketsExtents.Bottom
-                                      + OoXmlHelper.ScaleCsTtfToCml(hydrogenCharacter.Height, Inputs.MeanBondLength) / 2);
+                                      + OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Height, Inputs.MeanBondLength) / 2);
                 PlaceString($"{mol.Count}", point, mol.Path);
             }
 
@@ -647,6 +648,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         case CompassPoints.North:
                             hydrogens.AdjustPosition(main.BoundingBox.TopLeft - hydrogens.BoundingBox.BottomLeft);
+                            hydrogens.Nudge(CompassPoints.East, main.BoundingBox.Width / 2 - OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) / 2);
                             break;
 
                         case CompassPoints.East:
@@ -655,6 +657,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                         case CompassPoints.South:
                             hydrogens.AdjustPosition(main.BoundingBox.BottomLeft - hydrogens.BoundingBox.TopLeft);
+                            hydrogens.Nudge(CompassPoints.East, main.BoundingBox.Width / 2 - OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) / 2);
                             break;
 
                         case CompassPoints.West:
@@ -949,7 +952,6 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             Point measure = new Point(centrePoint.X, centrePoint.Y);
 
             // Adjust size to allow for text box to be bigger than the text
-            TtfCharacter hydrogenCharacter = Inputs.TtfCharacterSet['H'];
 
             foreach (var label in labels)
             {
@@ -957,7 +959,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 var bb = MeasureString(label.Value, measure);
 
                 // Adjustments to take into account text box margins
-                bb.Width = bb.Width + OoXmlHelper.ScaleCsTtfToCml(hydrogenCharacter.Width, Inputs.MeanBondLength) * 2.5;
+                bb.Width = bb.Width + OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) * 2.5;
                 bb.Height = bb.Height * 1.5;
 
                 // 2. Place string characters such that they are hanging below the "line"

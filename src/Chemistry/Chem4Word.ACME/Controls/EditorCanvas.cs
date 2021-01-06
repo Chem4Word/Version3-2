@@ -36,7 +36,7 @@ namespace Chem4Word.ACME.Controls
             mol.BuildAtomList(atomList);
             foreach (Atom atom in atomList)
             {
-                union.Union(chemicalVisuals[atom].ContentBounds);
+                union.Union(ChemicalVisuals[atom].ContentBounds);
             }
 
             return union;
@@ -138,8 +138,8 @@ namespace Chem4Word.ACME.Controls
                 {
                     var startAtomPosition = transformedPositions[bond.StartAtom];
                     var endAtomPosition = transformedPositions[bond.EndAtom];
-                    var startAtomVisual = (AtomVisual)(chemicalVisuals[bond.StartAtom]);
-                    var endAtomVisual = (AtomVisual)(chemicalVisuals[bond.EndAtom]);
+                    var startAtomVisual = (AtomVisual)(ChemicalVisuals[bond.StartAtom]);
+                    var endAtomVisual = (AtomVisual)(ChemicalVisuals[bond.EndAtom]);
                     var descriptor = BondVisual.GetBondDescriptor(startAtomVisual, endAtomVisual, ViewModel.Model.XamlBondLength,
                                                        bond.Stereo, startAtomPosition, endAtomPosition, bond.OrderValue,
                                                        bond.Placement, bond.Centroid, bond.SubsidiaryRing?.Centroid, ViewModel.Standoff);
@@ -156,7 +156,7 @@ namespace Chem4Word.ACME.Controls
 
         public AtomVisual GetAtomVisual(Atom adornedAtom)
         {
-            return chemicalVisuals[adornedAtom] as AtomVisual;
+            return ChemicalVisuals[adornedAtom] as AtomVisual;
         }
 
         public MoleculeSelectionAdorner GetMoleculeAdorner(Point p)

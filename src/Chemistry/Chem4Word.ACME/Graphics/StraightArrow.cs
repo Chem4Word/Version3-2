@@ -24,7 +24,6 @@ namespace Chem4Word.ACME.Graphics
             set { SetValue(StartPointProperty, value); }
         }
 
-        
         public static readonly DependencyProperty StartPointProperty =
             DependencyProperty.Register("StartPoint", typeof(Point), typeof(Arrow),
                                         new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsRender

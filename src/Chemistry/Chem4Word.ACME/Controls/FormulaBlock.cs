@@ -44,9 +44,11 @@ namespace Chem4Word.ACME.Controls
 
                     if (formulaPart.Count > 1)
                     {
-                        Run subs = new Run(formulaPart.Count.ToString());
+                        Run subs = new Run(formulaPart.Count.ToString())
+                                   {
+                                       BaselineAlignment = BaselineAlignment.Subscript
+                                   };
 
-                        subs.BaselineAlignment = BaselineAlignment.Subscript;
                         subs.FontSize = subs.FontSize - 2;
                         formulaBlock.Inlines.Add(subs);
                     }

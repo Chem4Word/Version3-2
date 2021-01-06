@@ -8,8 +8,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
+using static Chem4Word.Model2.Geometry.CompassPoints;
 
 namespace Chem4Word.ACME.Drawing
 {
@@ -44,7 +46,7 @@ namespace Chem4Word.ACME.Drawing
         /// </summary>
         /// <param name="parentMetrics">Metrics of the parent atom</param>
         /// <param name="direction">Orientation of the group relative to the parent atom, i.e. NESW</param>
-        /// <param name="pixelsperDip">Display dependent parameter for  rendering text</param>
+        /// <param name="pixelsPerDip">Display dependent parameter for rendering text</param>
         /// <returns>AtomTextMetrics object describing placement</returns>
         public AtomTextMetrics Measure(AtomTextMetrics parentMetrics, CompassPoints direction, float pixelsPerDip)
         {
@@ -56,7 +58,7 @@ namespace Chem4Word.ACME.Drawing
             _mainText.Premeasure();
 
             //measure up the subscript (if we have one)
-            string subscriptText = AtomHelpers.GetSubText(Count);
+            string subscriptText = TextUtils.GetSubText(Count);
             if (subscriptText != "")
             {
                 _subText = new SubLabelText(subscriptText, pixelsPerDip, _fontSize * ViewModel.ScriptScalingFactor);
@@ -130,31 +132,30 @@ namespace Chem4Word.ACME.Drawing
             {
                 //all addition in this routine is *vector* addition.
                 //We are not adding absolute X and Y values
-                case CompassPoints.East:
-                default:
-                    adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenEast * adjunctWidth;
-                    break;
-
-                case CompassPoints.North:
+                case North:
                     adjunctCenter = parentMetrics.Geocenter +
                                     BasicGeometry.ScreenNorth * charHeight;
                     break;
 
-                case CompassPoints.West:
+                case West:
                     if (subscriptInfo != null)
                     {
-                        adjunctCenter = parentMetrics.Geocenter + (BasicGeometry.ScreenWest *
-                                                                   (adjunctWidth + subscriptInfo.Value.Width));
+                        adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenWest *
+                            (adjunctWidth + subscriptInfo.Value.Width);
                     }
                     else
                     {
-                        adjunctCenter = parentMetrics.Geocenter + (BasicGeometry.ScreenWest * (adjunctWidth));
+                        adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenWest * adjunctWidth;
                     }
                     break;
 
-                case CompassPoints.South:
+                case South:
                     adjunctCenter = parentMetrics.Geocenter +
                                     BasicGeometry.ScreenSouth * charHeight;
+                    break;
+
+                default:
+                    adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenEast * adjunctWidth;
                     break;
             }
             return adjunctCenter;
