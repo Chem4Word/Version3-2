@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2020, The .NET Foundation.
+//  Copyright (c) 2021, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -48,6 +49,10 @@ namespace Chem4Word.Telemetry
         public string IpAddress { get; set; }
 
         public string IpObtainedFrom { get; set; }
+
+        public string LastBootUpTime { get; set; }
+
+        public string LastLoginTime { get; set; }
 
         public string DotNetVersion { get; set; }
 
@@ -222,6 +227,8 @@ namespace Chem4Word.Telemetry
 
                 GetDotNetVersionFromRegistry();
 
+                GatherBootUpTimeEtc();
+
                 try
                 {
                     BrowserVersion = new WebBrowser().Version.ToString();
@@ -258,6 +265,44 @@ namespace Chem4Word.Telemetry
             }
 
             return new List<string>();
+        }
+
+        private void GatherBootUpTimeEtc()
+        {
+            LastBootUpTime = "";
+            LastLoginTime = "";
+
+            var q1 = "*[System/Provider/@Name='Microsoft-Windows-Kernel-General' and System/EventID=12]";
+            var d1 = LastEventDateTime(q1);
+            LastBootUpTime = $"{SafeDate.ToLongDate(d1.ToUniversalTime())}";
+
+            var q2 = "*[System/Provider/@Name='Microsoft-Windows-Winlogon' and System/EventID=7001]";
+            var d2 = LastEventDateTime(q2);
+            LastLoginTime = $"{SafeDate.ToLongDate(d2.ToUniversalTime())}";
+
+            // Local Function
+            DateTime LastEventDateTime(string query)
+            {
+                DateTime result = DateTime.UtcNow;
+
+                var eventLogQuery = new EventLogQuery("System", PathType.LogName, query);
+                using (var elReader = new EventLogReader(eventLogQuery))
+                {
+                    EventRecord eventInstance = elReader.ReadEvent();
+                    while (eventInstance != null)
+                    {
+                        if (eventInstance.TimeCreated.HasValue)
+                        {
+
+                            result = eventInstance.TimeCreated.Value.ToUniversalTime();
+                        }
+
+                        eventInstance = elReader.ReadEvent();
+                    }
+                }
+
+                return result;
+            }
         }
 
         public static string GetMachineId()

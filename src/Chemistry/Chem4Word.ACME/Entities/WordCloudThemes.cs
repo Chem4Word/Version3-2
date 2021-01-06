@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2020, The .NET Foundation.
+//  Copyright (c) 2021, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -39,22 +39,11 @@ namespace Chem4Word.ACME.Entities
 
         public static WordCloudTheme Default { get; private set; }
 
+        // ToDo: Get this working
+        // (SolidColorBrush) ColorConverter.ConvertFromString("#2A579A")
         private static readonly List<SolidColorBrush> ColorPalette = new List<SolidColorBrush>
                                                                       {
-                                                                          Brushes.BlueViolet,
-                                                                          Brushes.LawnGreen,
-                                                                          Brushes.CornflowerBlue,
-                                                                          Brushes.DarkRed,
-                                                                          Brushes.DarkBlue,
-                                                                          Brushes.DarkGreen,
-                                                                          Brushes.Navy,
-                                                                          Brushes.DarkCyan,
-                                                                          Brushes.DarkOrange,
-                                                                          Brushes.DarkGoldenrod,
-                                                                          Brushes.DarkKhaki,
-                                                                          Brushes.Blue,
-                                                                          Brushes.Red,
-                                                                          Brushes.Green
+                                                                          Brushes.DarkBlue
                                                                       };
 
     }

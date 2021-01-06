@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Chem4Word")]
 [assembly: AssemblyProduct("Wpf.FunctionalGroupEditor")]
-[assembly: AssemblyCopyright("© Chem4Word 2020. All rights reserved.")]
+[assembly: AssemblyCopyright("© Chem4Word 2021. All rights reserved.")]
 [assembly: AssemblyTrademark("Chem4Word")]
 [assembly: AssemblyCulture("")]
 

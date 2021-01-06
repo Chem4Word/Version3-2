@@ -30,7 +30,7 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/INT_ALIGN_SWITCH_SECTIONS/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/USE_INDENT_FROM_VS/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">---------------------------------------------------------------------------&#xD;
- Copyright (c) 2020, The .NET Foundation.&#xD;
+ Copyright (c) $CURRENT_YEAR$, The .NET Foundation.&#xD;
  This software is released under the Apache License, Version 2.0.&#xD;
  The license and further copyright text can be found in the file LICENSE.md&#xD;
  at the root directory of the distribution.&#xD;

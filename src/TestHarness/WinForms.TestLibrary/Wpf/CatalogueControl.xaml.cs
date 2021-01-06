@@ -494,15 +494,23 @@ namespace WinForms.TestLibrary.Wpf
                 var userTagsFile = Path.Combine(_acmeOptions.SettingsPath, UserTagsFileName);
                 if (File.Exists(userTagsFile))
                 {
-                    var json = File.ReadAllText(userTagsFile);
-                    _userTags = JsonConvert.DeserializeObject<SortedDictionary<string, long>>(json);
+                    try
+                    {
+                        var json = File.ReadAllText(userTagsFile);
+                        _userTags = JsonConvert.DeserializeObject<SortedDictionary<string, long>>(json);
+                    }
+                    catch
+                    {
+                        _userTags = new SortedDictionary<string, long>();
+                    }
                 }
 
                 var userTags = _userTags.Select(t => t.Key).ToList();
                 var databaseTagsDto = _library.GetAllTags();
                 var databaseTags = databaseTagsDto.Select(t => t.Text).ToList();
 
-                var structureTags = new List<string>(dc.SelectedChemistryObject.Tags);
+                var structureTags = dc.SelectedChemistryObject.Tags;
+                _lastTags = structureTags;
                 var availableTags = databaseTags.Union(userTags).Except(structureTags).ToList();
 
                 TaggingControl.TagControlModel = new TagControlModel(new ObservableCollection<string>(availableTags),
