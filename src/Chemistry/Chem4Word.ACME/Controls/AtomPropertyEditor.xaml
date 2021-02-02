@@ -48,7 +48,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
             <StackPanel
@@ -83,6 +83,7 @@
             <StackPanel Grid.Row="1" Grid.Column="0">
                 <!--  Properties of an Element  -->
                 <StackPanel Visibility="{Binding IsChecked, Converter={StaticResource VisConverter}, ElementName=Element}">
+                <!-- <StackPanel Visibility="Visible">-->
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -305,7 +306,6 @@
                                 <RowDefinition Height="35" />
                                 <RowDefinition Height="35" />
                                 <RowDefinition Height="35" />
-                                <RowDefinition Height="35" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="10" />
@@ -317,7 +317,8 @@
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="4"
-                                Margin="5,5,-49,5"
+                                Padding="0"
+                                Margin="5,0,-50,0"
                                 HorizontalAlignment="Stretch"
                                 Style="{StaticResource LabelTextBlock}"><Run FontSize="14" Text="Hydrogen Placement" /></TextBlock>
 
@@ -396,17 +397,18 @@
             <StackPanel
                 Grid.Row="1"
                 Grid.Column="1"
-                MaxWidth="212"
-                MaxHeight="212"
-                Margin="5">
+                MaxWidth="245"
+                MaxHeight="245"
+                Margin="5,5,5,0"
+                VerticalAlignment="Top" Height="245">
                 <Border
                     BorderBrush="DarkOrange"
                     BorderThickness="3"
                     CornerRadius="5">
                     <ACME:Display
                         x:Name="Preview"
-                        Width="200"
-                        Height="200"
+                        Width="230"
+                        Height="230"
                         Margin="3"
                         HighlightActive="False" />
                 </Border>
@@ -417,7 +419,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 HorizontalAlignment="Right"
-                Orientation="Horizontal">
+                Orientation="Horizontal" Width="170">
                 <Button Click="Save_OnClick" Content="OK" />
                 <Button Click="Close_OnClick" Content="Cancel" />
             </StackPanel>
