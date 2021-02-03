@@ -272,7 +272,7 @@ namespace Chem4Word.Telemetry
             LastBootUpTime = "";
             LastLoginTime = "";
 
-            var q1 = "*[System/Provider/@Name='Microsoft-Windows-Kernel-General' and System/EventID=12]";
+            var q1 = "*[System/Provider/@Name='Microsoft-Windows-Kernel-Boot' and System/EventID=27]";
             var d1 = LastEventDateTime(q1);
             LastBootUpTime = $"{SafeDate.ToLongDate(d1.ToUniversalTime())}";
 
@@ -283,7 +283,7 @@ namespace Chem4Word.Telemetry
             // Local Function
             DateTime LastEventDateTime(string query)
             {
-                DateTime result = DateTime.UtcNow;
+                DateTime result = DateTime.MinValue;
 
                 var eventLogQuery = new EventLogQuery("System", PathType.LogName, query);
                 using (var elReader = new EventLogReader(eventLogQuery))
@@ -293,14 +293,25 @@ namespace Chem4Word.Telemetry
                     {
                         if (eventInstance.TimeCreated.HasValue)
                         {
-
-                            result = eventInstance.TimeCreated.Value.ToUniversalTime();
+                            var thisTime = eventInstance.TimeCreated.Value.ToUniversalTime();
+                            if (thisTime > result)
+                            {
+                                result = thisTime;
+                            }
+                            else
+                            {
+                                Debugger.Break();
+                            }
                         }
 
                         eventInstance = elReader.ReadEvent();
                     }
                 }
 
+                if (result == DateTime.MinValue)
+                {
+                    result = DateTime.UtcNow;
+                }
                 return result;
             }
         }
