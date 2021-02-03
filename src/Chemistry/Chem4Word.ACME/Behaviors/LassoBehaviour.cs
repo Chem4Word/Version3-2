@@ -573,22 +573,27 @@ namespace Chem4Word.ACME.Behaviors
                 case AtomVisual av:
                     {
                         var atom = av.ParentAtom;
-                        var rootMolecule = atom.Parent.RootMolecule;
-                        if (rootMolecule.IsGrouped)
+                        //check just in case the parent atom is null -- can happen occasionally
+                        if (atom != null)
                         {
-                            EditViewModel.AddToSelection(rootMolecule);
-                        }
-                        else
-                        {
-                            if (!EditViewModel.SelectedItems.Contains(atom))
+                            var rootMolecule = atom.Parent.RootMolecule;
+                            if (rootMolecule.IsGrouped)
                             {
-                                EditViewModel.AddToSelection(atom);
+                                EditViewModel.AddToSelection(rootMolecule);
                             }
                             else
                             {
-                                EditViewModel.RemoveFromSelection(atom);
+                                if (!EditViewModel.SelectedItems.Contains(atom))
+                                {
+                                    EditViewModel.AddToSelection(atom);
+                                }
+                                else
+                                {
+                                    EditViewModel.RemoveFromSelection(atom);
+                                }
                             }
                         }
+
                         CurrentStatus = ActiveSelText;
                         break;
                     }

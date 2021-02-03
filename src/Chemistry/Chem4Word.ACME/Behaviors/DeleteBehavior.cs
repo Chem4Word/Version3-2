@@ -33,7 +33,8 @@ namespace Chem4Word.ACME.Behaviors
             _cursor = CurrentEditor.Cursor;
             CurrentEditor.Cursor = CursorUtils.Eraser;
             CurrentEditor.MouseLeftButtonDown += CurrentEditor_MouseLeftButtonDown;
-
+            //set up an intercept on mouse move to control adorner visibility
+            CurrentEditor.PreviewMouseMove += CurrentEditor_PreviewMouseMove;
             CurrentEditor.IsHitTestVisible = true;
             if (_parent != null)
             {
@@ -44,9 +45,27 @@ namespace Chem4Word.ACME.Behaviors
             CurrentStatus = "Click to remove an atom or bond.";
         }
 
+        private void CurrentEditor_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            //needed to detect when we are over a hydrogen visual
+            var hitTestResult = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
+            if (hitTestResult is HydrogenVisual hv)
+            {
+                //turn off the H adorner display
+                e.Handled = true;
+                //and set the active visual to the parent
+                CurrentEditor.ActiveVisual = hv.ParentVisual;
+            }
+        }
+
         private void CurrentEditor_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var hitTestResult = CurrentEditor.ActiveVisual;
+            if (hitTestResult is HydrogenVisual)
+            {
+                //bail out - we shouldn't be deleting implicit Hs
+                return;
+            }
             if (hitTestResult is GroupVisual gv)
             {
                 var parent = gv.ParentMolecule;
@@ -75,6 +94,7 @@ namespace Chem4Word.ACME.Behaviors
             if (CurrentEditor != null)
             {
                 CurrentEditor.MouseLeftButtonDown -= CurrentEditor_MouseLeftButtonDown;
+                CurrentEditor.PreviewMouseMove -= CurrentEditor_PreviewMouseMove;
                 CurrentEditor.IsHitTestVisible = false;
                 CurrentEditor.Cursor = _cursor;
                 CurrentStatus = "";

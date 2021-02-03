@@ -5,9 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
 using System.Linq;
-using static Chem4Word.Model2.Helpers.Globals;
+
 namespace Chem4Word.Model2.Helpers
 {
     public static class AtomHelpers

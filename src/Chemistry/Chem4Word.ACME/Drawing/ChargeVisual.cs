@@ -77,7 +77,7 @@ namespace Chem4Word.ACME.Drawing
                         case CompassPoints.South:
                         case CompassPoints.West:
                             chargeCenter.Y -= parentBoundingBox.Height / 2;
-                            chargeCenter.X += (chargeBoundingBox.Width + parentBoundingBox.Width)/2;
+                            chargeCenter.X += (chargeBoundingBox.Width + parentBoundingBox.Width) / 2;
                             break;
 
                         //hydrogen is out of the way

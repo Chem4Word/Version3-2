@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
 using static Chem4Word.Model2.Geometry.CompassPoints;
 
 namespace Chem4Word.ACME.Drawing
