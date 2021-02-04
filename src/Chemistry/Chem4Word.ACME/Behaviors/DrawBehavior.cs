@@ -548,6 +548,8 @@ namespace Chem4Word.ACME.Behaviors
             var position = e.GetPosition(CurrentEditor);
             _currentAtomVisual = CurrentEditor.GetTargetedVisual(position) as AtomVisual;
 
+            IsDrawing = true;
+
             if (_currentAtomVisual is null)
             {
                 _angleSnapper = new Snapper(position, EditViewModel);
@@ -562,8 +564,9 @@ namespace Chem4Word.ACME.Behaviors
             {
                 HydrogenVisual hv = (HydrogenVisual)_currentAtomVisual;
                 EditViewModel.RotateHydrogen(hv.ParentVisual.ParentAtom);
+                IsDrawing = false;  //stops drop of an isolated atom
+                e.Handled = true;
             }
-            IsDrawing = true;
         }
 
         private bool Dragging(MouseEventArgs e)
