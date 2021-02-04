@@ -251,7 +251,7 @@
                         <Grid
                             Name="HydrogenPlacementGrid"
                             Grid.Row="1"
-                            Visibility="{Binding IsNotSingleton, Converter={StaticResource VisConverter}, Mode=OneWay}">
+                            Visibility="{Binding ShowCompass, Converter={StaticResource VisConverter}, Mode=OneWay}">
                             <Grid.Resources>
                                 <Style TargetType="ToggleButton">
                                     <Setter Property="Background" Value="Transparent" />

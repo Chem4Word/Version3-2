@@ -27,7 +27,7 @@ namespace Chem4Word.ACME.Controls
     /// <summary>
     /// Interaction logic for AtomPropertyEditor.xaml
     /// </summary>
-    public partial class AtomPropertyEditor : Window, INotifyPropertyChanged
+    public partial class AtomPropertyEditor : INotifyPropertyChanged
     {
         private bool _closedByUser;
         private bool IsDirty { get; set; }
@@ -249,6 +249,7 @@ namespace Chem4Word.ACME.Controls
                 atom.FormalCharge = AtomPropertiesModel.Charge;
                 atom.ExplicitC = AtomPropertiesModel.ExplicitC;
                 atom.ExplicitHPlacement = AtomPropertiesModel.HPlacement;
+
                 if (string.IsNullOrEmpty(AtomPropertiesModel.Isotope))
                 {
                     atom.IsotopeNumber = null;
@@ -257,6 +258,8 @@ namespace Chem4Word.ACME.Controls
                 {
                     atom.IsotopeNumber = int.Parse(AtomPropertiesModel.Isotope);
                 }
+                //show/hide the compass
+                AtomPropertiesModel.ShowCompass = atom.ShowSymbol && atom.ImplicitHydrogenCount > 0;
             }
 
             if (AtomPropertiesModel.IsFunctionalGroup)

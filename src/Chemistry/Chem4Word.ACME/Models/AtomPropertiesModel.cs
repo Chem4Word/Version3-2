@@ -21,6 +21,7 @@ namespace Chem4Word.ACME.Models
         private bool _isFunctionalGroup;
         private bool _isElement;
         private CompassPoints? _hPlacement;
+        private bool _showCompass;
 
         public ElementBase AddedElement { get; set; }
 
@@ -138,5 +139,18 @@ namespace Chem4Word.ACME.Models
         }
 
         public object IsNotSingleton { get; set; }
+
+        public bool ShowCompass { 
+            get
+
+            {
+                return _showCompass;
+            }
+            set
+            {
+                _showCompass = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }
