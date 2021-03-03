@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -138,7 +137,7 @@ namespace Chem4Word.ACME.Models
 
         public string MolecularWeightAsString => $"{MolecularWeight:N3}";
 
-        List<string> _tags = new List<string>();
+        private List<string> _tags = new List<string>();
 
         /// <summary>
         /// List of Tags

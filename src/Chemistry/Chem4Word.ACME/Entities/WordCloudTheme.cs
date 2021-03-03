@@ -45,6 +45,5 @@ namespace Chem4Word.ACME.Entities
         {
             get;
         }
-
     }
 }

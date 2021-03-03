@@ -20,8 +20,9 @@ namespace Chem4Word.ACME.Models
         private bool? _explicitC;
         private bool _isFunctionalGroup;
         private bool _isElement;
-        private CompassPoints? _hPlacement;
         private bool _showCompass;
+        private CompassPoints? _explicitHydrogenPlacement;
+        private CompassPoints? _fgPlacement;
 
         public ElementBase AddedElement { get; set; }
 
@@ -74,12 +75,22 @@ namespace Chem4Word.ACME.Models
             }
         }
 
-        public CompassPoints? HPlacement
+        public CompassPoints? ExplicitHydrogenPlacement
         {
-            get => _hPlacement;
+            get => _explicitHydrogenPlacement;
             set
             {
-                _hPlacement = value;
+                _explicitHydrogenPlacement = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CompassPoints? ExplicitFunctionalGroupPlacement
+        {
+            get => _fgPlacement;
+            set
+            {
+                _fgPlacement = value;
                 OnPropertyChanged();
             }
         }
@@ -140,7 +151,8 @@ namespace Chem4Word.ACME.Models
 
         public object IsNotSingleton { get; set; }
 
-        public bool ShowCompass { 
+        public bool ShowCompass
+        {
             get
 
             {

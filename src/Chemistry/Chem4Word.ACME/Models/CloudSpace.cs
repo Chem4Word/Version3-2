@@ -12,7 +12,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Interfaces;
 
 namespace Chem4Word.ACME.Models

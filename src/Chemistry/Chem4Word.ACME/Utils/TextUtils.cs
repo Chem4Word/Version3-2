@@ -38,11 +38,11 @@ namespace Chem4Word.ACME.Utils
                 chargeString = "+";
             }
             //use the en-rule for single negative charges - it makes them more distinct
-            else 
+            else
             {
                 chargeString = Globals.EnDashSymbol;
             }
-           
+
             int abscharge;
             if ((abscharge = Math.Abs(charge ?? 0)) > 1)
             {

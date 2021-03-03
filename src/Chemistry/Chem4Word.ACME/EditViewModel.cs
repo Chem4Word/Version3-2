@@ -2998,21 +2998,27 @@ namespace Chem4Word.ACME
 
                 ElementBase elementBaseBefore = atom.Element;
                 int? chargeBefore = atom.FormalCharge;
+                CompassPoints? explicitFGPlacementBefore = atom.ExplicitFunctionalGroupPlacement;
                 int? isotopeBefore = atom.IsotopeNumber;
                 bool? explicitCBefore = atom.ExplicitC;
-                CompassPoints? hPlacementBefore = atom.ExplicitHPlacement;
+                CompassPoints? hydrogenPlacementBefore = atom.ExplicitHPlacement;
 
                 ElementBase elementBaseAfter = model.Element;
                 int? chargeAfter = null;
                 int? isotopeAfter = null;
                 bool? explicitCAfter = null;
-                CompassPoints? hPlacementAfter = null;
 
-                if (elementBaseAfter is Element)
+                CompassPoints? hydrogenPlacementAfter = null;
+                CompassPoints? explicitFGPlacementAfter = null;
+                if (elementBaseAfter is FunctionalGroup)
+                {
+                    explicitFGPlacementAfter = model.ExplicitFunctionalGroupPlacement;
+                }
+                else if (elementBaseAfter is Element)
                 {
                     chargeAfter = model.Charge;
                     explicitCAfter = model.ExplicitC;
-                    hPlacementAfter = model.HPlacement;
+                    hydrogenPlacementAfter = model.ExplicitHydrogenPlacement;
                     if (!string.IsNullOrEmpty(model.Isotope))
                     {
                         isotopeAfter = int.Parse(model.Isotope);
@@ -3025,7 +3031,8 @@ namespace Chem4Word.ACME
                                   atom.FormalCharge = chargeAfter;
                                   atom.IsotopeNumber = isotopeAfter;
                                   atom.ExplicitC = explicitCAfter;
-                                  atom.ExplicitHPlacement = hPlacementAfter;
+                                  atom.ExplicitHPlacement = hydrogenPlacementAfter;
+                                  atom.ExplicitFunctionalGroupPlacement = explicitFGPlacementAfter;
                                   atom.Parent.UpdateVisual();
                                   //freshen any selection adorner
                                   if (SelectedItems.Contains(atom))
@@ -3041,7 +3048,8 @@ namespace Chem4Word.ACME
                                   atom.FormalCharge = chargeBefore;
                                   atom.IsotopeNumber = isotopeBefore;
                                   atom.ExplicitC = explicitCBefore;
-                                  atom.ExplicitHPlacement = hPlacementBefore;
+                                  atom.ExplicitHPlacement = hydrogenPlacementBefore;
+                                  atom.ExplicitFunctionalGroupPlacement = explicitFGPlacementBefore;
                                   atom.Parent.UpdateVisual();
                                   //freshen any selection adorner
                                   if (SelectedItems.Contains(atom))

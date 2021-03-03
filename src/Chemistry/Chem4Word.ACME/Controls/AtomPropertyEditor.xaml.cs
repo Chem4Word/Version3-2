@@ -129,7 +129,7 @@ namespace Chem4Word.ACME.Controls
                     break;
                 }
 
-                if (option.Element is FunctionalGroup fg)
+                if (option.Element is FunctionalGroup)
                 {
                     // Ignore any Functional Groups in the picker (if present)
                 }
@@ -163,6 +163,16 @@ namespace Chem4Word.ACME.Controls
 
         private void ChargeCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            HandleIsotopeOrChargeChange();
+        }
+
+        private void IsotopePicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            HandleIsotopeOrChargeChange();
+        }
+
+        private void HandleIsotopeOrChargeChange()
+        {
             SetStateOfExplicitCarbonCheckbox();
             ShowPreview();
         }
@@ -189,12 +199,6 @@ namespace Chem4Word.ACME.Controls
                     ExplicitCheckBox.IsEnabled = false;
                 }
             }
-        }
-
-        private void IsotopePicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SetStateOfExplicitCarbonCheckbox();
-            ShowPreview();
         }
 
         private void ExplicitCheckBox_OnClick(object sender, RoutedEventArgs e)
@@ -243,12 +247,15 @@ namespace Chem4Word.ACME.Controls
             var atoms = AtomPropertiesModel.MicroModel.GetAllAtoms();
             var atom = atoms[0];
 
+            AtomPropertiesModel.ShowCompass = false;
+
+            atom.Element = AtomPropertiesModel.Element;
+
             if (AtomPropertiesModel.IsElement)
             {
-                atom.Element = AtomPropertiesModel.Element;
                 atom.FormalCharge = AtomPropertiesModel.Charge;
                 atom.ExplicitC = AtomPropertiesModel.ExplicitC;
-                atom.ExplicitHPlacement = AtomPropertiesModel.HPlacement;
+                atom.ExplicitHPlacement = AtomPropertiesModel.ExplicitHydrogenPlacement;
 
                 if (string.IsNullOrEmpty(AtomPropertiesModel.Isotope))
                 {
@@ -258,16 +265,24 @@ namespace Chem4Word.ACME.Controls
                 {
                     atom.IsotopeNumber = int.Parse(AtomPropertiesModel.Isotope);
                 }
-                //show/hide the compass
-                AtomPropertiesModel.ShowCompass = atom.ShowSymbol && atom.ImplicitHydrogenCount > 0;
+
+                if (atom.Element is Element)
+                {
+                    AtomPropertiesModel.ShowCompass = atom.ShowSymbol && atom.ImplicitHydrogenCount > 0;
+                }
             }
 
             if (AtomPropertiesModel.IsFunctionalGroup)
             {
-                atom.Element = AtomPropertiesModel.Element;
+                atom.ExplicitFunctionalGroupPlacement = AtomPropertiesModel.ExplicitFunctionalGroupPlacement;
                 atom.FormalCharge = null;
                 atom.ExplicitC = null;
                 atom.IsotopeNumber = null;
+
+                if (AtomPropertiesModel.Element is FunctionalGroup fg)
+                {
+                    AtomPropertiesModel.ShowCompass = fg.Flippable;
+                }
             }
 
             SetPreviewProperties();
@@ -315,6 +330,36 @@ namespace Chem4Word.ACME.Controls
         private void PlacementButton_OnChecked(object sender, RoutedEventArgs e)
         {
             ShowPreview();
+        }
+
+        private void FGPlacementButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            ShowPreview();
+        }
+
+        private void Element_OnClick(object sender, RoutedEventArgs e)
+        {
+            var atoms = AtomPropertiesModel.MicroModel.GetAllAtoms();
+            var atom = atoms[0];
+
+            AtomPropertiesModel.ShowCompass = false;
+
+            if (AtomPropertiesModel.IsElement
+                && AtomPropertiesModel.Element is Element)
+            {
+                AtomPropertiesModel.ShowCompass = atom.ShowSymbol && atom.ImplicitHydrogenCount > 0;
+            }
+        }
+
+        private void FunctionalGroup_OnClick(object sender, RoutedEventArgs e)
+        {
+            AtomPropertiesModel.ShowCompass = false;
+
+            if (AtomPropertiesModel.IsFunctionalGroup
+                && AtomPropertiesModel.Element is FunctionalGroup fg)
+            {
+                AtomPropertiesModel.ShowCompass = fg.Flippable;
+            }
         }
     }
 }

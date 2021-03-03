@@ -186,13 +186,14 @@ namespace Chem4Word.ACME.Utils
                             model.Charge = atom.FormalCharge ?? 0;
                             model.Isotope = atom.IsotopeNumber.ToString();
                             model.ExplicitC = atom.ExplicitC;
-                            model.HPlacement = atom.ExplicitHPlacement;
+                            model.ExplicitHydrogenPlacement = atom.ExplicitHPlacement;
                         }
 
                         if (atom.Element is FunctionalGroup)
                         {
                             model.IsElement = false;
                             model.IsFunctionalGroup = true;
+                            model.ExplicitFunctionalGroupPlacement = atom.ExplicitFunctionalGroupPlacement;
                         }
 
                         model.IsNotSingleton = !atom.Singleton;

@@ -31,7 +31,7 @@ namespace Chem4Word.ACME.Behaviors
             base.OnDetaching();
         }
 
-        void AssociatedObject_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void AssociatedObject_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             e.Handled = true;
 

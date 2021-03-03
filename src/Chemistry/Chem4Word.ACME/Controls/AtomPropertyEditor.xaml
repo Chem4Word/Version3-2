@@ -6,13 +6,14 @@
     xmlns:compass="clr-namespace:Chem4Word.Model2.Geometry;assembly=Chem4Word.Model2"
     xmlns:conv="clr-namespace:Chem4Word.ACME.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dvm="clr-namespace:Chem4Word.ACME.Controls.DesignTimeModels"
     xmlns:local="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Chem4Word.ACME.Models"
     x:Name="PropertyEditor"
     Title="Atom Properties"
     MinWidth="200"
-    d:DataContext="{d:DesignInstance {x:Type models:AtomPropertiesModel}}"
+    d:DataContext="{d:DesignInstance {x:Type dvm:ApeDesigner},
+                                     IsDesignTimeCreatable=True}"
     Closing="AtomPropertyEditor_OnClosing"
     ContentRendered="AtomPropertyEditor_OnContentRendered"
     Icon="/Chem4Word.ACME;component/Resources/ms-word-16.ico"
@@ -37,6 +38,53 @@
                 FalseValue="Visible"
                 TrueValue="Collapsed" />
             <conv:NullableEnumToBooleanConverter x:Key="PlacementConverter" />
+            <Style x:Key="PlacementButtonStyle" TargetType="ToggleButton">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="FontWeight" Value="Regular" />
+                <Setter Property="FontFamily" Value="Arial" />
+                <Setter Property="Padding" Value="0,0,0,0" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="3*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Border
+                                    Grid.RowSpan="3"
+                                    Grid.ColumnSpan="3"
+                                    BorderBrush="DarkOrange"
+                                    BorderThickness="2"
+                                    Visibility="{TemplateBinding IsChecked,
+                                                                 Converter={StaticResource VisConverter}}" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    FontWeight="{TemplateBinding FontWeight}"
+                                    Text="{TemplateBinding Content}" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Border Margin="5">
@@ -66,12 +114,14 @@
                 <StackPanel Orientation="Horizontal">
                     <RadioButton
                         x:Name="Element"
+                        Click="Element_OnClick"
                         IsChecked="{Binding IsElement, Mode=TwoWay}"
                         Style="{StaticResource StandardRadioButton}">
                         <TextBlock Style="{StaticResource RadioButtonTextBlock}">Element</TextBlock>
                     </RadioButton>
                     <RadioButton
                         x:Name="FunctionalGroup"
+                        Click="FunctionalGroup_OnClick"
                         IsChecked="{Binding IsFunctionalGroup, Mode=TwoWay}"
                         Style="{StaticResource StandardRadioButton}">
                         <TextBlock Style="{StaticResource RadioButtonTextBlock}">Functional Group</TextBlock>
@@ -83,7 +133,7 @@
             <StackPanel Grid.Row="1" Grid.Column="0">
                 <!--  Properties of an Element  -->
                 <StackPanel Visibility="{Binding IsChecked, Converter={StaticResource VisConverter}, ElementName=Element}">
-                <!-- <StackPanel Visibility="Visible">-->
+                    <!-- <StackPanel Visibility="Visible">-->
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -131,7 +181,7 @@
                                     x:Name="AtomPicker"
                                     Width="Auto"
                                     Height="Auto"
-                                    MinWidth="48"
+                                    MinWidth="50"
                                     MinHeight="25"
                                     Margin="5"
                                     Background="{x:Static SystemColors.WindowBrush}"
@@ -230,6 +280,8 @@
                             <TextBlock
                                 Grid.Row="3"
                                 Grid.Column="0"
+                                Margin="5,0,0,7"
+                                VerticalAlignment="Bottom"
                                 Style="{StaticResource LabelTextBlock}"
                                 Visibility="{Binding HasIsotopes, Converter={StaticResource VisConverter}, Mode=OneWay}"><Run Text="Isotope" /></TextBlock>
                             <ComboBox
@@ -252,135 +304,103 @@
                             Name="HydrogenPlacementGrid"
                             Grid.Row="1"
                             Visibility="{Binding ShowCompass, Converter={StaticResource VisConverter}, Mode=OneWay}">
-                            <Grid.Resources>
-                                <Style TargetType="ToggleButton">
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="FontSize" Value="20" />
-                                    <Setter Property="FontWeight" Value="Regular" />
-                                    <Setter Property="FontFamily" Value="Arial" />
-                                    <Setter Property="Padding" Value="0,0,0,0" />
-                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="3*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*" />
-                                                        <RowDefinition Height="3*" />
-                                                        <RowDefinition Height="*" />
-                                                    </Grid.RowDefinitions>
-                                                    <Border
-                                                        Grid.RowSpan="3"
-                                                        Grid.ColumnSpan="3"
-                                                        BorderBrush="DarkOrange"
-                                                        BorderThickness="2"
-                                                        Visibility="{TemplateBinding IsChecked,
-                                                                                     Converter={StaticResource VisConverter}}" />
-                                                    <TextBlock
-                                                        Grid.Row="1"
-                                                        Grid.Column="1"
-                                                        HorizontalAlignment="Center"
-                                                        FontSize="{TemplateBinding FontSize}"
-                                                        FontWeight="{TemplateBinding FontWeight}"
-                                                        Text="{TemplateBinding Content}" />
-                                                </Grid>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsChecked" Value="True">
-                                                        <Setter Property="FontWeight" Value="Bold" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Grid.Resources>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="5" />
-                                <RowDefinition Height="35" />
-                                <RowDefinition Height="35" />
-                                <RowDefinition Height="35" />
-                                <RowDefinition Height="35" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="35" />
-                                <ColumnDefinition Width="35" />
-                                <ColumnDefinition Width="35" />
-                            </Grid.ColumnDefinitions>
                             <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="4"
-                                Padding="0"
-                                Margin="5,0,-50,0"
+                                Grid.Row="0"
+                                Margin="5,0,0,0"
                                 HorizontalAlignment="Stretch"
                                 Style="{StaticResource LabelTextBlock}"><Run FontSize="14" Text="Hydrogen Placement" /></TextBlock>
-
-                            <ToggleButton
-                                Name="AutoButton"
-                                Grid.Row="3"
-                                Grid.Column="2"
-                                Checked="PlacementButton_OnChecked"
-                                IsChecked="{Binding HPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Null}}"
-                                ToolTip="Automatic">
-                                A
-                            </ToggleButton>
-                            <ToggleButton
-                                Name="NorthButton"
-                                Grid.Row="2"
-                                Grid.Column="2"
-                                Checked="PlacementButton_OnChecked"
-                                IsChecked="{Binding HPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.North}}"
-                                ToolTip="North">
-                                H
-                            </ToggleButton>
-                            <ToggleButton
-                                Name="SouthButton"
-                                Grid.Row="4"
-                                Grid.Column="2"
-                                Checked="PlacementButton_OnChecked"
-                                IsChecked="{Binding HPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.South}}"
-                                ToolTip="South">
-                                H
-                            </ToggleButton>
-                            <ToggleButton
-                                Name="EastButton"
-                                Grid.Row="3"
-                                Grid.Column="3"
-                                Checked="PlacementButton_OnChecked"
-                                IsChecked="{Binding HPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.East}}"
-                                ToolTip="East">
-                                H
-                            </ToggleButton>
-                            <ToggleButton
-                                Name="WestButton"
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                Checked="PlacementButton_OnChecked"
-                                IsChecked="{Binding HPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.West}}"
-                                ToolTip="West">
-                                H
-                            </ToggleButton>
+                            <Grid Grid.Row="1" Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35" />
+                                    <RowDefinition Height="35" />
+                                    <RowDefinition Height="35" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="35" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton
+                                    Name="AutoButton"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Checked="PlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Null}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="Automatic">
+                                    A
+                                </ToggleButton>
+                                <ToggleButton
+                                    Name="NorthButton"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Checked="PlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.North}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="North">
+                                    N
+                                </ToggleButton>
+                                <ToggleButton
+                                    Name="SouthButton"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Checked="PlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.South}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="South">
+                                    S
+                                </ToggleButton>
+                                <ToggleButton
+                                    Name="EastButton"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Checked="PlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.East}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="East">
+                                    E
+                                </ToggleButton>
+                                <ToggleButton
+                                    Name="WestButton"
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Checked="PlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.West}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="West">
+                                    W
+                                </ToggleButton>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </StackPanel>
-
                 <!--  Properties of a Functional Group  -->
-                <StackPanel Orientation="Horizontal" Visibility="{Binding IsChecked, Converter={StaticResource VisConverter}, ElementName=FunctionalGroup}">
-                    <TextBlock Margin="5" Style="{StaticResource LabelTextBlock}"><Run Text="Group" /></TextBlock>
+                <Grid
+                    Width="Auto"
+                    Height="Auto"
+                    Visibility="{Binding IsChecked, Converter={StaticResource VisConverter}, ElementName=FunctionalGroup}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Padding="0,0" Style="{StaticResource LabelTextBlock}"><Run Text="Group" /></TextBlock>
                     <ComboBox
                         x:Name="FunctionalGroupPicker"
+                        Grid.Row="0"
+                        Grid.Column="1"
                         Width="Auto"
                         Height="Auto"
                         MinWidth="60"
                         MinHeight="25"
-                        Margin="5"
+                        Margin="0,5,0,5"
                         Background="{x:Static SystemColors.WindowBrush}"
                         FontFamily="Arial"
                         FontSize="18"
@@ -390,17 +410,73 @@
                         SelectedValuePath="Element"
                         SelectionChanged="FunctionalGroupPicker_OnSelectionChanged"
                         ToolTip="Click to choose Functional Group" />
-                </StackPanel>
+                    <Grid
+                        Name="FuncGroupPlacementGrid"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Height="Auto"
+                        Visibility="{Binding ShowCompass, Converter={StaticResource VisConverter}, Mode=OneWay}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                Margin="5,5,0,0"
+                                Style="{StaticResource LabelTextBlock}"><Run FontSize="14" Text="Group Placement" /></TextBlock>
+                            <Grid Grid.Row="1" Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="35" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton
+                                    Name="FGAutoButton"
+                                    Grid.Column="1"
+                                    Checked="FGPlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Null}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="Automatic">
+                                    A
+                                </ToggleButton>
+                                <ToggleButton
+                                    Name="FGEastButton"
+                                    Grid.Column="2"
+                                    Checked="FGPlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.East}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="East">
+                                    E
+                                </ToggleButton>
+                                <ToggleButton
+                                    Name="FGWestButton"
+                                    Grid.Column="0"
+                                    Checked="FGPlacementButton_OnChecked"
+                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.West}}"
+                                    Style="{StaticResource PlacementButtonStyle}"
+                                    ToolTip="West">
+                                    W
+                                </ToggleButton>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
             </StackPanel>
 
             <!--  Preview Pane  -->
             <StackPanel
                 Grid.Row="1"
                 Grid.Column="1"
+                Height="245"
                 MaxWidth="245"
                 MaxHeight="245"
                 Margin="5,5,5,0"
-                VerticalAlignment="Top" Height="245">
+                VerticalAlignment="Top">
                 <Border
                     BorderBrush="DarkOrange"
                     BorderThickness="3"
@@ -418,8 +494,9 @@
             <StackPanel
                 Grid.Row="2"
                 Grid.Column="1"
+                Width="170"
                 HorizontalAlignment="Right"
-                Orientation="Horizontal" Width="170">
+                Orientation="Horizontal">
                 <Button Click="Save_OnClick" Content="OK" />
                 <Button Click="Close_OnClick" Content="Cancel" />
             </StackPanel>
