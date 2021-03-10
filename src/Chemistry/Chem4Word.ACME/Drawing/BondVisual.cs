@@ -156,9 +156,11 @@ namespace Chem4Word.ACME.Drawing
 
                 bool chamferBond = otherBonds.Any()
                                    && oblique
+                                   && otherBonds.All(b => b.Order == Globals.OrderSingle)
+                                   && bond.Order == Globals.OrderSingle
                                    && (endAtom.Element as Element) == Globals.PeriodicTable.C
-                                   && endAtom.SymbolText == ""
-                                   && bond.Order == Globals.OrderSingle;
+                                   && endAtom.SymbolText == "";
+                                   
                 if (!chamferBond)
                 {
                     wbd.CappedOff = false;

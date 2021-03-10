@@ -1044,6 +1044,7 @@ namespace Chem4Word.ACME
                                   bond.Stereo = stereo;
                                   bond.StartAtom.UpdateVisual();
                                   bond.EndAtom.UpdateVisual();
+                                  RefreshConnectingWedges(bond);
                               };
 
                 Action redo = () =>
@@ -1052,6 +1053,7 @@ namespace Chem4Word.ACME
                                   bond.Stereo = newStereo ?? CurrentStereo;
                                   bond.StartAtom.UpdateVisual();
                                   bond.EndAtom.UpdateVisual();
+                                  RefreshConnectingWedges(bond);
                               };
 
                 UndoManager.BeginUndoBlock();
@@ -1063,6 +1065,28 @@ namespace Chem4Word.ACME
             catch (Exception exception)
             {
                 WriteTelemetryException(module, exception);
+            }
+
+            //local function
+            void RefreshConnectingWedges(Bond b)
+            {
+                foreach (var a in b.StartAtom.NeighboursExcept(b.EndAtom))
+                {
+                    var otherBond = b.StartAtom.BondBetween(a);
+                    if (otherBond.Stereo == BondStereo.Wedge || otherBond.Stereo == BondStereo.Hatch)
+                    {
+                        otherBond.UpdateVisual();
+                    }
+                }
+
+                foreach (var a in b.EndAtom.NeighboursExcept(b.StartAtom))
+                {
+                    var otherBond = b.EndAtom.BondBetween(a);
+                    if (otherBond.Stereo == BondStereo.Wedge || otherBond.Stereo == BondStereo.Hatch)
+                    {
+                        otherBond.UpdateVisual();
+                    }
+                }
             }
         }
 
