@@ -42,6 +42,7 @@ namespace Chem4Word.Core.Helpers
 
         public const string Chem4WordTooOld = "Chem4Word is too many versions old.";
         public const string Chem4WordIsBeta = "Chem4Word Beta testing is now closed.";
+        public const string WordIsNotActivated = "Micrsoft Word is not activated.";
 
         // Bond length limits etc
         public const double MinimumBondLength = 5;

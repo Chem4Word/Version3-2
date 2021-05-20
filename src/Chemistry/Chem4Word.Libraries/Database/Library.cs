@@ -313,7 +313,10 @@ namespace Chem4Word.Libraries.Database
             }
 
             sw.Stop();
+#if DEBUG
+            // Task 810
             _telemetry.Write(module, "Timing", $"Reading {allNames.Count} Chemical names took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
+#endif
             return allNames;
         }
 

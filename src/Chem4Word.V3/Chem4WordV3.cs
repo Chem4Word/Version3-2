@@ -54,6 +54,7 @@ namespace Chem4Word
         public bool VersionAvailableIsBeta = false;
         public bool IsEnabled;
         public bool IsEndOfLife;
+        public bool WordIsActivated;
 
         public XDocument AllVersions;
         public XDocument ThisVersion;
@@ -195,7 +196,7 @@ namespace Chem4Word
 
         private void C4WAddIn_Startup(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{MethodBase.GetCurrentMethod().Name}()";
             try
             {
                 // Deliberate crash to test Error Reporting
@@ -213,6 +214,7 @@ namespace Chem4Word
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
 
+                    CheckIfWordIsActivated();
                     PerformStartUpActions();
 
                     sw.Stop();
@@ -222,15 +224,34 @@ namespace Chem4Word
                 }
                 else
                 {
+#if DEBUG
                     if (Ribbon == null)
                     {
                         RegistryHelper.StoreMessage(module, "Ribbon is null");
                     }
                     RegistryHelper.StoreMessage(module, $"Command line {cmd}");
+#endif
                 }
             }
             catch (Exception exception)
             {
+                Debug.WriteLine($"{module} {exception.Message}");
+                RegistryHelper.StoreException(module, exception);
+            }
+        }
+
+        private void CheckIfWordIsActivated()
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            try
+            {
+                bool? flag = Globals.Chem4WordV3.Application.Options.SmartCutPaste;
+                WordIsActivated = flag.HasValue;
+            }
+            catch (Exception exception)
+            {
+                WordIsActivated = false;
                 Debug.WriteLine($"{module} {exception.Message}");
                 RegistryHelper.StoreException(module, exception);
             }
@@ -288,13 +309,9 @@ namespace Chem4Word
                 Debug.WriteLine(message);
                 StartUpTimings.Add(message);
             }
-            catch (ThreadAbortException threadAbortException)
+            catch // (ThreadAbortException threadAbortException)
             {
-                RegistryHelper.StoreException(module, threadAbortException);
-            }
-            catch (Exception exception)
-            {
-                RegistryHelper.StoreException(module, exception);
+                // Do Nothing
             }
         }
 
@@ -1088,7 +1105,10 @@ namespace Chem4Word
                         break;
                 }
 
-                if (IsEndOfLife || VersionsBehind > 0 && !VersionAvailableIsBeta)
+                string betaValue = Globals.Chem4WordV3.ThisVersion.Root?.Element("IsBeta")?.Value;
+                bool isBeta = betaValue != null && bool.Parse(betaValue);
+
+                if (IsEndOfLife || isBeta && !VersionAvailableIsBeta)
                 {
                     Ribbon.EditStructure.Enabled = false;
                     Ribbon.EditStructure.Label = "Draw";
@@ -1203,9 +1223,9 @@ namespace Chem4Word
                     int ccCount = sel.ContentControls.Count;
 
                     var targets = (from Word.ContentControl ccs in doc.ContentControls
-                                   orderby ccs.Range.Start
-                                   where $"{ccs.Title}" == Constants.ContentControlTitle
-                                   select ccs).ToList();
+                                  orderby ccs.Range.Start
+                                  where $"{ccs.Title}" == Constants.ContentControlTitle
+                                  select ccs).ToList();
 
                     foreach (Word.ContentControl cc in targets)
                     {
@@ -1801,7 +1821,7 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        string taskdoc = ((Word.Window)taskPane.Window).Document.Name;
+                        string taskdoc = ((Word.Window) taskPane.Window).Document.Name;
                         if (doc.Name.Equals(taskdoc))
                         {
                             if (taskPane.Title.Equals(Constants.LibraryTaskPaneTitle))
@@ -1866,7 +1886,7 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        string taskdoc = ((Word.Window)taskPane.Window).Document.Name;
+                        string taskdoc = ((Word.Window) taskPane.Window).Document.Name;
                         if (doc.Name.Equals(taskdoc))
                         {
                             if (taskPane.Title.Equals(Constants.NavigatorTaskPaneTitle))
@@ -2146,10 +2166,34 @@ namespace Chem4Word
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            if (!IsEndOfLife && VersionsBehind < Constants.MaximumVersionsBehind)
+            string betaValue = Globals.Chem4WordV3.ThisVersion.Root?.Element("IsBeta")?.Value;
+            bool isBeta = betaValue != null && bool.Parse(betaValue);
+
+            if (IsEndOfLife || VersionsBehind >= Constants.MaximumVersionsBehind
+                            || !WordIsActivated
+                            || isBeta && !VersionAvailableIsBeta)
+            {
+                if (isBeta && !VersionAvailableIsBeta)
+                {
+                    ChemistryProhibitedReason = Constants.Chem4WordIsBeta;
+                    ChemistryAllowed = false;
+                }
+
+                if (IsEndOfLife || VersionsBehind >= Constants.MaximumVersionsBehind)
+                {
+                    ChemistryProhibitedReason = Constants.Chem4WordTooOld;
+                    ChemistryAllowed = false;
+                }
+
+                if (!WordIsActivated)
+                {
+                    ChemistryProhibitedReason = Constants.WordIsNotActivated;
+                    ChemistryAllowed = false;
+                }
+            }
+            else
             {
                 bool allowed = true;
-                ChemistryProhibitedReason = VersionAvailableIsBeta ? "" : Constants.Chem4WordIsBeta;
 
                 try
                 {

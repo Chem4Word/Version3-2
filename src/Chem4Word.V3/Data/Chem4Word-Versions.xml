@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- This file must be uploaded to https://www.chem4word.co.uk/files3-2/ folder as Chem4Word-Versions.xml -->
 <ChangeLog>
-    <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
-    <Version>
-        <Number>3.2.0 Alpha 0</Number>
-        <IsBeta>true</IsBeta>
-        <Released>01-Jan-2021</Released>
-        <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-        </Changes>
-    </Version>
-    <EndOfLife>31-Dec-2345</EndOfLife>
+  <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
+  <Version>
+    <Number>3.2.0 Alpha 0</Number>
+    <IsBeta>true</IsBeta>
+    <Released>01-Apr-2021</Released>
+    <Changes>
+      <Change>...</Change>
+      <Change>...</Change>
+      <Change>...</Change>
+      <Change>...</Change>
+      <Change>...</Change>
+      <Change>...</Change>
+    </Changes>
+  </Version>
+  <EndOfLife>31-Dec-2345</EndOfLife>
 </ChangeLog>

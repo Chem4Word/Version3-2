@@ -166,16 +166,19 @@ namespace Chem4Word.Helpers
                         try
                         {
                             var isBeta = key.GetValue(Constants.RegistryValueNameAvailableIsBeta).ToString();
-                            Globals.Chem4WordV3.VersionAvailableIsBeta = bool.Parse(isBeta);
+                            if (!bool.TryParse(isBeta, out Globals.Chem4WordV3.VersionAvailableIsBeta))
+                            {
+                                Globals.Chem4WordV3.VersionAvailableIsBeta = true;
+                            }
                         }
                         catch
                         {
-                            Globals.Chem4WordV3.VersionAvailableIsBeta = false;
+                            Globals.Chem4WordV3.VersionAvailableIsBeta = true;
                         }
                     }
                     else
                     {
-                        Globals.Chem4WordV3.VersionAvailableIsBeta = false;
+                        Globals.Chem4WordV3.VersionAvailableIsBeta = true;
                     }
 
                     if (names.Contains(Constants.RegistryValueNameEndOfLife))
