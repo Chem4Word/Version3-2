@@ -59,7 +59,7 @@ namespace Chem4Word.Helpers
             {
                 try
                 {
-                    var cmlConverter = new CMLConverter();
+                    CMLConverter cmlConverter = new CMLConverter();
                     var model = cmlConverter.Import(display.Chemistry.ToString());
 
                     if (fromLibrary)

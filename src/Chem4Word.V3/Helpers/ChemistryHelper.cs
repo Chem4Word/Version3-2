@@ -169,17 +169,17 @@ namespace Chem4Word.Helpers
                     var cml = xmlPart.XML;
 
                     var cxmlId = CustomXmlPartHelper.GetCmlId(xmlPart);
-                    var cc = new CMLConverter();
+                    CMLConverter cc = new CMLConverter();
                     var model = cc.Import(cml);
 
                     renderer.Properties = new Dictionary<string, string>();
                     renderer.Properties.Add("Guid", cxmlId);
                     renderer.Cml = cml;
 
-                    string tempFilename = renderer.Render();
-                    if (File.Exists(tempFilename))
+                    string tempfileName = renderer.Render();
+                    if (File.Exists(tempfileName))
                     {
-                        UpdateThisStructure(doc, model, cxmlId, tempFilename);
+                        UpdateThisStructure(doc, model, cxmlId, tempfileName);
                     }
                 }
             }
@@ -224,7 +224,7 @@ namespace Chem4Word.Helpers
                     }
                     else
                     {
-                        var isFormula = false;
+                        bool isFormula = false;
                         string text = GetInlineText(model, prefix, ref isFormula, out _);
                         Update1D(target.Key, text, isFormula, $"{prefix}:{cxmlId}");
                     }

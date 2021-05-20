@@ -225,6 +225,20 @@ namespace Chem4Word.Telemetry
 
             WritePrivate("StartUp", "Information", string.Join(Environment.NewLine, lines));
 
+            // Log All Add Ins
+            if (_helper.AllAddIns != null && _helper.AllAddIns.Count > 0)
+            {
+                lines = new List<string>();
+                foreach (var addIn in _helper.AllAddIns)
+                {
+                    if (addIn.LoadBehaviour >= 0 && !string.IsNullOrEmpty(addIn.Description))
+                    {
+                        lines.Add($"{addIn.KeyName} '{addIn.Description}' [{addIn.LoadBehaviour}] {addIn.Manifest}".Trim());
+                    }
+                }
+                WritePrivate("StartUp", "Information", string.Join(Environment.NewLine, lines));
+            }
+
 #if DEBUG
             lines = new List<string>();
 

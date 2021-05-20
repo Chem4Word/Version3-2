@@ -221,6 +221,11 @@ namespace Chem4Word
                     message = $"{module} took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms";
                     StartUpTimings.Add(message);
                     Debug.WriteLine(message);
+
+                    if (!WordIsActivated)
+                    {
+                        UserInteractions.AlertUser("Microsoft Word is not activated!\nChem4Word uses features of Word which are only available if it is activated.");
+                    }
                 }
                 else
                 {
@@ -1304,7 +1309,8 @@ namespace Chem4Word
             {
                 try
                 {
-                    EvaluateChemistryAllowed();
+                    ClearChemistryContextMenus();
+                    EvaluateChemistryAllowed(inRightClick: true);
                     if (ChemistryAllowed)
                     {
                         if (sel.Start != sel.End)
@@ -1766,7 +1772,7 @@ namespace Chem4Word
                                     break;
                             }
 
-                            HandleNavigatorePane(doc);
+                            HandleNavigatorPane(doc);
 
                             HandleLibraryPane(doc, docxMode);
 
@@ -1876,7 +1882,7 @@ namespace Chem4Word
             #endregion Handle Library Task Panes
         }
 
-        private void HandleNavigatorePane(Word.Document doc)
+        private void HandleNavigatorPane(Word.Document doc)
         {
             #region Handle Navigator Task Panes
 
@@ -2162,7 +2168,7 @@ namespace Chem4Word
             }
         }
 
-        public void EvaluateChemistryAllowed()
+        public void EvaluateChemistryAllowed(bool inRightClick = false)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -2259,19 +2265,22 @@ namespace Chem4Word
                             Word.Selection sel = Application.Selection;
                             if (allowed && sel != null)
                             {
-                                if (allowed && sel.Start != sel.End)
+                                if (!inRightClick)
                                 {
-                                    if (!string.IsNullOrEmpty(sel.Text) && sel.Text.Contains("\r"))
+                                    if (allowed && sel.Start != sel.End)
                                     {
-                                        ChemistryProhibitedReason = "selection contains Line Ending";
+                                        if (!string.IsNullOrEmpty(sel.Text) && sel.Text.Contains("\r"))
+                                        {
+                                            ChemistryProhibitedReason = "selection contains Line Ending";
+                                            allowed = false;
+                                        }
+                                    }
+
+                                    if (allowed && sel.Paragraphs.Count > 1)
+                                    {
+                                        ChemistryProhibitedReason = $"selection contains {sel.Paragraphs.Count} paragraphs.";
                                         allowed = false;
                                     }
-                                }
-
-                                if (allowed && sel.Paragraphs.Count > 1)
-                                {
-                                    ChemistryProhibitedReason = $"selection contains {sel.Paragraphs.Count} paragraphs.";
-                                    allowed = false;
                                 }
 
                                 if (allowed && sel.OMaths.Count > 0)

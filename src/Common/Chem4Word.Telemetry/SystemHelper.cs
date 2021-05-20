@@ -42,6 +42,8 @@ namespace Chem4Word.Telemetry
 
         public string AddInVersion { get; set; }
 
+        public List<AddInProperties> AllAddIns { get; set; }
+
         public string AssemblyVersionNumber { get; set; }
 
         public string AddInLocation { get; set; }
@@ -227,6 +229,8 @@ namespace Chem4Word.Telemetry
 
                 GetDotNetVersionFromRegistry();
 
+                AllAddIns = InfoHelper.GetListOfAddIns();
+
                 GatherBootUpTimeEtc();
 
                 try
@@ -272,13 +276,20 @@ namespace Chem4Word.Telemetry
             LastBootUpTime = "";
             LastLoginTime = "";
 
-            var q1 = "*[System/Provider/@Name='Microsoft-Windows-Kernel-Boot' and System/EventID=27]";
-            var d1 = LastEventDateTime(q1);
-            LastBootUpTime = $"{SafeDate.ToLongDate(d1.ToUniversalTime())}";
+            try
+            {
+                var q1 = "*[System/Provider/@Name='Microsoft-Windows-Kernel-Boot' and System/EventID=27]";
+                var d1 = LastEventDateTime(q1);
+                LastBootUpTime = $"{SafeDate.ToLongDate(d1.ToUniversalTime())}";
 
-            var q2 = "*[System/Provider/@Name='Microsoft-Windows-Winlogon' and System/EventID=7001]";
-            var d2 = LastEventDateTime(q2);
-            LastLoginTime = $"{SafeDate.ToLongDate(d2.ToUniversalTime())}";
+                var q2 = "*[System/Provider/@Name='Microsoft-Windows-Winlogon' and System/EventID=7001]";
+                var d2 = LastEventDateTime(q2);
+                LastLoginTime = $"{SafeDate.ToLongDate(d2.ToUniversalTime())}";
+            }
+            catch
+            {
+                // Do Nothing
+            }
 
             // Local Function
             DateTime LastEventDateTime(string query)
