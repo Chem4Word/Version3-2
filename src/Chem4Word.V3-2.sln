@@ -105,6 +105,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.github\ISSUE_TEMPLATE\bug_report.md = ..\.github\ISSUE_TEMPLATE\bug_report.md
 		Chem4Word.V3-1.sln.DotSettings = Chem4Word.V3-1.sln.DotSettings
+		CML.md = CML.md
 		..\CODE_OF_CONDUCT.md = ..\CODE_OF_CONDUCT.md
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 		..\.github\ISSUE_TEMPLATE\feature_request.md = ..\.github\ISSUE_TEMPLATE\feature_request.md
