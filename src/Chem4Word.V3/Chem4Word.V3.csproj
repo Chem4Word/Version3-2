@@ -326,9 +326,9 @@
     <Compile Include="Library\LibraryViewControl.xaml.cs">
       <DependentUpon>LibraryViewControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Library\LibraryViewModel.cs" />
+    <Compile Include="Library\LibraryController.cs" />
     <Compile Include="Navigator\NavigatorSupport.cs" />
-    <Compile Include="Navigator\NavigatorViewModel.cs" />
+    <Compile Include="Navigator\NavigatorController.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

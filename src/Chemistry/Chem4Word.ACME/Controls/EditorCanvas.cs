@@ -121,7 +121,7 @@ namespace Chem4Word.ACME.Controls
 
             StreamGeometry ghostGeometry = new StreamGeometry();
 
-            double atomRadius = this.ViewModel.Model.XamlBondLength / 7.50;
+            double atomRadius = Controller.Model.XamlBondLength / 7.50;
             using (StreamGeometryContext ghostContext = ghostGeometry.Open())
             {
                 foreach (Atom atom in transformedPositions.Keys)
@@ -140,9 +140,9 @@ namespace Chem4Word.ACME.Controls
                     var endAtomPosition = transformedPositions[bond.EndAtom];
                     var startAtomVisual = (AtomVisual)(ChemicalVisuals[bond.StartAtom]);
                     var endAtomVisual = (AtomVisual)(ChemicalVisuals[bond.EndAtom]);
-                    var descriptor = BondVisual.GetBondDescriptor(startAtomVisual, endAtomVisual, ViewModel.Model.XamlBondLength,
+                    var descriptor = BondVisual.GetBondDescriptor(startAtomVisual, endAtomVisual, Controller.Model.XamlBondLength,
                                                        bond.Stereo, startAtomPosition, endAtomPosition, bond.OrderValue,
-                                                       bond.Placement, bond.Centroid, bond.SubsidiaryRing?.Centroid, ViewModel.Standoff);
+                                                       bond.Placement, bond.Centroid, bond.SubsidiaryRing?.Centroid, Controller.Standoff);
                     descriptor.Start = startAtomPosition;
                     descriptor.End = endAtomPosition;
                     var bondgeom = descriptor.DefiningGeometry;
@@ -197,10 +197,10 @@ namespace Chem4Word.ACME.Controls
         protected override Size MeasureOverride(Size constraint)
         {
             var tempSize = DesiredSize;
-            if (ViewModel != null)
+            if (Controller != null)
             {
-                var modelWidth = ViewModel.Model.MaxX - ViewModel.Model.MinX;
-                var modelHeight = ViewModel.Model.MaxY - ViewModel.Model.MinY;
+                var modelWidth = Controller.Model.MaxX - Controller.Model.MinX;
+                var modelHeight = Controller.Model.MaxY - Controller.Model.MinY;
                 if (tempSize.Width < modelWidth)
                 {
                     tempSize.Width = modelWidth;

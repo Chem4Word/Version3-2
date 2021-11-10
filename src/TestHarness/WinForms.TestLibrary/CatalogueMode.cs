@@ -65,13 +65,13 @@ namespace WinForms.TestLibrary
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var viewModel = new CatalogueViewModel(_telemetry, _libraryOptions);
+            var Controller = new CatalogueController(_telemetry, _libraryOptions);
 
             if (CatalogueHost.Child is CatalogueControl catalogueControl)
             {
                 catalogueControl.TopLeft = new Point(Left, Top);
                 catalogueControl.SetOptions(_telemetry, _acmeOptions, _libraryOptions);
-                catalogueControl.DataContext = viewModel;
+                catalogueControl.DataContext = Controller;
                 catalogueControl.UpdateStatusBar();
                 catalogueControl.OnSelectionChange -= CatalogueControlOnOnSelectionChange;
                 catalogueControl.OnSelectionChange += CatalogueControlOnOnSelectionChange;

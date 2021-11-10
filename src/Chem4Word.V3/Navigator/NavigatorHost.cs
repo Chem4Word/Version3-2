@@ -23,13 +23,13 @@ namespace Chem4Word.Navigator
 
         public NavigatorHost(Document doc) : this()
         {
-            var viewModel = new NavigatorViewModel(doc);
+            var controller = new NavigatorController(doc);
             navigatorView1.ActiveDocument = doc;
 
             _acmeOptions = new AcmeOptions(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath);
             navigatorView1.SetOptions(_acmeOptions);
 
-            navigatorView1.DataContext = viewModel;
+            navigatorView1.DataContext = controller;
         }
     }
 }

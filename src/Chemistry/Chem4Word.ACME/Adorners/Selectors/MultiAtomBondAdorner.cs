@@ -15,7 +15,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
     public class MultiAtomBondAdorner : MultiChemistryAdorner
     {
         public CombinedGeometry OverallGeometry { get; }
-        private double RenderRadius => (EditViewModel.Model.XamlBondLength * Globals.FontSizePercentageBond) / 4;
+        private double RenderRadius => (EditController.Model.XamlBondLength * Globals.FontSizePercentageBond) / 4;
 
         public MultiAtomBondAdorner(EditorCanvas currentEditor, List<ChemistryBase> chemistries) : base(currentEditor, chemistries)
         {

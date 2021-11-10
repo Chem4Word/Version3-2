@@ -56,7 +56,7 @@ namespace Wpf.FunctionalGroupEditor
                 {
                     if (Editor.IsDirty)
                     {
-                        var temp = Editor.ActiveViewModel.Model.Copy();
+                        var temp = Editor.ActiveController.Model.Copy();
                         temp.RescaleForCml();
                         string expansion = jsonConvertor.Export(temp, true);
                         var fge = _functionalGroups.FirstOrDefault(f => f.Name.Equals(_lastFunctionalGroup));
@@ -85,7 +85,7 @@ namespace Wpf.FunctionalGroupEditor
             if (Editor.IsDirty)
             {
                 var jsonConvertor = new JSONConverter();
-                var temp = Editor.ActiveViewModel.Model.Copy();
+                var temp = Editor.ActiveController.Model.Copy();
                 temp.RescaleForCml();
                 string jsonString = jsonConvertor.Export(temp);
                 var jc = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);

@@ -5,24 +5,19 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Diagnostics;
-
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Undo
 {
-    public class SettingsCommand : BaseCommand
+    public class RedoCommand : BaseCommand
     {
-        public SettingsCommand(EditController controller) : base(controller)
+        public RedoCommand(EditController controller) : base(controller)
         {
         }
 
-        public override bool CanExecute(object parameter)
-        {
-            return true;
-        }
+        public override bool CanExecute(object parameter) => EditController.UndoManager.CanRedo;
 
         public override void Execute(object parameter)
         {
-            Debugger.Break();
+            EditController.UndoManager.Redo();
         }
     }
 }

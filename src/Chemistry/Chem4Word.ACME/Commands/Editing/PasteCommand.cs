@@ -12,11 +12,11 @@ using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
 using Chem4Word.Model2.Helpers;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Editing
 {
     public class PasteCommand : BaseCommand
     {
-        public PasteCommand(EditViewModel vm) : base(vm)
+        public PasteCommand(EditController controller) : base(controller)
         {
         }
 
@@ -34,7 +34,7 @@ namespace Chem4Word.ACME.Commands
             if (Clipboard.ContainsData(Globals.FormatCML))
             {
                 string pastedCML = (string)Clipboard.GetData(Globals.FormatCML);
-                EditViewModel.PasteCML(pastedCML);
+                EditController.PasteCML(pastedCML);
             }
             else if (Clipboard.ContainsText())
             {
@@ -71,7 +71,7 @@ namespace Chem4Word.ACME.Commands
                 }
                 else
                 {
-                    EditViewModel.PasteModel(buffer);
+                    EditController.PasteModel(buffer);
                 }
             }
         }

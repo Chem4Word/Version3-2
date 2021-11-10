@@ -29,7 +29,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         //the editor that the Adorner attaches to
         public EditorCanvas CurrentEditor => (EditorCanvas)AdornedElement;
 
-        public EditViewModel EditViewModel => (CurrentEditor.ViewModel as EditViewModel);
+        public EditController EditController => (CurrentEditor.Controller as EditController);
         public SolidColorBrush RenderBrush { get; protected set; }
 
         [NotNull]

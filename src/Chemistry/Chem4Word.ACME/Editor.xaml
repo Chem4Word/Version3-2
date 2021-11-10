@@ -12,7 +12,7 @@
     x:Name="AcmeControl"
     Width="1024"
     Height="768"
-    d:DataContext="{d:DesignInstance acme:EditViewModel}"
+    d:DataContext="{d:DesignInstance acme:EditController}"
     Loaded="ACMEControl_Loaded"
     PreviewKeyDown="Editor_OnPreviewKeyDown"
     mc:Ignorable="d">
@@ -274,31 +274,31 @@
     <UserControl.InputBindings>
         <KeyBinding
             Key="Z"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UndoCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.UndoCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="Y"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.RedoCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.RedoCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="C"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CopyCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.CopyCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="X"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CutCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.CutCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="V"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.PasteCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.PasteCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="G"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.GroupCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.GroupCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="U"
-            Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UnGroupCommand}"
+            Command="{Binding ElementName=AcmeControl, Path=ActiveController.UnGroupCommand}"
             Modifiers="Control" />
     </UserControl.InputBindings>
 
@@ -371,8 +371,8 @@
                     FontSize="18"
                     FontWeight="DemiBold"
                     Foreground="{Binding Path=SelectedItem.Foreground, RelativeSource={RelativeSource Self}}"
-                    ItemsSource="{Binding ElementName=AcmeControl, Path=ActiveViewModel.AtomOptions}"
-                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveViewModel.SelectedElement, PresentationTraceSources.TraceLevel=None, Mode=TwoWay, Converter={StaticResource DoNothing}}"
+                    ItemsSource="{Binding ElementName=AcmeControl, Path=ActiveController.AtomOptions}"
+                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveController.SelectedElement, PresentationTraceSources.TraceLevel=None, Mode=TwoWay, Converter={StaticResource DoNothing}}"
                     SelectedValuePath="Element"
                     ToolTip="Current Atom Type">
                     <ComboBox.ItemTemplate>
@@ -392,7 +392,7 @@
                 </ComboBox>
                 <Button
                     x:Name="PTPickerButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.PickElementCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.PickElementCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Periodic Table">
                     <StaticResource ResourceKey="PTPickerIcon" />
@@ -404,7 +404,7 @@
                     Height="25"
                     IsHitTestVisible="True"
                     ItemsSource="{StaticResource BondOptions}"
-                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveViewModel.SelectedBondOptionId, Mode=TwoWay}"
+                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveController.SelectedBondOptionId, Mode=TwoWay}"
                     SelectedValuePath="Id"
                     ToolTip="Current Bond Type">
                     <ComboBox.ItemTemplate>
@@ -444,7 +444,7 @@
                         <Image Source="{StaticResource PencilIcon}" />
                     </Viewbox>
                     <RadioButton.Tag>
-                        <behaviors:DrawBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                        <behaviors:DrawBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
                 <RadioButton
@@ -537,7 +537,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Button.Tag>
-                                    <behaviors:LassoBehaviour EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                                    <behaviors:LassoBehaviour EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                                 </Button.Tag>
                             </Button>
                             <Button
@@ -582,7 +582,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Button.Tag>
-                                    <behaviors:LassoBehaviour EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" RectMode="True" />
+                                    <behaviors:LassoBehaviour EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" RectMode="True" />
                                 </Button.Tag>
                             </Button>
                         </Grid>
@@ -639,7 +639,7 @@
                                 </Viewbox>
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="6"
                                         Unsaturated="True" />
                                 </Button.Tag>
@@ -648,7 +648,7 @@
                                 <StaticResource ResourceKey="CyclohexanePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="6"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -657,7 +657,7 @@
                                 <StaticResource ResourceKey="CyclopentanePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="5"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -666,7 +666,7 @@
                                 <StaticResource ResourceKey="CyclopentadienePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="5"
                                         Unsaturated="True" />
                                 </Button.Tag>
@@ -675,7 +675,7 @@
                                 <StaticResource ResourceKey="CycloheptanePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="7"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -692,7 +692,7 @@
                                 </Viewbox>
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="4"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -703,7 +703,7 @@
                                 </Viewbox>
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}"
+                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
                                         RingSize="3"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -744,7 +744,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Button.Tag>
-                                    <behaviors:NRingBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                                    <behaviors:NRingBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                                 </Button.Tag>
                             </Button>
                         </UniformGrid>
@@ -762,7 +762,7 @@
                         </Viewbox.LayoutTransform>
                     </Viewbox>
                     <RadioButton.Tag>
-                        <behaviors:ChainBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                        <behaviors:ChainBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
                 <!--  ReactionButton Hidden (Collapsed)  -->
@@ -770,44 +770,49 @@
                     x:Name="ReactionButton"
                     GroupName="Actions"
                     Style="{StaticResource ToolbarButtonStyle}"
-                    Visibility="Collapsed">
-                    <Viewbox Stretch="Uniform">
-                        <StackPanel>
+                    TextBlock.FontSize="6">
+                    <RadioButton.Resources>
+                        <Style x:Key="MainTextStyle" TargetType="{x:Type TextBlock}">
+                            <Setter Property="FontSize" Value="7"/>
+                            <Setter Property="FontFamily" Value="Arial"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                        <Style x:Key="SubscriptStyle" TargetType="{x:Type Run}">
+                            <Setter Property="FontSize" Value="4"/>
+                            <Setter Property="FontFamily" Value="Arial"/>
+                            <Setter Property="BaselineAlignment" Value="Subscript"/>
+                        </Style>
+                    </RadioButton.Resources>
+                    <Viewbox Stretch="Uniform" >
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
                             <TextBlock
-                                HorizontalAlignment="Center"
-                                FontFamily="Arial"
-                                Foreground="{StaticResource ResourceKey=Chem4WordBrush}">
-                                <TextBlock.Effect>
-                                    <DropShadowEffect Color="LightGray" />
-                                </TextBlock.Effect>
-                                NH<Run BaselineAlignment="Subscript" FontSize="12">
-                                    3
-                                </Run>
+                                Style="{StaticResource MainTextStyle}"
+                                Grid.Row="0" Grid.Column="1">NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
                             </TextBlock>
                             <graphics:StraightArrow
+                                Grid.Row="1"
+                                Grid.Column="1"
                                 ArrowHeadClosed="True"
-                                Fill="{StaticResource ResourceKey=Chem4WordBrush}"
+                                Fill="Black"
                                 HeadAngle="35"
-                                HeadLength="10"
-                                Stroke="{StaticResource ResourceKey=Chem4WordBrush}"
-                                StartPoint="0,5"
-                                EndPoint="45,5">
-                                <graphics:Arrow.Effect>
-                                    <DropShadowEffect Color="LightGray" />
-                                </graphics:Arrow.Effect>
-                            </graphics:StraightArrow>
+                                HeadLength="2"
+                                Stroke="Black"
+                                StrokeThickness="0.75"
+                                StartPoint="0,0"
+                                EndPoint="15,0"/>
                             <TextBlock
-                                HorizontalAlignment="Center"
-                                FontFamily="Arial"
-                                Foreground="{StaticResource ResourceKey=Chem4WordBrush}">
-                                <TextBlock.Effect>
-                                    <DropShadowEffect Color="LightGray" />
-                                </TextBlock.Effect>
-                                H<Run BaselineAlignment="Subscript" FontSize="12">
-                                    2
-                                </Run>
-                                O</TextBlock>
-                        </StackPanel>
+                                Grid.Row="2" Grid.Column="1" Style="{StaticResource MainTextStyle}">H<Run Style="{StaticResource SubscriptStyle}">2</Run>O</TextBlock>
+                        </Grid>
                     </Viewbox>
                 </RadioButton>
                 <RadioButton
@@ -824,14 +829,14 @@
                         <Path Data="M16.24,3.56L21.19,8.5C21.97,9.29 21.97,10.55 21.19,11.34L12,20.53C10.44,22.09 7.91,22.09 6.34,20.53L2.81,17C2.03,16.21 2.03,14.95 2.81,14.16L13.41,3.56C14.2,2.78 15.46,2.78 16.24,3.56M4.22,15.58L7.76,19.11C8.54,19.9 9.8,19.9 10.59,19.11L14.12,15.58L9.17,10.63L4.22,15.58Z" Fill="DarkRed" />
                     </Viewbox>
                     <RadioButton.Tag>
-                        <behaviors:DeleteBehavior EditViewModel="{Binding ElementName=AcmeControl, Path=ActiveViewModel}" />
+                        <behaviors:DeleteBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
                 <Separator Margin="5" />
 
                 <Button
                     x:Name="CutButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CutCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.CutCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Cut">
                     <Viewbox
@@ -847,7 +852,7 @@
                 </Button>
                 <Button
                     x:Name="CopyButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CopyCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.CopyCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Copy">
                     <Viewbox
@@ -859,7 +864,7 @@
                 </Button>
                 <Button
                     x:Name="PasteButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.PasteCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.PasteCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Paste">
                     <Viewbox
@@ -871,7 +876,7 @@
                 </Button>
                 <Button
                     x:Name="UndoButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UndoCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.UndoCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Undo">
                     <Viewbox
@@ -888,7 +893,7 @@
                 </Button>
                 <Button
                     x:Name="RedoButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.RedoCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.RedoCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Redo">
                     <Viewbox
@@ -907,7 +912,7 @@
 
                 <Button
                     x:Name="FlipHorizontalButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.FlipHorizontalCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.FlipHorizontalCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Mirror Vertical ([Shift-click] to Flip)">
                     <Viewbox Width="24" Height="24">
@@ -916,7 +921,7 @@
                 </Button>
                 <Button
                     x:Name="FlipVerticalButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.FlipVerticalCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.FlipVerticalCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Mirror Horizontal ([Shift-click] to Flip)">
                     <Viewbox Width="24" Height="24">
@@ -925,7 +930,7 @@
                 </Button>
                 <Button
                     x:Name="AddHydrogensButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.AddHydrogensCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AddHydrogensCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Add Explicit Hydrogens">
                     <Viewbox
@@ -943,7 +948,7 @@
                 </Button>
                 <Button
                     x:Name="RemoveHydrogensButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.RemoveHydrogensCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.RemoveHydrogensCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Remove Explicit Hydrogens">
                     <Viewbox
@@ -961,7 +966,7 @@
                 </Button>
                 <Button
                     x:Name="FuseButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.FuseCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.FuseCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Fuse"
                     Visibility="Collapsed">
@@ -977,7 +982,7 @@
                 </Button>
                 <Button
                     x:Name="GroupButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.GroupCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.GroupCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Group fragments">
                     <Viewbox Width="24" Height="24">
@@ -993,7 +998,7 @@
                 </Button>
                 <Button
                     x:Name="UngroupButton"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveViewModel.UnGroupCommand}"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.UnGroupCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Ungroup fragments">
                     <Viewbox>
@@ -1007,6 +1012,7 @@
                             Stroke="{StaticResource GrabHandleBorderBrush}" />
                     </Viewbox>
                 </Button>
+             
                 <Separator Margin="5" />
 
                 <ComboBox
@@ -1014,12 +1020,13 @@
                     Width="50"
                     FontSize="16"
                     ItemsSource="{StaticResource AllowedBondLengths}"
-                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveViewModel.CurrentBondLength, Mode=TwoWay}"
+                    SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveController.CurrentBondLength, Mode=TwoWay}"
                     SelectedValuePath="Content"
                     Style="{StaticResource StandardCombo}"
                     ToolTip="Change Bond Length" />
                 <Separator Margin="5" />
-
+               
+                <Separator Margin="5" />
                 <Button
                     x:Name="SettingsButton"
                     Click="SettingsButton_OnClick"
@@ -1036,6 +1043,135 @@
                             Stroke="Black" />
                     </Viewbox>
                 </Button>
+            </ToolBar>
+            <ToolBar x:Name="ReactionToolbar" Band="2" BandIndex="1" Height ="40">
+                
+            </ToolBar>
+            <ToolBar x:Name="AlignToolbar" Band="2" BandIndex="2">
+                <Button x:Name="AlignMiddlesButton" 
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignMiddlesCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Align Middles">
+                    <Viewbox>
+                        <Grid>
+                            <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
+                                <Rectangle Name="Rect" Visibility="Visible" />
+                            </Grid>
+                            <Path Data="M20.001024,5.9999993L20.001024,16 26.001024,16 26.001024,5.9999993z M6.0010242,1.9999995L6.0010242,20 12.001024,20 12.001024,1.9999995z M4.0010242,0L14.001024,0 14.001024,9.9999994 18.001024,9.9999994 18.001024,3.9999995 28.001024,3.9999995 28.001024,9.9999984 32.001027,9.9999984 32.001027,11.999998 28.001024,11.999998 28.001024,18 18.001024,18 18.001024,12 14.001024,12 14.001024,22 4.0010242,22 4.0010242,12 0,12 0,9.9999994 4.0010242,9.9999994z" Stretch="Uniform" Fill="{StaticResource Chem4WordBrush}" Width="40" Height="40" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button x:Name="AlignCentresButton" 
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignCentresCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                        ToolTip="Align Centres">
+                    <Viewbox>
+                        <Grid>
+                            <Grid.LayoutTransform>
+                                <RotateTransform Angle="90"/>
+                            </Grid.LayoutTransform>
+                            <Grid Width="48" Height="48" Visibility="Visible">
+                                <Rectangle Visibility="Visible" />
+                            </Grid>
+                            <Path Data="M20.001024,5.9999993L20.001024,16 26.001024,16 26.001024,5.9999993z M6.0010242,1.9999995L6.0010242,20 12.001024,20 12.001024,1.9999995z M4.0010242,0L14.001024,0 14.001024,9.9999994 18.001024,9.9999994 18.001024,3.9999995 28.001024,3.9999995 28.001024,9.9999984 32.001027,9.9999984 32.001027,11.999998 28.001024,11.999998 28.001024,18 18.001024,18 18.001024,12 14.001024,12 14.001024,22 4.0010242,22 4.0010242,12 0,12 0,9.9999994 4.0010242,9.9999994z" Stretch="Uniform" Fill="{StaticResource Chem4WordBrush}" Width="40" Height="40" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button x:Name="AlignBottomButton"
+                        Style="{StaticResource CommandButtonStyle}"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignBottomsCommand}"
+                        ToolTip="Align Bottoms">
+                    <Viewbox>
+                        <Grid>
+                            <Path Data="M0,26L32,26 32,28 0,28z M20.000006,9.9999979L20.000006,19.999998 26.000006,19.999998 26.000006,9.9999979z M18.000006,7.9999979L28.000006,7.9999979 28.000006,21.999998 18.000006,21.999998z M6,2L6,20 12,20 12,2z M4,0L14,0 14,22 4,22z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button x:Name="AlignTopsButton"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignTopsCommand}"
+                        Style="{StaticResource CommandButtonStyle}"
+                        ToolTip="Align Tops">
+                    <Viewbox >
+                        <Grid>
+                            <Path Data="M6,7.9999995L6,26 12,26 12,7.9999995z M20.000006,7.9999981L20.000006,17.999998 26.000006,17.999998 26.000006,7.9999981z M4,5.9999995L14,5.9999995 14,28 4,28z M18.000006,5.9999981L28.000006,5.9999981 28.000006,19.999998 18.000006,19.999998z M0,0L32,0 32,2 0,2z"  Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button x:Name="AlignLeftButton"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignLeftsCommand}"
+                        Style="{StaticResource CommandButtonStyle}"
+                        ToolTip="Align Lefts">
+                    <Viewbox >
+                        <Grid>
+                            <Path Data="M7.9999971,19.99999L7.9999971,25.99999 25.999997,25.99999 25.999997,19.99999z M5.9999971,17.99999L27.999997,17.99999 27.999997,27.99999 5.9999971,27.99999z M8,6L8,12 18,12 18,6z M6,4L20,4 20,14 6,14z M0,0L2,0 2,32 0,32z"   Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button x:Name="AlignRightButton"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignRightsCommand}"
+                        Style="{StaticResource CommandButtonStyle}"
+                        ToolTip="Align Rights">
+                    <Viewbox >
+                        <Grid>
+                            <Path Data="M2,20L2,26 20,26 20,20z M0,18L22,18 22,28 0,28z M9.9999971,5.9999899L9.9999971,11.99999 19.999997,11.99999 19.999997,5.9999899z M7.9999972,3.9999899L21.999997,3.9999899 21.999997,13.99999 7.9999972,13.99999z M26.000001,0L28.000001,0 28.000001,32 26.000001,32z"   Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </Button>
+
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Row="1" Height="Auto">
@@ -1076,7 +1212,7 @@
             <TextBlock
                 FontFamily="Segoe UI"
                 Foreground="Black"
-                Text="{Binding ElementName=AcmeControl, Path=ActiveViewModel.ActiveMode.CurrentStatus}" />
+                Text="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveMode.CurrentStatus}" />
         </StatusBar>
     </Grid>
 </UserControl>

@@ -8,19 +8,19 @@
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Layout.Flipping
 {
-    public class FlipHorizontalCommand : FlipCommand
+    public class FlipVerticalCommand : FlipCommand
     {
-        public FlipHorizontalCommand(EditViewModel vm) : base(vm)
+        public FlipVerticalCommand(EditController controller) : base(controller)
         {
         }
 
         public override void Execute(object parameter)
         {
-            var selMolecule = EditViewModel.SelectedItems[0] as Molecule;
+            var selMolecule = EditController.SelectedItems[0] as Molecule;
             bool flipStereo = KeyboardUtils.HoldingDownShift();
-            EditViewModel.FlipMolecule(selMolecule, false, flipStereo);
+            EditController.FlipMolecule(selMolecule, true, flipStereo);
         }
     }
 }

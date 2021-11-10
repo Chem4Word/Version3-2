@@ -75,7 +75,7 @@ namespace Chem4Word.ACME.Behaviors
         protected override void OnAttached()
         {
             base.OnAttached();
-            EditViewModel.ClearSelection();
+            EditController.ClearSelection();
 
             CurrentEditor = (EditorCanvas)AssociatedObject;
             _parent = Application.Current.MainWindow;
@@ -108,7 +108,7 @@ namespace Chem4Word.ACME.Behaviors
             Clashing = false;
 
             CurrentAdorner = null;
-            var xamlBondSize = EditViewModel.Model.XamlBondLength;
+            var xamlBondSize = EditController.Model.XamlBondLength;
 
             switch (CurrentEditor.ActiveVisual)
             {
@@ -116,7 +116,7 @@ namespace Chem4Word.ACME.Behaviors
                     IdentifyPlacements(av.ParentAtom, xamlBondSize, out preferredPlacements, RingSize);
                     if (preferredPlacements != null)
                     {
-                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                               preferredPlacements, Unsaturated);
                         if (av.ParentAtom.Degree >= 2)
                         {
@@ -133,7 +133,7 @@ namespace Chem4Word.ACME.Behaviors
                     IdentifyPlacements(bv.ParentBond, out altPlacements, out preferredPlacements, RingSize, e.GetPosition(CurrentEditor));
                     if ((preferredPlacements != null) || (altPlacements != null))
                     {
-                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                               preferredPlacements ?? altPlacements, Unsaturated);
                         CurrentStatus = "Click bond to fuse a ring";
                     }
@@ -157,13 +157,13 @@ namespace Chem4Word.ACME.Behaviors
 
                     if (!Clashing)
                     {
-                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                             preferredPlacements, Unsaturated);
                         CurrentStatus = "Click to draw a standalone ring";
                     }
                     else
                     {
-                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                        CurrentAdorner = new FixedRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                               preferredPlacements, Unsaturated, greyedOut: true);
                         CurrentStatus = "Can't fuse ring here - hover pencil over atom or bond to place ring";
                     }
@@ -194,7 +194,7 @@ namespace Chem4Word.ACME.Behaviors
                 var newAtomPlacements = new List<NewAtomPlacement>();
 
                 List<Point> preferredPlacements;
-                var xamlBondSize = EditViewModel.Model.XamlBondLength;
+                var xamlBondSize = EditController.Model.XamlBondLength;
 
                 if (hitAtom != null)
                 {
@@ -230,7 +230,7 @@ namespace Chem4Word.ACME.Behaviors
                 {
                     FillExistingAtoms(preferredPlacements, altPlacements, newAtomPlacements, CurrentEditor);
 
-                    EditViewModel.DrawRing(newAtomPlacements, Unsaturated, startAt);
+                    EditController.DrawRing(newAtomPlacements, Unsaturated, startAt);
                 }
             }
             CurrentAdorner = null;

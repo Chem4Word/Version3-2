@@ -11,7 +11,7 @@ namespace Chem4Word.ACME.Commands
 {
     public class FuseCommand : BaseCommand
     {
-        public FuseCommand(EditViewModel vm) : base(vm)
+        public FuseCommand(EditController controller) : base(controller)
         {
         }
 

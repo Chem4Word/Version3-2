@@ -29,14 +29,14 @@ namespace Chem4Word.ACME
     /// </summary>
     public partial class Editor : UserControl, INotifyPropertyChanged, IHostedWpfEditor
     {
-        private EditViewModel _activeViewModel;
+        private EditController _activeController;
 
-        public EditViewModel ActiveViewModel
+        public EditController ActiveController
         {
-            get { return _activeViewModel; }
+            get { return _activeController; }
             set
             {
-                _activeViewModel = value;
+                _activeController = value;
                 OnPropertyChanged();
             }
         }
@@ -94,7 +94,7 @@ namespace Chem4Word.ACME
 
         public event EventHandler<WpfEventArgs> OnFeedbackChange;
 
-        private void ActiveViewModelOnFeedbackChange(object sender, WpfEventArgs e)
+        private void ActiveControllerOnFeedbackChange(object sender, WpfEventArgs e)
         {
             OnFeedbackChange?.Invoke(this, e);
         }
@@ -103,13 +103,13 @@ namespace Chem4Word.ACME
         {
             get
             {
-                if (ActiveViewModel == null)
+                if (ActiveController == null)
                 {
                     return false;
                 }
                 else
                 {
-                    return ActiveViewModel.IsDirty;
+                    return ActiveController.IsDirty;
                 }
             }
         }
@@ -118,14 +118,14 @@ namespace Chem4Word.ACME
         {
             get
             {
-                if (ActiveViewModel == null)
+                if (ActiveController == null)
                 {
                     return null;
                 }
                 else
                 {
                     CMLConverter cc = new CMLConverter();
-                    Model model = ActiveViewModel.Model.Copy();
+                    Model model = ActiveController.Model.Copy();
                     model.RescaleForCml();
                     return cc.Export(model);
                 }
@@ -136,13 +136,13 @@ namespace Chem4Word.ACME
         {
             get
             {
-                if (ActiveViewModel == null)
+                if (ActiveController == null)
                 {
                     return null;
                 }
                 else
                 {
-                    Model model = ActiveViewModel.Model.Copy();
+                    Model model = ActiveController.Model.Copy();
                     model.RescaleForCml();
                     return model;
                 }
@@ -271,37 +271,37 @@ namespace Chem4Word.ACME
             {
                 _model.RescaleForXaml(false, EditorOptions.BondLength);
 
-                ActiveViewModel = new EditViewModel(_model, ChemCanvas, _used1DProperties, Telemetry);
-                ActiveViewModel.EditorControl = this;
-                ActiveViewModel.Model.CentreInCanvas(new Size(ChemCanvas.ActualWidth, ChemCanvas.ActualHeight));
-                ActiveViewModel.EditorOptions = EditorOptions;
+                ActiveController = new EditController(_model, ChemCanvas, _used1DProperties, Telemetry);
+                ActiveController.EditorControl = this;
+                ActiveController.Model.CentreInCanvas(new Size(ChemCanvas.ActualWidth, ChemCanvas.ActualHeight));
+                ActiveController.EditorOptions = EditorOptions;
 
-                ChemCanvas.ViewModel = ActiveViewModel;
+                ChemCanvas.Controller = ActiveController;
 
                 ChemCanvas.ShowMoleculeGrouping = true;
                 ChemCanvas.ShowAtomsInColour = EditorOptions.ColouredAtoms;
                 ChemCanvas.ShowImplicitHydrogens = EditorOptions.ShowHydrogens;
                 ChemCanvas.ShowAllCarbonAtoms = EditorOptions.ShowCarbons;
 
-                ActiveViewModel.Loading = true;
+                ActiveController.Loading = true;
 
-                if (ActiveViewModel.Model.TotalBondsCount == 0)
+                if (ActiveController.Model.TotalBondsCount == 0)
                 {
-                    ActiveViewModel.CurrentBondLength = EditorOptions.BondLength;
+                    ActiveController.CurrentBondLength = EditorOptions.BondLength;
                 }
                 else
                 {
-                    var mean = ActiveViewModel.Model.MeanBondLength / Globals.ScaleFactorForXaml;
+                    var mean = ActiveController.Model.MeanBondLength / Globals.ScaleFactorForXaml;
                     var average = Math.Round(mean / 5.0) * 5;
-                    ActiveViewModel.CurrentBondLength = average;
+                    ActiveController.CurrentBondLength = average;
                 }
 
-                ActiveViewModel.Loading = false;
+                ActiveController.Loading = false;
 
                 ScrollIntoView();
-                BindControls(ActiveViewModel);
+                BindControls(ActiveController);
 
-                ActiveViewModel.OnFeedbackChange += ActiveViewModelOnFeedbackChange;
+                ActiveController.OnFeedbackChange += ActiveControllerOnFeedbackChange;
             }
 
             //refresh the ring button
@@ -322,10 +322,10 @@ namespace Chem4Word.ACME
         /// Sets up data bindings between the dropdowns
         /// and the view model
         /// </summary>
-        /// <param name="vm">EditViewModel for ACME</param>
-        private void BindControls(EditViewModel vm)
+        /// <param name="controller">EditController for ACME</param>
+        private void BindControls(EditController controller)
         {
-            vm.CurrentEditor = ChemCanvas;
+            controller.CurrentEditor = ChemCanvas;
         }
 
         /// <summary>
@@ -347,29 +347,29 @@ namespace Chem4Word.ACME
             // Re Load settings as they may have changed
             EditorOptions = new AcmeOptions(EditorOptions.SettingsPath);
 
-            if (ActiveViewModel != null)
+            if (ActiveController != null)
             {
-                if (ActiveViewModel.Model.TotalBondsCount == 0)
+                if (ActiveController.Model.TotalBondsCount == 0)
                 {
                     // Change current selection if the model is empty
                     foreach (ComboBoxItem item in BondLengthSelector.Items)
                     {
                         if (int.Parse(item.Content.ToString()) == EditorOptions.BondLength)
                         {
-                            ActiveViewModel.Loading = true;
+                            ActiveController.Loading = true;
                             BondLengthSelector.SelectedItem = item;
 
-                            ActiveViewModel.CurrentBondLength = EditorOptions.BondLength;
+                            ActiveController.CurrentBondLength = EditorOptions.BondLength;
 
-                            ActiveViewModel.Model.SetXamlBondLength(EditorOptions.BondLength);
-                            ActiveViewModel.Loading = false;
+                            ActiveController.Model.SetXamlBondLength(EditorOptions.BondLength);
+                            ActiveController.Loading = false;
                         }
                     }
                 }
 
-                ActiveViewModel.CurrentEditor.ShowAtomsInColour = EditorOptions.ColouredAtoms;
-                ActiveViewModel.CurrentEditor.ShowImplicitHydrogens = EditorOptions.ShowHydrogens;
-                ActiveViewModel.CurrentEditor.ShowAllCarbonAtoms = EditorOptions.ShowCarbons;
+                ActiveController.CurrentEditor.ShowAtomsInColour = EditorOptions.ColouredAtoms;
+                ActiveController.CurrentEditor.ShowImplicitHydrogens = EditorOptions.ShowHydrogens;
+                ActiveController.CurrentEditor.ShowAllCarbonAtoms = EditorOptions.ShowCarbons;
             }
         }
 
@@ -381,18 +381,18 @@ namespace Chem4Word.ACME
         /// <param name="e"></param>
         private void ModeButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (ActiveViewModel != null)
+            if (ActiveController != null)
             {
-                if (ActiveViewModel.ActiveMode != null)
+                if (ActiveController.ActiveMode != null)
                 {
-                    ActiveViewModel.ActiveMode = null;
+                    ActiveController.ActiveMode = null;
                 }
 
                 var radioButton = (RadioButton)sender;
 
                 if (radioButton.Tag is BaseEditBehavior bh)
                 {
-                    ActiveViewModel.ActiveMode = bh;
+                    ActiveController.ActiveMode = bh;
                 }
             }
         }
@@ -409,11 +409,11 @@ namespace Chem4Word.ACME
         {
             if (e.Key == Key.Delete)
             {
-                ActiveViewModel.DeleteSelection();
+                ActiveController.DeleteSelection();
             }
             else if (e.Key == Key.A && KeyboardUtils.HoldingDownControl())
             {
-                ActiveViewModel.SelectAll();
+                ActiveController.SelectAll();
             }
         }
 

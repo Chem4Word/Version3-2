@@ -117,14 +117,14 @@ namespace WinForms.TestLibrary.Wpf
         private void OnChemistryItemButtonClick(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource is WpfEventArgs source
-                && DataContext is CatalogueViewModel viewModel)
+                && DataContext is CatalogueController controller)
             {
                 Debug.WriteLine($"{_class} -> {source.Button} {source.OutputValue}");
 
                 if (source.Button.StartsWith("CheckBox"))
                 {
-                    _itemCount = viewModel.ChemistryItems.Count;
-                    _checkedItems = viewModel.ChemistryItems.Count(i => i.IsChecked);
+                    _itemCount = controller.ChemistryItems.Count;
+                    _checkedItems = controller.ChemistryItems.Count(i => i.IsChecked);
 
                     TrashButton.IsEnabled = _checkedItems > 0;
                     CheckedFilterButton.IsEnabled = _checkedItems > 0;
@@ -135,7 +135,7 @@ namespace WinForms.TestLibrary.Wpf
                 if (source.Button.StartsWith("DisplayDoubleClick"))
                 {
                     var id = long.Parse(source.OutputValue.Split('=')[1]);
-                    var item = viewModel.ChemistryItems.FirstOrDefault(o => o.Id == id);
+                    var item = controller.ChemistryItems.FirstOrDefault(o => o.Id == id);
                     if (item != null)
                     {
                         var topLeft = new Point(TopLeft.X + Constants.TopLeftOffset, TopLeft.Y + Constants.TopLeftOffset);
@@ -148,7 +148,7 @@ namespace WinForms.TestLibrary.Wpf
                             item.Formula = result.Formua;
                             item.MolecularWeight = result.MolecularWeight;
 
-                            viewModel.SelectedChemistryObject = item;
+                            controller.SelectedChemistryObject = item;
                         }
                     }
                 }
@@ -159,9 +159,9 @@ namespace WinForms.TestLibrary.Wpf
         {
             var sb = new StringBuilder();
             if (_itemCount == 0
-                && DataContext is CatalogueViewModel viewModel)
+                && DataContext is CatalogueController controller)
             {
-                _itemCount = viewModel.ChemistryItems.Count;
+                _itemCount = controller.ChemistryItems.Count;
             }
 
             if (_filteredItems == 0)
@@ -331,7 +331,7 @@ namespace WinForms.TestLibrary.Wpf
         {
             if (e.OriginalSource is ListBox source
                 && source.SelectedItem is ChemistryObject selected
-                && source.DataContext is CatalogueViewModel context)
+                && source.DataContext is CatalogueController context)
             {
                 context.SelectedChemistryObject = selected;
                 _lastTags = context.SelectedChemistryObject.Tags;
@@ -487,7 +487,7 @@ namespace WinForms.TestLibrary.Wpf
 
         private void OnSelectedItemChanged(object sender, DataTransferEventArgs e)
         {
-            if (DataContext is CatalogueViewModel dc
+            if (DataContext is CatalogueController dc
                 && dc.SelectedChemistryObject != null)
             {
                 // ToDo: Handle null SettingsPath
@@ -600,7 +600,7 @@ namespace WinForms.TestLibrary.Wpf
                 var sw = new Stopwatch();
                 sw.Start();
 
-                var dc = DataContext as CatalogueViewModel;
+                var dc = DataContext as CatalogueController;
                 _library.AddTags(dc.SelectedChemistryObject.Id, tags);
 
                 sw.Stop();

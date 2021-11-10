@@ -112,7 +112,7 @@ namespace Chem4Word.ACME.Utils
 
         public static void DoPropertyEdit(MouseButtonEventArgs e, EditorCanvas currentEditor)
         {
-            EditViewModel evm = (EditViewModel)currentEditor.ViewModel;
+            EditController controller = (EditController)currentEditor.Controller;
 
             var position = e.GetPosition(currentEditor);
             var screenPosition = currentEditor.PointToScreen(position);
@@ -131,7 +131,7 @@ namespace Chem4Word.ACME.Utils
                     var model = new MoleculePropertiesModel();
                     model.Centre = screenPosition;
                     model.Path = moleculeAdorner.AdornedMolecules[0].Path;
-                    model.Used1DProperties = evm.Used1DProperties;
+                    model.Used1DProperties = controller.Used1DProperties;
 
                     model.Data = new Model();
                     Molecule mol = moleculeAdorner.AdornedMolecules[0].Copy();
@@ -143,13 +143,13 @@ namespace Chem4Word.ACME.Utils
                     model.SpinMultiplicity = mol.SpinMultiplicity;
                     model.ShowMoleculeBrackets = mol.ShowMoleculeBrackets;
 
-                    var pe = new MoleculePropertyEditor(model, evm.EditorOptions);
+                    var pe = new MoleculePropertyEditor(model, controller.EditorOptions);
                     ShowDialog(pe, currentEditor);
 
                     if (model.Save)
                     {
                         var thisMolecule = model.Data.Molecules.First().Value;
-                        evm.UpdateMolecule(moleculeAdorner.AdornedMolecules[0], thisMolecule);
+                        controller.UpdateMolecule(moleculeAdorner.AdornedMolecules[0], thisMolecule);
                     }
 
                     Application.Current.ShutdownMode = mode;
@@ -244,23 +244,23 @@ namespace Chem4Word.ACME.Utils
                         }
                         model.MicroModel.ScaleToAverageBondLength(20);
 
-                        var pe = new AtomPropertyEditor(model, evm.EditorOptions);
+                        var pe = new AtomPropertyEditor(model, controller.EditorOptions);
 
                         ShowDialog(pe, currentEditor);
                         Application.Current.ShutdownMode = mode;
 
                         if (model.Save)
                         {
-                            evm.UpdateAtom(atom, model);
+                            controller.UpdateAtom(atom, model);
 
-                            evm.ClearSelection();
-                            evm.AddToSelection(atom);
+                            controller.ClearSelection();
+                            controller.AddToSelection(atom);
 
                             if (model.AddedElement != null)
                             {
                                 AddOptionIfNeeded(model);
                             }
-                            evm.SelectedElement = model.Element;
+                            controller.SelectedElement = model.Element;
                         }
                         pe.Close();
                     }
@@ -337,11 +337,11 @@ namespace Chem4Word.ACME.Utils
 
                         if (model.Save)
                         {
-                            evm.UpdateBond(bond, model);
-                            evm.ClearSelection();
+                            controller.UpdateBond(bond, model);
+                            controller.ClearSelection();
 
                             bond.Order = Globals.OrderValueToOrder(model.BondOrderValue);
-                            evm.AddToSelection(bond);
+                            controller.AddToSelection(bond);
                         }
                     }
                 }
@@ -349,7 +349,7 @@ namespace Chem4Word.ACME.Utils
 
             void AddOptionIfNeeded(AtomPropertiesModel model)
             {
-                if (!evm.AtomOptions.Any(ao => ao.Element.Symbol == model.AddedElement.Symbol))
+                if (!controller.AtomOptions.Any(ao => ao.Element.Symbol == model.AddedElement.Symbol))
                 {
                     AtomOption newOption = null;
                     switch (model.AddedElement)
@@ -362,7 +362,7 @@ namespace Chem4Word.ACME.Utils
                             newOption = new AtomOption(group);
                             break;
                     }
-                    evm.AtomOptions.Add(newOption);
+                    controller.AtomOptions.Add(newOption);
                 }
             }
         }

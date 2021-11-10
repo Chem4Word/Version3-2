@@ -21,7 +21,7 @@ using ContentControl = Microsoft.Office.Interop.Word.ContentControl;
 
 namespace Chem4Word.Navigator
 {
-    public class NavigatorViewModel
+    public class NavigatorController
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -34,12 +34,12 @@ namespace Chem4Word.Navigator
         //local reference to the active document
         private readonly Document _doc;
 
-        public NavigatorViewModel()
+        public NavigatorController()
         {
             NavigatorItems = new ObservableCollection<ChemistryObject>();
         }
 
-        public NavigatorViewModel(Document doc) : this()
+        public NavigatorController(Document doc) : this()
         {
             //get a reference to the document
             _doc = doc;

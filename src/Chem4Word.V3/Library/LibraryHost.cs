@@ -19,7 +19,7 @@ namespace Chem4Word.Library
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        private LibraryViewModel _libraryViewModel;
+        private LibraryController _libraryController;
         private AcmeOptions _editorOptions;
 
         public LibraryHost()
@@ -29,7 +29,7 @@ namespace Chem4Word.Library
 
         public void Clear()
         {
-            _libraryViewModel = null;
+            _libraryController = null;
         }
 
         public override void Refresh()
@@ -42,11 +42,11 @@ namespace Chem4Word.Library
 
                 using (new WaitCursor())
                 {
-                    if (_libraryViewModel == null)
+                    if (_libraryController == null)
                     {
-                        _libraryViewModel = new LibraryViewModel(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
+                        _libraryController = new LibraryController(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
                     }
-                    libraryView1.DataContext = _libraryViewModel;
+                    libraryView1.DataContext = _libraryController;
                 }
             }
             catch (Exception ex)

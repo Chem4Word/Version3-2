@@ -6,24 +6,22 @@
 // ---------------------------------------------------------------------------
 
 using System;
-using Chem4Word.ACME.Enums;
+using System.Diagnostics;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Sketching
 {
-    public class CutCommand : BaseCommand
+    public class AddAtomCommand : BaseCommand
     {
-        public CutCommand(EditViewModel vm) : base(vm)
-        {
-        }
+        #region ICommand Implementation
 
         public override bool CanExecute(object parameter)
         {
-            return EditViewModel.SelectionType != SelectionTypeCode.None;
+            return false;
         }
 
         public override void Execute(object parameter)
         {
-            EditViewModel.CutSelection();
+            Debugger.Break();
         }
 
         public override void RaiseCanExecChanged()
@@ -35,5 +33,15 @@ namespace Chem4Word.ACME.Commands
         }
 
         public override event EventHandler CanExecuteChanged;
+
+        #endregion ICommand Implementation
+
+        #region Constructors
+
+        public AddAtomCommand(EditController controller) : base(controller)
+        {
+        }
+
+        #endregion Constructors
     }
 }

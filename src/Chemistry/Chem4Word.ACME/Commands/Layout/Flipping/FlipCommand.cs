@@ -8,25 +8,25 @@
 using System.Diagnostics;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Layout.Flipping
 {
     public class FlipCommand : BaseCommand
     {
-        public FlipCommand(EditViewModel vm) : base(vm)
+        public FlipCommand(EditController controller) : base(controller)
         {
         }
 
         public override bool CanExecute(object parameter)
         {
-            return EditViewModel.SingleMolSelected;
+            return EditController.SingleMolSelected;
         }
 
         public override void Execute(object parameter)
         {
-            Debug.Assert(EditViewModel.SelectedItems[0] is Molecule);
-            var selMolecule = EditViewModel.SelectedItems[0] as Molecule;
+            Debug.Assert(EditController.SelectedItems[0] is Molecule);
+            var selMolecule = EditController.SelectedItems[0] as Molecule;
 
-            EditViewModel.FlipMolecule(selMolecule, false, false);
+            EditController.FlipMolecule(selMolecule, false, false);
         }
     }
 }

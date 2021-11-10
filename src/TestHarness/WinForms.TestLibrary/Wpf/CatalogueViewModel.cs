@@ -24,7 +24,7 @@ using IChem4Word.Contracts;
 
 namespace WinForms.TestLibrary.Wpf
 {
-    public class CatalogueViewModel : DependencyObject, INotifyPropertyChanged
+    public class CatalogueController : DependencyObject, INotifyPropertyChanged
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -32,7 +32,7 @@ namespace WinForms.TestLibrary.Wpf
         private readonly IChem4WordTelemetry _telemetry;
         private readonly LibraryOptions _libraryOptions;
 
-        public CatalogueViewModel(IChem4WordTelemetry telemetry, LibraryOptions libraryOptions)
+        public CatalogueController(IChem4WordTelemetry telemetry, LibraryOptions libraryOptions)
         {
             _telemetry = telemetry;
             _libraryOptions = libraryOptions;

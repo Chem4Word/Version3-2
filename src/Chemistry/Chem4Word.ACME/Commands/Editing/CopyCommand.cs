@@ -5,30 +5,35 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Linq;
+using System;
 using Chem4Word.ACME.Enums;
-using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Editing
 {
-    /// <summary>
-    /// handles the ungrouping of molecules
-    /// </summary>
-    public class UnGroupCommand : BaseCommand
+    public class CopyCommand : BaseCommand
     {
-        public UnGroupCommand(EditViewModel vm) : base(vm)
+        public CopyCommand(EditController controller) : base(controller)
         {
         }
 
         public override bool CanExecute(object parameter)
         {
-            return EditViewModel.SelectionType == SelectionTypeCode.Molecule &&
-                   EditViewModel.SelectedItems.OfType<Molecule>().All(m => m.IsGrouped);
+            return EditController.SelectionType != SelectionTypeCode.None;
         }
 
         public override void Execute(object parameter)
         {
-            EditViewModel.UnGroup(EditViewModel.SelectedItems);
+            EditController.CopySelection();
         }
+
+        public override void RaiseCanExecChanged()
+        {
+            if (CanExecuteChanged != null)
+            {
+                CanExecuteChanged.Invoke(this, new EventArgs());
+            }
+        }
+
+        public override event EventHandler CanExecuteChanged;
     }
 }

@@ -113,7 +113,7 @@ namespace Chem4Word.ACME.Behaviors
             if (MouseIsDown && IsDrawing)
             {
                 CurrentStatus = "Drag along arrow to size ring: [Esc] to cancel";
-                double xamlBondSize = EditViewModel.Model.XamlBondLength;
+                double xamlBondSize = EditController.Model.XamlBondLength;
                 if (Target != null && GetTargetedVisual(e) != Target) //dragging off a bond or atom
                 {
                     //first, work out how far we've dragged the mouse
@@ -129,7 +129,7 @@ namespace Chem4Word.ACME.Behaviors
                                 Vector parallelToBV =
                                     GetProjection(av.ParentAtom.BalancingVector(), av.Position, CurrentPoint);
                                 Point endPoint = av.Position + parallelToBV;
-                                CurrentAdorner = new NRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                                CurrentAdorner = new NRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                                   _preferredPlacements, av.Position, endPoint);
                             }
 
@@ -150,7 +150,7 @@ namespace Chem4Word.ACME.Behaviors
                                     Vector parallelToPerp =
                                         GetProjection(perpToAV.Value, parentBondMidPoint, CurrentPoint);
                                     Point endPoint = parentBondMidPoint + parallelToPerp;
-                                    CurrentAdorner = new NRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                                    CurrentAdorner = new NRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                                   _preferredPlacements,
                                                                   parentBondMidPoint, endPoint);
                                 }
@@ -188,7 +188,7 @@ namespace Chem4Word.ACME.Behaviors
                     {
                         CurrentStatus = "Can't draw ring here - drag over atom or bond to draw fused ring";
                     }
-                    CurrentAdorner = new NRingAdorner(CurrentEditor, EditViewModel.EditBondThickness,
+                    CurrentAdorner = new NRingAdorner(CurrentEditor, EditController.EditBondThickness,
                                                       _preferredPlacements, FirstPoint, CurrentPoint, Clashing);
                 }
                 else
@@ -303,7 +303,7 @@ namespace Chem4Word.ACME.Behaviors
                 {
                     List<NewAtomPlacement> newAtomPlacements = new List<NewAtomPlacement>();
                     FillExistingAtoms(_preferredPlacements, newAtomPlacements, CurrentEditor);
-                    EditViewModel.DrawRing(newAtomPlacements, false);
+                    EditController.DrawRing(newAtomPlacements, false);
                 }
             }
             CurrentEditor.ReleaseMouseCapture();
@@ -330,7 +330,7 @@ namespace Chem4Word.ACME.Behaviors
         protected override void OnAttached()
         {
             base.OnAttached();
-            EditViewModel.ClearSelection();
+            EditController.ClearSelection();
 
             CurrentEditor = (EditorCanvas)AssociatedObject;
 

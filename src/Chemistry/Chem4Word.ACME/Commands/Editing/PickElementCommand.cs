@@ -10,15 +10,15 @@ using System.Windows;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Editing
 {
     public class PickElementCommand : BaseCommand
     {
-        private readonly EditViewModel _evm;
+        private readonly EditController _controller;
 
-        public PickElementCommand(EditViewModel vm) : base(vm)
+        public PickElementCommand(EditController controller) : base(controller)
         {
-            _evm = vm;
+            _controller = controller;
         }
 
         public override bool CanExecute(object parameter) => true;
@@ -28,15 +28,15 @@ namespace Chem4Word.ACME.Commands
             PTPopup popupPicker = new PTPopup();
             var mosusePosition = System.Windows.Forms.Control.MousePosition;
             popupPicker.CentrePoint = new Point(mosusePosition.X, mosusePosition.Y);
-            UIUtils.ShowDialog(popupPicker, _evm.CurrentEditor);
+            UIUtils.ShowDialog(popupPicker, _controller.CurrentEditor);
             var popupPickerSelectedElement = popupPicker.SelectedElement;
             if (popupPickerSelectedElement != null)
             {
-                if (!_evm.AtomOptions.Any(ao => ao.Element == popupPickerSelectedElement))
+                if (!_controller.AtomOptions.Any(ao => ao.Element == popupPickerSelectedElement))
                 {
                     var newOption = new AtomOption(popupPickerSelectedElement as Element);
-                    _evm.AtomOptions.Add(newOption);
-                    _evm.SelectedElement = popupPickerSelectedElement;
+                    _controller.AtomOptions.Add(newOption);
+                    _controller.SelectedElement = popupPickerSelectedElement;
                 }
             }
         }

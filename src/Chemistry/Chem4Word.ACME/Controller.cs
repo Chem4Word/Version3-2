@@ -10,9 +10,9 @@ using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME
 {
-    public class ViewModel
+    public class Controller
     {
-        public ViewModel(Model chemistryModel)
+        public Controller(Model chemistryModel)
         {
             Model = chemistryModel;
 

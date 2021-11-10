@@ -21,19 +21,19 @@ using Chem4Word.Telemetry;
 
 namespace Chem4Word.Library
 {
-    public class LibraryViewModel : DependencyObject
+    public class LibraryController : DependencyObject
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         //used for XAML data binding
-        public ObservableCollection<ACME.Models.ChemistryObject> ChemistryItems { get; }
+        public ObservableCollection<ChemistryObject> ChemistryItems { get; }
 
         private bool _initializing;
         private readonly TelemetryWriter _telemetry;
         private readonly LibraryOptions _libraryOptions;
 
-        public LibraryViewModel(TelemetryWriter telemetry, LibraryOptions libraryOptions)
+        public LibraryController(TelemetryWriter telemetry, LibraryOptions libraryOptions)
         {
             _telemetry = telemetry;
             _libraryOptions = libraryOptions;

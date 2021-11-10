@@ -60,9 +60,9 @@ namespace Chem4Word.Library
                     var parts = source.OutputValue.Split('=');
                     var item = long.Parse(parts[1]);
 
-                    if (DataContext is LibraryViewModel viewModel)
+                    if (DataContext is LibraryController controller)
                     {
-                        var clicked = viewModel.ChemistryItems.FirstOrDefault(c => c.Id == item);
+                        var clicked = controller.ChemistryItems.FirstOrDefault(c => c.Id == item);
                         if (clicked != null)
                         {
                             Globals.Chem4WordV3.EventsEnabled = false;
@@ -128,7 +128,7 @@ namespace Chem4Word.Library
                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Filter library by '{SearchBox.Text}'");
 
                     //get the view from the listbox's source
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryViewModel) DataContext).ChemistryItems);
+                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryController) DataContext).ChemistryItems);
                     //then try to match part of either its name or an alternative name to the string typed in
                     view.Filter = ci =>
                                   {
@@ -158,7 +158,7 @@ namespace Chem4Word.Library
 
                 if (DataContext != null)
                 {
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryViewModel) DataContext).ChemistryItems);
+                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryController) DataContext).ChemistryItems);
                     view.Filter = null;
                 }
             }

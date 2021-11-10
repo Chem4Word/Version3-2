@@ -696,6 +696,11 @@ namespace Chem4Word.Model2
             }
         }
 
+        public double Top => BoundingBox.Top;
+        public double Bottom =>BoundingBox.Bottom;
+        public double Left => BoundingBox.Left;
+        public double Right => BoundingBox.Right;
+        public Point Centre => new Point(Left + (Right-Left)/2, Top +(Bottom - Top)/2);
         #region Events
 
         public event NotifyCollectionChangedEventHandler AtomsChanged;

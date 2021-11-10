@@ -397,14 +397,14 @@ namespace WinForms.TestHarness
             ListStacks();
         }
 
-        private List<ViewModel> StackToList(Stack<Model> stack)
+        private List<Controller> StackToList(Stack<Model> stack)
         {
-            List<ViewModel> list = new List<ViewModel>();
+            List<Controller> list = new List<Controller>();
             foreach (var item in stack)
             {
                 var model = item.Copy();
                 model.Refresh();
-                list.Add(new ViewModel(model));
+                list.Add(new Controller(model));
             }
 
             return list;

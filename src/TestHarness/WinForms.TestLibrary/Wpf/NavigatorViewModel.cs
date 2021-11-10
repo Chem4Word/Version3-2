@@ -11,11 +11,11 @@ using Chem4Word.ACME.Models;
 
 namespace WinForms.TestLibrary.Wpf
 {
-    public class NavigatorViewModel : DependencyObject
+    public class NavigatorController : DependencyObject
     {
         public ObservableCollection<ChemistryObject> NavigatorItems { get; }
 
-        public NavigatorViewModel()
+        public NavigatorController()
         {
             NavigatorItems = new ObservableCollection<ChemistryObject>();
         }

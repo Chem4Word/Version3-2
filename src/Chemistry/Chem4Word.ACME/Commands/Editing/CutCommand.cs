@@ -8,22 +8,22 @@
 using System;
 using Chem4Word.ACME.Enums;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Editing
 {
-    public class CopyCommand : BaseCommand
+    public class CutCommand : BaseCommand
     {
-        public CopyCommand(EditViewModel vm) : base(vm)
+        public CutCommand(EditController controller) : base(controller)
         {
         }
 
         public override bool CanExecute(object parameter)
         {
-            return EditViewModel.SelectionType != SelectionTypeCode.None;
+            return EditController.SelectionType != SelectionTypeCode.None;
         }
 
         public override void Execute(object parameter)
         {
-            EditViewModel.CopySelection();
+            EditController.CutSelection();
         }
 
         public override void RaiseCanExecChanged()

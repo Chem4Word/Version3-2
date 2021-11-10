@@ -221,6 +221,9 @@ namespace Chem4Word.Model2.Helpers
 
         #region Layout Constants
 
+        //'gravity' limit during aligned dragging
+        public const double DraggingTolerance = 20d;
+
         public const double VectorTolerance = 0.01d;
 
         // LineThickness of Bond if all else fails

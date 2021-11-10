@@ -6,26 +6,19 @@
 // ---------------------------------------------------------------------------
 
 using System.Linq;
-using Chem4Word.ACME.Enums;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Layout.Alignment
 {
-    public class GroupCommand : BaseCommand
+    public class AlignBottomsCommand : AlignCommand
     {
-        public GroupCommand(EditViewModel vm) : base(vm)
+        public AlignBottomsCommand(EditController controller) : base(controller)
         {
-        }
-
-        public override bool CanExecute(object parameter)
-        {
-            return EditViewModel.SelectionType == SelectionTypeCode.Molecule
-                   && EditViewModel.SelectedItems.OfType<Molecule>().Count() > 1;
         }
 
         public override void Execute(object parameter)
         {
-            EditViewModel.Group(EditViewModel.SelectedItems.ToList());
+            EditController.AlignBottoms(EditController.SelectedItems.OfType<Molecule>().ToList());
         }
     }
 }

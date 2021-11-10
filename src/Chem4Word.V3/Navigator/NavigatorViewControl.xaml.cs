@@ -63,9 +63,9 @@ namespace Chem4Word.Navigator
                     var parts = source.OutputValue.Split('=');
                     var item = parts[1];
 
-                    if (DataContext is NavigatorViewModel viewModel)
+                    if (DataContext is NavigatorController controller)
                     {
-                        var clicked = viewModel.NavigatorItems.FirstOrDefault(c => c.CustomControlTag == item);
+                        var clicked = controller.NavigatorItems.FirstOrDefault(c => c.CustomControlTag == item);
                         if (clicked != null)
                         {
                             Globals.Chem4WordV3.EventsEnabled = false;

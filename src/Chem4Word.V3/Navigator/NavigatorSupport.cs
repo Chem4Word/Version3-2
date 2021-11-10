@@ -28,10 +28,10 @@ namespace Chem4Word.Navigator
                     && custTaskPane.Control is NavigatorHost navHost)
                 {
                     var navigatorControl = navHost.navigatorView1;
-                    if (navigatorControl.DataContext is NavigatorViewModel viewModel)
+                    if (navigatorControl.DataContext is NavigatorController controller)
                     {
                         int idx = 0;
-                        foreach (var item in viewModel.NavigatorItems)
+                        foreach (var item in controller.NavigatorItems)
                         {
                             if (item.CustomControlTag.Equals(guid))
                             {

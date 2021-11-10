@@ -70,19 +70,19 @@ namespace WinForms.TestLibrary
             // This code belongs in the TaskPane Hosting Control
             if (LibraryHost.Child is LibraryControl libraryControl)
             {
-                var viewModel = new LibraryViewModel(_telemetry, _libraryOptions);
+                var controller = new LibraryController(_telemetry, _libraryOptions);
                 libraryControl.SetOptions(_acmeOptions);
-                libraryControl.DataContext = viewModel;
+                libraryControl.DataContext = controller;
             }
 
             _telemetry.Write(module, "Information", $"Library done at {sw.ElapsedMilliseconds}ms");
 
             if (CatalogueHost.Child is CatalogueControl catalogueControl)
             {
-                var viewModel = new CatalogueViewModel(_telemetry, _libraryOptions);
+                var controller = new CatalogueController(_telemetry, _libraryOptions);
                 catalogueControl.TopLeft = new Point(Left, Top);
                 catalogueControl.SetOptions(_telemetry, _acmeOptions, _libraryOptions);
-                catalogueControl.DataContext = viewModel;
+                catalogueControl.DataContext = controller;
                 catalogueControl.UpdateStatusBar();
             }
 
@@ -90,7 +90,7 @@ namespace WinForms.TestLibrary
 
             if (NavigatorHost.Child is NavigatorControl navigatorControl)
             {
-                var viewModel = new NavigatorViewModel();
+                var controller = new NavigatorController();
 
                 var lib = new Library(_telemetry, _libraryOptions);
                 List<ChemistryDataObject> dto = lib.GetAllChemistry();
@@ -105,11 +105,11 @@ namespace WinForms.TestLibrary
                         Formula = chemistryDto.Formula
                     };
 
-                    viewModel.NavigatorItems.Add(obj);
+                    controller.NavigatorItems.Add(obj);
                 }
 
                 navigatorControl.SetOptions(_acmeOptions);
-                navigatorControl.DataContext = viewModel;
+                navigatorControl.DataContext = controller;
             }
 
             sw.Stop();

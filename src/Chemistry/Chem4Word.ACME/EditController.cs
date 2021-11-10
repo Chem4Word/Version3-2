@@ -5,6 +5,28 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners.Selectors;
+using Chem4Word.ACME.Behaviors;
+using Chem4Word.ACME.Commands;
+using Chem4Word.ACME.Commands.Editing;
+using Chem4Word.ACME.Commands.Grouping;
+using Chem4Word.ACME.Commands.Layout.Alignment;
+using Chem4Word.ACME.Commands.Layout.Flipping;
+using Chem4Word.ACME.Commands.Sketching;
+using Chem4Word.ACME.Commands.Undo;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Enums;
+using Chem4Word.ACME.Models;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI.Wpf;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Geometry;
+using Chem4Word.Model2.Helpers;
+using IChem4Word.Contracts;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,28 +43,12 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners.Selectors;
-using Chem4Word.ACME.Behaviors;
-using Chem4Word.ACME.Commands;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.ACME.Enums;
-using Chem4Word.ACME.Models;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Core.UI.Wpf;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Converters.CML;
-using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
-using IChem4Word.Contracts;
 using static Chem4Word.Model2.Helpers.Globals;
 using Constants = Chem4Word.ACME.Resources.Constants;
 
 namespace Chem4Word.ACME
 {
-    public class EditViewModel : ViewModel, INotifyPropertyChanged
+    public class EditController : Controller, INotifyPropertyChanged
     {
         private static readonly string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static readonly string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -56,6 +62,7 @@ namespace Chem4Word.ACME
 
         public AcmeOptions EditorOptions { get; set; }
         public IChem4WordTelemetry Telemetry { get; set; }
+        private BaseEditBehavior _activeMode;
 
         #endregion Fields
 
@@ -231,6 +238,35 @@ namespace Chem4Word.ACME
 
         public ClipboardMonitor ClipboardMonitor { get; }
 
+        public bool IsAligning { get; set; }
+
+        public List<string> Used1DProperties { get; set; }
+
+        public BaseEditBehavior ActiveMode
+        {
+            get { return _activeMode; }
+            set
+            {
+                if (_activeMode != null)
+                {
+                    _activeMode.Detach();
+                    _activeMode = null;
+                }
+
+                _activeMode = value;
+                if (_activeMode != null)
+                {
+                    _activeMode.Attach(CurrentEditor);
+                    SendStatus(_activeMode.CurrentStatus);
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<AtomOption> AtomOptions { get; set; }
+
+        public bool IsDirty => UndoManager.CanUndo;
+
         #endregion Properties
 
         #region Events
@@ -260,7 +296,7 @@ namespace Chem4Word.ACME
         }
 
         /// <summary>
-        /// The pivotal routine for handling selection in the EditViewModel
+        /// The pivotal routine for handling selection in the EditController
         /// All display for selections *must* go through this routine.  No ifs, no buts
         /// </summary>
         /// <param name="sender"></param>
@@ -345,34 +381,6 @@ namespace Chem4Word.ACME
 
         #endregion Events
 
-        public bool IsDirty => UndoManager.CanUndo;
-
-        private BaseEditBehavior _activeMode;
-        public List<string> Used1DProperties { get; set; }
-
-        public BaseEditBehavior ActiveMode
-        {
-            get { return _activeMode; }
-            set
-            {
-                if (_activeMode != null)
-                {
-                    _activeMode.Detach();
-                    _activeMode = null;
-                }
-
-                _activeMode = value;
-                if (_activeMode != null)
-                {
-                    _activeMode.Attach(CurrentEditor);
-                    SendStatus(_activeMode.CurrentStatus);
-                }
-                OnPropertyChanged();
-            }
-        }
-
-        public ObservableCollection<AtomOption> AtomOptions { get; set; }
-
         #region Commands
 
         public AddAtomCommand AddAtomCommand { get; set; }
@@ -391,6 +399,14 @@ namespace Chem4Word.ACME
         public SettingsCommand SettingsCommand { get; set; }
         public PickElementCommand PickElementCommand { get; set; }
 
+        public AlignBottomsCommand AlignBottomsCommand { get; set; }
+        public AlignMiddlesCommand AlignMiddlesCommand { get; set; }
+        public AlignTopsCommand AlignTopsCommand { get; set; }
+
+        public AlignLeftsCommand AlignLeftsCommand { get; set; }
+        public AlignCentresCommand AlignCentresCommand { get; set; }
+        public AlignRightsCommand AlignRightsCommand { get; set; }
+
         #endregion Commands
 
         #region Constructors
@@ -402,7 +418,7 @@ namespace Chem4Word.ACME
         /// <param name="currentEditor"></param>
         /// <param name="used1DProperties"></param>
         /// <param name="telemetry"></param>
-        public EditViewModel(Model model, EditorCanvas currentEditor, List<string> used1DProperties, IChem4WordTelemetry telemetry) : base(model)
+        public EditController(Model model, EditorCanvas currentEditor, List<string> used1DProperties, IChem4WordTelemetry telemetry) : base(model)
         {
             CurrentEditor = currentEditor;
             Used1DProperties = used1DProperties;
@@ -431,7 +447,7 @@ namespace Chem4Word.ACME
         /// Initialises the minimum objects necessary to run [X]Unit Tests
         /// </summary>
         /// <param name="model"></param>
-        public EditViewModel(Model model) : base(model)
+        public EditController(Model model) : base(model)
         {
             LoadBondOptionsForUnitTest();
 
@@ -462,6 +478,14 @@ namespace Chem4Word.ACME
             UnGroupCommand = new UnGroupCommand(this);
             SettingsCommand = new SettingsCommand(this);
             PickElementCommand = new PickElementCommand(this);
+
+            AlignBottomsCommand = new AlignBottomsCommand(this);
+            AlignMiddlesCommand = new AlignMiddlesCommand(this);
+            AlignTopsCommand = new AlignTopsCommand(this);
+
+            AlignLeftsCommand = new AlignLeftsCommand(this);
+            AlignCentresCommand = new AlignCentresCommand(this);
+            AlignRightsCommand = new AlignRightsCommand(this);
         }
 
         private void ClipboardMonitor_OnClipboardContentChanged(object sender, EventArgs e)
@@ -586,6 +610,8 @@ namespace Chem4Word.ACME
         }
 
         #endregion Constructors
+
+        #region Methods
 
         public void SetElement(ElementBase value, List<Atom> selAtoms)
         {
@@ -897,6 +923,80 @@ namespace Chem4Word.ACME
                         redo();
                     }
                 }
+            }
+            catch (Exception exception)
+            {
+                WriteTelemetryException(module, exception);
+            }
+
+            CheckModelIntegrity(module);
+        }
+
+        public void DoTransform(List<Transform> operation, List<Molecule> molecules)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            try
+            {
+                var countString = molecules == null ? "{null}" : $"{molecules.Count}";
+
+                var rootMolecules = from m in molecules
+                                    where m.RootMolecule == m
+                                    select m;
+                Molecule[] moleculesToTransform = rootMolecules.ToArray();
+
+                Action undo = () =>
+                              {
+                                  SuppressEditorRedraw(true);
+                                  _selectedItems.Clear();
+                                  for (int i = 0; i < moleculesToTransform.Count(); i++)
+                                  {
+                                      var transform = string.Join(";", DecodeTransform(operation[i]));
+                                      WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
+                                      var inverse = operation[i].Inverse;
+                                      moleculesToTransform[i].Transform((Transform)inverse);
+                                  }
+                                  SuppressEditorRedraw(false);
+
+                                  foreach (Molecule mol in moleculesToTransform)
+                                  {
+                                      mol.UpdateVisual();
+                                  }
+
+                                  foreach (var o in moleculesToTransform)
+                                  {
+                                      AddToSelection(o);
+                                  }
+                              };
+
+                Action redo = () =>
+                              {
+                                  SuppressEditorRedraw(true);
+                                  _selectedItems.Clear();
+                                  for (int i = 0; i < moleculesToTransform.Count(); i++)
+                                  {
+                                      var transform = string.Join(";", DecodeTransform(operation[i]));
+                                      WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
+                                      var inverse = operation[i].Inverse;
+                                      moleculesToTransform[i].Transform(operation[i]);
+                                  }
+                                  SuppressEditorRedraw(false);
+
+                                  foreach (Molecule mol in moleculesToTransform)
+                                  {
+                                      mol.UpdateVisual();
+                                  }
+
+                                  foreach (var o in moleculesToTransform)
+                                  {
+                                      AddToSelection(o);
+                                  }
+                              };
+
+                UndoManager.BeginUndoBlock();
+                UndoManager.RecordAction(undo, redo);
+                UndoManager.EndUndoBlock();
+
+                redo();
             }
             catch (Exception exception)
             {
@@ -1579,6 +1679,14 @@ namespace Chem4Word.ACME
             FlipVerticalCommand.RaiseCanExecChanged();
             AddHydrogensCommand.RaiseCanExecChanged();
             RemoveHydrogensCommand.RaiseCanExecChanged();
+
+            AlignBottomsCommand.RaiseCanExecChanged();
+            AlignMiddlesCommand.RaiseCanExecChanged();
+            AlignTopsCommand.RaiseCanExecChanged();
+
+            AlignLeftsCommand.RaiseCanExecChanged();
+            AlignCentresCommand.RaiseCanExecChanged();
+            AlignRightsCommand.RaiseCanExecChanged();
         }
 
         public void RemoveAllAdorners()
@@ -3718,5 +3826,98 @@ namespace Chem4Word.ACME
                     break;
             }
         }
+
+        public void AlignMiddles(List<Molecule> molsToAlign)
+        {
+            List<Transform> shifts = new List<Transform>();
+            double middle = molsToAlign.Average(m => m.Centre.Y);
+            for (int i = 0; i < molsToAlign.Count; i++)
+            {
+                var shift = new TranslateTransform();
+                shift.Y = middle - molsToAlign[i].Centre.Y;
+                shifts.Add(shift);
+            }
+            AlignMolecules(molsToAlign, shifts);
+        }
+
+        public void AlignTops(List<Molecule> molsToAlign)
+        {
+            List<Transform> shifts = new List<Transform>();
+            double top = molsToAlign.Min(m => m.Top);
+            for (int i = 0; i < molsToAlign.Count; i++)
+            {
+                var shift = new TranslateTransform();
+                shift.Y = top - molsToAlign[i].Top;
+                shifts.Add(shift);
+            }
+            AlignMolecules(molsToAlign, shifts);
+        }
+
+        public void AlignBottoms(List<Molecule> molsToAlign)
+        {
+            List<Transform> shifts = new List<Transform>();
+            double bottom = molsToAlign.Max(m => m.Bottom);
+            for (int i = 0; i < molsToAlign.Count; i++)
+            {
+                var shift = new TranslateTransform();
+                shift.Y = bottom - molsToAlign[i].Bottom;
+                shifts.Add(shift);
+            }
+            AlignMolecules(molsToAlign, shifts);
+        }
+
+        public void AlignCentres(List<Molecule> molsToAlign)
+        {
+            List<Transform> shifts = new List<Transform>();
+            double centre = molsToAlign.Average(m => m.Centre.X);
+            for (int i = 0; i < molsToAlign.Count; i++)
+            {
+                var shift = new TranslateTransform();
+                shift.X = centre - molsToAlign[i].Centre.X;
+                shifts.Add(shift);
+            }
+            AlignMolecules(molsToAlign, shifts);
+        }
+
+        public void AlignLefts(List<Molecule> molsToAlign)
+        {
+            List<Transform> shifts = new List<Transform>();
+            double left = molsToAlign.Min(m => m.Left);
+            for (int i = 0; i < molsToAlign.Count; i++)
+            {
+                var shift = new TranslateTransform();
+                shift.X = left - molsToAlign[i].Left;
+                shifts.Add(shift);
+            }
+            AlignMolecules(molsToAlign, shifts);
+        }
+
+        public void AlignRights(List<Molecule> molsToAlign)
+        {
+            List<Transform> shifts = new List<Transform>();
+            double right = molsToAlign.Max(m => m.Right);
+            for (int i = 0; i < molsToAlign.Count; i++)
+            {
+                var shift = new TranslateTransform();
+                shift.X = right - molsToAlign[i].Right;
+                shifts.Add(shift);
+            }
+            AlignMolecules(molsToAlign, shifts);
+        }
+
+        // aligns a set of molecules given a set of adjusting transforms
+        private void AlignMolecules(List<Molecule> molsToAlign, List<Transform> adjustments)
+        {
+            //first check to see whether or not we have an equal number of adjustments and molecules
+            Debug.Assert(molsToAlign.Count == adjustments.Count);
+            ClearSelection();
+            UndoManager.BeginUndoBlock();
+
+            DoTransform(adjustments, molsToAlign);
+
+            UndoManager.EndUndoBlock();
+        }
+
+        #endregion Methods
     }
 }

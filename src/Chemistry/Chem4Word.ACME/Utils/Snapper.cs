@@ -23,23 +23,22 @@ namespace Chem4Word.ACME.Utils
         public Point StartPoint { get; }
         public int LockAngle { get; }
 
-        public EditViewModel ViewModel { get; }
+        public EditController Controller { get; }
 
         /// <summary>
         ///     Creates a new SnapGeometry
         /// </summary>
         /// <param name="startPoint">location of the angle where the bond swings from.</param>
         /// <param name="lockAngle">Angle in degrees - must be a factor of 360</param>
-        public Snapper(Point startPoint, EditViewModel viewModel, int lockAngle = 15, double bondLength = 0,
+        public Snapper(Point startPoint, EditController controller, int lockAngle = 15, double bondLength = 0,
             bool snapLength = true, bool snapAngle = true)
         {
-            ViewModel = viewModel;
             StartPoint = startPoint;
             IsSnappingLength = snapLength;
             IsSnappingAngle = snapAngle;
             if (bondLength == 0)
             {
-                _modelXamlBondLength = ViewModel.Model.XamlBondLength;
+                _modelXamlBondLength = controller.Model.XamlBondLength;
             }
             else
             {

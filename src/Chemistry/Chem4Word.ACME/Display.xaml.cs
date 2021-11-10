@@ -31,7 +31,7 @@ namespace Chem4Word.ACME
 
         #region Public Properties
 
-        public ViewModel CurrentViewModel { get; set; }
+        public Controller CurrentController { get; set; }
 
         #region Chemistry (DependencyProperty)
 
@@ -142,8 +142,8 @@ namespace Chem4Word.ACME
         public void Clear()
         {
             var model = new Model();
-            CurrentViewModel = new ViewModel(model);
-            DrawChemistry(CurrentViewModel);
+            CurrentController = new Controller(model);
+            DrawChemistry(CurrentController);
         }
 
         #endregion Public Methods
@@ -202,16 +202,16 @@ namespace Chem4Word.ACME
                 {
                     chemistryModel.RescaleForXaml(true, Constants.StandardBondLength);
 
-                    CurrentViewModel = new ViewModel(chemistryModel);
-                    CurrentViewModel.SetTextParams(chemistryModel.XamlBondLength);
-                    DrawChemistry(CurrentViewModel);
+                    CurrentController = new Controller(chemistryModel);
+                    CurrentController.SetTextParams(chemistryModel.XamlBondLength);
+                    DrawChemistry(CurrentController);
                 }
             }
         }
 
-        private void DrawChemistry(ViewModel currentViewModel)
+        private void DrawChemistry(Controller currentController)
         {
-            ChemCanvas.ViewModel = currentViewModel;
+            ChemCanvas.Controller = currentController;
         }
 
         #endregion Private Methods

@@ -18,17 +18,17 @@ namespace Chem4Word.ACME.Behaviors
 {
     public abstract class BaseEditBehavior : Behavior<Canvas>, INotifyPropertyChanged
     {
-        public EditViewModel EditViewModel
+        public EditController EditController
         {
-            get { return (EditViewModel)GetValue(EditViewModelProperty); }
+            get { return (EditController)GetValue(EditControllerProperty); }
             set
             {
-                SetValue(EditViewModelProperty, value);
+                SetValue(EditControllerProperty, value);
             }
         }
 
-        public static readonly DependencyProperty EditViewModelProperty =
-            DependencyProperty.Register("EditViewModel", typeof(EditViewModel), typeof(BaseEditBehavior), new PropertyMetadata(null));
+        public static readonly DependencyProperty EditControllerProperty =
+            DependencyProperty.Register("EditController", typeof(EditController), typeof(BaseEditBehavior), new PropertyMetadata(null));
 
         private string _currentStatus;
 
@@ -70,7 +70,7 @@ namespace Chem4Word.ACME.Behaviors
             set
             {
                 _currentStatus = value;
-                EditViewModel.SendStatus(value);
+                EditController.SendStatus(value);
                 OnPropertyChanged();
             }
         }

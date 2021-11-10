@@ -64,7 +64,7 @@ namespace Chem4Word.ACME.Adorners
                                 Placement = Globals.BondDirection.Anticlockwise,
                                 PrimaryCentroid = centroid
                             };
-                            BondGeometry.GetDoubleBondGeometry(dbd, dbd.PrincipleVector.Length, _fixedRingAdorner.CurrentEditor.ViewModel.Standoff);
+                            BondGeometry.GetDoubleBondGeometry(dbd, dbd.PrincipleVector.Length, _fixedRingAdorner.CurrentEditor.Controller.Standoff);
                             BasicGeometry.DrawGeometry(sgc, dbd.DefiningGeometry);
                             visited.Add(oldAtomPlacement);
                             visited.Add(newAtomPlacement);
@@ -76,7 +76,7 @@ namespace Chem4Word.ACME.Adorners
                                 Start = oldAtomPlacement.Position,
                                 End = newAtomPlacement.Position
                             };
-                            BondGeometry.GetSingleBondGeometry(sbd, _fixedRingAdorner.CurrentEditor.ViewModel.Standoff);
+                            BondGeometry.GetSingleBondGeometry(sbd, _fixedRingAdorner.CurrentEditor.Controller.Standoff);
                             BasicGeometry.DrawGeometry(sgc, sbd.DefiningGeometry);
                         }
 

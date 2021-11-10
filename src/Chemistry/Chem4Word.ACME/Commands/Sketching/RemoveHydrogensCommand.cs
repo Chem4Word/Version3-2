@@ -8,27 +8,27 @@
 using System.Linq;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Sketching
 {
-    public class AddHydrogensCommand : BaseCommand
+    public class RemoveHydrogensCommand : BaseCommand
     {
-        public AddHydrogensCommand(EditViewModel vm) : base(vm)
+        public RemoveHydrogensCommand(EditController controller) : base(controller)
         {
         }
 
         public override bool CanExecute(object parameter)
         {
-            var mols = EditViewModel.SelectedItems.OfType<Molecule>().ToList();
-            var atoms = EditViewModel.SelectedItems.OfType<Atom>().ToList();
-            var bonds = EditViewModel.SelectedItems.OfType<Bond>().ToList();
-            var nothingSelected = EditViewModel.SelectedItems.Count == 0;
+            var mols = EditController.SelectedItems.OfType<Molecule>().ToList();
+            var atoms = EditController.SelectedItems.OfType<Atom>().ToList();
+            var bonds = EditController.SelectedItems.OfType<Bond>().ToList();
+            var nothingSelected = EditController.SelectedItems.Count == 0;
 
             return nothingSelected || mols.Any() && !atoms.Any() && !bonds.Any();
         }
 
         public override void Execute(object parameter)
         {
-            EditViewModel.AddHydrogens();
+            EditController.RemoveHydrogens();
         }
     }
 }

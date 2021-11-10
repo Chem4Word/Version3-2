@@ -69,7 +69,7 @@ namespace Chem4Word.ACME.Behaviors
             CurrentEditor.Cursor = Cursors.Arrow;
 
             CurrentEditor.IsHitTestVisible = true;
-            _bondLength = CurrentEditor.ViewModel.Model.MeanBondLength;
+            _bondLength = CurrentEditor.Controller.Model.MeanBondLength;
             CurrentStatus = DefaultText;
         }
 
@@ -82,7 +82,7 @@ namespace Chem4Word.ACME.Behaviors
         {
             if (!(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
             {
-                EditViewModel.ClearSelection();
+                EditController.ClearSelection();
             }
 
             _mouseTrack = new PointCollection();
@@ -91,7 +91,7 @@ namespace Chem4Word.ACME.Behaviors
             Mouse.Capture(CurrentEditor);
             _mouseTrack.Add(_startpoint);
 
-            if (e.ClickCount == 2 && EditViewModel.SelectionType == SelectionTypeCode.Molecule)
+            if (e.ClickCount == 2 && EditController.SelectionType == SelectionTypeCode.Molecule)
             {
                 DoMolSelect(e);
                 e.Handled = true;
@@ -123,9 +123,9 @@ namespace Chem4Word.ACME.Behaviors
                 _atomList = null;
             }
 
-            if (EditViewModel.SelectedItems.Any())
+            if (EditController.SelectedItems.Any())
             {
-                EditViewModel.ClearSelection();
+                EditController.ClearSelection();
                 CurrentStatus = DefaultText;
             }
 
@@ -149,7 +149,7 @@ namespace Chem4Word.ACME.Behaviors
             {
                 if (_atomList != null && _atomList.Any())
                 {
-                    EditViewModel.DoTransform(_shift, _atomList);
+                    EditController.DoTransform(_shift, _atomList);
                     _atomList[0].Parent.UpdateVisual();
                 }
 
@@ -170,7 +170,7 @@ namespace Chem4Word.ACME.Behaviors
                     //select it
                     DoSelectionClick(e);
                 }
-                else if (_initialTarget != null && EditViewModel.SelectedItems.Contains(_initialTarget))
+                else if (_initialTarget != null && EditController.SelectedItems.Contains(_initialTarget))
                 {
                     DoSelectionClick(e);
                 }
@@ -180,9 +180,9 @@ namespace Chem4Word.ACME.Behaviors
                     _lassoHits = new List<object>();
                     GatherSelection(_lassoAdorner.Outline);
                     _lassoHits = _lassoHits.Distinct().ToList();
-                    EditViewModel.AddToSelection(_lassoHits);
+                    EditController.AddToSelection(_lassoHits);
                 }
-                if (EditViewModel.SelectedItems.Any())
+                if (EditController.SelectedItems.Any())
                 {
                     CurrentStatus = ActiveSelText;
                 }
@@ -220,7 +220,7 @@ namespace Chem4Word.ACME.Behaviors
             {
                 var selAtom = av.ParentAtom;
 
-                if (!EditViewModel.SelectedItems.Contains(selAtom))
+                if (!EditController.SelectedItems.Contains(selAtom))
                 {
                     _lassoHits.Add(selAtom);
                 }
@@ -290,8 +290,8 @@ namespace Chem4Word.ACME.Behaviors
             if (MouseIsDown(e) && IsDragging)
             {
                 if (_initialTarget is Bond b
-                    && EditViewModel.SelectionType == SelectionTypeCode.Bond
-                    && EditViewModel.SelectedItems.Count == 1) //i.e. we have one bond selected
+                    && EditController.SelectionType == SelectionTypeCode.Bond
+                    && EditController.SelectedItems.Count == 1) //i.e. we have one bond selected
                 {
                     CurrentStatus = "Drag bond to reposition.";
                     _atomList = new List<Atom> { b.StartAtom, b.EndAtom };
@@ -307,7 +307,7 @@ namespace Chem4Word.ACME.Behaviors
                 }
 
                 RemoveGhost();
-                _ghostAdorner = new PartialGhostAdorner(EditViewModel, _atomList, _shift);
+                _ghostAdorner = new PartialGhostAdorner(EditController, _atomList, _shift);
             }
         }
 
@@ -319,7 +319,7 @@ namespace Chem4Word.ACME.Behaviors
             //please don't modify it without good reason!
             //if you must then READ THE COMMENTS FIRST, PLEASE!
 
-            _atomList = EditViewModel.SelectedItems.OfType<Atom>().ToList();
+            _atomList = EditController.SelectedItems.OfType<Atom>().ToList();
             var immediateNeighbours = GetImmediateNeighbours(_atomList);
             //we need to check to see whether we are moving an atom connected to the rest of the molecule by a single bond
             //if we are then we can invoke the bond snapper to limit the movement
@@ -357,7 +357,7 @@ namespace Chem4Word.ACME.Behaviors
                     //now we need to work out how far away from the static atom the moving atom should be
                     var desiredDisplacement = originalDistance - fragmentSpan;
                     //then we snap it
-                    var bondSnapper = new Snapper(staticPoint, EditViewModel, bondLength: _bondLength, lockAngle: 10);
+                    var bondSnapper = new Snapper(staticPoint, EditController, bondLength: _bondLength, lockAngle: 10);
                     var snappedBondVector = bondSnapper.SnapVector(connectingBond.Angle, desiredDisplacement);
 
                     //subtract the original bond vector to get the actual desired, snapped shift
@@ -463,7 +463,7 @@ namespace Chem4Word.ACME.Behaviors
 
                 if (!(currentObject != null || KeyboardUtils.HoldingDownShift()))
                 {
-                    EditViewModel.ClearSelection();
+                    EditController.ClearSelection();
                 }
 
                 StartPoint = e.GetPosition(CurrentEditor);
@@ -472,7 +472,7 @@ namespace Chem4Word.ACME.Behaviors
             }
             else
             {
-                EditViewModel.RotateHydrogen(hv.ParentVisual.ParentAtom);
+                EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
             }
         }
 
@@ -528,7 +528,7 @@ namespace Chem4Word.ACME.Behaviors
                     {
                         var atom = av.ParentAtom;
                         Debug.WriteLine($"Hit Atom {atom.Id} at ({atom.Position.X},{atom.Position.Y})");
-                        EditViewModel.AddToSelection(atom);
+                        EditController.AddToSelection(atom);
                         CurrentStatus = ActiveSelText;
                         break;
                     }
@@ -537,13 +537,13 @@ namespace Chem4Word.ACME.Behaviors
                     {
                         var bond = bv.ParentBond;
                         Debug.WriteLine($"Hit Bond {bond.Id} at ({e.GetPosition(CurrentEditor).X},{e.GetPosition(CurrentEditor).Y})");
-                        EditViewModel.AddToSelection(bond);
+                        EditController.AddToSelection(bond);
                         CurrentStatus = ActiveSelText;
                         break;
                     }
 
                 default:
-                    EditViewModel.ClearSelection();
+                    EditController.ClearSelection();
                     CurrentStatus = DefaultText;
                     break;
             }
@@ -558,13 +558,13 @@ namespace Chem4Word.ACME.Behaviors
             {
                 case GroupVisual gv:
                     var mol = gv.ParentMolecule;
-                    if (!EditViewModel.SelectedItems.Contains(mol))
+                    if (!EditController.SelectedItems.Contains(mol))
                     {
-                        EditViewModel.AddToSelection(mol);
+                        EditController.AddToSelection(mol);
                     }
                     else
                     {
-                        EditViewModel.RemoveFromSelection(mol);
+                        EditController.RemoveFromSelection(mol);
                     }
 
                     CurrentStatus = ActiveSelText;
@@ -579,17 +579,17 @@ namespace Chem4Word.ACME.Behaviors
                             var rootMolecule = atom.Parent.RootMolecule;
                             if (rootMolecule.IsGrouped)
                             {
-                                EditViewModel.AddToSelection(rootMolecule);
+                                EditController.AddToSelection(rootMolecule);
                             }
                             else
                             {
-                                if (!EditViewModel.SelectedItems.Contains(atom))
+                                if (!EditController.SelectedItems.Contains(atom))
                                 {
-                                    EditViewModel.AddToSelection(atom);
+                                    EditController.AddToSelection(atom);
                                 }
                                 else
                                 {
-                                    EditViewModel.RemoveFromSelection(atom);
+                                    EditController.RemoveFromSelection(atom);
                                 }
                             }
                         }
@@ -604,16 +604,16 @@ namespace Chem4Word.ACME.Behaviors
                         var rootMolecule = bond.Parent.RootMolecule;
                         if (rootMolecule.IsGrouped)
                         {
-                            EditViewModel.AddToSelection(rootMolecule);
+                            EditController.AddToSelection(rootMolecule);
                         }
 
-                        if (!EditViewModel.SelectedItems.Contains(bond))
+                        if (!EditController.SelectedItems.Contains(bond))
                         {
-                            EditViewModel.AddToSelection(bond);
+                            EditController.AddToSelection(bond);
                         }
                         else
                         {
-                            EditViewModel.RemoveFromSelection(bond);
+                            EditController.RemoveFromSelection(bond);
                         }
 
                         CurrentStatus = ActiveSelText;
@@ -621,7 +621,7 @@ namespace Chem4Word.ACME.Behaviors
                     }
 
                 default:
-                    EditViewModel.ClearSelection();
+                    EditController.ClearSelection();
                     CurrentStatus = DefaultText;
                     break;
             }
@@ -637,7 +637,7 @@ namespace Chem4Word.ACME.Behaviors
             var myShape = result.VisualHit;
             if (myShape is GroupVisual selGroup)
             {
-                EditViewModel.AddToSelection(selGroup.ParentMolecule);
+                EditController.AddToSelection(selGroup.ParentMolecule);
                 return HitTestResultBehavior.Continue;
             }
             if (myShape is AtomVisual || myShape is BondVisual)
@@ -650,17 +650,17 @@ namespace Chem4Word.ACME.Behaviors
                         var selAtom = (myShape as AtomVisual)?.ParentAtom;
                         var selBond = (myShape as BondVisual)?.ParentBond;
 
-                        if (!(EditViewModel.SelectedItems.Contains(selAtom) ||
-                              EditViewModel.SelectedItems.Contains(selBond)))
+                        if (!(EditController.SelectedItems.Contains(selAtom) ||
+                              EditController.SelectedItems.Contains(selBond)))
                         {
                             if (selAtom != null)
                             {
-                                EditViewModel.AddToSelection(selAtom);
+                                EditController.AddToSelection(selAtom);
                             }
 
                             if (selBond != null)
                             {
-                                EditViewModel.AddToSelection(selBond);
+                                EditController.AddToSelection(selBond);
                             }
                         }
 
@@ -670,17 +670,17 @@ namespace Chem4Word.ACME.Behaviors
                         selAtom = (myShape as AtomVisual)?.ParentAtom;
                         selBond = (myShape as BondVisual)?.ParentBond;
 
-                        if (EditViewModel.SelectedItems.Contains(selAtom) ||
-                            EditViewModel.SelectedItems.Contains(selBond))
+                        if (EditController.SelectedItems.Contains(selAtom) ||
+                            EditController.SelectedItems.Contains(selBond))
                         {
                             if (selAtom != null)
                             {
-                                EditViewModel.RemoveFromSelection(selAtom);
+                                EditController.RemoveFromSelection(selAtom);
                             }
 
                             if (selBond != null)
                             {
-                                EditViewModel.RemoveFromSelection(selBond);
+                                EditController.RemoveFromSelection(selBond);
                             }
                         }
 

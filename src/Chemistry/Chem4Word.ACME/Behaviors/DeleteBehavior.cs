@@ -41,7 +41,7 @@ namespace Chem4Word.ACME.Behaviors
                 _parent.MouseLeftButtonDown += CurrentEditor_MouseLeftButtonDown;
             }
             //clear the current selection
-            EditViewModel.ClearSelection();
+            EditController.ClearSelection();
             CurrentStatus = "Click to remove an atom or bond.";
         }
 
@@ -69,23 +69,23 @@ namespace Chem4Word.ACME.Behaviors
             if (hitTestResult is GroupVisual gv)
             {
                 var parent = gv.ParentMolecule;
-                EditViewModel.DeleteMolecule(parent);
+                EditController.DeleteMolecule(parent);
                 CurrentStatus = "Group deleted";
             }
             else if (hitTestResult is AtomVisual atomVisual)
             {
                 var atom = atomVisual.ParentAtom;
-                this.EditViewModel.DeleteAtoms(new[] { atom });
+                EditController.DeleteAtoms(new[] { atom });
                 CurrentStatus = "Atom deleted.";
             }
             else if (hitTestResult is BondVisual bondVisual)
             {
                 var bond = bondVisual.ParentBond;
-                this.EditViewModel.DeleteBonds(new[] { bond });
+                EditController.DeleteBonds(new[] { bond });
                 CurrentStatus = "Bond deleted";
             }
 
-            EditViewModel.ClearSelection();
+            EditController.ClearSelection();
         }
 
         protected override void OnDetaching()

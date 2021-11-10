@@ -5,24 +5,24 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Diagnostics;
+using System.Linq;
+using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Layout.Alignment
 {
-    public class SettingsCommand : BaseCommand
+    public class AlignCommand : BaseCommand
     {
-        public SettingsCommand(EditController controller) : base(controller)
+        public AlignCommand(EditController controller) : base(controller)
         {
         }
 
         public override bool CanExecute(object parameter)
         {
-            return true;
+            return EditController.SelectedItems.Where(m => m is Molecule).Count() > 1;
         }
 
         public override void Execute(object parameter)
         {
-            Debugger.Break();
         }
     }
 }

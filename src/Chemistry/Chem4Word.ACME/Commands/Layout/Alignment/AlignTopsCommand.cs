@@ -5,19 +5,21 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-namespace Chem4Word.ACME.Commands
+using System.Linq;
+using Chem4Word.Model2;
+
+namespace Chem4Word.ACME.Commands.Layout.Alignment
 {
-    public class RedoCommand : BaseCommand
+    public class AlignTopsCommand : AlignCommand
     {
-        public RedoCommand(EditViewModel vm) : base(vm)
+        public AlignTopsCommand(EditController controller) : base(controller)
         {
         }
 
-        public override bool CanExecute(object parameter) => EditViewModel.UndoManager.CanRedo;
-
+        
         public override void Execute(object parameter)
         {
-            EditViewModel.UndoManager.Redo();
+            EditController.AlignTops(EditController.SelectedItems.OfType<Molecule>().ToList());
         }
     }
 }

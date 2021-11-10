@@ -174,7 +174,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         private void SetCentroid()
         {
             _centroid = BasicGeometry.GetCentroid(CurrentEditor.GetMoleculeBoundingBox(AdornedMolecules));
-            _rotateSnapper = new Snapper(_centroid, CurrentEditor.ViewModel as EditViewModel);
+            _rotateSnapper = new Snapper(_centroid, CurrentEditor.Controller as EditController);
         }
 
         public event DragCompletedEventHandler ResizeCompleted;
@@ -185,7 +185,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
             if (LastOperation != null)
             {
-                EditViewModel.DoTransform(LastOperation, AdornedMolecules);
+                EditController.DoTransform(LastOperation, AdornedMolecules);
 
                 SetBoundingBox();
                 ResizeCompleted?.Invoke(this, dragCompletedEventArgs);

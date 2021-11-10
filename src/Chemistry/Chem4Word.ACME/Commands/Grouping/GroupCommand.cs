@@ -5,22 +5,27 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Utils;
+using System.Linq;
+using Chem4Word.ACME.Enums;
 using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Grouping
 {
-    public class FlipVerticalCommand : FlipCommand
+    public class GroupCommand : BaseCommand
     {
-        public FlipVerticalCommand(EditViewModel vm) : base(vm)
+        public GroupCommand(EditController controller) : base(controller)
         {
+        }
+
+        public override bool CanExecute(object parameter)
+        {
+            return EditController.SelectionType == SelectionTypeCode.Molecule
+                   && EditController.SelectedItems.OfType<Molecule>().Count() > 1;
         }
 
         public override void Execute(object parameter)
         {
-            var selMolecule = EditViewModel.SelectedItems[0] as Molecule;
-            bool flipStereo = KeyboardUtils.HoldingDownShift();
-            EditViewModel.FlipMolecule(selMolecule, true, flipStereo);
+            EditController.Group(EditController.SelectedItems.ToList());
         }
     }
 }

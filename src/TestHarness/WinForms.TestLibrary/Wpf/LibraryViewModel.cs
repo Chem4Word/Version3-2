@@ -22,7 +22,7 @@ using Chem4Word.Telemetry;
 
 namespace WinForms.TestLibrary.Wpf
 {
-    public class LibraryViewModel : DependencyObject
+    public class LibraryController : DependencyObject
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
@@ -34,7 +34,7 @@ namespace WinForms.TestLibrary.Wpf
         private TelemetryWriter _telemetry;
         private LibraryOptions _libraryOptions;
 
-        public LibraryViewModel(TelemetryWriter telemetry, LibraryOptions libraryOptions)
+        public LibraryController(TelemetryWriter telemetry, LibraryOptions libraryOptions)
         {
             _telemetry = telemetry;
             _libraryOptions = libraryOptions;

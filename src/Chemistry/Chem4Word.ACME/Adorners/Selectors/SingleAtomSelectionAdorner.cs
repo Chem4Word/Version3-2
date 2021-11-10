@@ -5,6 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Controls;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -12,9 +15,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Controls;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -179,16 +179,20 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void BigThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            DragXTravel += e.HorizontalChange;
-            DragYTravel += e.VerticalChange;
+            //update how far it's travelled so far
+            double horizontalChange = e.HorizontalChange;
+            double verticalChange = e.VerticalChange;
+
+            DragXTravel += horizontalChange;
+            DragYTravel += verticalChange;
+
+            double vOffset = DragYTravel;
+            double hOffset = DragXTravel;
 
             var lastTranslation = (TranslateTransform)LastOperation;
 
-            lastTranslation.X = DragXTravel;
-            lastTranslation.Y = DragYTravel;
-
-            Canvas.SetLeft(BigThumb, StartPos.X + DragXTravel);
-            Canvas.SetTop(BigThumb, StartPos.Y + DragYTravel);
+            lastTranslation.X = hOffset;
+            lastTranslation.Y = vOffset;
 
             InvalidateVisual();
         }
@@ -210,7 +214,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 InvalidateVisual();
 
                 //move the molecule
-                EditViewModel.DoTransform(LastOperation, AdornedMolecules);
+                EditController.DoTransform(LastOperation, AdornedMolecules);
 
                 RaiseDRCompleted(sender, e);
 
@@ -223,7 +227,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             }
             else
             {
-                EditViewModel.RemoveFromSelection(AdornedMolecules.ConvertAll(am => (ChemistryBase)am));
+                EditController.RemoveFromSelection(AdornedMolecules.ConvertAll(am => (ChemistryBase)am));
             }
             Dragging = false;
         }

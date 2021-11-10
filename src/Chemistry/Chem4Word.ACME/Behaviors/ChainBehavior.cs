@@ -70,7 +70,7 @@ namespace Chem4Word.ACME.Behaviors
         protected override void OnAttached()
         {
             base.OnAttached();
-            EditViewModel.ClearSelection();
+            EditController.ClearSelection();
 
             CurrentEditor = (EditorCanvas)AssociatedObject;
 
@@ -98,7 +98,7 @@ namespace Chem4Word.ACME.Behaviors
         {
             if (IsDrawing && !Clashing)
             {
-                EditViewModel.DrawChain(Placements, Target);
+                EditController.DrawChain(Placements, Target);
             }
 
             MouseIsDown = false;
@@ -128,14 +128,14 @@ namespace Chem4Word.ACME.Behaviors
                 else
                 {
                     CurrentStatus = "Drag to start sizing chain: [Esc] to cancel.";
-                    var endPoint = e.GetPosition(EditViewModel.CurrentEditor);
+                    var endPoint = e.GetPosition(EditController.CurrentEditor);
 
                     MarkOutAtoms(endPoint, e);
                     CurrentAdorner =
-                        new ChainAdorner(FirstPoint, CurrentEditor, EditViewModel.EditBondThickness, Placements,
+                        new ChainAdorner(FirstPoint, CurrentEditor, EditController.EditBondThickness, Placements,
                                          endPoint, Target);
 
-                    var targetedVisual = EditViewModel.CurrentEditor.GetTargetedVisual(endPoint);
+                    var targetedVisual = EditController.CurrentEditor.GetTargetedVisual(endPoint);
                     //check to see we're not overwriting
                     bool overWritingSelf = false;
                     if (CurrentAdorner.Geometry != null)
@@ -180,7 +180,7 @@ namespace Chem4Word.ACME.Behaviors
                         }
                     }
 
-                    CurrentAdorner = new ChainAdorner(FirstPoint, CurrentEditor, EditViewModel.EditBondThickness, Placements,
+                    CurrentAdorner = new ChainAdorner(FirstPoint, CurrentEditor, EditController.EditBondThickness, Placements,
                                                        endPoint, Target, Clashing);
                     if (!Clashing)
                     {
@@ -254,13 +254,13 @@ namespace Chem4Word.ACME.Behaviors
                 Vector newvector = lastBondvector;
                 newvector = BasicGeometry.SnapVectorToClock(newvector);
                 newvector.Normalize();
-                newvector *= EditViewModel.Model.XamlBondLength;
+                newvector *= EditController.Model.XamlBondLength;
                 newvector *= rotator;
                 return newvector;
             }
 
             Vector displacement = endPoint - Placements.Last();
-            bool movedABond = displacement.Length > EditViewModel.Model.XamlBondLength;
+            bool movedABond = displacement.Length > EditController.Model.XamlBondLength;
 
             if (Target != null) //we hit an atom on mouse-down
             {
@@ -276,7 +276,7 @@ namespace Chem4Word.ACME.Behaviors
                     {
                         if (Target.Singleton)
                         {
-                            Snapper snapper = new Snapper(Placements.Last(), EditViewModel);
+                            Snapper snapper = new Snapper(Placements.Last(), EditController);
                             var newBondVector = snapper.SnapVector(0, displacement);
                             Placements.Add(Placements.Last() + newBondVector);
                         }
@@ -290,7 +290,7 @@ namespace Chem4Word.ACME.Behaviors
                         {
                             //Just sprout a balancing vector
                             Vector balancing = Target.BalancingVector();
-                            balancing *= EditViewModel.Model.XamlBondLength;
+                            balancing *= EditController.Model.XamlBondLength;
                             Placements.Add(Placements.Last() + balancing);
                         }
                     }
@@ -301,7 +301,7 @@ namespace Chem4Word.ACME.Behaviors
                 if (Placements.Count == 1)
                 {
                     //just got one entry in the list
-                    Snapper snapper = new Snapper(FirstPoint, EditViewModel);
+                    Snapper snapper = new Snapper(FirstPoint, EditController);
                     Point newEnd = snapper.SnapBond(endPoint, e);
                     Placements.Add(newEnd);
                 }

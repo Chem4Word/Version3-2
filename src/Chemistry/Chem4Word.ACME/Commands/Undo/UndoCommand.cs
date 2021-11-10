@@ -7,19 +7,19 @@
 
 using System;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Undo
 {
     public class UndoCommand : BaseCommand
     {
-        public UndoCommand(EditViewModel vm) : base(vm)
+        public UndoCommand(EditController controller) : base(controller)
         {
         }
 
-        public override bool CanExecute(object parameter) => EditViewModel.UndoManager.CanUndo;
+        public override bool CanExecute(object parameter) => EditController.UndoManager.CanUndo;
 
         public override void Execute(object parameter)
         {
-            EditViewModel.UndoManager.Undo();
+            EditController.UndoManager.Undo();
         }
 
         public override event EventHandler CanExecuteChanged;

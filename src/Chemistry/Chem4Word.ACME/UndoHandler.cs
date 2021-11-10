@@ -67,7 +67,7 @@ namespace Chem4Word.ACME
         //each block of transactions is bracketed by a buffer record at either end
         private readonly UndoRecord _startBracket, _endBracket;
 
-        private EditViewModel _editViewModel;
+        private EditController _editController;
         private IChem4WordTelemetry _telemetry;
 
         private Stack<UndoRecord> _undoStack;
@@ -79,9 +79,9 @@ namespace Chem4Word.ACME
 
         public bool CanUndo => _undoStack.Any(ur => ur.Level != 0);
 
-        public UndoHandler(EditViewModel vm, IChem4WordTelemetry telemetry)
+        public UndoHandler(EditController controller, IChem4WordTelemetry telemetry)
         {
-            _editViewModel = vm;
+            _editController = controller;
             _telemetry = telemetry;
 
             //set up the buffer record
@@ -224,9 +224,9 @@ namespace Chem4Word.ACME
                     }
                 }
 
-                //tell the parent viewmodel the command status has changed
-                _editViewModel.UndoCommand.RaiseCanExecChanged();
-                _editViewModel.RedoCommand.RaiseCanExecChanged();
+                //tell the parent Controller the command status has changed
+                _editController.UndoCommand.RaiseCanExecChanged();
+                _editController.RedoCommand.RaiseCanExecChanged();
             }
             catch (Exception exception)
             {
@@ -240,8 +240,8 @@ namespace Chem4Word.ACME
             try
             {
                 UndoActions();
-                _editViewModel.UndoCommand.RaiseCanExecChanged();
-                _editViewModel.RedoCommand.RaiseCanExecChanged();
+                _editController.UndoCommand.RaiseCanExecChanged();
+                _editController.RedoCommand.RaiseCanExecChanged();
             }
             catch (Exception exception)
             {
@@ -277,7 +277,7 @@ namespace Chem4Word.ACME
             }
 
 #if DEBUG
-            var integrity = _editViewModel.Model.CheckIntegrity();
+            var integrity = _editController.Model.CheckIntegrity();
             if (integrity.Count > 0)
             {
                 WriteTelemetry(module, "Integrity", string.Join(Environment.NewLine, integrity));
@@ -291,8 +291,8 @@ namespace Chem4Word.ACME
             try
             {
                 RedoActions();
-                _editViewModel.UndoCommand.RaiseCanExecChanged();
-                _editViewModel.RedoCommand.RaiseCanExecChanged();
+                _editController.UndoCommand.RaiseCanExecChanged();
+                _editController.RedoCommand.RaiseCanExecChanged();
             }
             catch (Exception exception)
             {
@@ -329,7 +329,7 @@ namespace Chem4Word.ACME
             }
 
 #if DEBUG
-            var integrity = _editViewModel.Model.CheckIntegrity();
+            var integrity = _editController.Model.CheckIntegrity();
             if (integrity.Count > 0)
             {
                 WriteTelemetry(module, "Integrity", string.Join(Environment.NewLine, integrity));

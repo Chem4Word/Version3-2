@@ -60,7 +60,7 @@ namespace Chem4Word.ACME.Drawing
             string subscriptText = TextUtils.GetSubText(Count);
             if (subscriptText != "")
             {
-                _subText = new SubLabelText(subscriptText, pixelsPerDip, _fontSize * ViewModel.ScriptScalingFactor);
+                _subText = new SubLabelText(subscriptText, pixelsPerDip, _fontSize * Controller.ScriptScalingFactor);
                 _subText.Premeasure();
             }
 

@@ -35,21 +35,21 @@ namespace Chem4Word.ACME.Adorners
 
         private IEnumerable<Atom> _atomList;
         public EditorCanvas CurrentEditor { get; }
-        public EditViewModel CurrentViewModel { get; }
+        public EditController CurrentController { get; }
 
-        public PartialGhostAdorner(EditViewModel currentModel, IEnumerable<Atom> atomList, Transform shear) : base(
-            currentModel.CurrentEditor)
+        public PartialGhostAdorner(EditController controller, IEnumerable<Atom> atomList, Transform shear) : base(
+            controller.CurrentEditor)
         {
             _shear = shear;
-            var myAdornerLayer = AdornerLayer.GetAdornerLayer(currentModel.CurrentEditor);
+            var myAdornerLayer = AdornerLayer.GetAdornerLayer(controller.CurrentEditor);
             _atomList = atomList;
             myAdornerLayer.Add(this);
             PreviewMouseMove += PartialGhostAdorner_PreviewMouseMove;
             PreviewMouseUp += PartialGhostAdorner_PreviewMouseUp;
             MouseUp += PartialGhostAdorner_MouseUp;
-            CurrentViewModel = currentModel;
+            CurrentController = controller;
 
-            CurrentEditor = CurrentViewModel.CurrentEditor;
+            CurrentEditor = CurrentController.CurrentEditor;
         }
 
         private void PartialGhostAdorner_MouseUp(object sender, MouseButtonEventArgs e)
@@ -116,7 +116,7 @@ namespace Chem4Word.ACME.Adorners
                 }
             }
 
-            var modelXamlBondLength = CurrentViewModel.Model.XamlBondLength;
+            var modelXamlBondLength = CurrentController.Model.XamlBondLength;
             double atomRadius = modelXamlBondLength / 7.50;
 
             foreach (Bond bond in bondSet)
@@ -134,7 +134,7 @@ namespace Chem4Word.ACME.Adorners
                                                                   bond.OrderValue,
                                                                   bond.Placement, bond.Centroid,
                                                                   bond.SubsidiaryRing?.Centroid,
-                                                                  CurrentEditor.ViewModel.Standoff);
+                                                                  CurrentEditor.Controller.Standoff);
                     descriptor.Start = startAtomPosition;
                     descriptor.End = endAtomPosition;
                     var bondgeom = descriptor.DefiningGeometry;

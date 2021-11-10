@@ -5,24 +5,22 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Diagnostics;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
 
-namespace Chem4Word.ACME.Commands
+namespace Chem4Word.ACME.Commands.Layout.Flipping
 {
-    public class SettingsCommand : BaseCommand
+    public class FlipHorizontalCommand : FlipCommand
     {
-        public SettingsCommand(EditController controller) : base(controller)
+        public FlipHorizontalCommand(EditController controller) : base(controller)
         {
-        }
-
-        public override bool CanExecute(object parameter)
-        {
-            return true;
         }
 
         public override void Execute(object parameter)
         {
-            Debugger.Break();
+            var selMolecule = EditController.SelectedItems[0] as Molecule;
+            bool flipStereo = KeyboardUtils.HoldingDownShift();
+            EditController.FlipMolecule(selMolecule, false, flipStereo);
         }
     }
 }

@@ -14,33 +14,33 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Helpers;
 using Xunit;
-using EVM = Chem4Word.ACME.EditViewModel;
+using EC = Chem4Word.ACME.EditController;
 
 namespace Chem4WordTests
 {
-    public class EditViewModel
+    public class EditController
     {
         [Fact]
         public void AddAtomChain_Creates_IsolatedAtom()
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.AddAtomChain)}[AddAtom]",
-                                    $"1 - {nameof(EVM.AddAtomChain)}[AddMolecule]",
+                                    $"1 - {nameof(EC.AddAtomChain)}[AddAtom]",
+                                    $"1 - {nameof(EC.AddAtomChain)}[AddMolecule]",
                                     "0 - #start#"
                                 };
 
             // Act
-            editViewModel.AddAtomChain(null, new Point(0, 0), Globals.ClockDirections.Nothing);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddAtomChain(null, new Point(0, 0), Globals.ClockDirections.Nothing);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -54,13 +54,13 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EVM.AddNewBond)}",
-                                    $"1 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
+                                    $"2 - {nameof(EC.AddNewBond)}",
+                                    $"1 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
                                     "0 - #start#"
                                 };
 
@@ -78,11 +78,11 @@ namespace Chem4WordTests
             molecule.Parent = model;
 
             // Act
-            editViewModel.AddAtomChain(atom, new Point(5, 5), Globals.ClockDirections.Nothing);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddAtomChain(atom, new Point(5, 5), Globals.ClockDirections.Nothing);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -97,12 +97,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.AddHydrogens)}",
+                                    $"1 - {nameof(EC.AddHydrogens)}",
                                     "0 - #start#"
                                 };
 
@@ -132,14 +132,14 @@ namespace Chem4WordTests
             model.AddMolecule(molecule);
             molecule.Parent = model;
 
-            editViewModel.AddToSelection(bond);
+            editController.AddToSelection(bond);
 
             // Act
-            editViewModel.AddHydrogens();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddHydrogens();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -154,12 +154,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.AddHydrogens)}",
+                                    $"1 - {nameof(EC.AddHydrogens)}",
                                     "0 - #start#"
                                 };
 
@@ -187,14 +187,14 @@ namespace Chem4WordTests
             model.AddMolecule(molecule2);
             molecule2.Parent = model;
 
-            editViewModel.AddToSelection(molecule1);
+            editController.AddToSelection(molecule1);
 
             // Act
-            editViewModel.AddHydrogens();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddHydrogens();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -209,12 +209,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DeleteAtoms)}[Singleton]",
+                                    $"1 - {nameof(EC.DeleteAtoms)}[Singleton]",
                                     "0 - #start#"
                                 };
 
@@ -245,11 +245,11 @@ namespace Chem4WordTests
             var a1 = model.GetAllAtoms().First();
 
             // Act
-            editViewModel.DeleteAtoms(new List<Atom> { a1 });
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DeleteAtoms(new List<Atom> { a1 });
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -266,22 +266,22 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DeleteAtomsAndBonds)}[MultipleFragments]",
+                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[MultipleFragments]",
                                     "0 - #start#"
                                 };
 
             // Act
             var atoms = model.GetAllAtoms().Where(a => (Element)a.Element == Globals.PeriodicTable.H);
-            editViewModel.DeleteAtoms(atoms);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DeleteAtoms(atoms);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -298,23 +298,23 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("cyclohexylidenecyclohexane.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
                                     "0 - #start#"
                                 };
 
             // Act
             var a11 = model.GetAllAtoms().First(a => a.Id == "a11");
             var a12 = model.GetAllAtoms().First(a => a.Id == "a12");
-            editViewModel.DeleteAtoms(new List<Atom> { a11, a12 });
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DeleteAtoms(new List<Atom> { a11, a12 });
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -331,22 +331,22 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("cyclohexylidenecyclohexane.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DeleteAtomsAndBonds)}[MultipleFragments]",
+                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[MultipleFragments]",
                                     "0 - #start#"
                                 };
 
             // Act
             var a1 = model.GetAllAtoms().First(a => a.Id == "a1");
-            editViewModel.DeleteAtoms(new List<Atom> { a1 });
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DeleteAtoms(new List<Atom> { a1 });
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -363,23 +363,23 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("cyclohexylidenecyclohexane.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DeleteAtomsAndBonds)}[MultipleFragments]",
+                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[MultipleFragments]",
                                     "0 - #start#"
                                 };
 
             // Act
             // find double bond connecting the two rings
             var targetBond = model.GetAllBonds().First(b => b.Order == Globals.OrderDouble);
-            editViewModel.DeleteBonds(new List<Bond> { targetBond });
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DeleteBonds(new List<Bond> { targetBond });
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -396,22 +396,22 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DeleteMolecule)}",
+                                    $"1 - {nameof(EC.DeleteMolecule)}",
                                     "0 - #start#"
                                 };
 
             // Act
             var molecule = model.Molecules.First().Value;
-            editViewModel.DeleteMolecule(molecule);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DeleteMolecule(molecule);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -428,13 +428,13 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EVM.DeleteAtomsAndBonds)}[SingleAtom]",
-                                    $"3 - {nameof(EVM.DeleteMolecule)}",
+                                    $"2 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"3 - {nameof(EC.DeleteMolecule)}",
                                     "0 - #start#"
                                 };
 
@@ -443,12 +443,12 @@ namespace Chem4WordTests
             var a4 = model.GetAllAtoms().First(a => a.Id == "a4");
             var a5 = model.GetAllAtoms().First(a => a.Id == "a5");
             var b4 = model.GetAllBonds().First(b => b.Id == "b4");
-            editViewModel.AddToSelection(new List<object> { m1, a4, a5, b4 });
-            editViewModel.DeleteSelection();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddToSelection(new List<object> { m1, a4, a5, b4 });
+            editController.DeleteSelection();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -465,24 +465,24 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"3 - {nameof(EVM.DeleteMolecule)}",
+                                    $"3 - {nameof(EC.DeleteMolecule)}",
                                     "0 - #start#"
                                 };
 
             // Act
             var m1 = model.GetAllMolecules().First(m => m.Id == "m1");
 
-            editViewModel.AddToSelection(new List<object> { m1 });
-            editViewModel.DeleteSelection();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddToSelection(new List<object> { m1 });
+            editController.DeleteSelection();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -499,12 +499,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EVM.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"2 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
                                     "0 - #start#"
                                 };
 
@@ -512,12 +512,12 @@ namespace Chem4WordTests
             var a4 = model.GetAllAtoms().First(a => a.Id == "a4");
             var a5 = model.GetAllAtoms().First(a => a.Id == "a5");
             var b4 = model.GetAllBonds().First(b => b.Id == "b4");
-            editViewModel.AddToSelection(new List<object> { a4, a5, b4 });
-            editViewModel.DeleteSelection();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddToSelection(new List<object> { a4, a5, b4 });
+            editController.DeleteSelection();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -534,23 +534,23 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EVM.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"2 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
                                     "0 - #start#"
                                 };
 
             // Act
             var b4 = model.GetAllBonds().First(b => b.Id == "b4");
-            editViewModel.AddToSelection(new List<object> { b4 });
-            editViewModel.DeleteSelection();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.AddToSelection(new List<object> { b4 });
+            editController.DeleteSelection();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -565,12 +565,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DoTransform)}",
+                                    $"1 - {nameof(EC.DoTransform)}",
                                     "0 - #start#"
                                 };
 
@@ -602,12 +602,12 @@ namespace Chem4WordTests
 
             // Act
             var tt = new TranslateTransform(5, 5);
-            editViewModel.DoTransform(tt, new List<Atom> { atom1, atom2 });
+            editController.DoTransform(tt, new List<Atom> { atom1, atom2 });
 
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -624,12 +624,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DoTransform)}",
+                                    $"1 - {nameof(EC.DoTransform)}",
                                     "0 - #start#"
                                 };
 
@@ -661,12 +661,12 @@ namespace Chem4WordTests
 
             // Act
             var tt = new TranslateTransform(5, 5);
-            editViewModel.DoTransform(tt, new List<Molecule> { molecule });
+            editController.DoTransform(tt, new List<Molecule> { molecule });
 
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -683,17 +683,17 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddAtom]",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddMolecule]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddAtom]",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddMolecule]",
                                     "0 - #start#"
                                 };
 
@@ -705,11 +705,11 @@ namespace Chem4WordTests
                              };
 
             // Act
-            editViewModel.DrawChain(placements, null);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DrawChain(placements, null);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -724,15 +724,15 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
                                     "0 - #start#"
                                 };
 
@@ -757,11 +757,11 @@ namespace Chem4WordTests
                              };
 
             // Act
-            editViewModel.DrawChain(placements, atom);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DrawChain(placements, atom);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -776,28 +776,28 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.DrawRing)}",
-                                    $"2 - {nameof(EVM.SetBondAttributes)}",
-                                    $"2 - {nameof(EVM.SetBondAttributes)}",
-                                    $"2 - {nameof(EVM.SetBondAttributes)}",
-                                    $"2 - {nameof(EVM.AddNewBond)}",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EVM.AddNewBond)}",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddEndAtom]",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddAtom]",
-                                    $"2 - {nameof(EVM.AddAtomChain)}[AddMolecule]",
+                                    $"1 - {nameof(EC.DrawRing)}",
+                                    $"2 - {nameof(EC.SetBondAttributes)}",
+                                    $"2 - {nameof(EC.SetBondAttributes)}",
+                                    $"2 - {nameof(EC.SetBondAttributes)}",
+                                    $"2 - {nameof(EC.AddNewBond)}",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EC.AddNewBond)}",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddAtom]",
+                                    $"2 - {nameof(EC.AddAtomChain)}[AddMolecule]",
                                     "0 - #start#"
                                 };
 
@@ -829,11 +829,11 @@ namespace Chem4WordTests
                                      Position = new Point(787.5,771)
                                  }
                              };
-            editViewModel.DrawRing(placements, true, 0);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.DrawRing(placements, true, 0);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -850,12 +850,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.Group)}",
+                                    $"1 - {nameof(EC.Group)}",
                                     "0 - #start#"
                                 };
 
@@ -864,11 +864,11 @@ namespace Chem4WordTests
             var m2 = model.GetAllMolecules().First(a => a.Id == "m2");
 
             // Act
-            editViewModel.Group(new List<object> { m1, m2 });
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.Group(new List<object> { m1, m2 });
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             var m0 = model.GetAllMolecules().First();
             var m0Path = m0.Path;
@@ -895,12 +895,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.IncreaseBondOrder)}",
+                                    $"1 - {nameof(EC.IncreaseBondOrder)}",
                                     "0 - #start#"
                                 };
 
@@ -953,12 +953,12 @@ namespace Chem4WordTests
             molecule.Parent = model;
 
             // Act
-            editViewModel.IncreaseBondOrder(bond);
+            editController.IncreaseBondOrder(bond);
 
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -974,12 +974,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.JoinMolecules)}",
+                                    $"1 - {nameof(EC.JoinMolecules)}",
                                     "0 - #start#"
                                 };
 
@@ -988,11 +988,11 @@ namespace Chem4WordTests
             var a4 = model.GetAllAtoms().First(a => a.Id == "a4");
 
             // Act
-            editViewModel.JoinMolecules(a1, a4, Globals.OrderDouble, Globals.BondStereo.None);
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.JoinMolecules(a1, a4, Globals.OrderDouble, Globals.BondStereo.None);
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -1009,21 +1009,21 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.RemoveHydrogens)}",
+                                    $"1 - {nameof(EC.RemoveHydrogens)}",
                                     "0 - #start#"
                                 };
 
             // Act
-            editViewModel.RemoveHydrogens();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.RemoveHydrogens();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -1040,24 +1040,24 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.RemoveHydrogens)}",
+                                    $"1 - {nameof(EC.RemoveHydrogens)}",
                                     "0 - #start#"
                                 };
 
             // Act
             var molecule = model.Molecules.First().Value;
-            editViewModel.AddToSelection(molecule);
+            editController.AddToSelection(molecule);
 
-            editViewModel.RemoveHydrogens();
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.RemoveHydrogens();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -1072,12 +1072,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.SetAverageBondLength)}",
+                                    $"1 - {nameof(EC.SetAverageBondLength)}",
                                     "0 - #start#"
                                 };
 
@@ -1109,12 +1109,12 @@ namespace Chem4WordTests
             var before = model.MeanBondLength;
 
             // Act
-            editViewModel.SetAverageBondLength(20);
+            editController.SetAverageBondLength(20);
 
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
             var after = model.MeanBondLength;
 
             // Assert(ions)
@@ -1130,12 +1130,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.SwapBondDirection)}",
+                                    $"1 - {nameof(EC.SwapBondDirection)}",
                                     "0 - #start#"
                                 };
 
@@ -1171,12 +1171,12 @@ namespace Chem4WordTests
             molecule.Parent = model;
 
             // Act
-            editViewModel.SwapBondDirection(bond);
+            editController.SwapBondDirection(bond);
 
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             // Assert(ions)
             CheckUndoStack(expectedStack, undoStack1);
@@ -1193,12 +1193,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Grouped-Molecules.xml"));
 
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EVM.UnGroup)}",
+                                    $"1 - {nameof(EC.UnGroup)}",
                                     "0 - #start#"
                                 };
 
@@ -1206,11 +1206,11 @@ namespace Chem4WordTests
             var m1 = model.GetAllMolecules().First(a => a.Id == "m1");
 
             // Act
-            editViewModel.UnGroup(new List<object> { m1 });
-            var undoStack1 = editViewModel.UndoManager.ReadUndoStack();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Redo();
-            var undoStack2 = editViewModel.UndoManager.ReadUndoStack();
+            editController.UnGroup(new List<object> { m1 });
+            var undoStack1 = editController.UndoManager.ReadUndoStack();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Redo();
+            var undoStack2 = editController.UndoManager.ReadUndoStack();
 
             var m2Path = model.GetAllMolecules().First(a => a.Id == "m2").Path;
             var m3Path = model.GetAllMolecules().First(a => a.Id == "m3").Path;
@@ -1231,11 +1231,11 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editViewModel = new EVM(model);
+            var editController = new EC(model);
 
             // Act
             // AddAtomChain
-            editViewModel.AddAtomChain(null, new Point(872, 709.5), Globals.ClockDirections.Nothing, Globals.PeriodicTable.C);
+            editController.AddAtomChain(null, new Point(872, 709.5), Globals.ClockDirections.Nothing, Globals.PeriodicTable.C);
 
             // DrawRing Isolated
             var ring1Points = new List<NewAtomPlacement>
@@ -1265,7 +1265,7 @@ namespace Chem4WordTests
                                           Position = new Point(787.5,771)
                                       }
                                   };
-            editViewModel.DrawRing(ring1Points, true, 0);
+            editController.DrawRing(ring1Points, true, 0);
 
             // DrawRing Joined to 1st atom
             var ring2Points = new List<NewAtomPlacement>
@@ -1296,7 +1296,7 @@ namespace Chem4WordTests
                                       Position = new Point(906.641,689.5)
                                   }
                               };
-            editViewModel.DrawRing(ring2Points, true, 0);
+            editController.DrawRing(ring2Points, true, 0);
 
             // DrawRing joined to bond
             var ring3Points = new List<NewAtomPlacement>
@@ -1328,16 +1328,16 @@ namespace Chem4WordTests
                                       ExistingAtom = FindAtom(model, new Point(906.641,689.5))
                                   }
                               };
-            editViewModel.DrawRing(ring3Points, true, 0);
+            editController.DrawRing(ring3Points, true, 0);
 
             // Checks before Undo(s)
             CheckMoleculeCount(model, 2);
             CheckAtomCount(model, 16);
             CheckBondCount(model, 17);
 
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Undo();
-            editViewModel.UndoManager.Undo();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Undo();
+            editController.UndoManager.Undo();
 
             // Assert(ions)
             CheckMoleculeCount(model, 1);

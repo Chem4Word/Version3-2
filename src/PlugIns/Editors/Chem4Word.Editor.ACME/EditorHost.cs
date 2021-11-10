@@ -100,14 +100,14 @@ namespace Chem4Word.Editor.ACME
                     editor.SetProperties(_cml, _used1DProperties, _options);
                     editor.OnFeedbackChange += AcmeEditorOnFeedbackChange;
 
-                    var model = editor.ActiveViewModel.Model;
+                    var model = editor.ActiveController.Model;
                     if (model == null || model.Molecules.Count == 0)
                     {
                         Text = "ACME - New structure";
                     }
                     else
                     {
-                        List<MoleculeFormulaPart> parts = FormulaHelper.ParseFormulaIntoParts(editor.ActiveViewModel.Model.ConciseFormula);
+                        List<MoleculeFormulaPart> parts = FormulaHelper.ParseFormulaIntoParts(editor.ActiveController.Model.ConciseFormula);
                         var x = FormulaHelper.FormulaPartsAsUnicode(parts);
                         Text = "ACME - Editing " + x;
                     }

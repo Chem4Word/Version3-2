@@ -73,7 +73,7 @@ namespace Chem4Word.ACME.Adorners
             {
                 fillBrush = BondPen.Brush.Clone();
             }
-            DrawRingSize(drawingContext, ringSize, pos, PixelsPerDip(), fillBrush, CurrentEditor.ViewModel.SymbolSize);
+            DrawRingSize(drawingContext, ringSize, pos, PixelsPerDip(), fillBrush, CurrentEditor.Controller.SymbolSize);
         }
 
         public static void DrawRingSize(DrawingContext drawingContext, int ringSize, Point pos, float pixelsPerDip, Brush fillBrush, double chemistrySymbolSize)

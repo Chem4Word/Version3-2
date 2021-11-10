@@ -94,7 +94,14 @@
     <Compile Include="Adorners\Feedback\HRotatorAdorner.cs" />
     <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
-    <Compile Include="Commands\PickElementCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignBottomsCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignCentresCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignLeftsCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignMiddlesCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignRightsCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignTopsCommand.cs" />
+    <Compile Include="Commands\Editing\PickElementCommand.cs" />
     <Compile Include="Controls\ChemistryItem.xaml.cs">
       <DependentUpon>ChemistryItem.xaml</DependentUpon>
     </Compile>
@@ -205,22 +212,22 @@
     <Compile Include="Enums\SelectionTypeCode.cs" />
     <Compile Include="Models\BondPropertiesModel.cs" />
     <Compile Include="Models\AtomPropertiesModel.cs" />
-    <Compile Include="Commands\AddAtomCommand.cs" />
-    <Compile Include="Commands\AddHydrogensCommand.cs" />
+    <Compile Include="Commands\Sketching\AddAtomCommand.cs" />
+    <Compile Include="Commands\Sketching\AddHydrogensCommand.cs" />
     <Compile Include="Commands\BaseCommand.cs" />
-    <Compile Include="Commands\CopyCommand.cs" />
-    <Compile Include="Commands\CutCommand.cs" />
-    <Compile Include="Commands\FlipCommand.cs" />
-    <Compile Include="Commands\FlipHorizontalCommand.cs" />
-    <Compile Include="Commands\FlipVerticalCommand.cs" />
+    <Compile Include="Commands\Editing\CopyCommand.cs" />
+    <Compile Include="Commands\Editing\CutCommand.cs" />
+    <Compile Include="Commands\Layout\Flipping\FlipCommand.cs" />
+    <Compile Include="Commands\Layout\Flipping\FlipHorizontalCommand.cs" />
+    <Compile Include="Commands\Layout\Flipping\FlipVerticalCommand.cs" />
     <Compile Include="Commands\FuseCommand.cs" />
-    <Compile Include="Commands\GroupCommand.cs" />
-    <Compile Include="Commands\PasteCommand.cs" />
-    <Compile Include="Commands\RedoCommand.cs" />
-    <Compile Include="Commands\RemoveHydrogensCommand.cs" />
+    <Compile Include="Commands\Grouping\GroupCommand.cs" />
+    <Compile Include="Commands\Editing\PasteCommand.cs" />
+    <Compile Include="Commands\Undo\RedoCommand.cs" />
+    <Compile Include="Commands\Sketching\RemoveHydrogensCommand.cs" />
     <Compile Include="Commands\SettingsCommand.cs" />
-    <Compile Include="Commands\UndoCommand.cs" />
-    <Compile Include="Commands\UnGroupCommand.cs" />
+    <Compile Include="Commands\Undo\UndoCommand.cs" />
+    <Compile Include="Commands\Grouping\UnGroupCommand.cs" />
     <Compile Include="Models\BaseDialogModel.cs" />
     <Compile Include="Controls\BondPropertyEditor.xaml.cs">
       <DependentUpon>BondPropertyEditor.xaml</DependentUpon>
@@ -267,7 +274,7 @@
     <Compile Include="Utils\TextUtils.cs" />
     <Compile Include="Utils\TriggerTracing.cs" />
     <Compile Include="Utils\UIUtils.cs" />
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="Controller.cs" />
     <Compile Include="Drawing\AtomVisual.cs" />
     <Compile Include="Drawing\BondGeometry.cs" />
     <Compile Include="Drawing\BondVisual.cs" />
@@ -291,7 +298,7 @@
     <Compile Include="Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EditViewModel.cs" />
+    <Compile Include="EditController.cs" />
     <Compile Include="Graphics\ArcArrow.cs" />
     <Compile Include="Graphics\Arrow.cs" />
     <Compile Include="Graphics\RegularPolygon.cs" />
