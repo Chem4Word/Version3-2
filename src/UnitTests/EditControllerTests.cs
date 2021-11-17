@@ -14,24 +14,24 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Helpers;
 using Xunit;
-using EC = Chem4Word.ACME.EditController;
+using Chem4Word.ACME;
 
 namespace Chem4WordTests
 {
-    public class EditController
+    public class EditControllerTests
     {
         [Fact]
         public void AddAtomChain_Creates_IsolatedAtom()
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.AddAtomChain)}[AddAtom]",
-                                    $"1 - {nameof(EC.AddAtomChain)}[AddMolecule]",
+                                    $"1 - {nameof(EditController.AddAtomChain)}[AddAtom]",
+                                    $"1 - {nameof(EditController.AddAtomChain)}[AddMolecule]",
                                     "0 - #start#"
                                 };
 
@@ -54,13 +54,13 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EC.AddNewBond)}",
-                                    $"1 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"2 - {nameof(EditController.AddNewBond)}",
+                                    $"1 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
                                     "0 - #start#"
                                 };
 
@@ -97,12 +97,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.AddHydrogens)}",
+                                    $"1 - {nameof(EditController.AddHydrogens)}",
                                     "0 - #start#"
                                 };
 
@@ -154,12 +154,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.AddHydrogens)}",
+                                    $"1 - {nameof(EditController.AddHydrogens)}",
                                     "0 - #start#"
                                 };
 
@@ -209,12 +209,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DeleteAtoms)}[Singleton]",
+                                    $"1 - {nameof(EditController.DeleteAtoms)}[Singleton]",
                                     "0 - #start#"
                                 };
 
@@ -266,12 +266,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[MultipleFragments]",
+                                    $"1 - {nameof(EditController.DeleteAtomsAndBonds)}[MultipleFragments]",
                                     "0 - #start#"
                                 };
 
@@ -298,12 +298,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("cyclohexylidenecyclohexane.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"1 - {nameof(EditController.DeleteAtomsAndBonds)}[SingleAtom]",
                                     "0 - #start#"
                                 };
 
@@ -331,12 +331,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("cyclohexylidenecyclohexane.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[MultipleFragments]",
+                                    $"1 - {nameof(EditController.DeleteAtomsAndBonds)}[MultipleFragments]",
                                     "0 - #start#"
                                 };
 
@@ -363,12 +363,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("cyclohexylidenecyclohexane.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DeleteAtomsAndBonds)}[MultipleFragments]",
+                                    $"1 - {nameof(EditController.DeleteAtomsAndBonds)}[MultipleFragments]",
                                     "0 - #start#"
                                 };
 
@@ -396,12 +396,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DeleteMolecule)}",
+                                    $"1 - {nameof(EditController.DeleteMolecule)}",
                                     "0 - #start#"
                                 };
 
@@ -428,13 +428,13 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
-                                    $"3 - {nameof(EC.DeleteMolecule)}",
+                                    $"2 - {nameof(EditController.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"3 - {nameof(EditController.DeleteMolecule)}",
                                     "0 - #start#"
                                 };
 
@@ -465,12 +465,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"3 - {nameof(EC.DeleteMolecule)}",
+                                    $"3 - {nameof(EditController.DeleteMolecule)}",
                                     "0 - #start#"
                                 };
 
@@ -499,12 +499,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"2 - {nameof(EditController.DeleteAtomsAndBonds)}[SingleAtom]",
                                     "0 - #start#"
                                 };
 
@@ -534,12 +534,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"2 - {nameof(EC.DeleteAtomsAndBonds)}[SingleAtom]",
+                                    $"2 - {nameof(EditController.DeleteAtomsAndBonds)}[SingleAtom]",
                                     "0 - #start#"
                                 };
 
@@ -565,12 +565,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DoTransform)}",
+                                    $"1 - {nameof(EditController.DoTransform)}",
                                     "0 - #start#"
                                 };
 
@@ -624,12 +624,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DoTransform)}",
+                                    $"1 - {nameof(EditController.DoTransform)}",
                                     "0 - #start#"
                                 };
 
@@ -683,17 +683,17 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddAtom]",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddMolecule]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddAtom]",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddMolecule]",
                                     "0 - #start#"
                                 };
 
@@ -724,15 +724,15 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
                                     "0 - #start#"
                                 };
 
@@ -776,28 +776,28 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.DrawRing)}",
-                                    $"2 - {nameof(EC.SetBondAttributes)}",
-                                    $"2 - {nameof(EC.SetBondAttributes)}",
-                                    $"2 - {nameof(EC.SetBondAttributes)}",
-                                    $"2 - {nameof(EC.AddNewBond)}",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"3 - {nameof(EC.AddNewBond)}",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddEndAtom]",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddAtom]",
-                                    $"2 - {nameof(EC.AddAtomChain)}[AddMolecule]",
+                                    $"1 - {nameof(EditController.DrawRing)}",
+                                    $"2 - {nameof(EditController.SetBondAttributes)}",
+                                    $"2 - {nameof(EditController.SetBondAttributes)}",
+                                    $"2 - {nameof(EditController.SetBondAttributes)}",
+                                    $"2 - {nameof(EditController.AddNewBond)}",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"3 - {nameof(EditController.AddNewBond)}",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddEndAtom]",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddAtom]",
+                                    $"2 - {nameof(EditController.AddAtomChain)}[AddMolecule]",
                                     "0 - #start#"
                                 };
 
@@ -850,12 +850,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.Group)}",
+                                    $"1 - {nameof(EditController.Group)}",
                                     "0 - #start#"
                                 };
 
@@ -895,12 +895,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.IncreaseBondOrder)}",
+                                    $"1 - {nameof(EditController.IncreaseBondOrder)}",
                                     "0 - #start#"
                                 };
 
@@ -974,12 +974,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-For-Joining.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.JoinMolecules)}",
+                                    $"1 - {nameof(EditController.JoinMolecules)}",
                                     "0 - #start#"
                                 };
 
@@ -1009,12 +1009,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.RemoveHydrogens)}",
+                                    $"1 - {nameof(EditController.RemoveHydrogens)}",
                                     "0 - #start#"
                                 };
 
@@ -1040,12 +1040,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Molecules-With-Foliage.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.RemoveHydrogens)}",
+                                    $"1 - {nameof(EditController.RemoveHydrogens)}",
                                     "0 - #start#"
                                 };
 
@@ -1072,12 +1072,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.SetAverageBondLength)}",
+                                    $"1 - {nameof(EditController.SetAverageBondLength)}",
                                     "0 - #start#"
                                 };
 
@@ -1130,12 +1130,12 @@ namespace Chem4WordTests
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.SwapBondDirection)}",
+                                    $"1 - {nameof(EditController.SwapBondDirection)}",
                                     "0 - #start#"
                                 };
 
@@ -1193,12 +1193,12 @@ namespace Chem4WordTests
             var mc = new CMLConverter();
             var model = mc.Import(ResourceHelper.GetStringResource("Two-Grouped-Molecules.xml"));
 
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EC.UnGroup)}",
+                                    $"1 - {nameof(EditController.UnGroup)}",
                                     "0 - #start#"
                                 };
 
@@ -1226,12 +1226,131 @@ namespace Chem4WordTests
             CheckBondCount(model, 8);
         }
 
+        [Theory]
+        [InlineData("AlignLefts", 0.75, 0.75, 0.5, 2.5)]
+        [InlineData("AlignCentres", 1.625, 0.75, 1.625, 2.5)]
+        [InlineData("AlignRights", 2.25, 0.75, 2.5, 2.5)]
+        [InlineData("AlignTops", 0.75, 0.75, 2.5, 0.5)]
+        [InlineData("AlignMiddles", 0.75, 1.625, 2.5, 1.625)]
+        [InlineData("AlignBottoms", 0.75, 2.25, 2.5, 2.5)]
+        public void Aligning_Molecules(string method, double m1x, double m1y, double m2x, double m2y)
+        {
+            // Arrange
+            var model = new Model();
+            var controller = new EditController(model);
+
+            var expectedStack = new List<string>
+                                {
+                                    "0 - #end#",
+                                    "2 - DoTransform",
+                                    "0 - #start#"
+                                };
+
+            #region Create Model
+
+            Molecule m1 = new Molecule();
+
+            Atom a1 = new Atom { Position = new Point(0, 0) };
+            Atom a2 = new Atom { Position = new Point(0, 1.5) };
+            Atom a3 = new Atom { Position = new Point(1.5, 1.5) };
+            Atom a4 = new Atom { Position = new Point(1.5, 0) };
+            m1.AddAtom(a1);
+            a1.Parent = m1;
+            m1.AddAtom(a2);
+            a2.Parent = m1;
+            m1.AddAtom(a3);
+            a3.Parent = m1;
+            m1.AddAtom(a4);
+            a4.Parent = m1;
+
+            Bond b1 = new Bond(a1, a2);
+            Bond b2 = new Bond(a2, a3);
+            Bond b3 = new Bond(a3, a4);
+            Bond b4 = new Bond(a4, a1);
+            m1.AddBond(b1);
+            b1.Parent = m1;
+            m1.AddBond(b2);
+            b2.Parent = m1;
+            m1.AddBond(b3);
+            b3.Parent = m1;
+            m1.AddBond(b4);
+            b4.Parent = m1;
+
+            Molecule m2 = new Molecule();
+            Atom a5 = new Atom { Position = new Point(2, 2) };
+            Atom a6 = new Atom { Position = new Point(2, 3) };
+            Atom a7 = new Atom { Position = new Point(3, 3) };
+            Atom a8 = new Atom { Position = new Point(3, 2) };
+            m2.AddAtom(a5);
+            a5.Parent = m2;
+            m2.AddAtom(a6);
+            a6.Parent = m2;
+            m2.AddAtom(a7);
+            a7.Parent = m2;
+            m2.AddAtom(a8);
+            a8.Parent = m2;
+
+            Bond b5 = new Bond(a5, a6);
+            Bond b6 = new Bond(a6, a7);
+            Bond b7 = new Bond(a7, a8);
+            Bond b8 = new Bond(a8, a5);
+            m2.AddBond(b5);
+            b5.Parent = m2;
+            m2.AddBond(b6);
+            b6.Parent = m2;
+            m2.AddBond(b7);
+            b7.Parent = m2;
+            m2.AddBond(b8);
+            b8.Parent = m2;
+
+            model.AddMolecule(m1);
+            m1.Parent = model;
+            model.AddMolecule(m2);
+            m2.Parent = model;
+
+            #endregion Create Model
+
+            // Act
+            switch (method)
+            {
+                case "AlignLefts":
+                    controller.AlignLefts(new List<Molecule> { m1, m2 });
+                    break;
+                case "AlignCentres":
+                    controller.AlignCentres(new List<Molecule> { m1, m2 });
+                    break;
+                case "AlignRights":
+                    controller.AlignRights(new List<Molecule> { m1, m2 });
+                    break;
+                case "AlignTops":
+                    controller.AlignTops(new List<Molecule> { m1, m2 });
+                    break;
+                case "AlignMiddles":
+                    controller.AlignMiddles(new List<Molecule> { m1, m2 });
+                    break;
+                case "AlignBottoms":
+                    controller.AlignBottoms(new List<Molecule> { m1, m2 });
+                    break;
+            }
+
+            var undoStack1 = controller.UndoManager.ReadUndoStack();
+            controller.UndoManager.Undo();
+            controller.UndoManager.Redo();
+            var undoStack2 = controller.UndoManager.ReadUndoStack();
+
+            // Assert
+            CheckUndoStack(expectedStack, undoStack1);
+            CheckUndoStack(expectedStack, undoStack2);
+            Assert.Equal(m1.Centre, new Point(m1x, m1y));
+            Assert.Equal(m2.Centre, new Point(m2x, m2y));
+        }
+
         [Fact]
         public void Customer_Fault_Scenario()
         {
             // Arrange
             var model = new Model();
-            var editController = new EC(model);
+            var editController = new EditController(model);
 
             // Act
             // AddAtomChain

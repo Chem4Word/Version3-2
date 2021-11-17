@@ -110,12 +110,12 @@
     <Compile Include="ControlTestForm.Designer.cs">
       <DependentUpon>ControlTestForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="General.cs" />
-    <Compile Include="Persistence.cs" />
-    <Compile Include="FunctionalGroupLoading.cs" />
+    <Compile Include="GeneralTests.cs" />
+    <Compile Include="PersistenceTests.cs" />
+    <Compile Include="FunctionalGroupTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceHelper.cs" />
-    <Compile Include="EditController.cs" />
+    <Compile Include="EditControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Chemistry\Chem4Word.ACME\Chem4Word.ACME.csproj">

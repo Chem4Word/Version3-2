@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Chem4WordTests
 {
-    public class General
+    public class GeneralTests
     {
         [Fact]
         public void CheckClone()

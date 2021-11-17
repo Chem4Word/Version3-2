@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Chem4WordTests
 {
-    public class Persistence
+    public class PersistenceTests
     {
         [Theory]
         [InlineData("Trimethylamine-Normal.xml")]

@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Chem4WordTests
 {
-    public class FunctionalGroupLoading
+    public class FunctionalGroupTests
     {
         [Fact]
         public void ShortCutListHasNoDuplicates()
