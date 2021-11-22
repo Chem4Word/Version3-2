@@ -304,5 +304,22 @@ namespace Chem4Word.Model2.Helpers
         public const string FormatSDFile = "SDFile";
 
         #endregion Clipboard Formats
+
+        #region Reaction Stuff
+        public enum ReactionType
+        {
+            Normal,
+            Equilibrium,
+            EquilibriumBiasedForward,
+            EquilibriumBiasedReverse,
+            Blocked
+        }
+        public enum SubstanceRole
+        {
+            Solvent,
+            Catalyst,
+            Spectator
+        }
+        #endregion
     }
 }

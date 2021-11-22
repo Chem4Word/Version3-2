@@ -15,7 +15,7 @@ using Chem4Word.Model2.Annotations;
 namespace Chem4Word.ACME.Adorners.Selectors
 {
     /// <summary>
-    /// All selection adorners are 'immutable':  they are drawn once and subsequently destroyed
+    /// Selection adorners are generally 'immutable':  they are drawn once and subsequently destroyed
     /// rather than being visually modified.  This makes coding much easier.
     /// When changing the visual appearance of a selection, create a new instance of the adorner
     /// supplying the element to the constructor along with the editor canvas
@@ -49,7 +49,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             DefaultSettings();
             AttachHandlers();
             BondToLayer();
-            IsHitTestVisible = false;
             AdornerOpacity = 0.25;
         }
 

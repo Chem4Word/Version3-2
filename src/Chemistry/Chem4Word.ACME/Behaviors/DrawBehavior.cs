@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners;
+using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Utils;
@@ -126,7 +126,7 @@ namespace Chem4Word.ACME.Behaviors
                             Vector.AngleBetween(_lastAtomVisual?.ParentAtom?.BalancingVector() ?? BasicGeometry.ScreenNorth,
                                 BasicGeometry.ScreenNorth);
                         //snap a bond into position
-                        lastPos = _angleSnapper.SnapBond(lastPos.Value, e, angleBetween);
+                        lastPos = _angleSnapper.SnapBond(lastPos.Value, angleBetween);
                     }
 
                     if (lastPos != null)
@@ -235,7 +235,7 @@ namespace Chem4Word.ACME.Behaviors
                             {
                                 //so just sprout a chain off it at two-o-clock
                                 EditController.AddAtomChain(
-                                    parentAtom, _angleSnapper.SnapBond(newAtomPos, e),
+                                    parentAtom, _angleSnapper.SnapBond(newAtomPos),
                                     ClockDirections.II);
                             }
                             else

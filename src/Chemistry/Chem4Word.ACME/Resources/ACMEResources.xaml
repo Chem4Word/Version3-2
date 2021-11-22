@@ -7,6 +7,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Brushes.xaml" />
         <ResourceDictionary Source="BondOptions.xaml" />
+        <ResourceDictionary Source="ReactionOptions.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!--  standard livery for Chem4Word  -->
@@ -278,7 +279,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Ellipse Fill="{x:Static SystemColors.WindowBrush}" Stroke="{StaticResource GrabHandleBorderBrush}" />
+                    <Ellipse Stroke="{StaticResource GrabHandleBorderBrush}">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="Orange" Opacity="0.25"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

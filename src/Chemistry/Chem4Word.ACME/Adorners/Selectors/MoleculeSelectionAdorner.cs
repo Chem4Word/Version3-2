@@ -29,7 +29,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         //some things to grab hold of
         protected readonly Thumb TopLeftHandle; //these do the resizing
-
         protected readonly Thumb TopRightHandle;    //these do the resizing
         protected readonly Thumb BottomLeftHandle;  //these do the resizing
         protected readonly Thumb BottomRightHandle; //these do the resizing
@@ -73,9 +72,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             IsHitTestVisible = true;
             Focusable = true;
             Focus();
-
-            PreviewMouseLeftButtonUp -= BaseSelectionAdorner_PreviewMouseLeftButtonUp;
-            MouseLeftButtonUp -= BaseSelectionAdorner_MouseLeftButtonUp;
         }
 
         #region Properties
@@ -92,7 +88,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         protected new void AttachHandlers()
         {
-            AttachHandler();
+            //detach the base class handlers to stop them interfering
+            DisableHandlers();
 
             //wire up the event handling
             TopLeftHandle.DragStarted += ResizeStarted;
@@ -110,9 +107,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
             BottomLeftHandle.DragCompleted += HandleResizeCompleted;
             BottomRightHandle.DragCompleted += HandleResizeCompleted;
 
-            //detach the handlers to stop them interfering
-            PreviewMouseLeftButtonDown -= BaseSelectionAdorner_PreviewMouseLeftButtonDown;
-            MouseLeftButtonDown -= BaseSelectionAdorner_MouseLeftButtonDown;
+            
+   
         }
 
         private void ResizeStarted(object sender, DragStartedEventArgs e)
@@ -209,12 +205,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 return;
             }
 
-            cornerThumb = new Thumb();
-
-            // Set some arbitrary visual characteristics.
-            cornerThumb.Cursor = customizedCursor;
-            SetThumbStyle(cornerThumb);
-            cornerThumb.IsHitTestVisible = true;
+            cornerThumb = new DragHandle(cursor:customizedCursor);
             VisualChildren.Add(cornerThumb);
         }
 

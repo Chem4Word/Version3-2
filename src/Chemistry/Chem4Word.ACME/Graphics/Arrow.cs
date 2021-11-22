@@ -96,7 +96,7 @@ namespace Chem4Word.ACME.Graphics
 
         public static readonly DependencyProperty HeadAngleProperty =
             DependencyProperty.Register("HeadAngle", typeof(double), typeof(Arrow),
-                                        new FrameworkPropertyMetadata(45.0,
+                                        new FrameworkPropertyMetadata(30d,
                                                                       FrameworkPropertyMetadataOptions.AffectsRender
                                                                       | FrameworkPropertyMetadataOptions.AffectsArrange
                                                                       | FrameworkPropertyMetadataOptions.AffectsMeasure));
@@ -127,7 +127,7 @@ namespace Chem4Word.ACME.Graphics
         /// <param name="line">PathFigure describing the body of the arrow</param>
         /// <param name="reverse">Draw arrow head at start instead of end of arrow</param>
         /// <returns>Simple path figure of arrow head, oriented appropriately </returns>
-        public PathFigure ArrowHeadGeometry(PathFigure line, bool reverse = false)
+        public virtual PathFigure ArrowHeadGeometry(PathFigure line, bool reverse = false)
         {
             var headAngleInRadians = HeadAngle / 360 * 2 * Math.PI;
 
@@ -192,7 +192,7 @@ namespace Chem4Word.ACME.Graphics
         /// </summary>
         /// <param name="line">PathFigure describing the arrow shaft</param>
         /// <returns></returns>
-        private static double GetPathFigureLength(PathFigure line)
+        protected static double GetPathFigureLength(PathFigure line)
         {
             var pathbits = line.GetFlattenedPathFigure();
 
@@ -233,19 +233,32 @@ namespace Chem4Word.ACME.Graphics
         /// <param name="drawingContext">DrawingContext provided by Windows or the calling code</param>
         /// <param name="outlinePen">Traces the arrow outline</param>
         /// <param name="headFillBrush">what the head is filled in with</param>
-        public void DrawArrowGeometry(DrawingContext drawingContext, Pen outlinePen, Brush headFillBrush)
+        public virtual void DrawArrowGeometry(DrawingContext drawingContext, Pen outlinePen, Brush headFillBrush)
         {
+            Brush overlayBrush;
+            Pen pen;
+            GetOverlayPen(out overlayBrush, out Pen overlayPen);
+
             base.OnRender(drawingContext);
             var mainLine = Shaft();
             PathFigureCollection pfc1 = new PathFigureCollection() { mainLine };
             outlinePen.StartLineCap = PenLineCap.Round;
             outlinePen.EndLineCap = PenLineCap.Round;
-            drawingContext.DrawGeometry(null, outlinePen, new PathGeometry(pfc1));
+            PathGeometry lineGeometry = new PathGeometry(pfc1);
+            drawingContext.DrawGeometry(null, outlinePen, lineGeometry);
+
+            var overlay = lineGeometry.GetWidenedPathGeometry(overlayPen);
+
+            drawingContext.DrawGeometry(overlayBrush, null, overlay);
             PathFigureCollection pfc2 = new PathFigureCollection();
+
+            Rect boundingBox = Rect.Empty;
             // Draw the arrow at the start of the line.
             if ((ArrowEnds & ArrowEnds.Start) == ArrowEnds.Start)
             {
-                pfc2.Add(ArrowHeadGeometry(mainLine, true));
+                PathFigure value = ArrowHeadGeometry(mainLine, true);
+                pfc2.Add(value);
+
             }
 
             // Draw the arrow at the end of the line.
@@ -254,7 +267,19 @@ namespace Chem4Word.ACME.Graphics
                 pfc2.Add(ArrowHeadGeometry(mainLine));
             }
 
-            drawingContext.DrawGeometry(headFillBrush, outlinePen, new PathGeometry(pfc2));
+            PathGeometry geometry = new PathGeometry(pfc2);
+            boundingBox = geometry.Bounds;
+            drawingContext.DrawGeometry(headFillBrush, outlinePen, geometry);
+            overlay = geometry.GetWidenedPathGeometry(overlayPen);
+            drawingContext.DrawGeometry(overlayBrush, overlayPen, overlay);
+
+        }
+
+        public void GetOverlayPen(out Brush overlayBrush, out Pen pen)
+        {
+            overlayBrush = Brushes.Transparent;
+            double overlayWidth = 2 * HeadLength * Math.Sin(HeadAngle / 360 * 2 * Math.PI);
+            pen = new Pen(overlayBrush, overlayWidth);
         }
     }
 }

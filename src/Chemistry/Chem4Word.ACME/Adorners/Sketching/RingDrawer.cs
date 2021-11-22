@@ -14,7 +14,7 @@ using Chem4Word.ACME.Models;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
-namespace Chem4Word.ACME.Adorners
+namespace Chem4Word.ACME.Adorners.Sketching
 {
     public class RingDrawer
     {

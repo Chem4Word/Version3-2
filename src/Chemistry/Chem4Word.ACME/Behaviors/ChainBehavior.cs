@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners;
+using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Utils;
@@ -302,7 +302,7 @@ namespace Chem4Word.ACME.Behaviors
                 {
                     //just got one entry in the list
                     Snapper snapper = new Snapper(FirstPoint, EditController);
-                    Point newEnd = snapper.SnapBond(endPoint, e);
+                    Point newEnd = snapper.SnapBond(endPoint);
                     Placements.Add(newEnd);
                 }
                 else if (movedABond) //placements must have more than one entry

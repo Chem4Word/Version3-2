@@ -456,5 +456,6 @@ namespace Chem4Word.ACME
             //the selected mode in the dropdown
             SelectionButton.Tag = selButton.Tag;
         }
+
     }
 }

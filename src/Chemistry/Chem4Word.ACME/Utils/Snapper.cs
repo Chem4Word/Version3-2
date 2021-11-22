@@ -64,7 +64,7 @@ namespace Chem4Word.ACME.Utils
         /// <param name="currentCoords">Coordinates of the mouse pointer</param>
         /// <param name="startAngle">Optional angle to start the locking at</param>
         /// <returns></returns>
-        public Point SnapBond(Point currentCoords, MouseEventArgs e, double startAngle = 0d)
+        public Point SnapBond(Point currentCoords, double startAngle = 0d)
         {
             Vector originalDisplacement = currentCoords - StartPoint;
             var offset = SnapVector(startAngle, originalDisplacement);
@@ -79,7 +79,7 @@ namespace Chem4Word.ACME.Utils
             //snap the length if desired
 
             double bondLength = SnapLength(originalDisplacement, _modelXamlBondLength,
-                                           IsSnappingLength && KeyboardUtils.HoldingDownShift());
+                                           !IsSnappingLength || KeyboardUtils.HoldingDownShift());
 
             //and then snap the angle
             angleInRads = SnapAngle(startAngle, originalDisplacement, IsSnappingAngle && KeyboardUtils.HoldingDownControl());

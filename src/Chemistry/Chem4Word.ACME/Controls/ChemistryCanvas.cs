@@ -5,8 +5,13 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners.Feedback;
+using Chem4Word.ACME.Drawing;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -14,10 +19,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners.Feedback;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -64,9 +65,10 @@ namespace Chem4Word.ACME.Controls
             }
         }
 
-        public AtomVisual ActiveAtomVisual => (ActiveVisual as AtomVisual);
+        public AtomVisual ActiveAtomVisual => ActiveVisual as AtomVisual;
 
-        public BondVisual ActiveBondVisual => (ActiveVisual as BondVisual);
+        public ReactionVisual ActiveReactionVisual => ActiveVisual as ReactionVisual;
+        public BondVisual ActiveBondVisual => ActiveVisual as BondVisual;
 
         public ChemistryBase ActiveChemistry
         {
@@ -82,6 +84,9 @@ namespace Chem4Word.ACME.Controls
 
                     case AtomVisual av:
                         return av.ParentAtom;
+
+                    case ReactionVisual rv:
+                        return rv.ParentReaction;
 
                     default:
                         return null;
@@ -256,8 +261,13 @@ namespace Chem4Word.ACME.Controls
             _controller.Model.AtomsChanged += Model_AtomsChanged;
             _controller.Model.BondsChanged += Model_BondsChanged;
             _controller.Model.MoleculesChanged += Model_MoleculesChanged;
-
+            _controller.Model.ReactionsChanged += Model_ReactionsChanged;
+            _controller.Model.ReactionSchemesChanged += Model_ReactionSchemesChanged;
             _controller.Model.PropertyChanged += Model_PropertyChanged;
+        }
+
+        private void Model_ReactionSchemesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
         }
 
         public bool AutoResize = true;
@@ -279,6 +289,10 @@ namespace Chem4Word.ACME.Controls
 
                     case Molecule m:
                         RedrawMolecule(m);
+                        break;
+
+                    case Reaction r:
+                        RedrawReaction(r);
                         break;
                 }
 
@@ -373,6 +387,21 @@ namespace Chem4Word.ACME.Controls
             av.RefCount = refCount;
         }
 
+        private void RedrawReaction(Reaction reaction)
+        {
+            int refcount = 1;
+            ReactionVisual rv;
+            if (ChemicalVisuals.ContainsKey(reaction))
+            {
+                rv = (ReactionVisual)ChemicalVisuals[reaction];
+                refcount = rv.RefCount;
+                ReactionRemoved(reaction);
+            }
+            ReactionAdded(reaction);
+            rv = (ReactionVisual)ChemicalVisuals[reaction];
+            rv.RefCount = refcount;
+        }
+
         private void Model_MoleculesChanged(object sender,
                                             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -442,6 +471,40 @@ namespace Chem4Word.ACME.Controls
 
                     AtomRemoved(a);
                 }
+            }
+        }
+
+        private void Model_ReactionsChanged(object sender,
+                                          System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var eNewItem in e.NewItems)
+                {
+                    Reaction a = (Reaction)eNewItem;
+
+                    ReactionAdded(a);
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (var eNewItem in e.OldItems)
+                {
+                    Reaction b = (Reaction)eNewItem;
+
+                    ReactionRemoved(b);
+                }
+            }
+        }
+
+        private void ReactionRemoved(Reaction reaction)
+        {
+            if (ChemicalVisuals.TryGetValue(reaction, out DrawingVisual dv))
+            {
+                var rv = (ReactionVisual)dv;
+                DeleteVisual(rv);
+                ChemicalVisuals.Remove(reaction);
             }
         }
 
@@ -536,6 +599,10 @@ namespace Chem4Word.ACME.Controls
                     _highlightAdorner = new BondHoverAdorner(this, bv);
                     break;
 
+                case ReactionVisual rv:
+                    _highlightAdorner = new ReactionHoverAdorner(this, rv);
+                    break;
+
                 default:
                     _highlightAdorner = null;
                     break;
@@ -567,9 +634,30 @@ namespace Chem4Word.ACME.Controls
                 {
                     MoleculeAdded(molecule);
                 }
-
+                if (controller.Model.ReactionSchemes.Any())
+                {
+                    foreach (Reaction reaction in controller.Model.DefaultReactionScheme.Reactions.Values)
+                    {
+                        ReactionAdded(reaction);
+                    }
+                }
                 InvalidateMeasure();
             }
+        }
+
+        private void ReactionAdded(Reaction reaction)
+        {
+            ReactionVisual rv;
+            if (ChemicalVisuals.ContainsKey(reaction)) //it's already in the list
+            {
+                rv = (ReactionVisual)ChemicalVisuals[reaction];
+                DeleteVisual(rv);
+            }
+            ChemicalVisuals[reaction] = new ReactionVisual(reaction);
+            rv = (ReactionVisual)ChemicalVisuals[reaction];
+            rv.ChemicalVisuals = ChemicalVisuals;
+            rv.Render();
+            AddVisual(rv);
         }
 
         public void Clear()

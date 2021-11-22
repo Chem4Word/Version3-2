@@ -5,6 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Enums;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,12 +18,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.ACME.Enums;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Model2;
 
 namespace Chem4Word.ACME.Behaviors
 {
@@ -212,27 +212,38 @@ namespace Chem4Word.ACME.Behaviors
         private HitTestResultBehavior GatherCallback(HitTestResult result)
         {
             var myShape = result.VisualHit;
-            if (myShape is GroupVisual selGroup)
+            switch (myShape)
             {
-                _lassoHits.Add(selGroup.ParentMolecule);
-            }
-            if (myShape is AtomVisual av)
-            {
-                var selAtom = av.ParentAtom;
+                case GroupVisual selGroup:
+                    _lassoHits.Add(selGroup.ParentMolecule);
+                    break;
+                case AtomVisual av:
+                    {
+                        var selAtom = av.ParentAtom;
 
-                if (!EditController.SelectedItems.Contains(selAtom))
-                {
-                    _lassoHits.Add(selAtom);
-                }
+                        if (!EditController.SelectedItems.Contains(selAtom))
+                        {
+                            _lassoHits.Add(selAtom);
+                        }
+
+                        break;
+                    }
+
+                case ReactionVisual rv:
+                    _lassoHits.Add(rv.ParentReaction);
+                    break;
             }
             return HitTestResultBehavior.Continue;
         }
 
         private void CurrentEditor_PreviewMouseMove(object sender, MouseEventArgs e)
         {
+            //this is a *tunnelling* event which means it fires on the outmost
+            //container before any of the visual children
             //TODO:  disable the hydrogen rotator selector
             var pos = Mouse.GetPosition(CurrentEditor);
             Vector shift; //how much we want to shift the objects by
+            //first check to see whether we're dragging a thumb of some kind
 
             if (MouseIsDown(e) && !IsDragging)
             {
@@ -278,7 +289,7 @@ namespace Chem4Word.ACME.Behaviors
                 else
                 {
                     var target = CurrentObject(e);
-
+                    
                     if (_initialTarget != target)
                     {
                         IsDragging = true;
@@ -426,7 +437,10 @@ namespace Chem4Word.ACME.Behaviors
             {
                 currentObject = bv.ParentBond;
             }
-
+            else if (visual is ReactionVisual rv)
+            {
+                currentObject = rv.ParentReaction;
+            }
             return currentObject;
         }
 
@@ -448,6 +462,10 @@ namespace Chem4Word.ACME.Behaviors
             {
                 currentObject = gv.ParentMolecule;
             }
+            else if (visual is ReactionVisual rv)
+            {
+                currentObject = rv.ParentReaction;
+            }
 
             return currentObject;
         }
@@ -457,7 +475,11 @@ namespace Chem4Word.ACME.Behaviors
         private void CurrentEditor_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
-            if (!(visual is HydrogenVisual hv))
+            if (visual is HydrogenVisual hv)
+            {
+                EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
+            }
+            else
             {
                 var currentObject = CurrentObject(e);
 
@@ -469,10 +491,6 @@ namespace Chem4Word.ACME.Behaviors
                 StartPoint = e.GetPosition(CurrentEditor);
 
                 _initialTarget = CurrentObject(e);
-            }
-            else
-            {
-                EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
             }
         }
 
@@ -619,7 +637,19 @@ namespace Chem4Word.ACME.Behaviors
                         CurrentStatus = ActiveSelText;
                         break;
                     }
-
+                case ReactionVisual rv:
+                    {
+                        var reaction = rv.ParentReaction;
+                        if (!EditController.SelectedItems.Contains(reaction))
+                        {
+                            EditController.AddToSelection(reaction);
+                        }
+                        else
+                        {
+                            EditController.RemoveFromSelection(reaction);
+                        }
+                        break;
+                    }
                 default:
                     EditController.ClearSelection();
                     CurrentStatus = DefaultText;

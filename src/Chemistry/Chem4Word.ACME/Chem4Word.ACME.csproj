@@ -90,10 +90,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adorners\Feedback\ReactionHoverAdorner.cs" />
+    <Compile Include="Adorners\Sketching\DrawReactionAdorner.cs" />
     <Compile Include="Adorners\Feedback\BaseHoverAdorner.cs" />
     <Compile Include="Adorners\Feedback\HRotatorAdorner.cs" />
     <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
+    <Compile Include="Adorners\Selectors\ReactionSelectionAdorner.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
+    <Compile Include="Behaviors\ReactionBehavior.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignBottomsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignCentresCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignLeftsCommand.cs" />
@@ -102,11 +106,17 @@
     <Compile Include="Commands\Layout\Alignment\AlignRightsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignTopsCommand.cs" />
     <Compile Include="Commands\Editing\PickElementCommand.cs" />
+    <Compile Include="Controls\DragHandle.cs" />
+    <Compile Include="Controls\ReactionOption.cs" />
     <Compile Include="Controls\ChemistryItem.xaml.cs">
       <DependentUpon>ChemistryItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\DesignTimeModels\BpeDesigner.cs" />
     <Compile Include="Controls\DesignTimeModels\ApeDesigner.cs" />
+    <Compile Include="Drawing\ReactionVisual.cs" />
+    <Compile Include="Graphics\BlockedArrow.cs" />
+    <Compile Include="Graphics\EquilibriumArrow.cs" />
+    <Compile Include="Graphics\Harpoon.cs" />
     <Compile Include="Models\CloudSpace.cs" />
     <Compile Include="Models\CryptoRandomizer.cs" />
     <Compile Include="Controls\FormulaBlock.cs" />
@@ -176,13 +186,13 @@
     <Compile Include="Enums\2Point5BondType.cs" />
     <Compile Include="Adorners\Feedback\BondHoverAdorner.cs" />
     <Compile Include="Adorners\Feedback\AtomHoverAdorner.cs" />
-    <Compile Include="Adorners\ChainAdorner.cs" />
-    <Compile Include="Adorners\DrawBondAdorner.cs" />
-    <Compile Include="Adorners\NRingAdorner.cs" />
-    <Compile Include="Adorners\FixedRingAdorner.cs" />
+    <Compile Include="Adorners\Sketching\ChainAdorner.cs" />
+    <Compile Include="Adorners\Sketching\DrawBondAdorner.cs" />
+    <Compile Include="Adorners\Sketching\NRingAdorner.cs" />
+    <Compile Include="Adorners\Sketching\FixedRingAdorner.cs" />
     <Compile Include="Adorners\LassoAdorner.cs" />
     <Compile Include="Adorners\PartialGhostAdorner.cs" />
-    <Compile Include="Adorners\RingDrawer.cs" />
+    <Compile Include="Adorners\Sketching\RingDrawer.cs" />
     <Compile Include="Controls\AtomOption.cs" />
     <Compile Include="Behaviors\ChainBehavior.cs" />
     <Compile Include="Behaviors\NRingBehavior.cs" />
@@ -344,6 +354,10 @@
     <Page Include="Controls\PTPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ReactionOptions.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\BondOptions.xaml">
       <SubType>Designer</SubType>

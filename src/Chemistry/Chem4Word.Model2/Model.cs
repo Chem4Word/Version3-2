@@ -5,6 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Helpers;
+using Chem4Word.Model2.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,9 +15,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Helpers;
-using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
@@ -27,6 +27,10 @@ namespace Chem4Word.Model2
         public event NotifyCollectionChangedEventHandler BondsChanged;
 
         public event NotifyCollectionChangedEventHandler MoleculesChanged;
+
+        public event NotifyCollectionChangedEventHandler ReactionSchemesChanged;
+
+        public event NotifyCollectionChangedEventHandler ReactionsChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -70,12 +74,12 @@ namespace Chem4Word.Model2
                 }
             }
         }
-
+        //responds to a property being changed on an object
         private void ChemObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(sender, e);
         }
-
+        //transmits the proerty being changed on an object
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (!InhibitEvents)
@@ -87,12 +91,12 @@ namespace Chem4Word.Model2
                 }
             }
         }
-
+        //responds to bonds being added or removed
         private void Bonds_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnBondsChanged(sender, e);
         }
-
+        //transmits bonds being added or removed
         private void OnBondsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (!InhibitEvents)
@@ -104,12 +108,12 @@ namespace Chem4Word.Model2
                 }
             }
         }
-
+        //responds to atoms being added or removed
         private void Atoms_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnAtomsChanged(sender, e);
         }
-
+        //transmits atoms being added or removed
         private void OnAtomsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (!InhibitEvents)
@@ -438,6 +442,8 @@ namespace Chem4Word.Model2
         //wraps up the above Molecules collection
         public ReadOnlyDictionary<string, Molecule> Molecules;
 
+        private readonly Dictionary<string, ReactionScheme> _reactionSchemes;
+        public ReadOnlyDictionary<string, ReactionScheme> ReactionSchemes;
         public string CustomXmlPartGuid { get; set; }
 
         public List<string> GeneralErrors { get; set; }
@@ -573,7 +579,18 @@ namespace Chem4Word.Model2
             // Join using Bullet character <Alt>0183
             return string.Join(" · ", strings);
         }
-
+        public ReactionScheme DefaultReactionScheme
+        {
+            get
+            {
+                if (!ReactionSchemes.Any())
+                {
+                    var rs = new ReactionScheme();
+                    AddReactionScheme(rs);
+                }
+                return ReactionSchemes.Values.First();
+            }
+        }
         #endregion Properties
 
         #region Constructors
@@ -582,6 +599,8 @@ namespace Chem4Word.Model2
         {
             _molecules = new Dictionary<string, Molecule>();
             Molecules = new ReadOnlyDictionary<string, Molecule>(_molecules);
+            _reactionSchemes = new Dictionary<string, ReactionScheme>();
+            ReactionSchemes = new ReadOnlyDictionary<string, ReactionScheme>(_reactionSchemes);
             GeneralErrors = new List<string>();
         }
 
@@ -1079,7 +1098,86 @@ namespace Chem4Word.Model2
 
             RepositionAll(offsetLeft, offsetTop);
         }
-    }
 
-    #endregion Methods
+        public ReactionScheme AddReactionScheme(ReactionScheme newScheme)
+        {
+            _reactionSchemes[newScheme.InternalId] = newScheme;
+            NotifyCollectionChangedEventArgs e =
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add,
+                    new List<ReactionScheme> { newScheme });
+            UpdateReactionSchemeEventHandlers(e);
+            OnReactionSchemesChanged(this, e);
+            return newScheme;
+        }
+
+        private void OnReactionSchemesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+       
+            if (!InhibitEvents)
+            {
+                var temp = ReactionSchemesChanged;
+                if (temp != null)
+                {
+                    temp.Invoke(sender, e);
+                }
+            }
+        }
+        
+
+        private void UpdateReactionSchemeEventHandlers(NotifyCollectionChangedEventArgs e)
+        {
+     
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems)
+                {
+                    var rs = ((ReactionScheme)oldItem);
+                    rs.ReactionsChanged -= Reactions_CollectionChanged;
+                    
+                    rs.PropertyChanged -= ChemObject_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (var newItem in e.NewItems)
+                {
+                    var rs = ((ReactionScheme)newItem);
+                    rs.ReactionsChanged += Reactions_CollectionChanged;
+                    rs.PropertyChanged += ChemObject_PropertyChanged;
+                }
+            }
+        }
+
+        private void Reactions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnReactionsChanged(sender,e);
+        }
+
+        private void OnReactionsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!InhibitEvents)
+            {
+                var temp = ReactionsChanged;
+                if (temp != null)
+                {
+                    temp.Invoke(sender, e);
+                }
+            }
+        }
+
+        public void RemoveReactionScheme(ReactionScheme scheme)
+        {
+            _reactionSchemes.Remove(scheme.InternalId);
+            NotifyCollectionChangedEventArgs e =
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+                    new List<ReactionScheme> { scheme });
+            UpdateReactionSchemeEventHandlers(e);
+            OnReactionSchemesChanged(this, e);
+        }
+
+
+
+        #endregion Methods
+    }
 }

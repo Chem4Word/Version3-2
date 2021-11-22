@@ -57,7 +57,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         {
             BuildBigDragArea();
 
-            AttachHandler();
+            DisableHandlers();
             Focusable = false;
             IsHitTestVisible = true;
 
@@ -65,12 +65,14 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Keyboard.Focus(this);
         }
 
-        protected void AttachHandler()
+        protected void DisableHandlers()
         {
             //detach the handlers to stop them interfering with dragging
             PreviewMouseLeftButtonDown -= BaseSelectionAdorner_PreviewMouseLeftButtonDown;
             MouseLeftButtonDown -= BaseSelectionAdorner_MouseLeftButtonDown;
             PreviewMouseMove -= BaseSelectionAdorner_PreviewMouseMove;
+            PreviewMouseLeftButtonUp -= BaseSelectionAdorner_PreviewMouseLeftButtonUp;
+            MouseLeftButtonUp -= BaseSelectionAdorner_MouseLeftButtonUp;
         }
 
         private void BigThumb_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

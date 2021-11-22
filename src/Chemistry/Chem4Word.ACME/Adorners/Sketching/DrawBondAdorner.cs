@@ -14,7 +14,7 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
 
-namespace Chem4Word.ACME.Adorners
+namespace Chem4Word.ACME.Adorners.Sketching
 {
     public class DrawBondAdorner : Adorner
     {
@@ -26,7 +26,10 @@ namespace Chem4Word.ACME.Adorners
         public Globals.BondStereo Stereo { get; set; }
 
         public string BondOrder { get; set; }
-
+        public double DragXTravel { get; private set; }
+        public double DragYTravel { get; private set; }
+        public Vector? StartDisplacement { get; private set; }
+        public Vector? EndDisplacement { get; private set; }
         public Point StartPoint
         {
             get { return (Point)GetValue(StartPointProperty); }
@@ -135,14 +138,14 @@ namespace Chem4Word.ACME.Adorners
                     var secondPen = pen.Clone();
                     secondPen.DashStyle = DashStyles.Dash;
                     drawingContext.DrawLine(pen, layout.Start, layout.End);
-                    var doubleBondDescriptor = (layout as DoubleBondLayout);
+                    var doubleBondDescriptor = layout as DoubleBondLayout;
                     drawingContext.DrawLine(secondPen,
                                             doubleBondDescriptor.SecondaryStart,
                                             doubleBondDescriptor.SecondaryEnd);
                     break;
 
                 case Globals.OrderPartial23:
-                    var tbd = (layout as TripleBondLayout);
+                    var tbd = layout as TripleBondLayout;
                     secondPen = pen.Clone();
                     secondPen.DashStyle = DashStyles.Dash;
                     drawingContext.DrawLine(pen, tbd.SecondaryStart, tbd.SecondaryEnd);
@@ -151,7 +154,7 @@ namespace Chem4Word.ACME.Adorners
                     break;
 
                 case Globals.OrderTriple:
-                    tbd = (layout as TripleBondLayout);
+                    tbd = layout as TripleBondLayout;
                     drawingContext.DrawLine(pen, tbd.SecondaryStart, tbd.SecondaryEnd);
                     drawingContext.DrawLine(pen, tbd.Start, tbd.End);
                     drawingContext.DrawLine(pen, tbd.TertiaryStart, tbd.TertiaryEnd);
@@ -176,7 +179,7 @@ namespace Chem4Word.ACME.Adorners
                 return wbd;
             }
 
-            if (stereo == Globals.BondStereo.Indeterminate && (order == Globals.OrderSingle))
+            if (stereo == Globals.BondStereo.Indeterminate && order == Globals.OrderSingle)
             {
                 descriptor = new BondLayout { Start = startPoint, End = endPoint };
                 BondGeometry.GetWavyBondGeometry(descriptor, bondLength, CurrentEditor.Controller.Standoff);

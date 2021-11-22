@@ -105,7 +105,10 @@ namespace Chem4Word.ACME
                 {
                     result |= SelectionTypeCode.Molecule;
                 }
-
+                if (SelectedItems.OfType<Reaction>().Any())
+                {
+                    result |= SelectionTypeCode.Reaction;
+                }
                 return result;
             }
         }
@@ -134,6 +137,7 @@ namespace Chem4Word.ACME
         }
 
         private ElementBase _selectedElement;
+        private ReactionType? _selectedReactionType;
 
         public ElementBase SelectedElement
         {
@@ -216,6 +220,107 @@ namespace Chem4Word.ACME
                     SetBondOption();
                 }
             }
+        }
+
+        public void MoveReaction(Reaction reaction, Point startPoint, Point endPoint)
+        {
+            var oldStart = reaction.TailPoint;
+            var oldEnd = reaction.HeadPoint;
+            UndoManager.BeginUndoBlock();
+            Action redo = () =>
+                {
+                    reaction.TailPoint = startPoint;
+                    reaction.HeadPoint = endPoint;
+                    RemoveFromSelection(reaction);
+                    AddToSelection(reaction);
+                };
+            Action undo = () =>
+                {
+                    reaction.TailPoint = oldStart;
+                    reaction.HeadPoint = oldEnd;
+                    RemoveFromSelection(reaction);
+                    AddToSelection(reaction);
+                };
+
+            redo();
+            UndoManager.RecordAction(undo, redo);
+            UndoManager.EndUndoBlock();
+        }
+
+        public ReactionType? SelectedReactionType
+        {
+            get
+            {
+                var selectedReactionTypes = (from ro in SelectedReactions()
+                                             select ro.ReactionType).Distinct().ToList();
+                switch (selectedReactionTypes.Count)
+                {
+                    case 0:
+                        return _selectedReactionType;
+
+                    case 1:
+                        return selectedReactionTypes[0];
+
+                    default:
+                        return null;
+                }
+            }
+            set
+            {
+                _selectedReactionType = value;
+                {
+                    if (value != null)
+                    {
+                        SetReactionType(value.Value);
+                    }
+                }
+            }
+        }
+
+        //sets all selected reactions to the currently applied type
+        public void SetReactionType(ReactionType value)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            try
+            {
+                var affectedReactions = SelectedItems.OfType<Reaction>().Count();
+                WriteTelemetry(module, "Debug", $"Type: {SelectedReactionType}; Affected Reactions {affectedReactions}");
+
+                if (SelectedItems.OfType<Reaction>().Any())
+                {
+                    UndoManager.BeginUndoBlock();
+                    IEnumerable<Reaction> reactions = SelectedItems.OfType<Reaction>().ToList();
+                    foreach (Reaction reaction in reactions)
+                    {
+                        Action redo = () =>
+                         {
+                             reaction.ReactionType = value;
+                             RemoveFromSelection(reaction);
+                             AddToSelection(reaction);
+                         };
+                        var reactionType = reaction.ReactionType;
+                        Action undo = () =>
+                        {
+                            reaction.ReactionType = reactionType;
+                            RemoveFromSelection(reaction);
+                            AddToSelection(reaction);
+                        };
+                        redo();
+                        UndoManager.RecordAction(undo, redo);
+                        UndoManager.EndUndoBlock();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                WriteTelemetryException(module, exception);
+            }
+        }
+
+        private List<Reaction> SelectedReactions()
+        {
+            var selectedReactions = SelectedItems.OfType<Reaction>();
+            return selectedReactions.ToList();
         }
 
         private List<BondOption> SelectedBondOptions()
@@ -324,6 +429,7 @@ namespace Chem4Word.ACME
             OnPropertyChanged(nameof(SelectedElement));
             OnPropertyChanged(nameof(SelectedBondOptionId));
             OnPropertyChanged(nameof(SelectionType));
+            OnPropertyChanged(nameof(SelectedReactionType));
             //tell the editor what commands are allowable
             UpdateCommandStatuses();
         }
@@ -436,10 +542,10 @@ namespace Chem4Word.ACME
             _selectedItems.CollectionChanged += SelectedItems_Changed;
 
             UndoManager = new UndoHandler(this, telemetry);
+
             SetupCommands();
 
-            _selectedElement = Globals.PeriodicTable.C;
-            _selectedBondOptionId = 1;
+            DefaultSettings();
         }
 
         /// <summary>
@@ -455,9 +561,16 @@ namespace Chem4Word.ACME
             SelectedItems = new ReadOnlyObservableCollection<object>(_selectedItems);
 
             UndoManager = new UndoHandler(this, null);
+
             SetupCommands();
 
+            DefaultSettings();
+        }
+
+        private void DefaultSettings()
+        {
             _selectedBondOptionId = 1;
+            _selectedReactionType = ReactionType.Normal;
             _selectedElement = Globals.PeriodicTable.C;
         }
 
@@ -1454,6 +1567,37 @@ namespace Chem4Word.ACME
             return null;
         }
 
+        /// <summary>
+        /// Adds a new reaction to the model
+        /// </summary>
+        /// <param name="reaction">New reaction to add.</param>
+        public void AddReaction(Reaction reaction)
+        {
+            ReactionScheme rs;
+            UndoManager.BeginUndoBlock();
+
+            Action redo = () =>
+            {
+                //check to see if we have a scheme
+                var scheme = Model.DefaultReactionScheme;
+                scheme.AddReaction(reaction);
+            };
+            Action undo = () =>
+            {
+                var scheme = Model.DefaultReactionScheme;
+                ClearSelection();
+                scheme.RemoveReaction(reaction);
+                if (!scheme.Reactions.Any())
+                {
+                    Model.RemoveReactionScheme(scheme);
+                }
+            };
+
+            redo();
+            UndoManager.RecordAction(undo, redo);
+            UndoManager.EndUndoBlock();
+        }
+
         public void SetAverageBondLength(double newLength)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -1766,6 +1910,8 @@ namespace Chem4Word.ACME
                              select m).ToList();
             var allMolecules = (from m in newObjects.OfType<Molecule>().Union(SelectedItems.OfType<Molecule>())
                                 select m).ToList();
+            var allReactions = (from r in newObjects.OfType<Reaction>().Union(SelectedItems.OfType<Reaction>())
+                                select r).ToList();
 
             var allSingletons = singleAtomMols.Count == allMolecules.Count && singleAtomMols.Any();
             var allGroups = allMolecules.Count == groupMols.Count && groupMols.Any();
@@ -1806,6 +1952,17 @@ namespace Chem4Word.ACME
                 }
                 molAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
                 molAdorner.DragCompleted += AtomAdorner_DragCompleted;
+            }
+
+            if (allReactions.Any())
+            {
+                foreach (Reaction r in allReactions)
+                {
+                    var reactionAdorner = new ReactionSelectionAdorner(CurrentEditor, r);
+                    SelectionAdorners[r] = reactionAdorner;
+                    reactionAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
+                    reactionAdorner.DragCompleted += ReactionAdorner_DragCompleted;
+                }
             }
         }
 
@@ -2358,6 +2515,16 @@ namespace Chem4Word.ACME
             CheckModelIntegrity(module);
         }
 
+        private void ReactionAdorner_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            //we've completed the drag operation
+            //remove the existing molecule adorner
+            var selectionAdorner = ((ReactionSelectionAdorner)sender);
+            RemoveFromSelection(selectionAdorner.AdornedReaction);
+            //and add in a new one
+            AddToSelection(selectionAdorner.AdornedReaction);
+        }
+
         public bool SingleMolSelected
         {
             get { return SelectedItems.Count == 1 && SelectedItems[0] is Molecule; }
@@ -2588,7 +2755,20 @@ namespace Chem4Word.ACME
             {
                 UpdateAtomBondAdorners();
             }
+            //now do the reactions
+            var newReactions = thingsToAdd.OfType<Reaction>().ToList();
 
+            foreach (Reaction newReaction in newReactions)
+            {
+                if (!_selectedItems.Contains(newReaction))
+                {
+                    _selectedItems.Add(newReaction);
+                    if (thingsToAdd.Contains(newReaction))
+                    {
+                        thingsToAdd.Remove(newReaction);
+                    }
+                }
+            }
             DebugHelper.WriteLine($"Timing: {sw.ElapsedMilliseconds}ms");
             DebugHelper.WriteLine($"Finished at {DateTime.Now}");
         }
@@ -2644,6 +2824,11 @@ namespace Chem4Word.ACME
 
                             break;
                         }
+                    case Reaction r:
+                        {
+                            _selectedItems.Remove(r);
+                        }
+                        break;
                 }
             }
 
@@ -3555,6 +3740,7 @@ namespace Chem4Word.ACME
                 var atoms = SelectedItems.OfType<Atom>().ToList();
                 var bonds = SelectedItems.OfType<Bond>().ToList();
                 var mols = SelectedItems.OfType<Molecule>().ToList();
+                var reactions = SelectedItems.OfType<Reaction>().ToList();
 
                 UndoManager.BeginUndoBlock();
 
@@ -3567,7 +3753,10 @@ namespace Chem4Word.ACME
                 {
                     DeleteAtomsAndBonds(atoms, bonds);
                 }
-
+                if (reactions.Any())
+                {
+                    DeleteReactions(reactions);
+                }
                 _selectedItems.Clear();
                 UndoManager.EndUndoBlock();
             }
@@ -3577,6 +3766,40 @@ namespace Chem4Word.ACME
             }
 
             CheckModelIntegrity(module);
+        }
+
+        internal void DeleteReactions(IEnumerable<Reaction> reactions)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            try
+            {
+                WriteTelemetry(module, "Debug", "Called");
+                {
+                    UndoManager.BeginUndoBlock();
+                    foreach (Reaction r in reactions)
+                    {
+                        Action redo = () =>
+                              {
+                                  ClearSelection();
+                                  Model.DefaultReactionScheme.RemoveReaction(r);
+                              };
+
+                        Action undo = () =>
+                                      {
+                                          
+                                          Model.DefaultReactionScheme.AddReaction(r);
+                                          AddToSelection(r);
+                                      };
+                        redo();
+                        UndoManager.RecordAction(undo, redo);
+                    }
+                    UndoManager.EndUndoBlock();
+                }
+            }
+            catch (Exception exception)
+            {
+                WriteTelemetryException(module, exception);
+            }
         }
 
         /// <summary>
@@ -3769,6 +3992,10 @@ namespace Chem4Word.ACME
             foreach (var mol in Model.Molecules.Values)
             {
                 AddToSelection(mol);
+            }
+            foreach (var r in Model.DefaultReactionScheme.Reactions.Values)
+            {
+                AddToSelection(r);
             }
         }
 

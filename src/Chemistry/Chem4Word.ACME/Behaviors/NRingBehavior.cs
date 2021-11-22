@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners;
+using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Models;
@@ -55,15 +55,15 @@ namespace Chem4Word.ACME.Behaviors
                 _currentAdorner = value;
                 if (_currentAdorner != null)
                 {
-                    _currentAdorner.MouseLeftButtonDown += _currentAdorner_MouseLeftButtonDown;
-                    _currentAdorner.MouseLeftButtonUp += _currentAdorner_MouseLeftButtonUp;
+                    _currentAdorner.MouseLeftButtonDown += CurrentAdorner_MouseLeftButtonDown;
+                    _currentAdorner.MouseLeftButtonUp += CurrentAdorner_MouseLeftButtonUp;
                     _currentAdorner.PreviewKeyDown += CurrentAdorner_KeyDown;
-                    _currentAdorner.MouseMove += _currentAdorner_MouseMove;
+                    _currentAdorner.MouseMove += CurrentAdorner_MouseMove;
                 }
             }
         }
 
-        private void _currentAdorner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void CurrentAdorner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             CurrentEditor_MouseLeftButtonUp(sender, e);
         }
@@ -80,7 +80,7 @@ namespace Chem4Word.ACME.Behaviors
             CurrentStatus = DefaultStatusText;
         }
 
-        private void _currentAdorner_MouseMove(object sender, MouseEventArgs e)
+        private void CurrentAdorner_MouseMove(object sender, MouseEventArgs e)
         {
             CurrentEditor_MouseMove(sender, e);
             CurrentStatus = DefaultStatusText;
@@ -92,10 +92,10 @@ namespace Chem4Word.ACME.Behaviors
             {
                 var layer = AdornerLayer.GetAdornerLayer(CurrentEditor);
                 layer.Remove(_currentAdorner);
-                _currentAdorner.MouseLeftButtonDown -= _currentAdorner_MouseLeftButtonDown;
-                _currentAdorner.MouseLeftButtonUp -= _currentAdorner_MouseLeftButtonUp;
+                _currentAdorner.MouseLeftButtonDown -= CurrentAdorner_MouseLeftButtonDown;
+                _currentAdorner.MouseLeftButtonUp -= CurrentAdorner_MouseLeftButtonUp;
                 _currentAdorner.PreviewKeyDown -= CurrentAdorner_KeyDown;
-                _currentAdorner.MouseMove -= _currentAdorner_MouseMove;
+                _currentAdorner.MouseMove -= CurrentAdorner_MouseMove;
                 _currentAdorner = null;
             }
         }
@@ -290,7 +290,7 @@ namespace Chem4Word.ACME.Behaviors
             return 3;
         }
 
-        private void _currentAdorner_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void CurrentAdorner_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             CurrentEditor_MouseLeftButtonDown(sender, e);
         }

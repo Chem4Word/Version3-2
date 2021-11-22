@@ -84,7 +84,12 @@ namespace Chem4Word.ACME.Behaviors
                 EditController.DeleteBonds(new[] { bond });
                 CurrentStatus = "Bond deleted";
             }
-
+            else if (hitTestResult is ReactionVisual reactionVisual)
+            {
+                var reaction = reactionVisual.ParentReaction;
+                EditController.DeleteReactions(new[] {reaction });
+                CurrentStatus = "Bond deleted";
+            }
             EditController.ClearSelection();
         }
 
