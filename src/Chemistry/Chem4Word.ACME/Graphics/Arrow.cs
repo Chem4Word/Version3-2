@@ -147,7 +147,7 @@ namespace Chem4Word.ACME.Graphics
             }
 
             //create a simple geometry so we can use a wpf trick to determine the length
-            PathGeometry tempPG = new PathGeometry();
+            var tempPG = new PathGeometry();
             tempPG.Figures.Add(line);
 
             Point endPoint;
@@ -236,7 +236,6 @@ namespace Chem4Word.ACME.Graphics
         public virtual void DrawArrowGeometry(DrawingContext drawingContext, Pen outlinePen, Brush headFillBrush)
         {
             Brush overlayBrush;
-            Pen pen;
             GetOverlayPen(out overlayBrush, out Pen overlayPen);
 
             base.OnRender(drawingContext);
@@ -252,13 +251,11 @@ namespace Chem4Word.ACME.Graphics
             drawingContext.DrawGeometry(overlayBrush, null, overlay);
             PathFigureCollection pfc2 = new PathFigureCollection();
 
-            Rect boundingBox = Rect.Empty;
             // Draw the arrow at the start of the line.
             if ((ArrowEnds & ArrowEnds.Start) == ArrowEnds.Start)
             {
                 PathFigure value = ArrowHeadGeometry(mainLine, true);
                 pfc2.Add(value);
-
             }
 
             // Draw the arrow at the end of the line.
@@ -268,11 +265,9 @@ namespace Chem4Word.ACME.Graphics
             }
 
             PathGeometry geometry = new PathGeometry(pfc2);
-            boundingBox = geometry.Bounds;
             drawingContext.DrawGeometry(headFillBrush, outlinePen, geometry);
             overlay = geometry.GetWidenedPathGeometry(overlayPen);
             drawingContext.DrawGeometry(overlayBrush, overlayPen, overlay);
-
         }
 
         public void GetOverlayPen(out Brush overlayBrush, out Pen pen)

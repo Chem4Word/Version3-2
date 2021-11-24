@@ -1,14 +1,14 @@
 ﻿<UserControl
     x:Class="Chem4Word.ACME.Editor"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:acme="clr-namespace:Chem4Word.ACME"
     xmlns:behaviors="clr-namespace:Chem4Word.ACME.Behaviors"
     xmlns:control="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="AcmeControl"
     Width="1024"
     Height="768"
@@ -769,10 +769,10 @@
                 <RadioButton
                     x:Name="ReactionButton"
                     Click="ModeButton_OnChecked"
-                    ToolTip="Draw Reaction"
                     GroupName="Actions"
                     Style="{StaticResource ToolbarButtonStyle}"
-                    TextBlock.FontSize="6">
+                    TextBlock.FontSize="6"
+                    ToolTip="Draw Reaction">
                     <RadioButton.Resources>
                         <Style x:Key="MainTextStyle" TargetType="{x:Type TextBlock}">
                             <Setter Property="FontSize" Value="7" />
@@ -798,8 +798,10 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock
-                                Style="{StaticResource MainTextStyle}"
-                                Grid.Row="0" Grid.Column="1">NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Style="{StaticResource MainTextStyle}">
+                                NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
                             </TextBlock>
                             <graphics:StraightArrow
                                 Grid.Row="1"
@@ -813,10 +815,14 @@
                                 StartPoint="0,0"
                                 EndPoint="15,0" />
                             <TextBlock
-                                Grid.Row="2" Grid.Column="1" Style="{StaticResource MainTextStyle}">H<Run Style="{StaticResource SubscriptStyle}">2</Run>O</TextBlock>
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Style="{StaticResource MainTextStyle}">
+                                H<Run Style="{StaticResource SubscriptStyle}">2</Run>
+                                O</TextBlock>
                         </Grid>
                     </Viewbox>
-                     <RadioButton.Tag>
+                    <RadioButton.Tag>
                         <behaviors:ReactionBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
@@ -1049,20 +1055,27 @@
                     </Viewbox>
                 </Button>
             </ToolBar>
-            <ToolBar x:Name="ReactionToolbar" Band="2" BandIndex="1" Width="Auto" Height ="40">
+            <ToolBar
+                x:Name="ReactionToolbar"
+                Width="Auto"
+                Height="40"
+                Band="2"
+                BandIndex="1">
                 <ComboBox
                     Name="ReactionSelector"
                     Width="78"
-                    ItemsSource="{StaticResource ReactionOptions}" Style="{StaticResource StandardCombo}"
+                    Margin="0,6"
+                    ItemsSource="{StaticResource ReactionOptions}"
                     SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveController.SelectedReactionType, Mode=TwoWay}"
-                    SelectedValuePath="ReactionType" Margin="0,6">
+                    SelectedValuePath="ReactionType"
+                    Style="{StaticResource StandardCombo}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <Image
-                                    Width="60"
-                                    Height="18"
-                                    HorizontalAlignment="Left"
-                                    Stretch="Uniform">
+                                Width="60"
+                                Height="18"
+                                HorizontalAlignment="Left"
+                                Stretch="Uniform">
                                 <Image.Source>
                                     <DrawingImage Drawing="{Binding Path=ReactionGraphic}" />
                                 </Image.Source>
@@ -1071,127 +1084,130 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </ToolBar>
-            <ToolBar x:Name="AlignToolbar" Band="2" BandIndex="2">
-                <Button x:Name="AlignMiddlesButton"
+            <ToolBar
+                x:Name="AlignToolbar"
+                Band="2"
+                BandIndex="2">
+                <Button
+                    x:Name="AlignLeftButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignLeftsCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Align Lefts">
+                    <Viewbox Width="24" Height="24">
+                        <Grid>
+                            <Path
+                                Data="M0,0 L2,0 2,32 0,32Z M8,2 L8,8 18,8 18,2Z M6,0 L20,0 20,10 6,10Z M8,16 L8,22 26,22 26,16Z M6,14 L28,14 28,24 6,24Z"
+                                Fill="{StaticResource Chem4WordBrush}"
+                                Stretch="Uniform" />
+                            <graphics:StraightArrow
+                                ArrowHeadClosed="True"
+                                Fill="Green"
+                                HeadAngle="35"
+                                HeadLength="2"
+                                Stroke="Green"
+                                StrokeThickness="2"
+                                StartPoint="20,30"
+                                EndPoint="8,30" />
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="AlignCentresButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignCentresCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Align Centres">
+                    <Viewbox Width="24" Height="24">
+                        <Grid>
+                            <Grid.LayoutTransform>
+                                <RotateTransform Angle="-90" />
+                            </Grid.LayoutTransform>
+                            <Path
+                                Data="M20,6 L20,16 26,16 26,6Z M6,2 L6,20 12,20 12,2Z M4,0 L14,0 14,10 18,10 18,4 28,4 28,10 32,10 32,12 28,12 28,18 18,18 18,12 14,12 14,22 4,22 4,12 0,12 0,10 4,10Z"
+                                Fill="{StaticResource Chem4WordBrush}"
+                                Stretch="Uniform" />
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="AlignRightButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignRightsCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Align Rights">
+                    <Viewbox Width="24" Height="24">
+                        <Grid>
+                            <Path
+                                Data="M26,0 L28,0 28,32 26,32Z M10,2 L10,8 20,8 20,2Z M8,0 L22,0 22,10 8,10Z M2,16 L2,22 20,22 20,16Z M0,14 L22,14 22,24 0,24Z"
+                                Fill="{StaticResource Chem4WordBrush}"
+                                Stretch="Uniform" />
+                            <graphics:StraightArrow
+                                ArrowHeadClosed="True"
+                                Fill="Green"
+                                HeadAngle="35"
+                                HeadLength="2"
+                                Stroke="Green"
+                                StrokeThickness="2"
+                                StartPoint="8,30"
+                                EndPoint="20,30" />
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="AlignBottomButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignBottomsCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Align Bottoms">
+                    <Viewbox Width="24" Height="24">
+                        <Grid>
+                            <Path
+                                Data="M0,26 L32,26 32,28 0,28Z M24,10 L24,20 30,20 30,10Z M22,8 L32,8 32,22 22,22Z M10,2 L10,20 16,20 16,2Z M8,0 L18,0 18,22 8,22Z"
+                                Fill="{StaticResource Chem4WordBrush}"
+                                Stretch="Uniform" />
+                            <graphics:StraightArrow
+                                ArrowHeadClosed="True"
+                                Fill="Green"
+                                HeadAngle="35"
+                                HeadLength="2"
+                                Stroke="Green"
+                                StrokeThickness="2"
+                                StartPoint="2,8"
+                                EndPoint="2,20" />
+                        </Grid>
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="AlignMiddlesButton"
                     Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignMiddlesCommand}"
                     Style="{StaticResource CommandButtonStyle}"
                     ToolTip="Align Middles">
-                    <Viewbox>
+                    <Viewbox Width="24" Height="24">
                         <Grid>
-                            <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
-                                <Rectangle Name="Rect" Visibility="Visible" />
-                            </Grid>
-                            <Path Data="M20.001024,5.9999993L20.001024,16 26.001024,16 26.001024,5.9999993z M6.0010242,1.9999995L6.0010242,20 12.001024,20 12.001024,1.9999995z M4.0010242,0L14.001024,0 14.001024,9.9999994 18.001024,9.9999994 18.001024,3.9999995 28.001024,3.9999995 28.001024,9.9999984 32.001027,9.9999984 32.001027,11.999998 28.001024,11.999998 28.001024,18 18.001024,18 18.001024,12 14.001024,12 14.001024,22 4.0010242,22 4.0010242,12 0,12 0,9.9999994 4.0010242,9.9999994z" Stretch="Uniform" Fill="{StaticResource Chem4WordBrush}" Width="40" Height="40" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
+                            <Path
+                                Data="M20,6 L20,16 26,16 26,6Z M6,2 L6,20 12,20 12,2Z M4,0 L14,0 14,10 18,10 18,4 28,4 28,10 32,10 32,12 28,12 28,18 18,18 18,12 14,12 14,22 4,22 4,12 0,12 0,10 4,10Z"
+                                Fill="{StaticResource Chem4WordBrush}"
+                                Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
                 </Button>
-                <Button x:Name="AlignCentresButton"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignCentresCommand}"
+                <Button
+                    x:Name="AlignTopsButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignTopsCommand}"
                     Style="{StaticResource CommandButtonStyle}"
-                        ToolTip="Align Centres">
-                    <Viewbox>
+                    ToolTip="Align Tops">
+                    <Viewbox Width="24" Height="24">
                         <Grid>
-                            <Grid.LayoutTransform>
-                                <RotateTransform Angle="90" />
-                            </Grid.LayoutTransform>
-                            <Grid Width="48" Height="48" Visibility="Visible">
-                                <Rectangle Visibility="Visible" />
-                            </Grid>
-                            <Path Data="M20.001024,5.9999993L20.001024,16 26.001024,16 26.001024,5.9999993z M6.0010242,1.9999995L6.0010242,20 12.001024,20 12.001024,1.9999995z M4.0010242,0L14.001024,0 14.001024,9.9999994 18.001024,9.9999994 18.001024,3.9999995 28.001024,3.9999995 28.001024,9.9999984 32.001027,9.9999984 32.001027,11.999998 28.001024,11.999998 28.001024,18 18.001024,18 18.001024,12 14.001024,12 14.001024,22 4.0010242,22 4.0010242,12 0,12 0,9.9999994 4.0010242,9.9999994z" Stretch="Uniform" Fill="{StaticResource Chem4WordBrush}" Width="40" Height="40" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
-                        </Grid>
-                    </Viewbox>
-                </Button>
-                <Button x:Name="AlignBottomButton"
-                        Style="{StaticResource CommandButtonStyle}"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignBottomsCommand}"
-                        ToolTip="Align Bottoms">
-                    <Viewbox>
-                        <Grid>
-                            <Path Data="M0,26L32,26 32,28 0,28z M20.000006,9.9999979L20.000006,19.999998 26.000006,19.999998 26.000006,9.9999979z M18.000006,7.9999979L28.000006,7.9999979 28.000006,21.999998 18.000006,21.999998z M6,2L6,20 12,20 12,2z M4,0L14,0 14,22 4,22z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
-                        </Grid>
-                    </Viewbox>
-                </Button>
-                <Button x:Name="AlignTopsButton"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignTopsCommand}"
-                        Style="{StaticResource CommandButtonStyle}"
-                        ToolTip="Align Tops">
-                    <Viewbox>
-                        <Grid>
-                            <Path Data="M6,7.9999995L6,26 12,26 12,7.9999995z M20.000006,7.9999981L20.000006,17.999998 26.000006,17.999998 26.000006,7.9999981z M4,5.9999995L14,5.9999995 14,28 4,28z M18.000006,5.9999981L28.000006,5.9999981 28.000006,19.999998 18.000006,19.999998z M0,0L32,0 32,2 0,2z"  Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
-                        </Grid>
-                    </Viewbox>
-                </Button>
-                <Button x:Name="AlignLeftButton"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignLeftsCommand}"
-                        Style="{StaticResource CommandButtonStyle}"
-                        ToolTip="Align Lefts">
-                    <Viewbox>
-                        <Grid>
-                            <Path Data="M7.9999971,19.99999L7.9999971,25.99999 25.999997,25.99999 25.999997,19.99999z M5.9999971,17.99999L27.999997,17.99999 27.999997,27.99999 5.9999971,27.99999z M8,6L8,12 18,12 18,6z M6,4L20,4 20,14 6,14z M0,0L2,0 2,32 0,32z"   Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
-                        </Grid>
-                    </Viewbox>
-                </Button>
-                <Button x:Name="AlignRightButton"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignRightsCommand}"
-                        Style="{StaticResource CommandButtonStyle}"
-                        ToolTip="Align Rights">
-                    <Viewbox>
-                        <Grid>
-                            <Path Data="M2,20L2,26 20,26 20,20z M0,18L22,18 22,28 0,28z M9.9999971,5.9999899L9.9999971,11.99999 19.999997,11.99999 19.999997,5.9999899z M7.9999972,3.9999899L21.999997,3.9999899 21.999997,13.99999 7.9999972,13.99999z M26.000001,0L28.000001,0 28.000001,32 26.000001,32z"   Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource Chem4WordBrush}">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
+                            <Path
+                                Data="M0,0 L32,0 32,2 0,2Z M10,8 L10,26 16,26 16,8Z M8,6 L18,6 18,28 8,28Z M24,8 L24,18 30,18 30,8Z M22,6 L32,6 32,20 22,20Z"
+                                Fill="{StaticResource Chem4WordBrush}"
+                                Stretch="Uniform" />
+                            <graphics:StraightArrow
+                                ArrowHeadClosed="True"
+                                Fill="Green"
+                                HeadAngle="35"
+                                HeadLength="2"
+                                Stroke="Green"
+                                StrokeThickness="2"
+                                StartPoint="2,20"
+                                EndPoint="2,8" />
                         </Grid>
                     </Viewbox>
                 </Button>

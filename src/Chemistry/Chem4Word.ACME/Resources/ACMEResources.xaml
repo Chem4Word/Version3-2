@@ -281,7 +281,7 @@
                 <ControlTemplate TargetType="Thumb">
                     <Ellipse Stroke="{StaticResource GrabHandleBorderBrush}">
                         <Ellipse.Fill>
-                            <SolidColorBrush Color="Orange" Opacity="0.25"/>
+                            <SolidColorBrush Opacity="0.25" Color="Orange" />
                         </Ellipse.Fill>
                     </Ellipse>
                 </ControlTemplate>

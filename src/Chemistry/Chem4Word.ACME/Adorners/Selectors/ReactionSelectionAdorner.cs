@@ -32,14 +32,11 @@ namespace Chem4Word.ACME.Adorners.Selectors
         protected bool Dragging;
         private SolidColorBrush _solidColorBrush;
         private Pen _dashPen;
-        private bool MouseDown { get; set; }
-        private Point MouseLoc { get; set; }
+        private bool MouseIsDown { get; set; }
         private const string UNLOCK_STATUS = "[Shift] = unlock length; [Ctrl] = unlock angle; [Esc] = cancel.";
         private const string DEFAULT_STATUS = "Drag a handle to resize; drag shaft to reposition.";
         public Point OriginalLocation { get; private set; }
         public Point CurrentLocation { get; set; }
-
-        public event DragCompletedEventHandler DragCompleted;
 
         public ReactionSelectionAdorner(EditorCanvas currentEditor, Reaction reaction) : base(currentEditor)
         {
@@ -73,23 +70,20 @@ namespace Chem4Word.ACME.Adorners.Selectors
         protected void DisableHandlers()
         {
             //detach the handlers to stop them interfering with dragging
-            PreviewMouseLeftButtonDown -= BaseSelectionAdorner_PreviewMouseLeftButtonDown;
             MouseLeftButtonDown -= BaseSelectionAdorner_MouseLeftButtonDown;
-            //MouseMove -= BaseSelectionAdorner_PreviewMouseMove;
-            PreviewMouseLeftButtonUp -= BaseSelectionAdorner_PreviewMouseLeftButtonUp;
             MouseLeftButtonUp -= BaseSelectionAdorner_MouseLeftButtonUp;
+            PreviewMouseLeftButtonDown -= BaseSelectionAdorner_PreviewMouseLeftButtonDown;
+            PreviewMouseLeftButtonUp -= BaseSelectionAdorner_PreviewMouseLeftButtonUp;
         }
 
         protected new void AttachHandlers()
         {
             //detach the handlers to stop them interfering with dragging
-
             DisableHandlers();
 
             MouseLeftButtonDown += ReactionSelectionAdorner_MouseLeftButtonDown;
-            PreviewMouseMove += ReactionSelectionAdorner_MouseMove;
-
             MouseLeftButtonUp += ReactionSelectionAdorner_MouseLeftButtonUp;
+            PreviewMouseMove += ReactionSelectionAdorner_MouseMove;
         }
 
         private void ReactionSelectionAdorner_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -106,8 +100,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             //get rid of the original handles
             RemoveHandle(HeadHandle);
             RemoveHandle(TailHandle);
-
-            //VisualTreeHelper.HitTest(CurrentEditor, null, HitTestCallBack, new PointHitTestParameters(OriginalLocation));
 
             if ((CurrentLocation - AdornedReaction.HeadPoint).LengthSquared <= _halfThumbWidth * _halfThumbWidth)
             {
@@ -149,7 +141,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             if (Resizing)
             {
                 Mouse.Capture((ReactionSelectionAdorner)sender);
-                //MainDisplacement = e.GetPosition(CurrentEditor) - OriginalLocation;
                 if (_draggedVisual == HeadHandle)
                 {
                     CurrentLocation = _resizeSnapper.SnapBond(CurrentLocation, 90);
@@ -173,15 +164,14 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void ReactionSelectionAdorner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            MouseDown = false;
+            MouseIsDown = false;
 
             EditController.MoveReaction(AdornedReaction, AdornedReaction.TailPoint + TailDisplacement, AdornedReaction.HeadPoint + HeadDisplacement);
 
             Resizing = false;
             Dragging = false;
 
-            //
-            this.ReleaseMouseCapture();
+            ReleaseMouseCapture();
             InvalidateVisual();
             e.Handled = true;
             EditController.SendStatus(DEFAULT_STATUS);
@@ -197,30 +187,30 @@ namespace Chem4Word.ACME.Adorners.Selectors
             RemoveHandle(HeadHandle);
             RemoveHandle(TailHandle);
 
-            Point newStartPoint = AdornedReaction.TailPoint;
-            Point newEndPoint = AdornedReaction.HeadPoint;
+            Point newTailPoint = AdornedReaction.TailPoint;
+            Point newHeadPoint = AdornedReaction.HeadPoint;
 
-            Graphics.Arrow arrowVisual;
+            Arrow arrowVisual;
             base.OnRender(drawingContext);
             if (Resizing)
             {
-                newStartPoint = AdornedReaction.TailPoint + TailDisplacement;
-                newEndPoint = AdornedReaction.HeadPoint + HeadDisplacement;
+                newTailPoint = AdornedReaction.TailPoint + TailDisplacement;
+                newHeadPoint = AdornedReaction.HeadPoint + HeadDisplacement;
             }
             else if (Dragging)
             {
-                newStartPoint = AdornedReaction.TailPoint + TailDisplacement;
-                newEndPoint = AdornedReaction.HeadPoint + HeadDisplacement;
+                newTailPoint = AdornedReaction.TailPoint + TailDisplacement;
+                newHeadPoint = AdornedReaction.HeadPoint + HeadDisplacement;
             }
 
-            Debug.WriteLine($"New Start Point = {newStartPoint}, New End Point = {newEndPoint}");
+            Debug.WriteLine($"New Tail Point = {newTailPoint}, New Head Point = {newHeadPoint}");
             if (!(Resizing || Dragging))
             {
-                BuildHandle(drawingContext, HeadHandle, newEndPoint, handleFillBrush, handleBorderPen);
-                BuildHandle(drawingContext, TailHandle, newStartPoint, handleFillBrush, handleBorderPen);
+                BuildHandle(drawingContext, HeadHandle, newHeadPoint, handleFillBrush, handleBorderPen);
+                BuildHandle(drawingContext, TailHandle, newTailPoint, handleFillBrush, handleBorderPen);
             }
 
-            arrowVisual = GetArrowShape(newStartPoint, newEndPoint);
+            arrowVisual = GetArrowShape(newTailPoint, newHeadPoint);
             arrowVisual.DrawArrowGeometry(drawingContext, _dashPen, _solidColorBrush);
             arrowVisual.GetOverlayPen(out Brush overlayBrush, out Pen overlayPen);
             arrowVisual.DrawArrowGeometry(drawingContext, overlayPen, overlayBrush);

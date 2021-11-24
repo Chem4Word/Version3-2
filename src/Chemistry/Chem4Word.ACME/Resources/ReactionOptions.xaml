@@ -3,12 +3,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:acme="clr-namespace:Chem4Word.ACME">
 
-    <Pen x:Key="ArrowPen"  Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" LineJoin="Miter" Thickness="0.75" />
+    <Pen
+        x:Key="ArrowPen"
+        Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+        LineJoin="Miter"
+        Thickness="0.75" />
 
     <x:Array x:Key="ReactionOptions" Type="acme:ReactionOption">
-        <acme:ReactionOption
-           Id="1"
-           ReactionType="Normal">
+        <acme:ReactionOption Id="1" ReactionType="Normal">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
@@ -16,7 +18,10 @@
                             <PathFigure IsClosed="False" StartPoint="0,5">
                                 <LineSegment Point="30,5" />
                             </PathFigure>
-                            <PathFigure  IsFilled="True" IsClosed="True" StartPoint="35,5">
+                            <PathFigure
+                                IsClosed="True"
+                                IsFilled="True"
+                                StartPoint="35,5">
                                 <LineSegment Point="30,3" />
                                 <LineSegment Point="30, 7" />
                             </PathFigure>
@@ -26,18 +31,22 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption
-           Id="2"
-           ReactionType="Equilibrium">
+        <acme:ReactionOption Id="2" ReactionType="Equilibrium">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
                         <PathGeometry>
-                            <PathFigure IsClosed="False" IsFilled="False" StartPoint="0,3">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="0,3">
                                 <LineSegment Point="35,3" />
                                 <LineSegment Point="30,1" />
                             </PathFigure>
-                            <PathFigure IsClosed="False" IsFilled="False" StartPoint="35,7">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="35,7">
                                 <LineSegment Point="0,7" />
                                 <LineSegment Point="5,9" />
                             </PathFigure>
@@ -47,18 +56,22 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption
-           Id="3"
-           ReactionType="EquilibriumBiasedForward">
+        <acme:ReactionOption Id="3" ReactionType="EquilibriumBiasedForward">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
                         <PathGeometry>
-                            <PathFigure IsClosed="False" IsFilled="False" StartPoint="0,3">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="0,3">
                                 <LineSegment Point="35,3" />
                                 <LineSegment Point="30,1" />
                             </PathFigure>
-                            <PathFigure IsClosed="False" IsFilled="False" StartPoint="25,7">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="25,7">
                                 <LineSegment Point="10,7" />
                                 <LineSegment Point="15,9" />
                             </PathFigure>
@@ -68,18 +81,22 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption
-           Id="4"
-           ReactionType="EquilibriumBiasedReverse">
+        <acme:ReactionOption Id="4" ReactionType="EquilibriumBiasedReverse">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
                         <PathGeometry>
-                            <PathFigure IsClosed="False" IsFilled="False" StartPoint="10,3">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="10,3">
                                 <LineSegment Point="25,3" />
                                 <LineSegment Point="20,1" />
                             </PathFigure>
-                            <PathFigure IsClosed="False" IsFilled="False" StartPoint="35,7">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="35,7">
                                 <LineSegment Point="0,7" />
                                 <LineSegment Point="5,9" />
                             </PathFigure>
@@ -89,9 +106,7 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption
-           Id="5"
-           ReactionType="Blocked">
+        <acme:ReactionOption Id="5" ReactionType="Blocked">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
@@ -99,14 +114,23 @@
                             <PathFigure IsClosed="False" StartPoint="0,5">
                                 <LineSegment Point="30,5" />
                             </PathFigure>
-                            <PathFigure  IsFilled="True" IsClosed="True" StartPoint="35,5">
+                            <PathFigure
+                                IsClosed="True"
+                                IsFilled="True"
+                                StartPoint="35,5">
                                 <LineSegment Point="30,3" />
                                 <LineSegment Point="30,7" />
                             </PathFigure>
-                            <PathFigure IsFilled="False" IsClosed="False" StartPoint="14,2">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="14,2">
                                 <LineSegment Point="20,8" />
                             </PathFigure>
-                            <PathFigure IsFilled="False" IsClosed="False" StartPoint="20,2">
+                            <PathFigure
+                                IsClosed="False"
+                                IsFilled="False"
+                                StartPoint="20,2">
                                 <LineSegment Point="14,8" />
                             </PathFigure>
                         </PathGeometry>

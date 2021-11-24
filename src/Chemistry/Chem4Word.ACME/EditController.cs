@@ -1089,7 +1089,6 @@ namespace Chem4Word.ACME
                                   {
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
                                       WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
-                                      var inverse = operation[i].Inverse;
                                       moleculesToTransform[i].Transform(operation[i]);
                                   }
                                   SuppressEditorRedraw(false);
@@ -1573,7 +1572,6 @@ namespace Chem4Word.ACME
         /// <param name="reaction">New reaction to add.</param>
         public void AddReaction(Reaction reaction)
         {
-            ReactionScheme rs;
             UndoManager.BeginUndoBlock();
 
             Action redo = () =>
@@ -1961,7 +1959,6 @@ namespace Chem4Word.ACME
                     var reactionAdorner = new ReactionSelectionAdorner(CurrentEditor, r);
                     SelectionAdorners[r] = reactionAdorner;
                     reactionAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
-                    reactionAdorner.DragCompleted += ReactionAdorner_DragCompleted;
                 }
             }
         }
@@ -3684,7 +3681,6 @@ namespace Chem4Word.ACME
                 }
 
                 var molList = buffer.Molecules.Values.ToList();
-                var abb = buffer.BoundingBoxWithFontSize;
                 //grab the metrics of the editor's viewport
                 var editorControlHorizontalOffset = EditorControl.HorizontalOffset;
                 var editorControlViewportWidth = EditorControl.ViewportWidth;
