@@ -684,46 +684,57 @@ namespace Chem4Word.ACME.Controls
 
         public Rect GetDrawnBoundingBox(Molecule molecule)
         {
-            var bb = GetExtents(molecule);
+            var boundingBox = GetExtents(molecule);
 
             foreach (var m in molecule.Molecules.Values)
             {
                 if (ChemicalVisuals.TryGetValue(m.GetGroupKey(), out DrawingVisual molVisual))
                 {
                     GroupVisual gv = (GroupVisual)molVisual;
-                    bb.Union(gv.ContentBounds);
-                    bb.Inflate(Spacing, Spacing);
+                    boundingBox.Union(gv.ContentBounds);
+                    boundingBox.Inflate(Spacing, Spacing);
                 }
                 else
                 {
-                    bb.Union(GetDrawnBoundingBox(m));
+                    boundingBox.Union(GetDrawnBoundingBox(m));
                 }
             }
 
-            return bb;
+            return boundingBox;
+        }
+
+        public Rect GetDrawnBoundingBox(Reaction reaction)
+        {
+            Rect boundingBox = Rect.Empty;
+            var reactionVisual = ChemicalVisuals[reaction];
+
+            boundingBox.Union(reactionVisual.ContentBounds);
+            boundingBox.Inflate(Spacing, Spacing);
+
+            return boundingBox;
         }
 
         private Rect GetExtents(Molecule molecule)
         {
-            Rect bb = Rect.Empty;
+            Rect boundingBox = Rect.Empty;
 
             foreach (var atom in molecule.Atoms.Values)
             {
                 var mv = (AtomVisual)ChemicalVisuals[atom];
                 var contentBounds = mv.ContentBounds;
-                bb.Union(contentBounds);
+                boundingBox.Union(contentBounds);
             }
 
             if (ChemicalVisuals.TryGetValue(molecule, out DrawingVisual molvisual))
             {
-                bb.Union(molvisual.ContentBounds);
+                boundingBox.Union(molvisual.ContentBounds);
             }
 
             foreach (var mol in molecule.Molecules.Values)
             {
-                bb.Union(GetExtents(mol));
+                boundingBox.Union(GetExtents(mol));
             }
-            return bb;
+            return boundingBox;
         }
 
         private void MoleculeAdded(Molecule molecule)
@@ -743,9 +754,9 @@ namespace Chem4Word.ACME.Controls
                 MoleculeAdded(child);
             }
 
-            var bb = GetDrawnBoundingBox(molecule);
+            var boundingBox = GetDrawnBoundingBox(molecule);
             //do the final rendering of the group visual on top
-            RedrawMolecule(molecule, bb);
+            RedrawMolecule(molecule, boundingBox);
         }
 
         private void MoleculeRemoved(Molecule molecule)

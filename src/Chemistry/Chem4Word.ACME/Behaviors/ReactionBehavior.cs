@@ -28,6 +28,7 @@ namespace Chem4Word.ACME.Behaviors
         public Point LastPos { get; private set; }
 
         private Adorner _adorner;
+        private const double DRAW_TOLERANCE = 20d;
 
         public Point FirstPoint { get; set; }
         public Point CurrentPoint { get; set; }
@@ -44,7 +45,7 @@ namespace Chem4Word.ACME.Behaviors
             _parent = Application.Current.MainWindow;
             _lastCursor = CurrentEditor.Cursor;
             CurrentEditor.Cursor = CursorUtils.Pencil;
-            
+
             CurrentEditor.MouseLeftButtonDown += CurrentEditor_MouseLeftButtonDown;
             CurrentEditor.MouseMove += CurrentEditor_MouseMove;
             CurrentEditor.MouseLeftButtonUp += CurrentEditor_MouseLeftButtonUp;
@@ -102,12 +103,15 @@ namespace Chem4Word.ACME.Behaviors
         {
             CurrentEditor.ReleaseMouseCapture();
             CurrentStatus = "";
-            if(IsDrawing)
+            if (IsDrawing)
             {
                 var currentPos = e.GetPosition(CurrentEditor);
-                currentPos = _angleSnapper.SnapBond(currentPos);
-                Reaction reaction = new Reaction() {TailPoint = LastPos, HeadPoint =currentPos, ReactionType=EditController.SelectedReactionType.Value};
-                EditController.AddReaction(reaction);
+                if ((currentPos - LastPos).LengthSquared >= DRAW_TOLERANCE)
+                {
+                    currentPos = _angleSnapper.SnapBond(currentPos);
+                    Reaction reaction = new Reaction() { TailPoint = LastPos, HeadPoint = currentPos, ReactionType = EditController.SelectedReactionType.Value };
+                    EditController.AddReaction(reaction);
+                }
             }
             ClearTemporaries();
         }
@@ -125,7 +129,7 @@ namespace Chem4Word.ACME.Behaviors
                 CurrentStatus = "[Shift] = unlock length; [Ctrl] = unlock angle; [Esc] = cancel.";
                 CurrentEditor.Cursor = CursorUtils.Pencil;
                 var pt = _angleSnapper.SnapBond(currentPos);
-                _adorner = new DrawReactionAdorner(CurrentEditor) { StartPoint = LastPos, EndPoint = pt, ReactionType=EditController.SelectedReactionType.Value };
+                _adorner = new DrawReactionAdorner(CurrentEditor) { StartPoint = LastPos, EndPoint = pt, ReactionType = EditController.SelectedReactionType.Value };
             }
         }
 

@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Media;
 using Chem4Word.ACME.Adorners.Selectors;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -42,21 +42,28 @@ namespace Chem4Word.ACME.Controls
             return union;
         }
 
-        public Rect GetMoleculeBoundingBox(List<Molecule> adornedMolecules)
+        public Rect GetCombinedBoundingBox(List<ChemistryBase> chemistries)
         {
             Rect union = Rect.Empty;
-            foreach (Molecule molecule in adornedMolecules)
+            foreach (ChemistryBase cb in chemistries)
             {
-                Rect bb;
-                if (molecule.IsGrouped)
+                Rect boundingBox = Rect.Empty;
+                if (cb is Molecule molecule)
                 {
-                    bb = GetDrawnBoundingBox(molecule);
+                    if (molecule.IsGrouped)
+                    {
+                        boundingBox = GetDrawnBoundingBox(molecule);
+                    }
+                    else
+                    {
+                        boundingBox = GetMoleculeBoundingBox(molecule);
+                    }
                 }
-                else
+                else if (cb is Reaction reaction)
                 {
-                    bb = GetMoleculeBoundingBox(molecule);
+                    boundingBox = GetReactionBoundingBox(new List<Reaction> { reaction });
                 }
-                union.Union(bb);
+                union.Union(boundingBox);
             }
 
             return union;
@@ -69,7 +76,7 @@ namespace Chem4Word.ACME.Controls
         /// <param name="adornedMolecules">List of molecules to ghost</param>
         /// <param name="operation"></param>
         /// <returns></returns>
-        public Geometry GhostMolecule(List<Molecule> adornedMolecules, Transform operation = null)
+        public Geometry GhostMolecules(List<Molecule> adornedMolecules, Transform operation = null)
         {
             var atomList = new List<Atom>();
             foreach (Molecule mol in adornedMolecules)
@@ -212,6 +219,17 @@ namespace Chem4Word.ACME.Controls
                 }
             }
             return tempSize;
+        }
+
+        internal Rect GetReactionBoundingBox(List<Reaction> adornedReactions)
+        {
+            Rect union = Rect.Empty;
+            foreach (Reaction r in adornedReactions)
+            {
+                union.Union(GetDrawnBoundingBox(r));
+            }
+
+            return union;
         }
 
         #endregion Overrides

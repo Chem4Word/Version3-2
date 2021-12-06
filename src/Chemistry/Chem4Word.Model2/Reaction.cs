@@ -34,6 +34,11 @@ namespace Chem4Word.Model2
 
         private Point _startPoint;
 
+        public void UpdateVisual()
+        {
+            OnPropertyChanged(nameof(ReactionType));
+        }
+
         public Point TailPoint
         {
             get { return _startPoint; }

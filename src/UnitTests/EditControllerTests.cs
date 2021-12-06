@@ -443,7 +443,7 @@ namespace Chem4WordTests
             var a4 = model.GetAllAtoms().First(a => a.Id == "a4");
             var a5 = model.GetAllAtoms().First(a => a.Id == "a5");
             var b4 = model.GetAllBonds().First(b => b.Id == "b4");
-            editController.AddToSelection(new List<object> { m1, a4, a5, b4 });
+            editController.AddToSelection(new List<ChemistryBase> { m1, a4, a5, b4 });
             editController.DeleteSelection();
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
@@ -477,7 +477,7 @@ namespace Chem4WordTests
             // Act
             var m1 = model.GetAllMolecules().First(m => m.Id == "m1");
 
-            editController.AddToSelection(new List<object> { m1 });
+            editController.AddToSelection(new List<ChemistryBase> { m1 });
             editController.DeleteSelection();
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
@@ -512,7 +512,7 @@ namespace Chem4WordTests
             var a4 = model.GetAllAtoms().First(a => a.Id == "a4");
             var a5 = model.GetAllAtoms().First(a => a.Id == "a5");
             var b4 = model.GetAllBonds().First(b => b.Id == "b4");
-            editController.AddToSelection(new List<object> { a4, a5, b4 });
+            editController.AddToSelection(new List<ChemistryBase> { a4, a5, b4 });
             editController.DeleteSelection();
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
@@ -545,7 +545,7 @@ namespace Chem4WordTests
 
             // Act
             var b4 = model.GetAllBonds().First(b => b.Id == "b4");
-            editController.AddToSelection(new List<object> { b4 });
+            editController.AddToSelection(new List<ChemistryBase> { b4 });
             editController.DeleteSelection();
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
@@ -570,7 +570,7 @@ namespace Chem4WordTests
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EditController.DoTransform)}",
+                                    $"1 - {nameof(EditController.TransformAtoms)}",
                                     "0 - #start#"
                                 };
 
@@ -602,7 +602,7 @@ namespace Chem4WordTests
 
             // Act
             var tt = new TranslateTransform(5, 5);
-            editController.DoTransform(tt, new List<Atom> { atom1, atom2 });
+            editController.TransformAtoms(tt, new List<Atom> { atom1, atom2 });
 
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
@@ -629,7 +629,7 @@ namespace Chem4WordTests
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    $"1 - {nameof(EditController.DoTransform)}",
+                                    $"1 - {nameof(EditController.TransformMoleculeList)}",
                                     "0 - #start#"
                                 };
 
@@ -661,7 +661,7 @@ namespace Chem4WordTests
 
             // Act
             var tt = new TranslateTransform(5, 5);
-            editController.DoTransform(tt, new List<Molecule> { molecule });
+            editController.TransformMoleculeList(tt, new List<Molecule> { molecule });
 
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
@@ -1242,7 +1242,7 @@ namespace Chem4WordTests
             var expectedStack = new List<string>
                                 {
                                     "0 - #end#",
-                                    "2 - DoTransform",
+                                    $"2 - {nameof(EditController.MultiTransformMolecules)}",
                                     "0 - #start#"
                                 };
 
@@ -1317,7 +1317,14 @@ namespace Chem4WordTests
                     controller.AlignLefts(new List<Molecule> { m1, m2 });
                     break;
                 case "AlignCentres":
-                    controller.AlignCentres(new List<Molecule> { m1, m2 });
+                    expectedStack = new List<string>
+                                    {
+                                        "0 - #end#",
+                                        $"2 - {nameof(EditController.AlignReactionCentres)}",
+                                        $"3 - {nameof(EditController.MultiTransformMolecules)}",
+                                        "0 - #start#"
+                                    };
+                    controller.AlignCentres(new List<ChemistryBase> { m1, m2 });
                     break;
                 case "AlignRights":
                     controller.AlignRights(new List<Molecule> { m1, m2 });
@@ -1326,7 +1333,14 @@ namespace Chem4WordTests
                     controller.AlignTops(new List<Molecule> { m1, m2 });
                     break;
                 case "AlignMiddles":
-                    controller.AlignMiddles(new List<Molecule> { m1, m2 });
+                    expectedStack = new List<string>
+                                    {
+                                        "0 - #end#",
+                                        $"2 - {nameof(EditController.AlignReactionMiddles)}",
+                                        $"3 - {nameof(EditController.MultiTransformMolecules)}",
+                                        "0 - #start#"
+                                    };
+                    controller.AlignMiddles(new List<ChemistryBase> { m1, m2 });
                     break;
                 case "AlignBottoms":
                     controller.AlignBottoms(new List<Molecule> { m1, m2 });

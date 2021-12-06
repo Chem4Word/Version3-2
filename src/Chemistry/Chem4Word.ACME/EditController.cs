@@ -465,7 +465,7 @@ namespace Chem4Word.ACME
         {
             if (e.ClickCount == 2)
             {
-                _selectedItems.Clear();
+                ClearSelection();
                 Molecule mol = null;
                 var visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
                 if (visual is AtomVisual av)
@@ -979,7 +979,7 @@ namespace Chem4Word.ACME
             return result;
         }
 
-        public void DoTransform(Transform operation, List<Atom> atoms)
+        public void TransformAtoms(Transform operation, List<Atom> atoms)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -999,7 +999,7 @@ namespace Chem4Word.ACME
 
                         Action undo = () =>
                                       {
-                                          _selectedItems.Clear();
+                                          ClearSelection();
                                           foreach (Atom atom in atomsToTransform)
                                           {
                                               atom.Position = inverse.Transform(atom.Position);
@@ -1015,7 +1015,7 @@ namespace Chem4Word.ACME
 
                         Action redo = () =>
                                       {
-                                          _selectedItems.Clear();
+                                          ClearSelection();
                                           foreach (Atom atom in atomsToTransform)
                                           {
                                               atom.Position = operation.Transform(atom.Position);
@@ -1045,7 +1045,103 @@ namespace Chem4Word.ACME
             CheckModelIntegrity(module);
         }
 
-        public void DoTransform(List<Transform> operation, List<Molecule> molecules)
+        public void TransformChemistries(Transform operation, List<ChemistryBase> chemistries)
+        {
+            var molecules = chemistries.OfType<Molecule>().ToList();
+            var reactions = chemistries.OfType<Reaction>().ToList();
+
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            try
+            {
+                var countMolString = molecules == null ? "{null}" : $"{molecules.Count}";
+                var countReactString = reactions == null ? "{null}" : $"{reactions.Count}";
+
+                var rootMolecules = from m in molecules
+                                    where m.RootMolecule == m
+                                    select m;
+                Molecule[] moleculesToTransform = rootMolecules.ToArray();
+                var transform = string.Join(";", DecodeTransform(operation));
+
+                Action undo = () =>
+                              {
+                                  SuppressEditorRedraw(true);
+                                  ClearSelection();
+
+                                  var inverse = operation.Inverse;
+
+                                  for (int i = 0; i < moleculesToTransform.Count(); i++)
+                                  {
+                                      WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
+                                      moleculesToTransform[i].Transform((Transform)inverse);
+                                  }
+
+                                  WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
+
+                                  foreach (Reaction reaction in reactions)
+                                  {
+                                      reaction.TailPoint = inverse.Transform(reaction.TailPoint);
+                                      reaction.HeadPoint = inverse.Transform(reaction.HeadPoint);
+                                  }
+
+                                  SuppressEditorRedraw(false);
+
+                                  foreach (Molecule mol in moleculesToTransform)
+                                  {
+                                      mol.UpdateVisual();
+                                  }
+                                  foreach (Reaction react in reactions)
+                                  {
+                                      react.UpdateVisual();
+                                  }
+                                  AddToSelection(molecules.Cast<ChemistryBase>().ToList());
+                                  AddToSelection(reactions.Cast<ChemistryBase>().ToList());
+                              };
+
+                Action redo = () =>
+                              {
+                                  SuppressEditorRedraw(true);
+                                  ClearSelection();
+                                  for (int i = 0; i < moleculesToTransform.Count(); i++)
+                                  {
+                                      WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
+                                      moleculesToTransform[i].Transform(operation);
+                                  }
+                                  WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
+
+                                  foreach (Reaction reaction in reactions)
+                                  {
+                                      reaction.TailPoint = operation.Transform(reaction.TailPoint);
+                                      reaction.HeadPoint = operation.Transform(reaction.HeadPoint);
+                                  }
+
+                                  SuppressEditorRedraw(false);
+
+                                  foreach (Molecule mol in moleculesToTransform)
+                                  {
+                                      mol.UpdateVisual();
+                                  }
+                                  foreach (Reaction react in reactions)
+                                  {
+                                      react.UpdateVisual();
+                                  }
+                                  AddToSelection(molecules.Cast<ChemistryBase>().ToList());
+                                  AddToSelection(reactions.Cast<ChemistryBase>().ToList());
+                              };
+                UndoManager.BeginUndoBlock();
+                UndoManager.RecordAction(undo, redo);
+                UndoManager.EndUndoBlock();
+
+                redo();
+            }
+            catch (Exception exception)
+            {
+                WriteTelemetryException(module, exception);
+            }
+
+            CheckModelIntegrity(module);
+        }
+
+        public void MultiTransformMolecules(List<Transform> operation, List<Molecule> molecules)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -1060,7 +1156,7 @@ namespace Chem4Word.ACME
                 Action undo = () =>
                               {
                                   SuppressEditorRedraw(true);
-                                  _selectedItems.Clear();
+
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
@@ -1074,17 +1170,13 @@ namespace Chem4Word.ACME
                                   {
                                       mol.UpdateVisual();
                                   }
-
-                                  foreach (var o in moleculesToTransform)
-                                  {
-                                      AddToSelection(o);
-                                  }
+                                  AddToSelection(moleculesToTransform.Cast<ChemistryBase>().ToList());
                               };
 
                 Action redo = () =>
                               {
                                   SuppressEditorRedraw(true);
-                                  _selectedItems.Clear();
+
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
@@ -1097,11 +1189,7 @@ namespace Chem4Word.ACME
                                   {
                                       mol.UpdateVisual();
                                   }
-
-                                  foreach (var o in moleculesToTransform)
-                                  {
-                                      AddToSelection(o);
-                                  }
+                                  AddToSelection(moleculesToTransform.Cast<ChemistryBase>().ToList());
                               };
 
                 UndoManager.BeginUndoBlock();
@@ -1118,7 +1206,7 @@ namespace Chem4Word.ACME
             CheckModelIntegrity(module);
         }
 
-        public void DoTransform(Transform operation, List<Molecule> molecules)
+        public void TransformMoleculeList(Transform operation, List<Molecule> molecules)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -1138,7 +1226,7 @@ namespace Chem4Word.ACME
                     Action undo = () =>
                                   {
                                       SuppressEditorRedraw(true);
-                                      _selectedItems.Clear();
+                                      ClearSelection();
                                       foreach (Molecule mol in moleculesToTransform)
                                       {
                                           mol.Transform((Transform)inverse);
@@ -1149,17 +1237,13 @@ namespace Chem4Word.ACME
                                       {
                                           mol.UpdateVisual();
                                       }
-
-                                      foreach (var o in moleculesToTransform)
-                                      {
-                                          AddToSelection(o);
-                                      }
+                                      AddToSelection(molecules.Cast<ChemistryBase>().ToList());
                                   };
 
                     Action redo = () =>
                                   {
                                       SuppressEditorRedraw(true);
-                                      _selectedItems.Clear();
+                                      ClearSelection();
                                       foreach (Molecule mol in moleculesToTransform)
                                       {
                                           mol.Transform(operation);
@@ -1169,11 +1253,6 @@ namespace Chem4Word.ACME
                                       foreach (Molecule mol in moleculesToTransform)
                                       {
                                           mol.UpdateVisual();
-                                      }
-
-                                      foreach (var o in moleculesToTransform)
-                                      {
-                                          AddToSelection(o);
                                       }
                                   };
 
@@ -1881,9 +1960,9 @@ namespace Chem4Word.ACME
                     {
                         var msAdorner = (MoleculeSelectionAdorner)selectionAdorner;
 
-                        msAdorner.DragCompleted -= MolAdorner_DragCompleted;
+                        msAdorner.DragIsCompleted -= MolAdorner_DragCompleted;
                         msAdorner.MouseLeftButtonDown -= SelAdorner_MouseLeftButtonDown;
-                        (msAdorner as SingleAtomSelectionAdorner).DragCompleted -= MolAdorner_DragCompleted;
+                        (msAdorner as SingleAtomSelectionAdorner).DragIsCompleted -= MolAdorner_DragCompleted;
                     }
 
                     layer.Remove(selectionAdorner);
@@ -1914,7 +1993,7 @@ namespace Chem4Word.ACME
             var allSingletons = singleAtomMols.Count == allMolecules.Count && singleAtomMols.Any();
             var allGroups = allMolecules.Count == groupMols.Count && groupMols.Any();
 
-            if (allSingletons)
+            if (allSingletons) //all single objects
             {
                 RemoveAllAdorners();
                 SingleAtomSelectionAdorner atomAdorner =
@@ -1925,40 +2004,85 @@ namespace Chem4Word.ACME
                 }
 
                 atomAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
-                atomAdorner.DragCompleted += AtomAdorner_DragCompleted;
+                atomAdorner.DragIsCompleted += AtomAdorner_DragCompleted;
             }
             else if (allGroups)
             {
-                RemoveAllAdorners();
-                var groupAdorner = new GroupSelectionAdorner(CurrentEditor,
-                                                       groupMols);
-                foreach (Molecule mol in groupMols)
+                if (!allReactions.Any()) //no reactions selected
                 {
-                    SelectionAdorners[mol] = groupAdorner;
+                    RemoveAllAdorners();
+                    var groupAdorner = new GroupSelectionAdorner(CurrentEditor,
+                                                           groupMols.Cast<ChemistryBase>().ToList());
+                    foreach (Molecule mol in groupMols)
+                    {
+                        SelectionAdorners[mol] = groupAdorner;
+                    }
+                    groupAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
+                    groupAdorner.DragIsCompleted += AtomAdorner_DragCompleted;
                 }
-                groupAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
-                groupAdorner.DragCompleted += AtomAdorner_DragCompleted;
+                else //some reactions & groups
+                {
+                    RemoveAllAdorners();
+                    AddMixed(allMolecules, allReactions);
+                }
             }
             else if (allMolecules.Any())
             {
-                RemoveAllAdorners();
-                var molAdorner = new MoleculeSelectionAdorner(CurrentEditor,
-                                                             allMolecules);
-                foreach (Molecule mol in allMolecules)
+                if (!allReactions.Any()) //no reactions
                 {
-                    SelectionAdorners[mol] = molAdorner;
+                    RemoveAllAdorners();
+                    var molAdorner = new MoleculeSelectionAdorner(CurrentEditor,
+                                                                 allMolecules.Cast<ChemistryBase>().ToList());
+                    foreach (Molecule mol in allMolecules)
+                    {
+                        SelectionAdorners[mol] = molAdorner;
+                    }
+                    molAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
+                    molAdorner.DragIsCompleted += AtomAdorner_DragCompleted;
                 }
-                molAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
-                molAdorner.DragCompleted += AtomAdorner_DragCompleted;
-            }
-
-            if (allReactions.Any())
-            {
-                foreach (Reaction r in allReactions)
+                else //some reactions & molecules
                 {
+                    RemoveAllAdorners();
+                    AddMixed(allMolecules, allReactions);
+                }
+            }
+            else if (allReactions.Any()) //just reactions
+            {
+                RemoveAllAdorners();
+                if (allReactions.Count > 1)
+                {
+                    AddMixed(allMolecules, allReactions);
+                }
+                else
+                {
+                    var r = allReactions.First();
                     var reactionAdorner = new ReactionSelectionAdorner(CurrentEditor, r);
                     SelectionAdorners[r] = reactionAdorner;
                     reactionAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
+                }
+            }
+            //local function
+            void AddMixed(List<Molecule> mols, List<Reaction> reacts)
+            {
+                List<ChemistryBase> chemistries = mols.Cast<ChemistryBase>().ToList();
+                chemistries = chemistries.Union(reacts).ToList();
+                MoleculeSelectionAdorner selector;
+                if (mols.Where(m => m.IsGrouped).Any())
+                {
+                    selector = new GroupSelectionAdorner(CurrentEditor, chemistries);
+                }
+                else
+                {
+                    selector = new MoleculeSelectionAdorner(CurrentEditor, chemistries);
+                }
+
+                foreach (Molecule mol in mols)
+                {
+                    SelectionAdorners[mol] = selector;
+                }
+                foreach (Reaction r in reacts)
+                {
+                    SelectionAdorners[r] = selector;
                 }
             }
         }
@@ -2053,7 +2177,7 @@ namespace Chem4Word.ACME
                 {
                     firstAtom.Parent.Refresh();
                     firstAtom.Parent.UpdateVisual();
-                    _selectedItems.Clear();
+                    ClearSelection();
                 };
                 Action redo = () =>
                 {
@@ -2367,7 +2491,7 @@ namespace Chem4Word.ACME
                             RefreshMolecules(Model.Molecules.Values.ToList());
                         }
 
-                        _selectedItems.Clear();
+                        ClearSelection();
                     };
 
                     Action redoAction = () =>
@@ -2397,7 +2521,7 @@ namespace Chem4Word.ACME
                             RefreshMolecules(Model.Molecules.Values.ToList());
                         }
 
-                        _selectedItems.Clear();
+                        ClearSelection();
                     };
 
                     UndoManager.BeginUndoBlock();
@@ -2470,7 +2594,7 @@ namespace Chem4Word.ACME
                             RefreshMolecules(Model.Molecules.Values.ToList());
                         }
 
-                        _selectedItems.Clear();
+                        ClearSelection();
                     };
 
                     Action redoAction = () =>
@@ -2494,7 +2618,7 @@ namespace Chem4Word.ACME
                             RefreshMolecules(Model.Molecules.Values.ToList());
                         }
 
-                        _selectedItems.Clear();
+                        ClearSelection();
                     };
 
                     UndoManager.BeginUndoBlock();
@@ -2622,10 +2746,11 @@ namespace Chem4Word.ACME
             }
         }
 
-        public void AddToSelection(object thingToAdd)
+        public void AddToSelection(ChemistryBase thingToAdd)
         {
             var parent = (thingToAdd as Atom)?.Parent ?? (thingToAdd as Bond)?.Parent;
-            var thingsToAdd = new List<object> { thingToAdd };
+
+            var thingsToAdd = new List<ChemistryBase> { thingToAdd };
             if (parent != null)
             {
                 if (!SelectedItems.Contains(parent))
@@ -2635,11 +2760,15 @@ namespace Chem4Word.ACME
             }
             else
             {
+                if (SelectedItems.Contains(thingsToAdd))
+                {
+                    RemoveFromSelection(thingsToAdd);
+                }
                 AddToSelection(thingsToAdd);
             }
         }
 
-        public void AddToSelection(List<object> thingsToAdd)
+        public void AddToSelection(List<ChemistryBase> thingsToAdd)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -2698,10 +2827,11 @@ namespace Chem4Word.ACME
             var newMols = thingsToAdd.OfType<Molecule>().ToList();
             foreach (var molecule in newMols)
             {
-                if (!_selectedItems.Contains(molecule.RootMolecule))
+                if (_selectedItems.Contains(molecule.RootMolecule))
                 {
-                    _selectedItems.Add(molecule);
+                    _selectedItems.Remove(molecule.RootMolecule);
                 }
+                _selectedItems.Add(molecule.RootMolecule);
                 thingsToAdd.Remove(molecule);
             }
 
@@ -3053,7 +3183,7 @@ namespace Chem4Word.ACME
 
                     Action redo = () =>
                     {
-                        _selectedItems.Clear();
+                        ClearSelection();
                         int theoreticalRings = mol.TheoreticalRings;
                         foreach (Bond deleteBond in deleteBonds)
                         {
@@ -3088,7 +3218,7 @@ namespace Chem4Word.ACME
 
                     Action undo = () =>
                     {
-                        _selectedItems.Clear();
+                        ClearSelection();
                         foreach (Atom restoreAtom in deleteAtoms)
                         {
                             mol.AddAtom(restoreAtom);
@@ -3198,7 +3328,7 @@ namespace Chem4Word.ACME
 
                     Action undo = () =>
                     {
-                        _selectedItems.Clear();
+                        ClearSelection();
                         foreach (Molecule oldMol in oldMolecules)
                         {
                             oldMol.Reparent();
@@ -3227,7 +3357,7 @@ namespace Chem4Word.ACME
 
                     Action redo = () =>
                     {
-                        _selectedItems.Clear();
+                        ClearSelection();
                         foreach (Molecule newmol in newMolecules)
                         {
                             newmol.Reparent();
@@ -3605,7 +3735,7 @@ namespace Chem4Word.ACME
                             mol.Transform((Transform)transform);
                             mol.UpdateVisual();
                         }
-                        _selectedItems.Clear();
+                        ClearSelection();
                     }
                 };
 
@@ -3635,7 +3765,7 @@ namespace Chem4Word.ACME
                             mol.Transform((Transform)inverse);
                             mol.UpdateVisual();
                         }
-                        _selectedItems.Clear();
+                        ClearSelection();
                     }
                 };
 
@@ -3705,7 +3835,7 @@ namespace Chem4Word.ACME
                 };
                 Action redo = () =>
                 {
-                    _selectedItems.Clear();
+                    ClearSelection();
                     foreach (var mol in molList)
                     {
                         mol.Parent = Model;
@@ -3753,7 +3883,7 @@ namespace Chem4Word.ACME
                 {
                     DeleteReactions(reactions);
                 }
-                _selectedItems.Clear();
+                ClearSelection();
                 UndoManager.EndUndoBlock();
             }
             catch (Exception exception)
@@ -3782,7 +3912,6 @@ namespace Chem4Word.ACME
 
                         Action undo = () =>
                                       {
-                                          
                                           Model.DefaultReactionScheme.AddReaction(r);
                                           AddToSelection(r);
                                       };
@@ -3926,7 +4055,7 @@ namespace Chem4Word.ACME
                 Molecule parent = new Molecule();
                 Action redo = () =>
                 {
-                    _selectedItems.Clear();
+                    ClearSelection();
                     parent.Parent = Model;
                     Model.AddMolecule(parent);
                     var kids = children.ToArray();
@@ -3946,7 +4075,7 @@ namespace Chem4Word.ACME
 
                 Action undo = () =>
                 {
-                    _selectedItems.Clear();
+                    ClearSelection();
 
                     Model.RemoveMolecule(parent);
                     parent.Parent = null;
@@ -3985,14 +4114,17 @@ namespace Chem4Word.ACME
         public void SelectAll()
         {
             ClearSelection();
+            List<ChemistryBase> selection = new List<ChemistryBase>();
             foreach (var mol in Model.Molecules.Values)
             {
-                AddToSelection(mol);
+                selection.Add(mol);
             }
             foreach (var r in Model.DefaultReactionScheme.Reactions.Values)
             {
-                AddToSelection(r);
+                selection.Add(r);
             }
+
+            AddToSelection(selection);
         }
 
         private void WriteTelemetry(string source, string level, string message)
@@ -4050,17 +4182,96 @@ namespace Chem4Word.ACME
             }
         }
 
-        public void AlignMiddles(List<Molecule> molsToAlign)
+        public void AlignMiddles(List<ChemistryBase> thingsToAlign)
         {
+            UndoManager.BeginUndoBlock();
             List<Transform> shifts = new List<Transform>();
-            double middle = molsToAlign.Average(m => m.Centre.Y);
-            for (int i = 0; i < molsToAlign.Count; i++)
+            List<Molecule> mols = thingsToAlign.OfType<Molecule>().ToList();
+            double middle = mols.Average(m => m.Centre.Y);
+            for (int i = 0; i < mols.Count; i++)
             {
                 var shift = new TranslateTransform();
-                shift.Y = middle - molsToAlign[i].Centre.Y;
+                shift.Y = middle - mols[i].Centre.Y;
                 shifts.Add(shift);
             }
-            AlignMolecules(molsToAlign, shifts);
+            AlignMolecules(mols, shifts);
+            //now do any reactions
+
+            List<Reaction> reacts = thingsToAlign.OfType<Reaction>().ToList();
+            AlignReactionMiddles(reacts, middle);
+            UndoManager.EndUndoBlock();
+        }
+
+        public void AlignReactionMiddles(List<Reaction> reactions, double middle)
+        {
+            Dictionary<Reaction, (Point start, Point end)> originalPos = new Dictionary<Reaction, (Point, Point)>();
+            foreach (Reaction r in reactions)
+            {
+                originalPos[r] = (r.TailPoint, r.HeadPoint);
+            }
+            Action redo = () =>
+            {
+                foreach (Reaction r in reactions)
+                {
+                    Point newTailPoint = new Point(r.TailPoint.X, middle);
+                    Point newHeadpoint = new Point(r.HeadPoint.X, middle);
+                    if (newHeadpoint != newTailPoint)
+                    {
+                        r.TailPoint = newTailPoint;
+                        r.HeadPoint = newHeadpoint;
+                    }
+                }
+                AddToSelection(reactions.Cast<ChemistryBase>().ToList());
+            };
+            Action undo = () =>
+            {
+                foreach (Reaction r in reactions)
+                {
+                    r.TailPoint = new Point(r.TailPoint.X, originalPos[r].start.Y);
+                    r.HeadPoint = new Point(r.HeadPoint.X, originalPos[r].end.Y);
+                }
+                AddToSelection(reactions.Cast<ChemistryBase>().ToList());
+            };
+            redo();
+            UndoManager.BeginUndoBlock();
+            UndoManager.RecordAction(undo, redo);
+            UndoManager.EndUndoBlock();
+        }
+
+        public void AlignReactionCentres(List<Reaction> reacts, double centre)
+        {
+            Dictionary<Reaction, (Point start, Point end)> originalPos = new Dictionary<Reaction, (Point, Point)>();
+            foreach (Reaction r in reacts)
+            {
+                originalPos[r] = (r.TailPoint, r.HeadPoint);
+            }
+            Action redo = () =>
+            {
+                foreach (Reaction r in reacts)
+                {
+                    Point newTailPoint = new Point(centre, r.TailPoint.Y);
+                    Point newHeadpoint = new Point(centre, r.HeadPoint.Y);
+                    if (newHeadpoint != newTailPoint)
+                    {
+                        r.TailPoint = newTailPoint;
+                        r.HeadPoint = newHeadpoint;
+                    }
+                }
+                AddToSelection(reacts.Cast<ChemistryBase>().ToList());
+            };
+            Action undo = () =>
+            {
+                foreach (Reaction r in reacts)
+                {
+                    r.TailPoint = new Point(originalPos[r].start.X, r.TailPoint.Y);
+                    r.HeadPoint = new Point(originalPos[r].end.X, r.HeadPoint.Y);
+                }
+                AddToSelection(reacts.Cast<ChemistryBase>().ToList());
+            };
+            redo();
+            UndoManager.BeginUndoBlock();
+            UndoManager.RecordAction(undo, redo);
+            UndoManager.EndUndoBlock();
         }
 
         public void AlignTops(List<Molecule> molsToAlign)
@@ -4089,17 +4300,23 @@ namespace Chem4Word.ACME
             AlignMolecules(molsToAlign, shifts);
         }
 
-        public void AlignCentres(List<Molecule> molsToAlign)
+        public void AlignCentres(List<ChemistryBase> thingsToAlign)
         {
+            UndoManager.BeginUndoBlock();
             List<Transform> shifts = new List<Transform>();
-            double centre = molsToAlign.Average(m => m.Centre.X);
-            for (int i = 0; i < molsToAlign.Count; i++)
+            List<Molecule> mols = thingsToAlign.OfType<Molecule>().ToList();
+            double centre = mols.Average(m => m.Centre.X);
+            for (int i = 0; i < mols.Count; i++)
             {
                 var shift = new TranslateTransform();
-                shift.X = centre - molsToAlign[i].Centre.X;
+                shift.X = centre - mols[i].Centre.X;
                 shifts.Add(shift);
             }
-            AlignMolecules(molsToAlign, shifts);
+            ClearSelection();
+            AlignMolecules(mols, shifts);
+            List<Reaction> reacts = thingsToAlign.OfType<Reaction>().ToList();
+            AlignReactionCentres(reacts, centre);
+            UndoManager.EndUndoBlock();
         }
 
         public void AlignLefts(List<Molecule> molsToAlign)
@@ -4133,11 +4350,11 @@ namespace Chem4Word.ACME
         {
             //first check to see whether or not we have an equal number of adjustments and molecules
             Debug.Assert(molsToAlign.Count == adjustments.Count);
-            ClearSelection();
+
             UndoManager.BeginUndoBlock();
 
-            DoTransform(adjustments, molsToAlign);
-
+            MultiTransformMolecules(adjustments, molsToAlign);
+            AddToSelection(molsToAlign.Cast<ChemistryBase>().ToList());
             UndoManager.EndUndoBlock();
         }
 

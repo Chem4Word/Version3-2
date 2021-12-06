@@ -210,7 +210,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 BuildHandle(drawingContext, TailHandle, newTailPoint, handleFillBrush, handleBorderPen);
             }
 
-            arrowVisual = GetArrowShape(newTailPoint, newHeadPoint);
+            arrowVisual = GetArrowShape(newTailPoint, newHeadPoint, AdornedReaction);
             arrowVisual.DrawArrowGeometry(drawingContext, _dashPen, _solidColorBrush);
             arrowVisual.GetOverlayPen(out Brush overlayBrush, out Pen overlayPen);
             arrowVisual.DrawArrowGeometry(drawingContext, overlayPen, overlayBrush);
@@ -232,10 +232,10 @@ namespace Chem4Word.ACME.Adorners.Selectors
             }
         }
 
-        private Arrow GetArrowShape(Point newStartPoint, Point newEndPoint)
+        public static Arrow GetArrowShape(Point newStartPoint, Point newEndPoint, Reaction adornedReaction)
         {
             Arrow arrowVisual;
-            switch (AdornedReaction.ReactionType)
+            switch (adornedReaction.ReactionType)
             {
                 case Globals.ReactionType.Equilibrium:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };

@@ -23,7 +23,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
         //this is the main grab area for the molecule
         protected Thumb BigThumb;
 
-        public List<Molecule> AdornedMolecules => AdornedChemistries.Select(c => (Molecule)c).ToList();
+        public List<Molecule> AdornedMolecules => AdornedChemistries.OfType<Molecule>().ToList();
+        public List<Reaction> AdornedReactions => AdornedChemistries.OfType<Reaction>().ToList();
 
         //tracks the last operation performed
         protected Transform LastOperation;
@@ -116,8 +117,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
         /// <param name="drawingContext"></param>
         protected override void OnRender(DrawingContext drawingContext)
         {
-            var borderPen = (Pen)FindResource(Globals.AdornerBorderPen);
-            var renderBrush = (Brush)FindResource(Globals.AdornerFillBrush);
+            var ghostPen = (Pen)FindResource(Globals.AdornerBorderPen);
+            var ghostBrush = (Brush)FindResource(Globals.AdornerFillBrush);
             if (IsWorking)
             {
                 object elem = AdornedElement;
@@ -126,12 +127,18 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 //take a snapshot of the molecule
                 if (_ghostMolecule == null)
                 {
-                    _ghostMolecule = CurrentEditor.GhostMolecule(AdornedMolecules);
+                    _ghostMolecule = CurrentEditor.GhostMolecules(AdornedMolecules);
                 }
 
                 _ghostMolecule.Transform = LastOperation;
 
-                drawingContext.DrawGeometry(renderBrush, borderPen, _ghostMolecule);
+                drawingContext.DrawGeometry(ghostBrush, ghostPen, _ghostMolecule);
+
+                foreach (Reaction r in AdornedReactions)
+                {
+                    var arrow = ReactionSelectionAdorner.GetArrowShape(LastOperation.Transform(r.TailPoint), LastOperation.Transform(r.HeadPoint), r);
+                    arrow.DrawArrowGeometry(drawingContext, ghostPen, ghostBrush);
+                }
 
                 base.OnRender(drawingContext);
             }
@@ -142,19 +149,19 @@ namespace Chem4Word.ACME.Adorners.Selectors
         {
             // desiredWidth and desiredHeight are the width and height of the element that's being adorned.
             // These will be used to place the ResizingAdorner at the corners of the adorned element.
-            var bbb = CurrentEditor.GetMoleculeBoundingBox(AdornedMolecules);
+            var bigBoundingBox = CurrentEditor.GetCombinedBoundingBox(AdornedChemistries);
 
             if (LastOperation != null)
             {
-                bbb = LastOperation.TransformBounds(bbb);
+                bigBoundingBox = LastOperation.TransformBounds(bigBoundingBox);
             }
 
             //put a box right around the entire shebang
-            BigThumb.Arrange(bbb);
-            Canvas.SetLeft(BigThumb, bbb.Left);
-            Canvas.SetTop(BigThumb, bbb.Top);
-            BigThumb.Height = bbb.Height;
-            BigThumb.Width = bbb.Width;
+            BigThumb.Arrange(bigBoundingBox);
+            Canvas.SetLeft(BigThumb, bigBoundingBox.Left);
+            Canvas.SetTop(BigThumb, bigBoundingBox.Top);
+            BigThumb.Height = bigBoundingBox.Height;
+            BigThumb.Width = bigBoundingBox.Width;
 
             // Return the final size.
             return finalSize;
@@ -162,7 +169,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         #region Events
 
-        public event DragCompletedEventHandler DragCompleted;
+        public event DragCompletedEventHandler DragIsCompleted;
 
         #endregion Events
 
@@ -216,7 +223,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 InvalidateVisual();
 
                 //move the molecule
-                EditController.DoTransform(LastOperation, AdornedMolecules);
+                EditController.TransformChemistries(LastOperation, AdornedChemistries);
 
                 RaiseDRCompleted(sender, e);
 
@@ -229,7 +236,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             }
             else
             {
-                EditController.RemoveFromSelection(AdornedMolecules.ConvertAll(am => (ChemistryBase)am));
+                EditController.RemoveFromSelection(AdornedChemistries);
             }
             Dragging = false;
         }
@@ -238,7 +245,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         protected void RaiseDRCompleted(object sender, DragCompletedEventArgs dragCompletedEventArgs)
         {
-            DragCompleted?.Invoke(this, dragCompletedEventArgs);
+            DragIsCompleted?.Invoke(this, dragCompletedEventArgs);
         }
     }
 }

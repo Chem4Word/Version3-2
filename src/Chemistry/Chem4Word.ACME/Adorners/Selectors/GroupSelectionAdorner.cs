@@ -16,9 +16,10 @@ namespace Chem4Word.ACME.Adorners.Selectors
 {
     public class GroupSelectionAdorner : MoleculeSelectionAdorner
     {
-        public GroupSelectionAdorner(EditorCanvas currentEditor, List<Molecule> molecules)
+        public GroupSelectionAdorner(EditorCanvas currentEditor, List<ChemistryBase> molecules)
             : base(currentEditor, molecules)
         {
+            
         }
 
         protected override void SetThumbStyle(Thumb cornerThumb)

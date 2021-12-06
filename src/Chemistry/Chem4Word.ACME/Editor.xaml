@@ -780,7 +780,7 @@
                             <Setter Property="HorizontalAlignment" Value="Center" />
                         </Style>
                         <Style x:Key="SubscriptStyle" TargetType="{x:Type Run}">
-                            <Setter Property="FontSize" Value="4" />
+                            <Setter Property="FontSize" Value="3.5" />
                             <Setter Property="FontFamily" Value="Arial" />
                             <Setter Property="BaselineAlignment" Value="Subscript" />
                         </Style>
@@ -817,9 +817,7 @@
                             <TextBlock
                                 Grid.Row="2"
                                 Grid.Column="1"
-                                Style="{StaticResource MainTextStyle}">
-                                H<Run Style="{StaticResource SubscriptStyle}">2</Run>
-                                O</TextBlock>
+                                Style="{StaticResource MainTextStyle}">H<Run Style="{StaticResource SubscriptStyle}">2</Run>O</TextBlock>
                         </Grid>
                     </Viewbox>
                     <RadioButton.Tag>

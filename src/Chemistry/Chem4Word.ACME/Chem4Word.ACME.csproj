@@ -103,6 +103,7 @@
     <Compile Include="Commands\Layout\Alignment\AlignLeftsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignMiddlesCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignCommand.cs" />
+    <Compile Include="Commands\Layout\Alignment\AlignOnlyMoleculesCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignRightsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignTopsCommand.cs" />
     <Compile Include="Commands\Editing\PickElementCommand.cs" />

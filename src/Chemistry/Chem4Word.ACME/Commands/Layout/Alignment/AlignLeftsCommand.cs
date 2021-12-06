@@ -10,7 +10,7 @@ using Chem4Word.Model2;
 
 namespace Chem4Word.ACME.Commands.Layout.Alignment
 {
-    public class AlignLeftsCommand : AlignCommand
+    public class AlignLeftsCommand : AlignOnlyMoleculesCommand
     {
         public AlignLeftsCommand(EditController controller) : base(controller)
         {

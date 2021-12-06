@@ -10,15 +10,19 @@ using Chem4Word.Model2;
 
 namespace Chem4Word.ACME.Commands.Layout.Alignment
 {
-    public class AlignBottomsCommand : AlignOnlyMoleculesCommand
+    public class AlignOnlyMoleculesCommand : AlignCommand
     {
-        public AlignBottomsCommand(EditController controller) : base(controller)
+        public AlignOnlyMoleculesCommand(EditController controller) : base(controller)
         {
-        }
 
+        }
+        public override bool CanExecute(object parameter)
+        {
+            return EditController.SelectionType == Enums.SelectionTypeCode.Molecule && EditController.SelectedItems.Count > 1;
+        }
         public override void Execute(object parameter)
         {
-            EditController.AlignBottoms(EditController.SelectedItems.OfType<Molecule>().ToList());
+            EditController.AlignCentres(EditController.SelectedItems.OfType<ChemistryBase>().ToList());
         }
     }
 }

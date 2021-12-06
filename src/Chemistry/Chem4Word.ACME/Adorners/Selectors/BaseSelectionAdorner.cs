@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -39,6 +40,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         protected override int VisualChildrenCount => VisualChildren.Count;
 
+        public virtual DragCompletedEventHandler DragCompleted {get; set;}
         #endregion Shared Properties
 
         #region Constructors

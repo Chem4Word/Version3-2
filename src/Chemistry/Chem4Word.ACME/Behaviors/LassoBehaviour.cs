@@ -149,7 +149,7 @@ namespace Chem4Word.ACME.Behaviors
             {
                 if (_atomList != null && _atomList.Any())
                 {
-                    EditController.DoTransform(_shift, _atomList);
+                    EditController.TransformAtoms(_shift, _atomList);
                     _atomList[0].Parent.UpdateVisual();
                 }
 
@@ -180,7 +180,7 @@ namespace Chem4Word.ACME.Behaviors
                     _lassoHits = new List<object>();
                     GatherSelection(_lassoAdorner.Outline);
                     _lassoHits = _lassoHits.Distinct().ToList();
-                    EditController.AddToSelection(_lassoHits);
+                    EditController.AddToSelection(_lassoHits.Cast<ChemistryBase>().ToList());
                 }
                 if (EditController.SelectedItems.Any())
                 {
