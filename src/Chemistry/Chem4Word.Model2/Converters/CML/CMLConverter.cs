@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
-using Chem4Word.Model2.Helpers;
-using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2.Converters.CML
 {
@@ -42,7 +42,14 @@ namespace Chem4Word.Model2.Converters.CML
                     var newMol = GetMolecule(meElement);
 
                     AddMolecule(newModel, newMol);
-                    newMol.Parent = (IChemistryContainer)newModel;
+                    newMol.Parent = newModel;
+                }
+                var schemeElements = CMLHelper.GetReactionSchemes(root);
+                foreach (XElement schemeElement in schemeElements)
+                {
+                    var newScheme = GetReactionScheme(schemeElement);
+                    AddReactionScheme(newModel, newScheme);
+                    newScheme.Parent = newModel;
                 }
 
                 #region Handle 1D Labels
@@ -64,6 +71,11 @@ namespace Chem4Word.Model2.Converters.CML
             }
 
             return newModel;
+        }
+
+        private void AddReactionScheme(Model newModel, ReactionScheme newScheme)
+        {
+            newModel.AddReactionScheme(newScheme);
         }
 
         public string Export(Model model, bool compressed = false, bool cmlIsRoot = true)
@@ -88,6 +100,10 @@ namespace Chem4Word.Model2.Converters.CML
                 foreach (Molecule molecule in model.Molecules.Values)
                 {
                     root.Add(GetMoleculeElement(molecule));
+                }
+                foreach (ReactionScheme scheme in model.ReactionSchemes.Values)
+                {
+                    root.Add(GetXElement(scheme));
                 }
             }
             else
@@ -138,7 +154,22 @@ namespace Chem4Word.Model2.Converters.CML
                         }
                     }
                 }
-
+                foreach (ReactionScheme scheme in model.ReactionSchemes.Values)
+                {
+                    if (scheme.Id == null)
+                    {
+                        relabelRequired = true;
+                        break;
+                    }
+                    foreach (Reaction reaction in scheme.Reactions.Values)
+                    {
+                        if (reaction.Id == null)
+                        {
+                            relabelRequired = true;
+                            break;
+                        }
+                    }
+                }
                 if (relabelRequired)
                 {
                     model.Relabel(false);
@@ -330,6 +361,54 @@ namespace Chem4Word.Model2.Converters.CML
             }
 
             return result;
+        }
+
+        private XElement GetXElement(ReactionScheme scheme)
+        {
+            XElement rsElement = new XElement(CMLNamespaces.cml + CMLConstants.TagReactionScheme,
+                new XAttribute(CMLConstants.AttributeId, scheme.Id));
+            if (scheme.Reactions.Any())
+            {
+                foreach (Reaction reaction in scheme.Reactions.Values)
+                {
+                    rsElement.Add(GetXElement(reaction));
+                }
+            }
+            return rsElement;
+        }
+
+        private XElement GetXElement(Reaction reaction)
+        {
+            XElement reactionElement = new XElement(CMLNamespaces.cml + CMLConstants.TagReaction,
+                new XAttribute(CMLConstants.AttributeId, reaction.Id),
+                new XAttribute(CMLNamespaces.c4w + CMLConstants.AttributeArrowHead, PointHelper.AsCMLString(reaction.HeadPoint)),
+                new XAttribute(CMLNamespaces.c4w + CMLConstants.AttributeArrowTail, PointHelper.AsCMLString(reaction.TailPoint)));
+
+            switch (reaction.ReactionType)
+            {
+                case Globals.ReactionType.Normal:
+                    break;
+
+                case Globals.ReactionType.Reversible:
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueReversible));
+                    break;
+
+                case Globals.ReactionType.ReversibleBiasedForward:
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueReversible));
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionBias, CMLConstants.AttrValueBiasForward));
+                    break;
+
+                case Globals.ReactionType.ReversibleBiasedReverse:
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueReversible));
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionBias, CMLConstants.AttrValueBiasReverse));
+                    break;
+
+                case Globals.ReactionType.Blocked:
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueBlocked));
+                    break;
+            }
+            //TODO: add reactants products and substances
+            return reactionElement;
         }
 
         private XElement GetXElement(Atom atom)
@@ -648,6 +727,79 @@ namespace Chem4Word.Model2.Converters.CML
             }
 
             return bond;
+        }
+
+        private static ReactionScheme GetReactionScheme(XElement cmlElement)
+        {
+            ReactionScheme scheme = new ReactionScheme();
+            string idValue = cmlElement.Attribute(CMLConstants.AttributeId)?.Value;
+            if (!string.IsNullOrEmpty(idValue))
+            {
+                scheme.Id = idValue;
+            }
+            List<XElement> reactionElements = CMLHelper.GetReactions(cmlElement);
+            foreach (XElement reactionElement in reactionElements)
+            {
+                Reaction newReaction = GetReaction(reactionElement);
+                scheme.AddReaction(newReaction);
+                newReaction.Parent = scheme;
+            }
+            return scheme;
+        }
+
+        private static Reaction GetReaction(XElement cmlElement)
+        {
+            Reaction reaction = new Reaction();
+            string idValue = cmlElement.Attribute(CMLConstants.AttributeId)?.Value;
+            if (!string.IsNullOrEmpty(idValue))
+            {
+                reaction.Id = idValue;
+            }
+
+            string arrowTailValue = cmlElement.Attribute(CMLNamespaces.c4w + CMLConstants.AttributeArrowTail)?.Value;
+            if (!string.IsNullOrEmpty(arrowTailValue))
+            {
+                reaction.TailPoint = Point.Parse(arrowTailValue);
+            }
+
+            string arrowHeadValue = cmlElement.Attribute(CMLNamespaces.c4w + CMLConstants.AttributeArrowHead)?.Value;
+            if (!string.IsNullOrEmpty(arrowHeadValue))
+            {
+                reaction.HeadPoint = Point.Parse(arrowHeadValue);
+            }
+
+            string reactionTypeValue = cmlElement.Attribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType)?.Value;
+
+            reaction.ReactionType = Globals.ReactionType.Normal;
+
+            if (!string.IsNullOrEmpty(reactionTypeValue))
+            {
+                switch (reactionTypeValue)
+                {
+                    case CMLConstants.AttrValueBlocked:
+                        reaction.ReactionType = Globals.ReactionType.Blocked;
+                        break;
+
+                    case CMLConstants.AttrValueReversible:
+                        reaction.ReactionType = Globals.ReactionType.Reversible;
+                        {
+                            string bias = cmlElement.Attribute(CMLNamespaces.cml + CMLConstants.AttributeReactionBias)?.Value;
+                            if (!string.IsNullOrEmpty(bias))
+                            {
+                                if (bias == CMLConstants.AttrValueBiasForward)
+                                {
+                                    reaction.ReactionType = Globals.ReactionType.ReversibleBiasedForward;
+                                }
+                                else if (bias == CMLConstants.AttrValueBiasReverse)
+                                {
+                                    reaction.ReactionType = Globals.ReactionType.ReversibleBiasedReverse;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            return reaction;
         }
 
         // <cml:formula id="m1.f1" convention="chemspider:Smiles" inline="m1.f1" concise="C 6 H 14 Li 1 N 1" />

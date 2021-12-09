@@ -237,15 +237,15 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Arrow arrowVisual;
             switch (adornedReaction.ReactionType)
             {
-                case Globals.ReactionType.Equilibrium:
+                case Globals.ReactionType.Reversible:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
 
-                case Globals.ReactionType.EquilibriumBiasedForward:
+                case Globals.ReactionType.ReversibleBiasedForward:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Forward };
                     break;
 
-                case Globals.ReactionType.EquilibriumBiasedReverse:
+                case Globals.ReactionType.ReversibleBiasedReverse:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Backward };
                     break;
 

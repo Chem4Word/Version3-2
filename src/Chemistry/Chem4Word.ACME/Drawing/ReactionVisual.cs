@@ -35,15 +35,15 @@ namespace Chem4Word.ACME.Drawing
             Arrow arrow; 
             switch (ParentReaction.ReactionType)
             {
-                case Globals.ReactionType.Equilibrium:
+                case Globals.ReactionType.Reversible:
                     arrow = new Graphics.EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
                     break;
 
-                case Globals.ReactionType.EquilibriumBiasedForward:
+                case Globals.ReactionType.ReversibleBiasedForward:
                     arrow = new Graphics.EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, Bias = Graphics.EquilibriumBias.Forward };
                     break;
 
-                case Globals.ReactionType.EquilibriumBiasedReverse:
+                case Globals.ReactionType.ReversibleBiasedReverse:
                     arrow = new Graphics.EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, Bias = Graphics.EquilibriumBias.Backward };
                     break;
 
@@ -60,5 +60,6 @@ namespace Chem4Word.ACME.Drawing
                 arrow.DrawArrowGeometry(dc, new Pen(Brushes.Black, 1), Brushes.Black);
             }
         }
+        
     }
 }

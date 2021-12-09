@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Model2.Geometry;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
-using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.CML
 {
@@ -174,6 +174,17 @@ namespace Chem4Word.Model2.Converters.CML
             return labels1.Union(labels2).ToList();
         }
 
+        internal static List<XElement> GetReactionSchemes(XElement doc)
+        {
+            List<XElement> result = new List<XElement>();
+
+            var rschemes = from XElement xe in doc.Elements(CMLConstants.TagReactionScheme) select xe;
+            var rschemes2 = from XElement xe2 in doc.Elements(CMLNamespaces.cml + CMLConstants.TagReactionScheme) select xe2;
+            result = rschemes.Union(rschemes2).ToList();
+
+            return result;
+        }
+
         internal static int? GetFormalCharge(XElement cmlElement)
         {
             int formalCharge;
@@ -266,6 +277,15 @@ namespace Chem4Word.Model2.Converters.CML
             {
                 return null;
             }
+        }
+
+        internal static List<XElement> GetReactions(XElement doc)
+        {
+            List<XElement> result = new List<XElement>();
+            var reacts = from XElement xe in doc.Elements(CMLConstants.TagReaction) select xe;
+            var reacts2 = from XElement xe2 in doc.Elements(CMLNamespaces.cml + CMLConstants.TagReaction) select xe2;
+            result = reacts.Union(reacts2).ToList();
+            return result;
         }
     }
 }

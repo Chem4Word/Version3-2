@@ -31,7 +31,7 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption Id="2" ReactionType="Equilibrium">
+        <acme:ReactionOption Id="2" ReactionType="Reversible">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
@@ -56,7 +56,7 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption Id="3" ReactionType="EquilibriumBiasedForward">
+        <acme:ReactionOption Id="3" ReactionType="ReversibleBiasedForward">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
@@ -81,7 +81,7 @@
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
 
-        <acme:ReactionOption Id="4" ReactionType="EquilibriumBiasedReverse">
+        <acme:ReactionOption Id="4" ReactionType="ReversibleBiasedReverse">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>

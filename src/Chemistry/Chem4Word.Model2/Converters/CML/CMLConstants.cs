@@ -5,6 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System.Xml.Linq;
+
 namespace Chem4Word.Model2.Converters.CML
 {
     // ReSharper disable once InconsistentNaming
@@ -30,7 +32,27 @@ namespace Chem4Word.Model2.Converters.CML
 
         public const string TagXmlPartGuid = "customXmlPartGuid";
         public const string AttributeShowMoleculeBrackets = "showBrackets";
+        // Reactions and schemes
 
+        public const string TagReactionScheme ="reactionScheme";
+        
+        public const string TagReaction = "reaction";
+        public const string AttributeReactionType ="reactionType";
+        public const string AttrValueReversible ="reversible";
+        public const string AttrValueBlocked = "blocked";
+        public const string AttributeReactionBias = "reactionBias";
+        public const string AttrValueBiasForward="forward";
+        public const string AttrValueBiasReverse="reverse";
+
+        public const string AttributeArrowTail = "tail";
+        public const string AttributeArrowHead = "head";
+
+        public const string TagReactant="reactant";
+        public const string TagReactantList="reactantList";
+        public const string TagProduct="product";
+        public const string TagProductList="productList";
+        public const string TagSubstance="substance";
+        public const string TagSubstanceList="substanceList";
         // Atoms
         public const string TagAtomArray = "atomArray";
 
@@ -90,5 +112,6 @@ namespace Chem4Word.Model2.Converters.CML
         public const string ValueChem4WordResolverIupacName = "chem4word:ResolvedIupacname";
         public const string ValueChem4WordResolverSmilesName = "chem4word:ResolvedSmiles";
         public const string ValueChem4WordResolverFormulaName = "chem4word:ResolvedFormula";
+        
     }
 }

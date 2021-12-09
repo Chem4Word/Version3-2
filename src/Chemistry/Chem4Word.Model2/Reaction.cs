@@ -34,11 +34,6 @@ namespace Chem4Word.Model2
 
         private Point _startPoint;
 
-        public void UpdateVisual()
-        {
-            OnPropertyChanged(nameof(ReactionType));
-        }
-
         public Point TailPoint
         {
             get { return _startPoint; }
@@ -85,7 +80,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        public string Id { get; private set; }
+        public string Id { get; set; }
         public string InternalId { get; }
 
         public ReactionScheme Parent { get; set; }
@@ -169,6 +164,26 @@ namespace Chem4Word.Model2
             }
         }
 
+        public Reaction Copy()
+        {
+            //TODO: Copy reactants and products
+            Reaction newReaction = new Reaction();
+            newReaction.ConditionsText = ConditionsText;
+            newReaction.HeadPoint = HeadPoint;
+            newReaction.Id = Id;
+            newReaction.ReactionType = ReactionType;
+            newReaction.ReagentText = ReagentText;
+            newReaction.TailPoint = TailPoint;
+            return newReaction;
+        }
+
+        internal void RepositionAll(double x, double y)
+        {
+            var offsetVector = new Vector(-x, -y);
+            HeadPoint += offsetVector;
+            TailPoint += offsetVector;
+        }
+
         public void AddProduct(Molecule product)
         {
             _products[product.InternalId] = product;
@@ -176,6 +191,15 @@ namespace Chem4Word.Model2
                 new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add,
                                                      new List<Molecule> { product });
             OnProductsChanged(this, e);
+        }
+
+        internal void ReLabelGuids(ref int reactionCount)
+        {
+            Guid guid;
+            if (Guid.TryParse(Id, out guid))
+            {
+                Id = $"r{++reactionCount}";
+            }
         }
 
         private void OnProductsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -197,6 +221,11 @@ namespace Chem4Word.Model2
                                                          new List<Molecule> { product });
                 OnProductsChanged(this, e);
             }
+        }
+
+        public void UpdateVisual()
+        {
+            OnPropertyChanged(nameof(ReactionType));
         }
 
         #endregion Methods

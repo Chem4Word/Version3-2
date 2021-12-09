@@ -10,14 +10,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows;
 
 namespace Chem4Word.Model2
 {
+    /* NB: the Model currently supports only one reaction scheme. This should *always* be 
+     * access by the DefaultReactionScheme property. Do not add more schemes to the Model!
+     * We will review support for additional schemes as and when appropriate */
     public class ReactionScheme : INotifyPropertyChanged
     {
         public readonly ReadOnlyDictionary<string, Reaction> Reactions;
         private readonly Dictionary<string, Reaction> _reactions;
-        public string Id { get; private set; }
+        public string Id { get; set; }
         public string InternalId { get; }
         public Model Parent { get; set; }
         public IChemistryContainer Root => throw new System.NotImplementedException();
@@ -28,7 +32,7 @@ namespace Chem4Word.Model2
 
         public ReactionScheme()
         {
-             Id = Guid.NewGuid().ToString("D");
+            Id = Guid.NewGuid().ToString("D");
             InternalId = Id;
             _reactions = new Dictionary<string, Reaction>();
             Reactions = new ReadOnlyDictionary<string, Reaction>(_reactions);
@@ -43,6 +47,7 @@ namespace Chem4Word.Model2
             OnReactionsChanged(this, e);
             UpdateReactionEventHandlers(e);
         }
+
         //transmits a reaction being added or removed
         private void OnReactionsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -104,6 +109,53 @@ namespace Chem4Word.Model2
         private void Reaction_ReactantsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void ReLabel(ref int schemeCount, ref int reactionCount)
+        {
+            Id = $"rs{++schemeCount}";
+
+            foreach (Reaction r in Reactions.Values)
+            {
+                r.Id = $"r{++reactionCount}";
+            }
+        }
+
+        public ReactionScheme Copy()
+        {
+            ReactionScheme copy = new ReactionScheme();
+
+            Dictionary<string, Reaction> reactions = new Dictionary<string, Reaction>();
+
+            foreach (var reaction in Reactions.Values)
+            {
+                Reaction r = reaction.Copy();
+                copy.AddReaction(r);
+                r.Parent = copy;
+            }
+            return copy;
+        }
+
+        public void RepositionAll(double x, double y)
+        {
+            var offsetVector = new Vector(-x, -y);
+            foreach (Reaction r in Reactions.Values)
+            {
+                r.RepositionAll(x, y);
+            }
+        }
+
+        internal void ReLabelGuids(ref int reactionSchemeCount, ref int reactionCount)
+        {
+            Guid guid;
+            if (Guid.TryParse(Id, out guid))
+            {
+                Id = $"rs{++reactionSchemeCount}";
+            }
+            foreach (Reaction r in Reactions.Values)
+            {
+                r.ReLabelGuids(ref reactionCount);
+            }
         }
     }
 }

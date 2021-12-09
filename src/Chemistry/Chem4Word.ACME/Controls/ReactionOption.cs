@@ -64,16 +64,16 @@ namespace Chem4Word.ACME
                             return "Normal reaction";
                         }
 
-                    case Globals.ReactionType.Equilibrium:
+                    case Globals.ReactionType.Reversible:
                         {
                             return "Equilibrium Reaction";
                         }
 
-                    case Globals.ReactionType.EquilibriumBiasedForward:
+                    case Globals.ReactionType.ReversibleBiasedForward:
                         {
                             return "Forward-biased equilibrium";
                         }
-                    case Globals.ReactionType.EquilibriumBiasedReverse:
+                    case Globals.ReactionType.ReversibleBiasedReverse:
                         {
                             return "Reverse-biasedequilibrium";
                         }

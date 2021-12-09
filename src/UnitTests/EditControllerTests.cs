@@ -5,16 +5,16 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media;
+using Chem4Word.ACME;
 using Chem4Word.ACME.Models;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Helpers;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
 using Xunit;
-using Chem4Word.ACME;
 
 namespace Chem4WordTests
 {
@@ -1240,7 +1240,7 @@ namespace Chem4WordTests
             var controller = new EditController(model);
 
             var expectedStack = new List<string>
-                                {
+                                 {
                                     "0 - #end#",
                                     $"2 - {nameof(EditController.MultiTransformMolecules)}",
                                     "0 - #start#"
@@ -1316,6 +1316,7 @@ namespace Chem4WordTests
                 case "AlignLefts":
                     controller.AlignLefts(new List<Molecule> { m1, m2 });
                     break;
+
                 case "AlignCentres":
                     expectedStack = new List<string>
                                     {
@@ -1326,12 +1327,15 @@ namespace Chem4WordTests
                                     };
                     controller.AlignCentres(new List<ChemistryBase> { m1, m2 });
                     break;
+
                 case "AlignRights":
                     controller.AlignRights(new List<Molecule> { m1, m2 });
                     break;
+
                 case "AlignTops":
                     controller.AlignTops(new List<Molecule> { m1, m2 });
                     break;
+
                 case "AlignMiddles":
                     expectedStack = new List<string>
                                     {
@@ -1342,6 +1346,7 @@ namespace Chem4WordTests
                                     };
                     controller.AlignMiddles(new List<ChemistryBase> { m1, m2 });
                     break;
+
                 case "AlignBottoms":
                     controller.AlignBottoms(new List<Molecule> { m1, m2 });
                     break;

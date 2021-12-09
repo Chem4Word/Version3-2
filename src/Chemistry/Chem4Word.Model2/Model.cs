@@ -74,11 +74,13 @@ namespace Chem4Word.Model2
                 }
             }
         }
+
         //responds to a property being changed on an object
         private void ChemObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(sender, e);
         }
+
         //transmits the proerty being changed on an object
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -91,11 +93,13 @@ namespace Chem4Word.Model2
                 }
             }
         }
+
         //responds to bonds being added or removed
         private void Bonds_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnBondsChanged(sender, e);
         }
+
         //transmits bonds being added or removed
         private void OnBondsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -108,11 +112,13 @@ namespace Chem4Word.Model2
                 }
             }
         }
+
         //responds to atoms being added or removed
         private void Atoms_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnAtomsChanged(sender, e);
         }
+
         //transmits atoms being added or removed
         private void OnAtomsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -371,7 +377,14 @@ namespace Chem4Word.Model2
                 {
                     boundingBox.Union(mol.BoundingBox);
                 }
-
+                foreach (ReactionScheme scheme in ReactionSchemes.Values)
+                {
+                    foreach (Reaction reaction in scheme.Reactions.Values)
+                    {
+                        Rect reactionRect = new Rect(reaction.TailPoint, reaction.HeadPoint);
+                        boundingBox.Union(reactionRect);
+                    }
+                }
                 return boundingBox;
             }
         }
@@ -412,6 +425,15 @@ namespace Chem4Word.Model2
                     }
 
                     _boundingBox = modelRect;
+
+                    foreach (ReactionScheme scheme in ReactionSchemes.Values)
+                    {
+                        foreach (Reaction reaction in scheme.Reactions.Values)
+                        {
+                            Rect reactionRect = new Rect(reaction.TailPoint, reaction.HeadPoint);
+                            _boundingBox.Union(reactionRect);
+                        }
+                    }
                 }
 
                 return _boundingBox;
@@ -579,6 +601,7 @@ namespace Chem4Word.Model2
             // Join using Bullet character <Alt>0183
             return string.Join(" · ", strings);
         }
+
         public ReactionScheme DefaultReactionScheme
         {
             get
@@ -591,6 +614,7 @@ namespace Chem4Word.Model2
                 return ReactionSchemes.Values.First();
             }
         }
+
         #endregion Properties
 
         #region Constructors
@@ -619,13 +643,17 @@ namespace Chem4Word.Model2
             {
                 molecule.RepositionAll(x, y);
             }
+            foreach (ReactionScheme rs in ReactionSchemes.Values)
+            {
+                rs.RepositionAll(x, y);
+            }
             _boundingBox = Rect.Empty;
         }
 
         public void CenterOn(Point point)
         {
             Rect boundingBox = BoundingBoxWithFontSize;
-            Point midPoint = new Point(BoundingBoxWithFontSize.Left + boundingBox.Width / 2, BoundingBoxWithFontSize.Top + BoundingBoxWithFontSize.Height / 2);
+            Point midPoint = new Point(boundingBox.Left + boundingBox.Width / 2, boundingBox.Top + boundingBox.Height / 2);
             Vector displacement = midPoint - point;
             RepositionAll(displacement.X, displacement.Y);
         }
@@ -707,7 +735,8 @@ namespace Chem4Word.Model2
 
         public void ReLabelGuids()
         {
-            int bondCount = 0, atomCount = 0, molCount = 0;
+            int bondCount = 0, atomCount = 0, 
+                molCount = 0, reactionSchemeCount=0, reactionCount=0;
 
             foreach (var molecule in GetAllMolecules())
             {
@@ -739,19 +768,63 @@ namespace Chem4Word.Model2
                 }
             }
 
+            foreach (ReactionScheme scheme in GetAllReactionSchemes())
+            {
+                var number = scheme.Id.Substring(1);
+                int n;
+                if (int.TryParse(number, out n))
+                {
+                    reactionSchemeCount = Math.Max(reactionSchemeCount, n);
+                }
+            }
+
+            foreach (Reaction reaction in GetAllReactions())
+            {
+                var number = reaction.Id.Substring(1);
+                int n;
+                if (int.TryParse(number, out n))
+                {
+                    reactionCount = Math.Max(reactionCount, n);
+                }
+            }
+
             foreach (Molecule m in Molecules.Values)
             {
                 m.ReLabelGuids(ref molCount, ref atomCount, ref bondCount);
             }
+
+            foreach (ReactionScheme rs in ReactionSchemes.Values)
+            {
+                rs.ReLabelGuids(ref reactionSchemeCount, ref reactionCount);
+            }
+        }
+
+        private IEnumerable<Reaction> GetAllReactions()
+        {
+            var reactions = from rs in GetAllReactionSchemes()
+                            from r in rs.Reactions.Values
+                            select r;
+            return reactions;
+        }
+
+        private IEnumerable<ReactionScheme> GetAllReactionSchemes()
+        {
+            var schemes = from rs in ReactionSchemes.Values
+                          select rs;
+            return schemes;
         }
 
         public void Relabel(bool includeNames)
         {
             int bondCount = 0, atomCount = 0, molCount = 0;
-
+            int schemeCount = 0, reactionCount = 0;
             foreach (Molecule m in Molecules.Values)
             {
                 m.ReLabel(ref molCount, ref atomCount, ref bondCount, includeNames);
+            }
+            foreach (ReactionScheme scheme in ReactionSchemes.Values)
+            {
+                scheme.ReLabel(ref schemeCount, ref reactionCount);
             }
         }
 
@@ -765,18 +838,23 @@ namespace Chem4Word.Model2
 
         public Model Copy()
         {
-            Model copy = new Model();
+            Model modelCopy = new Model();
             foreach (var child in Molecules.Values)
             {
-                Molecule m = child.Copy();
-                copy.AddMolecule(m);
-                m.Parent = copy;
+                Molecule molCopy = child.Copy();
+                modelCopy.AddMolecule(molCopy);
+                molCopy.Parent = modelCopy;
             }
+            foreach (var rs in ReactionSchemes.Values)
+            {
+                ReactionScheme schemeCopy = rs.Copy();
+                modelCopy.AddReactionScheme(schemeCopy);
+                schemeCopy.Parent = modelCopy;
+            }
+            modelCopy.ScaledForXaml = ScaledForXaml;
+            modelCopy.CustomXmlPartGuid = CustomXmlPartGuid;
 
-            copy.ScaledForXaml = ScaledForXaml;
-            copy.CustomXmlPartGuid = CustomXmlPartGuid;
-
-            return copy;
+            return modelCopy;
         }
 
         private void ClearMolecules()
@@ -919,6 +997,14 @@ namespace Chem4Word.Model2
                 foreach (var atom in allAtoms)
                 {
                     atom.Position = new Point(atom.Position.X * scale, atom.Position.Y * scale);
+                }
+                foreach (var scheme in ReactionSchemes.Values)
+                {
+                    foreach (var reaction in scheme.Reactions.Values)
+                    {
+                        reaction.TailPoint = new Point(reaction.TailPoint.X * scale, reaction.TailPoint.Y * scale);
+                        reaction.HeadPoint = new Point(reaction.HeadPoint.X * scale, reaction.HeadPoint.Y * scale);
+                    }
                 }
                 _boundingBox = Rect.Empty;
             }
@@ -1112,7 +1198,6 @@ namespace Chem4Word.Model2
 
         private void OnReactionSchemesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-       
             if (!InhibitEvents)
             {
                 var temp = ReactionSchemesChanged;
@@ -1122,18 +1207,16 @@ namespace Chem4Word.Model2
                 }
             }
         }
-        
 
         private void UpdateReactionSchemeEventHandlers(NotifyCollectionChangedEventArgs e)
         {
-     
             if (e.OldItems != null)
             {
                 foreach (var oldItem in e.OldItems)
                 {
                     var rs = ((ReactionScheme)oldItem);
                     rs.ReactionsChanged -= Reactions_CollectionChanged;
-                    
+
                     rs.PropertyChanged -= ChemObject_PropertyChanged;
                 }
             }
@@ -1151,7 +1234,7 @@ namespace Chem4Word.Model2
 
         private void Reactions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            OnReactionsChanged(sender,e);
+            OnReactionsChanged(sender, e);
         }
 
         private void OnReactionsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -1175,8 +1258,6 @@ namespace Chem4Word.Model2
             UpdateReactionSchemeEventHandlers(e);
             OnReactionSchemesChanged(this, e);
         }
-
-
 
         #endregion Methods
     }

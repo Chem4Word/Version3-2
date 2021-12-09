@@ -309,9 +309,9 @@ namespace Chem4Word.Model2.Helpers
         public enum ReactionType
         {
             Normal,
-            Equilibrium,
-            EquilibriumBiasedForward,
-            EquilibriumBiasedReverse,
+            Reversible,
+            ReversibleBiasedForward,
+            ReversibleBiasedReverse,
             Blocked
         }
         public enum SubstanceRole

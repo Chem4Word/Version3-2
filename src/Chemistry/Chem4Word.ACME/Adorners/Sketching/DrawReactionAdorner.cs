@@ -61,15 +61,15 @@ namespace Chem4Word.ACME.Adorners.Sketching
 
             switch (ReactionType)
             {
-                case ReactionType.Equilibrium:
+                case ReactionType.Reversible:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = StartPoint, EndPoint = EndPoint };
                     break;
 
-                case ReactionType.EquilibriumBiasedForward:
+                case ReactionType.ReversibleBiasedForward:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = StartPoint, EndPoint = EndPoint, Bias = Graphics.EquilibriumBias.Forward };
                     break;
 
-                case ReactionType.EquilibriumBiasedReverse:
+                case ReactionType.ReversibleBiasedReverse:
                     arrowVisual = new Graphics.EquilibriumArrow { StartPoint = StartPoint, EndPoint = EndPoint, Bias = Graphics.EquilibriumBias.Backward };
                     break;
 

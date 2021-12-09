@@ -1658,6 +1658,7 @@ namespace Chem4Word.ACME
                 //check to see if we have a scheme
                 var scheme = Model.DefaultReactionScheme;
                 scheme.AddReaction(reaction);
+                reaction.Parent = scheme;
             };
             Action undo = () =>
             {
@@ -1741,6 +1742,11 @@ namespace Chem4Word.ACME
                         if (selectedItem is Molecule molecule)
                         {
                             tempModel.AddMolecule(molecule);
+                        }
+                        else if (selectedItem is Reaction reaction)
+                        {
+                            //TODO: Handle multiple reaction schemes in future. This is a kludge
+                            tempModel.DefaultReactionScheme.AddReaction(reaction);
                         }
                         else if (selectedItem is Atom atom)
                         {
@@ -3908,11 +3914,13 @@ namespace Chem4Word.ACME
                               {
                                   ClearSelection();
                                   Model.DefaultReactionScheme.RemoveReaction(r);
+                                  r.Parent = null;
                               };
 
                         Action undo = () =>
                                       {
                                           Model.DefaultReactionScheme.AddReaction(r);
+                                          r.Parent = Model.DefaultReactionScheme;
                                           AddToSelection(r);
                                       };
                         redo();

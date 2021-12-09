@@ -16,5 +16,8 @@ namespace Chem4Word.Core.Helpers
 
         public static string AsString(Point p)
             => $"{SafeDouble.AsString4(p.X)},{SafeDouble.AsString4(p.Y)}";
+
+        public static object AsCMLString(Point p) =>
+            $"{SafeDouble.AsCMLString(p.X)},{SafeDouble.AsCMLString(p.Y)}";
     }
 }

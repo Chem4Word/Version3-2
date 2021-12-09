@@ -20,6 +20,8 @@ namespace Chem4Word.Core.Helpers
         public static string AsString4(double value)
             => value.ToString("#,##0.0000", CultureInfo.InvariantCulture);
 
+        public static object AsCMLString(double value) => value.ToString("0.0###", CultureInfo.InvariantCulture);
+
         public static string AsString0(double value)
             => value.ToString("#,##0", CultureInfo.InvariantCulture);
     }
