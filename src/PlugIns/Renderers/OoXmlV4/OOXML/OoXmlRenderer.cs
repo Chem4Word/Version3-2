@@ -5,6 +5,17 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI.Forms;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Helpers;
+using Chem4Word.Renderer.OoXmlV4.Entities;
+using Chem4Word.Renderer.OoXmlV4.Enums;
+using Chem4Word.Renderer.OoXmlV4.TTF;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Wordprocessing;
+using IChem4Word.Contracts;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,16 +24,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Core.UI.Forms;
-using Chem4Word.Model2;
-using Chem4Word.Renderer.OoXmlV4.Entities;
-using Chem4Word.Renderer.OoXmlV4.Enums;
-using Chem4Word.Renderer.OoXmlV4.TTF;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using IChem4Word.Contracts;
-using Newtonsoft.Json;
 using A = DocumentFormat.OpenXml.Drawing;
 using Drawing = DocumentFormat.OpenXml.Wordprocessing.Drawing;
 using Point = System.Windows.Point;
@@ -115,14 +116,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             _positionerOutputs = positioner.Position();
 
-            // 6.1  Calculate canvas size
             SetCanvasSize();
 
-            // 6.2  Create Base OoXml Objects
+            // Create Base OoXml Objects
             Run run = CreateRun();
 
-            // 7.   Render Brackets
-            // Render molecule grouping brackets
+            // Render molecule Group Brackets
             if (_options.ShowMoleculeGrouping)
             {
                 foreach (var group in _positionerOutputs.GroupBrackets)
@@ -138,7 +137,67 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 DrawMoleculeBrackets(moleculeBracket, OoXmlHelper.ACS_LINE_WIDTH, "000000");
             }
 
-            // 8.   Render Diagnostic Markers
+            // Render reactions
+            foreach (ReactionScheme scheme in _chemistryModel.ReactionSchemes.Values)
+            {
+                foreach (Reaction reaction in scheme.Reactions.Values)
+                {
+                    switch (reaction.ReactionType)
+                    {
+                        case Globals.ReactionType.Normal:
+                        case Globals.ReactionType.Blocked:
+                            var isBlocked = reaction.ReactionType == Globals.ReactionType.Blocked;
+                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, isBlocked, "000000", OoXmlHelper.ACS_LINE_WIDTH);
+                            break;
+
+                        default:
+                            var simple = new SimpleLine(reaction.TailPoint, reaction.HeadPoint);
+                            var topLine = simple.GetParallel(BondOffset() / 2);
+                            var bottomLine = simple.GetParallel(-BondOffset() / 2);
+
+                            var p1 = topLine.Start;
+                            var p2 = topLine.End;
+
+                            var p3 = bottomLine.End;
+                            var p4 = bottomLine.Start;
+
+                            switch (reaction.ReactionType)
+                            {
+                                case Globals.ReactionType.ReversibleBiasedReverse:
+                                    CoordinateTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LINE_SHRINK_PIXELS);
+                                    break;
+                                case Globals.ReactionType.ReversibleBiasedForward:
+                                    CoordinateTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LINE_SHRINK_PIXELS);
+                                    break;
+                                case Globals.ReactionType.Reversible:
+                                    break;
+                            }
+
+                            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, "000000", OoXmlHelper.ACS_LINE_WIDTH);
+                            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, "000000", OoXmlHelper.ACS_LINE_WIDTH);
+
+                            break;
+                    }
+                }
+
+                // Local Function
+                Point BarbLocation(Point tailPoint, Point headPoint)
+                {
+                    Vector barbVector = tailPoint - headPoint;
+                    barbVector.Normalize();
+                    barbVector *= BondOffset();
+
+                    Matrix rotator = new Matrix();
+                    rotator.Rotate(45);
+                    barbVector *= rotator;
+
+                    Point result = headPoint + barbVector;
+
+                    return result;
+                }
+            }
+
+            // Render Diagnostic Markers
             if (_options.ShowMoleculeBoundingBoxes)
             {
                 foreach (var item in _positionerOutputs.AllMoleculeExtents)
@@ -157,7 +216,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 foreach (var hull in _positionerOutputs.ConvexHulls)
                 {
                     var points = hull.Value.ToList();
-                    DrawPolygon(points, "ff0000", 0.25);
+                    DrawPolygon(points, true, "ff0000", 0.25);
                 }
             }
 
@@ -247,11 +306,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 foreach (var hull in _positionerOutputs.ConvexHulls)
                 {
                     var points = hull.Value.ToList();
-                    DrawPolygon(points, "ff0000", 0.25);
+                    DrawPolygon(points, true, "ff0000", 0.25);
                 }
             }
 
-            // 9.1  Calculate and tweak Wedge and Hatch bonds
+            // Calculate and tweak Wedge and Hatch bonds
             var wedges =
                 _positionerOutputs.BondLines.Where(t => t.Style == BondLineStyle.Wedge
                                                             || t.Style == BondLineStyle.Hatch).ToList();
@@ -298,7 +357,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
-            // 9.2  Render Bond Lines
+            // Render Bond Lines
             foreach (var bondLine in _positionerOutputs.BondLines)
             {
                 switch (bondLine.Style)
@@ -319,13 +378,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
-            // 10.  Render Atom and Molecule Characters
+            // Render Atom and Molecule Characters
             foreach (var character in _positionerOutputs.AtomLabelCharacters)
             {
                 DrawCharacter(character);
             }
 
-            // 11.  Render Molecule Captions as TextBoxes
+            // Render Molecule Captions as TextBoxes
             if (_options.ShowMoleculeCaptions && _options.RenderCaptionsAsTextBox)
             {
                 foreach (var caption in _positionerOutputs.MoleculeCaptions)
@@ -336,6 +395,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
+            // Any other general dignostics
+
             // Finally draw any debugging diagnostics
             foreach (var line in _positionerOutputs.Diagnostics.Lines)
             {
@@ -344,7 +405,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             foreach (var polygon in _positionerOutputs.Diagnostics.Polygons)
             {
-                DrawPolygon(polygon, "00ff00", 0.25);
+                DrawPolygon(polygon, true, "00ff00", 0.25);
             }
 
             foreach (var spot in _positionerOutputs.Diagnostics.Points)
@@ -1388,7 +1449,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             _wordprocessingGroup.Append(wordprocessingShape);
         }
 
-        private void DrawPolygon(List<Point> points, string lineColour, double lineWidth)
+        private void DrawPolygon(List<Point> points, bool isClosed, string lineColour, double lineWidth)
         {
             Rect cmlExtents = new Rect(points[0], points[points.Count - 1]);
 
@@ -1430,9 +1491,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 path.Append(lineTo);
             }
 
-            // Close the path
-            A.CloseShapePath closeShapePath = new A.CloseShapePath();
-            path.Append(closeShapePath);
+            if (isClosed)
+            {
+                // Close the path
+                A.CloseShapePath closeShapePath = new A.CloseShapePath();
+                path.Append(closeShapePath);
+            }
 
             pathList.Append(path);
 
@@ -1455,6 +1519,111 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             wordprocessingShape.Append(textBodyProperties);
 
             _wordprocessingGroup.Append(wordprocessingShape);
+        }
+
+        private void DrawReactionArrow(Point lineStart, Point lineEnd, string reactionPath, bool isCrossed, string lineColour, double lineWidth)
+        {
+            var tuple = OffsetPoints(lineStart, lineEnd);
+            Point cmlStartPoint = tuple.Start;
+            Point cmlEndPoint = tuple.End;
+            Rect cmlLineExtents = tuple.Extents;
+
+            Int64Value emuTop = OoXmlHelper.ScaleCmlToEmu(cmlLineExtents.Top);
+            Int64Value emuLeft = OoXmlHelper.ScaleCmlToEmu(cmlLineExtents.Left);
+            Int64Value emuWidth = OoXmlHelper.ScaleCmlToEmu(cmlLineExtents.Width);
+            Int64Value emuHeight = OoXmlHelper.ScaleCmlToEmu(cmlLineExtents.Height);
+
+            long id = _ooxmlId++;
+            string suffix = string.IsNullOrEmpty(reactionPath) ? id.ToString() : reactionPath;
+            string shapeName = "Reaction Arrow " + suffix;
+
+            Wps.WordprocessingShape wordprocessingShape = CreateShape(id, shapeName);
+            Wps.ShapeProperties shapeProperties = CreateShapeProperties(wordprocessingShape, emuTop, emuLeft, emuWidth, emuHeight);
+
+            // Add the line
+            A.PathList pathList = new A.PathList();
+
+            A.Path path = new A.Path { Width = emuWidth, Height = emuHeight };
+
+            A.MoveTo moveTo = new A.MoveTo();
+            A.Point point1 = new A.Point { X = OoXmlHelper.ScaleCmlToEmu(cmlEndPoint.X).ToString(), Y = OoXmlHelper.ScaleCmlToEmu(cmlEndPoint.Y).ToString() };
+            moveTo.Append(point1);
+            path.Append(moveTo);
+
+            A.LineTo lineTo = new A.LineTo();
+            A.Point point2 = new A.Point { X = OoXmlHelper.ScaleCmlToEmu(cmlStartPoint.X).ToString(), Y = OoXmlHelper.ScaleCmlToEmu(cmlStartPoint.Y).ToString() };
+            lineTo.Append(point2);
+            path.Append(lineTo);
+
+            pathList.Append(path);
+
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
+
+            A.SolidFill solidFill = new A.SolidFill();
+            A.RgbColorModelHex rgbColorModelHex = new A.RgbColorModelHex { Val = lineColour };
+            solidFill.Append(rgbColorModelHex);
+            outline.Append(solidFill);
+
+            // Add Arrow Head
+            A.HeadEnd tailEnd = new A.HeadEnd
+            {
+                Type = A.LineEndValues.Triangle,
+                Width = A.LineEndWidthValues.Small,
+                Length = A.LineEndLengthValues.Small
+            };
+            outline.Append(tailEnd);
+
+            // Add the cross if required
+            if (isCrossed)
+            {
+                Vector shaftVector = cmlEndPoint - cmlStartPoint;
+                var midpoint = cmlStartPoint + shaftVector * 0.5;
+
+                double crossArmLength = OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE * _chemistryModel.MeanBondLength;
+                Point[] points = new Point[4];
+
+                Matrix rotator = new Matrix();
+                rotator.Rotate(-45);
+                Vector shaftUnit = shaftVector;
+                shaftUnit.Normalize();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    rotator.Rotate(90);
+                    points[i] = midpoint + shaftUnit * crossArmLength * rotator;
+                }
+
+                AddCrossLine(points[0], points[2]);
+                AddCrossLine(points[1], points[3]);
+            }
+
+            shapeProperties.Append(CreateCustomGeometry(pathList));
+            shapeProperties.Append(outline);
+
+            wordprocessingShape.Append(CreateShapeStyle());
+
+            Wps.TextBodyProperties textBodyProperties = new Wps.TextBodyProperties();
+            wordprocessingShape.Append(textBodyProperties);
+
+            _wordprocessingGroup.Append(wordprocessingShape);
+
+            // Local Function
+            void AddCrossLine(Point startPoint, Point endPoint)
+            {
+                A.Path path1 = new A.Path { Width = emuWidth, Height = emuHeight };
+
+                A.MoveTo moveTo2 = new A.MoveTo();
+                A.Point point3 = new A.Point { X = OoXmlHelper.ScaleCmlToEmu(endPoint.X).ToString(), Y = OoXmlHelper.ScaleCmlToEmu(endPoint.Y).ToString() };
+                moveTo2.Append(point3);
+                path1.Append(moveTo2);
+
+                A.LineTo lineTo2 = new A.LineTo();
+                A.Point point4 = new A.Point { X = OoXmlHelper.ScaleCmlToEmu(startPoint.X).ToString(), Y = OoXmlHelper.ScaleCmlToEmu(startPoint.Y).ToString() };
+                lineTo2.Append(point4);
+                path1.Append(lineTo2);
+                pathList.Append(path1);
+            }
         }
 
         private void DrawStraightLine(Point bondStart, Point bondEnd, string bondPath,

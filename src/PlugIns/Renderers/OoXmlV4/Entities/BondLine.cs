@@ -236,16 +236,10 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public BondLine GetParallel(double offset)
         {
-            double xDifference = Start.X - End.X;
-            double yDifference = Start.Y - End.Y;
-            double length = Math.Sqrt(Math.Pow(xDifference, 2) + Math.Pow(yDifference, 2));
+            var simpleLine = new SimpleLine(Start, End);
+            var offsetLine = simpleLine.GetParallel(offset);
 
-            Point newStartPoint = new Point((float)(Start.X - offset * yDifference / length),
-                                            (float)(Start.Y + offset * xDifference / length));
-            Point newEndPoint = new Point((float)(End.X - offset * yDifference / length),
-                                          (float)(End.Y + offset * xDifference / length));
-
-            return new BondLine(Style, newStartPoint, newEndPoint, Bond)
+            return new BondLine(Style, offsetLine.Start, offsetLine.End, Bond)
             {
                 Colour = Colour
             };

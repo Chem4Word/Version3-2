@@ -86,7 +86,20 @@ namespace Chem4Word.Model2
         public ReactionScheme Parent { get; set; }
         public bool InhibitEvents { get; private set; }
 
-        public override string Path => throw new NotImplementedException();
+        public override string Path
+        {
+            get
+            {
+                if (Parent == null)
+                {
+                    return Id;
+                }
+                else
+                {
+                    return Parent.Path + "/" + Id;
+                }
+            }
+        }
 
         public double Angle => Vector.AngleBetween(BasicGeometry.ScreenNorth, HeadPoint - TailPoint);
         public readonly ReadOnlyDictionary<string, Molecule> Reactants;

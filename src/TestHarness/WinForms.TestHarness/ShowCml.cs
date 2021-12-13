@@ -87,7 +87,7 @@ namespace WinForms.TestHarness
         {
             foreach (var line in scintilla.Lines)
             {
-                if (line.Text.Contains("cml:molecule"))
+                if (line.Text.Contains("cml:molecule") || line.Text.Contains("cml:reactionScheme"))
                 {
                     line.FoldChildren(FoldAction.Contract);
                 }

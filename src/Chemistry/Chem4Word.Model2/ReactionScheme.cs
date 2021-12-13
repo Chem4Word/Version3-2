@@ -26,6 +26,21 @@ namespace Chem4Word.Model2
         public Model Parent { get; set; }
         public IChemistryContainer Root => throw new System.NotImplementedException();
 
+        public string Path
+        {
+            get
+            {
+                if (Parent == null)
+                {
+                    return Id;
+                }
+                else
+                {
+                    return Parent.Path + "/" + Id;
+                }
+            }
+        }
+
         public event NotifyCollectionChangedEventHandler ReactionsChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
