@@ -56,16 +56,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
         public Vector HeadDisplacement { get; private set; }
         public Vector TailDisplacement { get; private set; }
 
-        protected void SetThumbStyle(Thumb cornerThumb)
-        {
-            cornerThumb.Style = (Style)FindResource(Globals.GrabHandleStyle);
-        }
-
-        private void PositionHandle(Thumb handle, Point endPoint)
-        {
-            handle.Arrange(new Rect(endPoint.X - _halfThumbWidth, endPoint.Y - _halfThumbWidth, THUMB_WIDTH,
-                                           THUMB_WIDTH));
-        }
 
         protected void DisableHandlers()
         {
@@ -136,30 +126,35 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void ReactionSelectionAdorner_MouseMove(object sender, MouseEventArgs e)
         {
-            Keyboard.Focus(this);
             CurrentLocation = e.GetPosition(CurrentEditor);
-            if (Resizing)
+            if (Resizing || Dragging)
             {
-                Mouse.Capture((ReactionSelectionAdorner)sender);
-                if (_draggedVisual == HeadHandle)
+                Keyboard.Focus(this);
+                
+                if (Resizing)
                 {
-                    CurrentLocation = _resizeSnapper.SnapBond(CurrentLocation, 90);
-                    HeadDisplacement = CurrentLocation - AdornedReaction.HeadPoint;
+                    Mouse.Capture((ReactionSelectionAdorner)sender);
+                    if (_draggedVisual == HeadHandle)
+                    {
+                        CurrentLocation = AdornedReaction.TailPoint + _resizeSnapper.SnapVector(AdornedReaction.Angle, CurrentLocation - AdornedReaction.TailPoint);
+                        HeadDisplacement = CurrentLocation - AdornedReaction.HeadPoint;
+                    }
+                    else if (_draggedVisual == TailHandle)
+                    {
+                        CurrentLocation = AdornedReaction.HeadPoint + _resizeSnapper.SnapVector(AdornedReaction.Angle, CurrentLocation - AdornedReaction.HeadPoint);
+                        TailDisplacement = CurrentLocation - AdornedReaction.TailPoint;
+                    }
+                    EditController.SendStatus(UNLOCK_STATUS);
                 }
-                else if (_draggedVisual == TailHandle)
+                else if (Dragging)
                 {
-                    CurrentLocation = _resizeSnapper.SnapBond(CurrentLocation, 90);
-                    TailDisplacement = CurrentLocation - AdornedReaction.TailPoint;
+                    HeadDisplacement = CurrentLocation - OriginalLocation;
+                    TailDisplacement = HeadDisplacement;
                 }
-                EditController.SendStatus(UNLOCK_STATUS);
-            }
-            else if (Dragging)
-            {
-                HeadDisplacement = CurrentLocation - OriginalLocation;
-                TailDisplacement = HeadDisplacement;
+
+                InvalidateVisual();
             }
             e.Handled = true;
-            InvalidateVisual();
         }
 
         private void ReactionSelectionAdorner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -192,12 +187,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
             Arrow arrowVisual;
             base.OnRender(drawingContext);
-            if (Resizing)
-            {
-                newTailPoint = AdornedReaction.TailPoint + TailDisplacement;
-                newHeadPoint = AdornedReaction.HeadPoint + HeadDisplacement;
-            }
-            else if (Dragging)
+            if (Resizing || Dragging)
             {
                 newTailPoint = AdornedReaction.TailPoint + TailDisplacement;
                 newHeadPoint = AdornedReaction.HeadPoint + HeadDisplacement;

@@ -273,7 +273,7 @@ namespace Chem4Word.ACME.Graphics
         public void GetOverlayPen(out Brush overlayBrush, out Pen pen)
         {
             overlayBrush = Brushes.Transparent;
-            double overlayWidth = 2 * HeadLength * Math.Sin(HeadAngle / 360 * 2 * Math.PI);
+            double overlayWidth = 4 * HeadLength * Math.Sin(HeadAngle / 360 * 2 * Math.PI);
             pen = new Pen(overlayBrush, overlayWidth);
         }
     }
