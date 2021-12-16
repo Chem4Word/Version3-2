@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 namespace Chem4Word.Model2
@@ -13,13 +14,13 @@ namespace Chem4Word.Model2
     {
         public List<Atom> Atoms { get; set; }
         public List<Bond> Bonds { get; set; }
-        public Dictionary<string, Molecule> Molecules { get; set; }
+        public Dictionary<Guid, Molecule> Molecules { get; set; }
 
         public HydrogenTargets()
         {
             Atoms = new List<Atom>();
             Bonds = new List<Bond>();
-            Molecules = new Dictionary<string, Molecule>();
+            Molecules = new Dictionary<Guid, Molecule>();
         }
     }
 }

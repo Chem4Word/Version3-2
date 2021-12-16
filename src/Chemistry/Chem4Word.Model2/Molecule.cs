@@ -29,12 +29,12 @@ namespace Chem4Word.Model2
         #region Collections
 
         public readonly List<Ring> Rings;
-        public readonly ReadOnlyDictionary<string, Atom> Atoms; //keyed by InternalId
-        private Dictionary<string, Atom> _atoms;
+        public readonly ReadOnlyDictionary<Guid, Atom> Atoms; //keyed by InternalId
+        private Dictionary<Guid, Atom> _atoms;
         public readonly ReadOnlyCollection<Bond> Bonds; //this is the edge list
         private List<Bond> _bonds;
-        private Dictionary<string, Molecule> _molecules;
-        public readonly ReadOnlyDictionary<string, Molecule> Molecules;
+        private Dictionary<Guid, Molecule> _molecules;
+        public readonly ReadOnlyDictionary<Guid, Molecule> Molecules;
         public ObservableCollection<TextualProperty> Formulas { get; internal set; }
         public ObservableCollection<TextualProperty> Names { get; internal set; }
         public List<string> Warnings { get; set; }
@@ -160,7 +160,7 @@ namespace Chem4Word.Model2
 
         public string Id { get; set; }
 
-        public string InternalId { get; }
+        public Guid InternalId { get; }
 
         public IChemistryContainer Parent { get; set; }
 
@@ -242,16 +242,28 @@ namespace Chem4Word.Model2
             string id = path.UpTo("/");
 
             string relativepath = Helpers.Utils.GetRelativePath(id, path);
-
-            if (Molecules.ContainsKey(id))
+            Molecule foundMol = null;
+            foreach(Molecule m in Molecules.Values)
             {
-                return Molecules[id].GetFromPath(relativepath);
+                if (m.Id == id)
+                {
+                    foundMol = m;
+                    break;
+                }
             }
-
-            if (Atoms.ContainsKey(relativepath))
+            if (foundMol!=null)
             {
-                return Atoms[relativepath];
+                return foundMol.GetFromPath(relativepath);
             }
+            
+            foreach (Atom a in Atoms.Values)
+            {
+                if (a.Id == relativepath)
+                {
+                    return a;
+                }
+            }
+           
 
             var bond = (from b in Bonds
                         where b.Id == relativepath
@@ -449,15 +461,15 @@ namespace Chem4Word.Model2
 
         public Molecule()
         {
-            Id = Guid.NewGuid().ToString("D");
-            InternalId = Id;
+            InternalId = Guid.NewGuid();
+            Id = InternalId.ToString("D");
 
-            _atoms = new Dictionary<string, Atom>();
-            Atoms = new ReadOnlyDictionary<string, Atom>(_atoms);
+            _atoms = new Dictionary<Guid, Atom>();
+            Atoms = new ReadOnlyDictionary<Guid, Atom>(_atoms);
             _bonds = new List<Bond>();
             Bonds = new ReadOnlyCollection<Bond>(_bonds);
-            _molecules = new Dictionary<string, Molecule>();
-            Molecules = new ReadOnlyDictionary<string, Molecule>(_molecules);
+            _molecules = new Dictionary<Guid, Molecule>();
+            Molecules = new ReadOnlyDictionary<Guid, Molecule>(_molecules);
 
             Formulas = new ObservableCollection<TextualProperty>();
             Names = new ObservableCollection<TextualProperty>();
@@ -1046,7 +1058,7 @@ namespace Chem4Word.Model2
             return result;
         }
 
-        public IEnumerable<Bond> GetBonds(string atomID)
+        public IEnumerable<Bond> GetBonds(Guid atomID)
         {
             foreach (Bond bond in Bonds)
             {

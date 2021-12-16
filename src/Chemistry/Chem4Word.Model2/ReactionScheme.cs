@@ -19,10 +19,10 @@ namespace Chem4Word.Model2
      * We will review support for additional schemes as and when appropriate */
     public class ReactionScheme : INotifyPropertyChanged
     {
-        public readonly ReadOnlyDictionary<string, Reaction> Reactions;
-        private readonly Dictionary<string, Reaction> _reactions;
+        public readonly ReadOnlyDictionary<Guid, Reaction> Reactions;
+        private readonly Dictionary<Guid, Reaction> _reactions;
         public string Id { get; set; }
-        public string InternalId { get; }
+        public Guid InternalId { get; }
         public Model Parent { get; set; }
         public IChemistryContainer Root => throw new System.NotImplementedException();
 
@@ -47,10 +47,11 @@ namespace Chem4Word.Model2
 
         public ReactionScheme()
         {
-            Id = Guid.NewGuid().ToString("D");
-            InternalId = Id;
-            _reactions = new Dictionary<string, Reaction>();
-            Reactions = new ReadOnlyDictionary<string, Reaction>(_reactions);
+            InternalId = Guid.NewGuid();
+            Id = InternalId.ToString("D");
+             
+            _reactions = new Dictionary<Guid, Reaction>();
+            Reactions = new ReadOnlyDictionary<Guid, Reaction>(_reactions);
         }
 
         public void AddReaction(Reaction reaction)

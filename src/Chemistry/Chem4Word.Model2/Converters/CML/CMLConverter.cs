@@ -569,7 +569,7 @@ namespace Chem4Word.Model2.Converters.CML
                 newMol.Parent = molecule;
             }
 
-            Dictionary<string, string> reverseAtomLookup = new Dictionary<string, string>();
+            Dictionary<string, Guid> reverseAtomLookup = new Dictionary<string, Guid>();
             foreach (XElement atomElement in atomElements)
             {
                 Atom newAtom = GetAtom(atomElement);
@@ -686,7 +686,7 @@ namespace Chem4Word.Model2.Converters.CML
             return atom;
         }
 
-        private static Bond GetBond(XElement cmlElement, Dictionary<string, string> reverseAtomLookup)
+        private static Bond GetBond(XElement cmlElement, Dictionary<string, Guid> reverseAtomLookup)
         {
             Bond bond = new Bond();
 

@@ -2404,7 +2404,7 @@ namespace Chem4Word.ACME
                 {
                     List<Atom> newAtoms = new List<Atom>();
                     List<Bond> newBonds = new List<Bond>();
-                    Dictionary<string, Molecule> parents = new Dictionary<string, Molecule>();
+                    Dictionary<Guid, Molecule> parents = new Dictionary<Guid, Molecule>();
                     foreach (var atom in targetAtoms)
                     {
                         double separation = 90.0;

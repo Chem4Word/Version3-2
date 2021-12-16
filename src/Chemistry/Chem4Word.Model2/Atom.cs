@@ -635,14 +635,14 @@ namespace Chem4Word.Model2
 
         public Atom()
         {
-            Id = Guid.NewGuid().ToString("D");
-            InternalId = Id;
+            InternalId = Guid.NewGuid();
+            Id = InternalId.ToString("D");
         }
 
         /// <summary>
-        /// The internal ID is what is used to tie atoms and bonds together
+        /// The internal ID ties atoms and bonds together
         /// </summary>
-        public string InternalId { get; }
+        public Guid InternalId { get; }
 
         public bool Singleton => Parent?.Atoms.Count == 1 && Parent?.Atoms.Values.First() == this;
 

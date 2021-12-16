@@ -309,8 +309,8 @@ namespace Chem4Word.Model2.Converters.MDL
                     idx++;
 
                     Bond thisBond = new Bond();
-                    thisBond.StartAtomInternalId = atom1?.InternalId;
-                    thisBond.EndAtomInternalId = atom2?.InternalId;
+                    thisBond.StartAtomInternalId = atom1.InternalId;
+                    thisBond.EndAtomInternalId = atom2.InternalId;
 
                     // Bond Order
                     string order = GetSubString(line, 6, 3);

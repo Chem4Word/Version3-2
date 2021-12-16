@@ -459,13 +459,13 @@ namespace Chem4Word.Model2
             }
         }
 
-        private readonly Dictionary<string, Molecule> _molecules;
+        private readonly Dictionary<Guid, Molecule> _molecules;
 
         //wraps up the above Molecules collection
-        public ReadOnlyDictionary<string, Molecule> Molecules;
+        public ReadOnlyDictionary<Guid, Molecule> Molecules;
 
-        private readonly Dictionary<string, ReactionScheme> _reactionSchemes;
-        public ReadOnlyDictionary<string, ReactionScheme> ReactionSchemes;
+        private readonly Dictionary<Guid, ReactionScheme> _reactionSchemes;
+        public ReadOnlyDictionary<Guid, ReactionScheme> ReactionSchemes;
         public string CustomXmlPartGuid { get; set; }
 
         public List<string> GeneralErrors { get; set; }
@@ -621,10 +621,10 @@ namespace Chem4Word.Model2
 
         public Model()
         {
-            _molecules = new Dictionary<string, Molecule>();
-            Molecules = new ReadOnlyDictionary<string, Molecule>(_molecules);
-            _reactionSchemes = new Dictionary<string, ReactionScheme>();
-            ReactionSchemes = new ReadOnlyDictionary<string, ReactionScheme>(_reactionSchemes);
+            _molecules = new Dictionary<Guid, Molecule>();
+            Molecules = new ReadOnlyDictionary<Guid, Molecule>(_molecules);
+            _reactionSchemes = new Dictionary<Guid, ReactionScheme>();
+            ReactionSchemes = new ReadOnlyDictionary<Guid, ReactionScheme>(_reactionSchemes);
             GeneralErrors = new List<string>();
         }
 
@@ -670,19 +670,33 @@ namespace Chem4Word.Model2
 
                 string molID = path.UpTo("/");
 
-                if (!Molecules.ContainsKey(molID))
+                Molecule foundMol = null;
+                foreach(Molecule m in Molecules.Values)
+                {
+                    if (m.Id ==molID)
+                    {
+                        foundMol =m;
+                        break;
+                    }
+                }
+                
+                if (molID is null)
                 {
                     throw new ArgumentException("First child is not a molecule");
                 }
 
+                if (foundMol is null)
+                {
+                    throw new ArgumentOutOfRangeException("MolID not found in model");
+                }
                 string relativepath = Helpers.Utils.GetRelativePath(molID, path);
                 if (relativepath != "")
                 {
-                    return Molecules[molID].GetFromPath(relativepath);
+                    return foundMol.GetFromPath(relativepath);
                 }
                 else
                 {
-                    return Molecules[molID];
+                    return foundMol;
                 }
             }
             catch (ArgumentException ex)

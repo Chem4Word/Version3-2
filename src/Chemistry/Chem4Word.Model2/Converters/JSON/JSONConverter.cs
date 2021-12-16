@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -187,7 +188,7 @@ namespace Chem4Word.Model2.Converters.JSON
 
         private static void AddMolecule(dynamic data, Model newModel)
         {
-            Dictionary<int, string> atoms = new Dictionary<int, string>();
+            Dictionary<int, Guid> atoms = new Dictionary<int, Guid>();
             var newMol = new Molecule();
             ElementBase ce = Globals.PeriodicTable.C;
             int atomCount = 0;

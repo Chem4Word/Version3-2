@@ -22,9 +22,9 @@ namespace Chem4Word.Model2
     {
         #region Properties
 
-        public string EndAtomInternalId { get; set; }
+        public Guid EndAtomInternalId { get; set; }
 
-        public string StartAtomInternalId { get; set; }
+        public Guid StartAtomInternalId { get; set; }
 
         public Atom EndAtom
         {
@@ -76,7 +76,7 @@ namespace Chem4Word.Model2
 
         public string Id { get; set; }
 
-        public string InternalId { get; }
+        public Guid InternalId { get; }
 
         public override string Path
         {
@@ -670,8 +670,8 @@ namespace Chem4Word.Model2
 
         public Bond()
         {
-            Id = Guid.NewGuid().ToString("D");
-            InternalId = Id;
+            InternalId = Guid.NewGuid();
+            Id = InternalId.ToString("D");
             Messages = new List<string>();
         }
 
@@ -702,12 +702,12 @@ namespace Chem4Word.Model2
             return OtherAtom(a.InternalId);
         }
 
-        private Atom OtherAtom(string aId)
+        private Atom OtherAtom(Guid aId)
         {
             return Parent?.Atoms[OtherAtomID(aId)];
         }
 
-        private string OtherAtomID(string aId)
+        private Guid OtherAtomID(Guid aId)
         {
             if (aId.Equals(StartAtomInternalId))
             {
@@ -719,7 +719,7 @@ namespace Chem4Word.Model2
             }
             else
             {
-                throw new ArgumentException("Atom ID is not part of this Bond.", aId);
+                throw new ArgumentException("Atom ID is not part of this Bond.", aId.ToString("D"));
             }
         }
 

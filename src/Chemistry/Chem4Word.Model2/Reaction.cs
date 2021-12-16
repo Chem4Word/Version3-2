@@ -81,7 +81,7 @@ namespace Chem4Word.Model2
         }
 
         public string Id { get; set; }
-        public string InternalId { get; }
+        public Guid InternalId { get; }
 
         public ReactionScheme Parent { get; set; }
         public bool InhibitEvents { get; private set; }
@@ -102,15 +102,15 @@ namespace Chem4Word.Model2
         }
 
         public double Angle => Vector.AngleBetween(BasicGeometry.ScreenNorth, HeadPoint - TailPoint);
-        public readonly ReadOnlyDictionary<string, Molecule> Reactants;
-        public readonly ReadOnlyDictionary<string, Molecule> Products;
+        public readonly ReadOnlyDictionary<Guid, Molecule> Reactants;
+        public readonly ReadOnlyDictionary<Guid, Molecule> Products;
 
         #endregion Properties
 
         #region Fields
 
-        private Dictionary<string, Molecule> _reactants;
-        private Dictionary<string, Molecule> _products;
+        private Dictionary<Guid, Molecule> _reactants;
+        private Dictionary<Guid, Molecule> _products;
 
         #endregion Fields
 
@@ -129,13 +129,14 @@ namespace Chem4Word.Model2
         public Reaction()
         {
             // first set up the Ids
-            Id = Guid.NewGuid().ToString("D");
-            InternalId = Id;
+            InternalId = Guid.NewGuid();
+            Id = InternalId.ToString("D");
+
             //initialise the collections
-            _reactants = new Dictionary<string, Molecule>();
-            _products = new Dictionary<string, Molecule>();
-            Reactants = new ReadOnlyDictionary<string, Molecule>(_reactants);
-            Products = new ReadOnlyDictionary<string, Molecule>(_products);
+            _reactants = new Dictionary<Guid, Molecule>();
+            _products = new Dictionary<Guid, Molecule>();
+            Reactants = new ReadOnlyDictionary<Guid, Molecule>(_reactants);
+            Products = new ReadOnlyDictionary<Guid, Molecule>(_products);
         }
 
         #endregion Constructors
@@ -208,8 +209,7 @@ namespace Chem4Word.Model2
 
         internal void ReLabelGuids(ref int reactionCount)
         {
-            Guid guid;
-            if (Guid.TryParse(Id, out guid))
+            if (Guid.TryParse(Id, out _))
             {
                 Id = $"r{++reactionCount}";
             }
