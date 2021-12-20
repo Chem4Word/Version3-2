@@ -406,6 +406,9 @@ namespace Chem4Word.Model2.Converters.CML
                 case Globals.ReactionType.Blocked:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueBlocked));
                     break;
+                 case Globals.ReactionType.Resonance:
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueResonance));
+                    break;
             }
             //TODO: add reactants products and substances
             return reactionElement;
@@ -796,6 +799,9 @@ namespace Chem4Word.Model2.Converters.CML
                                 }
                             }
                         }
+                        break;
+                    case CMLConstants.AttrValueResonance:
+                        reaction.ReactionType = Globals.ReactionType.Resonance;
                         break;
                 }
             }

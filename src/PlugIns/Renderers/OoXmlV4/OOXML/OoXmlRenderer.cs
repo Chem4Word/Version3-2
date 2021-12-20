@@ -146,8 +146,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         case Globals.ReactionType.Normal:
                         case Globals.ReactionType.Blocked:
-                            var isBlocked = reaction.ReactionType == Globals.ReactionType.Blocked;
-                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, isBlocked, "000000", OoXmlHelper.ACS_LINE_WIDTH);
+                        case Globals.ReactionType.Resonance:
+                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, "000000", OoXmlHelper.ACS_LINE_WIDTH);
                             break;
 
                         default:
@@ -1521,7 +1521,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             _wordprocessingGroup.Append(wordprocessingShape);
         }
 
-        private void DrawReactionArrow(Point lineStart, Point lineEnd, string reactionPath, bool isCrossed, string lineColour, double lineWidth)
+        private void DrawReactionArrow(Point lineStart, Point lineEnd, string reactionPath, Globals.ReactionType reactionType, string lineColour, double lineWidth)
         {
             var tuple = OffsetPoints(lineStart, lineEnd);
             Point cmlStartPoint = tuple.Start;
@@ -1566,16 +1566,27 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             outline.Append(solidFill);
 
             // Add Arrow Head
-            A.HeadEnd tailEnd = new A.HeadEnd
+            A.HeadEnd headEnd = new A.HeadEnd
             {
                 Type = A.LineEndValues.Triangle,
                 Width = A.LineEndWidthValues.Small,
                 Length = A.LineEndLengthValues.Small
             };
-            outline.Append(tailEnd);
+            outline.Append(headEnd);
+
+            if (reactionType == Globals.ReactionType.Resonance)
+            {
+                A.TailEnd tailEnd = new A.TailEnd
+                {
+                    Type = A.LineEndValues.Triangle,
+                    Width = A.LineEndWidthValues.Small,
+                    Length = A.LineEndLengthValues.Small
+                };
+                outline.Append(tailEnd);
+            }
 
             // Add the cross if required
-            if (isCrossed)
+            if (reactionType == Globals.ReactionType.Blocked)
             {
                 Vector shaftVector = cmlEndPoint - cmlStartPoint;
                 var midpoint = cmlStartPoint + shaftVector * 0.5;

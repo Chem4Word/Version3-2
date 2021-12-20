@@ -243,6 +243,10 @@ namespace Chem4Word.ACME.Adorners.Selectors
                     arrowVisual = new Graphics.BlockedArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
 
+                case Globals.ReactionType.Resonance:
+                    arrowVisual = new Graphics.StraightArrow {StartPoint = newStartPoint, EndPoint = newEndPoint, ArrowEnds=Enums.ArrowEnds.Both};
+                    break;
+
                 default:
                     arrowVisual = new Graphics.StraightArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;

@@ -138,5 +138,32 @@
                 </GeometryDrawing>
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
+         <acme:ReactionOption Id="6" ReactionType="Resonance">
+            <acme:ReactionOption.ReactionGraphic>
+                <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry>
+                            <PathFigure IsClosed="False" StartPoint="0,5">
+                                <LineSegment Point="30,5" />
+                            </PathFigure>
+                            <PathFigure
+                                IsClosed="True"
+                                IsFilled="True"
+                                StartPoint="35,5">
+                                <LineSegment Point="30,3" />
+                                <LineSegment Point="30,7" />
+                            </PathFigure>
+                            <PathFigure
+                                IsClosed="True"
+                                IsFilled="True"
+                                StartPoint="0,5">
+                                <LineSegment Point="5,3" />
+                                <LineSegment Point="5,7" />
+                            </PathFigure>
+                        </PathGeometry>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </acme:ReactionOption.ReactionGraphic>
+        </acme:ReactionOption>
     </x:Array>
 </ResourceDictionary>

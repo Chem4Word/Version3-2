@@ -40,6 +40,7 @@ namespace Chem4Word.Model2.Converters.CML
         public const string AttributeReactionType ="reactionType";
         public const string AttrValueReversible ="reversible";
         public const string AttrValueBlocked = "blocked";
+        public const string AttrValueResonance = "resonance";
         public const string AttributeReactionBias = "reactionBias";
         public const string AttrValueBiasForward="forward";
         public const string AttrValueBiasReverse="reverse";

@@ -36,23 +36,27 @@ namespace Chem4Word.ACME.Drawing
             switch (ParentReaction.ReactionType)
             {
                 case Globals.ReactionType.Reversible:
-                    arrow = new Graphics.EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
+                    arrow = new EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
                     break;
 
                 case Globals.ReactionType.ReversibleBiasedForward:
-                    arrow = new Graphics.EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, Bias = Graphics.EquilibriumBias.Forward };
+                    arrow = new EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, Bias = Graphics.EquilibriumBias.Forward };
                     break;
 
                 case Globals.ReactionType.ReversibleBiasedReverse:
-                    arrow = new Graphics.EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, Bias = Graphics.EquilibriumBias.Backward };
+                    arrow = new EquilibriumArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, Bias = Graphics.EquilibriumBias.Backward };
                     break;
 
                 case Globals.ReactionType.Blocked:
-                    arrow = new Graphics.BlockedArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
+                    arrow = new BlockedArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
+                    break;
+
+                case Globals.ReactionType.Resonance:
+                    arrow = new StraightArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint, ArrowEnds=Enums.ArrowEnds.Both };
                     break;
 
                 default:
-                    arrow = new Graphics.StraightArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
+                    arrow = new StraightArrow { StartPoint = ParentReaction.TailPoint, EndPoint = ParentReaction.HeadPoint };
                     break;
             }
              using (DrawingContext dc = RenderOpen())

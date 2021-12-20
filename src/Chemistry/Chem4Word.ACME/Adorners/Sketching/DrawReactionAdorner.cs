@@ -76,7 +76,9 @@ namespace Chem4Word.ACME.Adorners.Sketching
                 case ReactionType.Blocked:
                     arrowVisual = new Graphics.BlockedArrow { StartPoint = StartPoint, EndPoint = EndPoint };
                     break;
-
+                case ReactionType.Resonance:
+                    arrowVisual = new Graphics.StraightArrow { StartPoint = StartPoint, EndPoint = EndPoint, ArrowEnds=Enums.ArrowEnds.Both };
+                    break;
                 default:
                     arrowVisual = new Graphics.StraightArrow { StartPoint = StartPoint, EndPoint = EndPoint };
                     break;

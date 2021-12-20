@@ -312,7 +312,8 @@ namespace Chem4Word.Model2.Helpers
             Reversible,
             ReversibleBiasedForward,
             ReversibleBiasedReverse,
-            Blocked
+            Blocked,
+            Resonance
         }
         public enum SubstanceRole
         {
