@@ -457,5 +457,9 @@ namespace Chem4Word.ACME
             SelectionButton.Tag = selButton.Tag;
         }
 
+        private void ReagentsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

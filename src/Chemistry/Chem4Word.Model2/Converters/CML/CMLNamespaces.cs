@@ -26,5 +26,7 @@ namespace Chem4Word.Model2.Converters.CML
 
         // ReSharper disable once InconsistentNaming
         public static XNamespace c4w = "http://www.chem4word.com/cml";
+
+        public static XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
     }
 }

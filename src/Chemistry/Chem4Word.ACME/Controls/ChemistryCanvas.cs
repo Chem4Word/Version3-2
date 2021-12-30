@@ -618,7 +618,7 @@ namespace Chem4Word.ACME.Controls
         protected override int VisualChildrenCount => ChemicalVisuals.Count;
 
         //bookkeeping collection
-        protected Dictionary<object, DrawingVisual> ChemicalVisuals { get; }
+        public Dictionary<object, DrawingVisual> ChemicalVisuals { get; }
 
         /// <summary>
         /// Draws the chemistry
@@ -653,7 +653,11 @@ namespace Chem4Word.ACME.Controls
                 rv = (ReactionVisual)ChemicalVisuals[reaction];
                 DeleteVisual(rv);
             }
-            ChemicalVisuals[reaction] = new ReactionVisual(reaction);
+            ChemicalVisuals[reaction] = new ReactionVisual(reaction)
+                                        {
+                                            TextSize = Controller.BlockTextSize,
+                                            ScriptSize = Controller.BlockTextSize * Controller.ScriptScalingFactor
+                                        };
             rv = (ReactionVisual)ChemicalVisuals[reaction];
             rv.ChemicalVisuals = ChemicalVisuals;
             rv.Render();

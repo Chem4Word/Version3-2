@@ -5,6 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Media;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
@@ -16,14 +24,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using IChem4Word.Contracts;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Media;
 using A = DocumentFormat.OpenXml.Drawing;
 using Drawing = DocumentFormat.OpenXml.Wordprocessing.Drawing;
 using Point = System.Windows.Point;
@@ -137,7 +137,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 DrawMoleculeBrackets(moleculeBracket, OoXmlHelper.ACS_LINE_WIDTH, "000000");
             }
 
-            // Render reactions
+            // Render reaction arrows
             foreach (ReactionScheme scheme in _chemistryModel.ReactionSchemes.Values)
             {
                 foreach (Reaction reaction in scheme.Reactions.Values)
@@ -166,9 +166,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                 case Globals.ReactionType.ReversibleBiasedReverse:
                                     CoordinateTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LINE_SHRINK_PIXELS);
                                     break;
+
                                 case Globals.ReactionType.ReversibleBiasedForward:
                                     CoordinateTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LINE_SHRINK_PIXELS);
                                     break;
+
                                 case Globals.ReactionType.Reversible:
                                     break;
                             }
@@ -281,8 +283,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         var innerPoint = point + vector * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE;
                         smallerCircle.Points.Add(innerPoint);
 
-                        Rect extents = new Rect(new Point(innerPoint.X - spotSize, innerPoint.Y - spotSize),
-                                                new Point(innerPoint.X + spotSize, innerPoint.Y + spotSize));
+                        //Rect extents = new Rect(new Point(innerPoint.X - spotSize, innerPoint.Y - spotSize),
+                        //                        new Point(innerPoint.X + spotSize, innerPoint.Y + spotSize))
                         //DrawShape(extents, A.ShapeTypeValues.Ellipse, false, "ff0000", 0.5)
                     }
 
@@ -639,7 +641,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     lines.Add(new SimpleLine(r[3], r[4]));
                 }
 
-                p0 = p0 + step;
+                p0 += step;
                 p1 = p0 + perpendicular;
                 p2 = p0 - perpendicular;
 
@@ -1405,13 +1407,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             path.Append(moveTo);
 
             // Straight Lines
-            foreach (var p in allpoints)
-            {
-                //A.LineTo lineTo = new A.LineTo();
-                //A.Point point = MakePoint(p, cmlExtents);
-                //lineTo.Append(point);
-                //path.Append(lineTo);
-            }
+            //foreach (var p in allpoints)
+            //{
+            //    //A.LineTo lineTo = new A.LineTo();
+            //    //A.Point point = MakePoint(p, cmlExtents);
+            //    //lineTo.Append(point);
+            //    //path.Append(lineTo);
+            //}
 
             // Curved Lines
             for (int i = 0; i < allpoints.Count; i += 3)

@@ -18,6 +18,23 @@ namespace Chem4Word.Model2
 {
     public class Reaction : ChemistryBase, INotifyPropertyChanged
     {
+        #region Internal Constructs
+
+        /// <summary>
+        /// The relative offset of a text block to its reaction arrow.
+        /// Specified as a polar coordinate
+        ///  - fractional length along the arrow (default 0.5)
+        ///  - angle between the start of the arrow and the offset centre
+        /// </summary>
+        public struct TextOffset
+        {
+            // Temporarily commented out as not yet used ...
+            //private double FractionalLength;
+            //private double Angle;
+        }
+
+        #endregion Internal Constructs
+
         #region Properties
 
         private ReactionType _reactionType;
@@ -68,6 +85,7 @@ namespace Chem4Word.Model2
             }
         }
 
+        public TextOffset? ReagentsBlockOffset { get; set; }
         private string _conditionsText;
 
         public string ConditionsText
@@ -79,6 +97,8 @@ namespace Chem4Word.Model2
                 OnPropertyChanged();
             }
         }
+
+        public TextOffset? ConditionsBlockOffset { get; set; }
 
         public string Id { get; set; }
         public Guid InternalId { get; }
@@ -101,7 +121,12 @@ namespace Chem4Word.Model2
             }
         }
 
-        public double Angle => Vector.AngleBetween(BasicGeometry.ScreenNorth, HeadPoint - TailPoint);
+        public double Angle => Vector.AngleBetween(BasicGeometry.ScreenNorth, ReactionVector);
+
+        public Vector ReactionVector => HeadPoint-TailPoint;
+
+        public Point MidPoint => TailPoint + ReactionVector /2;
+
         public readonly ReadOnlyDictionary<Guid, Molecule> Reactants;
         public readonly ReadOnlyDictionary<Guid, Molecule> Products;
 

@@ -23,8 +23,6 @@ namespace Chem4Word.ACME.Drawing
 
         public double SuperscriptSize { get; set; }
 
-        public double Standoff { get; set; }
-
         public FunctionalGroupTextSource(FunctionalGroup parentGroup, string colour, bool isFlipped = false)
         {
             _colour = colour;

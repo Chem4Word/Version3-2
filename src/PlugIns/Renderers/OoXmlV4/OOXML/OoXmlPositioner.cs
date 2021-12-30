@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using System.Xml;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
@@ -51,7 +52,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         public PositionerOutputs Position()
         {
             _hydrogenCharacter = Inputs.TtfCharacterSet['H'];
-            
+
             int moleculeNo = 0;
 
             foreach (Molecule mol in Inputs.Model.Molecules.Values)
@@ -71,7 +72,189 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 #endregion Step 4 - Shrink bond lines
             }
 
+            // Render reaction texts
+            ProcessReactionTexts();
+
+            // We are done now so we can return the final values
             return Outputs;
+        }
+
+        private void ProcessReactionTexts()
+        {
+            foreach (ReactionScheme scheme in Inputs.Model.ReactionSchemes.Values)
+            {
+                foreach (Reaction reaction in scheme.Reactions.Values)
+                {
+                    if (!string.IsNullOrEmpty(reaction.ReagentText))
+                    {
+                        var terms = TermsFromFlowDocument(reaction.ReagentText);
+                        AddReactionCharacters(reaction, scheme.Path, terms, true);
+                    }
+
+                    if (!string.IsNullOrEmpty(reaction.ConditionsText))
+                    {
+                        var terms = TermsFromFlowDocument(reaction.ConditionsText);
+                        AddReactionCharacters(reaction, scheme.Path, terms, false);
+                    }
+                }
+            }
+        }
+
+        private void AddReactionCharacters(Reaction reaction, string schemePath, List<FunctionalGroupTerm> terms,
+                                           bool isReagent = true, TextBlockJustification justification = TextBlockJustification.Centre)
+        {
+            var path = reaction.Path + (isReagent ? "/reagent" : "/conditions");
+
+            const string Black = "000000";
+
+            var lines = new GroupOfCharacters(reaction.MidPoint, path, schemePath,
+                                             Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+
+            // 1. Generate characters
+            foreach (var term in terms)
+            {
+                // 1.1 Measure
+                var measure = new GroupOfCharacters(new Point(0, 0), null, null,
+                                                    Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+                measure.AddParts(term.Parts, Black);
+
+                // 1.2 Apply NewLine with measured offset
+                if (lines.Characters.Any())
+                {
+                    switch (justification)
+                    {
+                        case TextBlockJustification.Left:
+                        lines.NewLine();
+                        break;
+                        case TextBlockJustification.Centre:
+                        lines.NewLine(lines.BoundingBox.Width / 2 - measure.BoundingBox.Width / 2);
+                        break;
+                        case TextBlockJustification.Right:
+                        lines.NewLine(lines.BoundingBox.Width - measure.BoundingBox.Width);
+                        break;
+                    }
+                }
+
+                // 1.3 Add Characters for real
+                lines.AddParts(term.Parts, Black);
+            }
+
+            // 2. Position characters
+
+            // 2.1 Centre group on reaction midpoint
+            lines.AdjustPosition(reaction.MidPoint - lines.Centre);
+            Debug.WriteLine(lines.BoundingBox);
+
+            // 2.2 March away from reaction midpoint
+            var vector = OffsetVector(reaction, isReagent);
+            Debug.WriteLine($"{path} {lines.BoundingBox}");
+
+            bool isOutside;
+            int maxLoops = 0;
+            do
+            {
+                lines.AdjustPosition(vector);
+                var hull = ConvexHull(lines.Characters);
+                isOutside = GeometryTool.IsOutside(reaction.HeadPoint, reaction.TailPoint, hull);
+                Debug.WriteLine($"{path} {lines.BoundingBox} {isOutside} {maxLoops}");
+                if (maxLoops++ >= 10)
+                {
+                    break;
+                }
+            } while (!isOutside);
+            lines.AdjustPosition(vector);
+
+            // 3. Transfer to output
+            foreach (var character in lines.Characters)
+            {
+                Outputs.AtomLabelCharacters.Add(character);
+            }
+
+            // Finally create diagnostics
+            Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(lines.BoundingBox, OoXmlHelper.ACS_LINE_WIDTH / 2), "00b050"));
+            Outputs.ConvexHulls.Add(path, ConvexHull(path));
+        }
+
+        private Vector OffsetVector(Reaction reaction, bool isReagent)
+        {
+            bool arrowIsBackwards = reaction.TailPoint.X > reaction.HeadPoint.X;
+            double perpendicularAngle = 90;
+            if (arrowIsBackwards)
+            {
+                perpendicularAngle = -perpendicularAngle;
+            }
+
+            Matrix rotator = new Matrix();
+            var userOffset = isReagent ? reaction.ReagentsBlockOffset : reaction.ConditionsBlockOffset;
+            if (userOffset is null)
+            {
+                // above or below the arrow
+                if (isReagent)
+                {
+                    rotator.Rotate(-perpendicularAngle);
+                }
+                else
+                {
+                    rotator.Rotate(perpendicularAngle);
+                }
+            }
+            else
+            {
+                // ToDo: Implement
+            }
+
+            // Create the perpendicular vector
+            Vector perpendicularVector = reaction.ReactionVector;
+            perpendicularVector.Normalize();
+            perpendicularVector *= rotator;
+
+            perpendicularVector *= OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE * Inputs.MeanBondLength;
+
+            return perpendicularVector;
+        }
+
+        private List<FunctionalGroupTerm> TermsFromFlowDocument(string flowDocument)
+        {
+            List<FunctionalGroupTerm> result = new List<FunctionalGroupTerm>();
+
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(flowDocument);
+
+            var root = xml.FirstChild.FirstChild;
+            var term = new FunctionalGroupTerm();
+
+            foreach (XmlNode node in root.ChildNodes)
+            {
+                switch (node.LocalName)
+                {
+                    case "Run":
+                        var part = new FunctionalGroupPart();
+                        part.Text = node.InnerText;
+                        if (node.Attributes?["BaselineAlignment"] != null)
+                        {
+                            var alignment = node.Attributes["BaselineAlignment"].Value;
+                            switch (alignment)
+                            {
+                                case "Subscript":
+                                    part.Type = FunctionalGroupPartType.Subscript;
+                                    break;
+
+                                case "Superscript":
+                                    part.Type = FunctionalGroupPartType.Superscript;
+                                    break;
+                            }
+                        }
+                        term.Parts.Add(part);
+                        break;
+
+                    case "LineBreak":
+                        result.Add(term);
+                        term = new FunctionalGroupTerm();
+                        break;
+                }
+            }
+
+            return result;
         }
 
         private void ShrinkBondLinesPass1(Progress pb)
@@ -100,13 +283,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     Point start = new Point(bl.Start.X, bl.Start.Y);
                     Point end = new Point(bl.End.X, bl.End.Y);
 
-                    bool outside;
-                    var r = GeometryTool.ClipLineWithPolygon(start, end, hull.Value, out outside);
+                    bool lineStartsOutsidePolygon;
+                    var r = GeometryTool.ClipLineWithPolygon(start, end, hull.Value, out lineStartsOutsidePolygon);
 
                     switch (r.Length)
                     {
                         case 3:
-                            if (outside)
+                            if (lineStartsOutsidePolygon)
                             {
                                 bl.Start = new Point(r[0].X, r[0].Y);
                                 bl.End = new Point(r[1].X, r[1].Y);
@@ -119,7 +302,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             break;
 
                         case 2:
-                            if (!outside)
+                            if (!lineStartsOutsidePolygon)
                             {
                                 // This line is totally inside so remove it!
                                 Outputs.BondLines.Remove(bl);
@@ -1417,9 +1600,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private List<Point> ConvexHull(string atomPath)
         {
+            var chars = Outputs.AtomLabelCharacters.Where(m => m.ParentAtom == atomPath).ToList();
+            return ConvexHull(chars);
+        }
+
+        private List<Point> ConvexHull(List<AtomLabelCharacter> chars)
+        {
             List<Point> points = new List<Point>();
 
-            var chars = Outputs.AtomLabelCharacters.Where(m => m.ParentAtom == atomPath);
             double margin = OoXmlHelper.CML_CHARACTER_MARGIN;
             foreach (var c in chars)
             {
@@ -1428,20 +1616,20 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 if (c.IsSmaller)
                 {
                     points.Add(new Point(c.Position.X + OoXmlHelper.ScaleCsTtfToCml(c.Character.Width, Inputs.MeanBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR + margin,
-                                        c.Position.Y - margin));
+                                         c.Position.Y - margin));
                     points.Add(new Point(c.Position.X + OoXmlHelper.ScaleCsTtfToCml(c.Character.Width, Inputs.MeanBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR + margin,
-                                        c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR + margin));
+                                         c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR + margin));
                     points.Add(new Point(c.Position.X - margin,
-                                        c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR + margin));
+                                         c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR + margin));
                 }
                 else
                 {
                     points.Add(new Point(c.Position.X + OoXmlHelper.ScaleCsTtfToCml(c.Character.Width, Inputs.MeanBondLength) + margin,
-                                        c.Position.Y - margin));
+                                         c.Position.Y - margin));
                     points.Add(new Point(c.Position.X + OoXmlHelper.ScaleCsTtfToCml(c.Character.Width, Inputs.MeanBondLength) + margin,
-                                        c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) + margin));
+                                         c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) + margin));
                     points.Add(new Point(c.Position.X - margin,
-                                          c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) + margin));
+                                         c.Position.Y + OoXmlHelper.ScaleCsTtfToCml(c.Character.Height, Inputs.MeanBondLength) + margin));
                 }
             }
 

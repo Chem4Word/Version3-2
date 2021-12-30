@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Chem4Word.Model2.Converters.CML
 {
@@ -410,7 +411,21 @@ namespace Chem4Word.Model2.Converters.CML
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueResonance));
                     break;
             }
-            //TODO: add reactants products and substances
+
+            if(!string.IsNullOrEmpty(reaction.ReagentText))
+            {
+                XElement reagentText = new XElement(CMLNamespaces.c4w + CMLConstants.TagReagentText);
+                XElement reagentTextElement = XElement.Parse(reaction.ReagentText);
+                reagentText.Add(reagentTextElement);
+                reactionElement.Add(reagentText);
+            }
+             if(!string.IsNullOrEmpty(reaction.ConditionsText))
+            {
+                XElement conditionsText = new XElement(CMLNamespaces.c4w + CMLConstants.TagConditionsText);
+                 XElement conditionsTextElement = XElement.Parse(reaction.ConditionsText);
+                conditionsText.Add(conditionsTextElement);
+                reactionElement.Add(conditionsText);
+            }
             return reactionElement;
         }
 
@@ -804,6 +819,20 @@ namespace Chem4Word.Model2.Converters.CML
                         reaction.ReactionType = Globals.ReactionType.Resonance;
                         break;
                 }
+            }
+
+            XElement reagentElement = cmlElement.Element(CMLNamespaces.c4w + CMLConstants.TagReagentText);
+            string reagentText = reagentElement.ToString();
+            if(!string.IsNullOrEmpty(reagentText))
+            {
+                reaction.ReagentText = reagentElement.CreateNavigator().InnerXml;
+            }
+
+            XElement conditionsElement = cmlElement.Element(CMLNamespaces.c4w + CMLConstants.TagConditionsText);
+            string conditionsText = conditionsElement.ToString();
+            if(!string.IsNullOrEmpty(reagentText))
+            {
+                reaction.ConditionsText = conditionsElement.CreateNavigator().InnerXml;
             }
             return reaction;
         }

@@ -54,6 +54,8 @@ namespace Chem4Word.Model2.Converters.CML
         public const string TagProductList="productList";
         public const string TagSubstance="substance";
         public const string TagSubstanceList="substanceList";
+        public const string TagReagentText= "reagents";
+        public const string TagConditionsText= "conditions";
         // Atoms
         public const string TagAtomArray = "atomArray";
 

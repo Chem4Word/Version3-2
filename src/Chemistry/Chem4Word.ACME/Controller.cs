@@ -26,12 +26,13 @@ namespace Chem4Word.ACME
         public void SetTextParams(double bondLength)
         {
             SymbolSize = bondLength / 2.0d;
+            BlockTextSize = SymbolSize * 0.7;
         }
 
         #region Properties
 
         public double SymbolSize { get; set; }
-
+        public double BlockTextSize {get; set; }
         public const double ScriptScalingFactor = 0.6;
         public double Standoff => SymbolSize / 6;
         public Model Model { get; }

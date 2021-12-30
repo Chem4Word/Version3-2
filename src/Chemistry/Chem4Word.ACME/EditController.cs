@@ -12,6 +12,7 @@ using Chem4Word.ACME.Commands.Editing;
 using Chem4Word.ACME.Commands.Grouping;
 using Chem4Word.ACME.Commands.Layout.Alignment;
 using Chem4Word.ACME.Commands.Layout.Flipping;
+using Chem4Word.ACME.Commands.Reactions;
 using Chem4Word.ACME.Commands.Sketching;
 using Chem4Word.ACME.Commands.Undo;
 using Chem4Word.ACME.Controls;
@@ -39,6 +40,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -48,6 +50,11 @@ using Constants = Chem4Word.ACME.Resources.Constants;
 
 namespace Chem4Word.ACME
 {
+    /// <summary>
+    /// The master brain of ACME. All editing operations arise from this class.
+    /// We use commands to perform instantaneous operations, such as deletion.
+    /// We use behaviors to put the editor into one mode or another
+    /// </summary>
     public class EditController : Controller, INotifyPropertyChanged
     {
         private static readonly string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
@@ -69,6 +76,9 @@ namespace Chem4Word.ACME
         #region Properties
 
         public bool Loading { get; set; }
+
+        //indicates whether a text editor is active
+        public bool TextEditorIsActive { get; set; }
 
         public string CurrentBondOrder
         {
@@ -513,6 +523,9 @@ namespace Chem4Word.ACME
         public AlignCentresCommand AlignCentresCommand { get; set; }
         public AlignRightsCommand AlignRightsCommand { get; set; }
 
+        public EditReagentsCommand EditReagentsCommand { get; set; }
+        public EditConditionsCommand EditConditionsCommand { get; set; }
+
         #endregion Commands
 
         #region Constructors
@@ -599,6 +612,9 @@ namespace Chem4Word.ACME
             AlignLeftsCommand = new AlignLeftsCommand(this);
             AlignCentresCommand = new AlignCentresCommand(this);
             AlignRightsCommand = new AlignRightsCommand(this);
+
+            EditConditionsCommand = new EditConditionsCommand(this);
+            EditReagentsCommand = new EditReagentsCommand(this);
         }
 
         private void ClipboardMonitor_OnClipboardContentChanged(object sender, EventArgs e)
@@ -1914,6 +1930,9 @@ namespace Chem4Word.ACME
             AlignLeftsCommand.RaiseCanExecChanged();
             AlignCentresCommand.RaiseCanExecChanged();
             AlignRightsCommand.RaiseCanExecChanged();
+
+            EditReagentsCommand.RaiseCanExecChanged();
+            EditConditionsCommand.RaiseCanExecChanged();
         }
 
         public void RemoveAllAdorners()
@@ -2062,7 +2081,7 @@ namespace Chem4Word.ACME
                 else
                 {
                     var r = allReactions.First();
-                    var reactionAdorner = new ReactionSelectionAdorner(CurrentEditor, r);
+                    var reactionAdorner = new ReactionSelectionAdorner(CurrentEditor, CurrentEditor.ChemicalVisuals[r] as ReactionVisual);
                     SelectionAdorners[r] = reactionAdorner;
                     reactionAdorner.MouseLeftButtonDown += SelAdorner_MouseLeftButtonDown;
                 }
@@ -4364,6 +4383,57 @@ namespace Chem4Word.ACME
             MultiTransformMolecules(adjustments, molsToAlign);
             AddToSelection(molsToAlign.Cast<ChemistryBase>().ToList());
             UndoManager.EndUndoBlock();
+        }
+
+        //edits the current reagent block
+        public void EditReagents()
+        {
+            CreateReagentsBlockEditor(SelectedItems[0] as Reaction);
+        }
+
+        private void CreateReagentsBlockEditor(Reaction reaction)
+        {
+            string reagentText = reaction.ReagentText;
+
+            RichTextBox rtb = new RichTextBox();
+            if (reaction.ReagentsBlockOffset is null)
+            {
+               
+               CurrentEditor.Children.Add(rtb);
+               Canvas.SetLeft(rtb, 80);
+                Canvas.SetTop(rtb,80);
+                rtb.Height=80;
+                rtb.Width=80;
+            }
+        }
+
+        private Vector GetDefaultBlockOffset(Reaction reaction, AnnotationEditor annotationEditor, bool goingUp = true)
+        {
+            Vector reactionVector = reaction.HeadPoint - reaction.TailPoint;
+            double desiredOffset = annotationEditor.Height / 2;
+            Vector desiredCentreVector = reactionVector;
+            desiredCentreVector.Normalize();
+            desiredCentreVector *= desiredOffset;
+            Matrix rotator = new Matrix();
+            if (goingUp)
+            {
+                rotator.Rotate(-90);
+            }
+            else
+            {
+                rotator.Rotate(90);
+            }
+            return reactionVector / 2 + desiredCentreVector * rotator;
+        }
+
+        //edits the current conditions block
+        public void EditConditions()
+        {
+            CreateConditionsBlockEditor(SelectedItems[0] as Reaction);
+        }
+
+        private void CreateConditionsBlockEditor(Reaction reaction)
+        {
         }
 
         #endregion Methods

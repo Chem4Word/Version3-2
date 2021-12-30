@@ -41,8 +41,13 @@ namespace Chem4Word.ACME.Drawing
             Render(ParentAtom.Position, ShowInColour ? ParentGroup.Colour : "#000000");
         }
 
+
         private void Render(Point location, string colour)
         {
+            //HERE BE DRAGONS!
+            //Alter this code at your own risk - this is very difficult code
+            //and should be studied carefully before modification
+            // is even considered!
             int textStorePosition = 0;
             bool flipped;
 

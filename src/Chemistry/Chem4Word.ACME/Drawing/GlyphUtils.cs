@@ -37,7 +37,10 @@ namespace Chem4Word.ACME.Drawing
                                                                        FontStyles.Normal,
                                                                        FontWeights.Bold,
                                                                        FontStretches.Normal);
-
+        public static Typeface BlockTypeface { get; } = new Typeface(new FontFamily("Arial"),
+                                                                       FontStyles.Normal,
+                                                                       FontWeights.Normal,
+                                                                       FontStretches.Normal);
         public static Typeface MoleculelabelTypeface { get; } = new Typeface(new FontFamily("Arial"),
                                                                              FontStyles.Normal,
                                                                              FontWeights.Normal,

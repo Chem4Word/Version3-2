@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Renderer.OoXmlV4.OOXML;
 using Chem4Word.Renderer.OoXmlV4.TTF;
@@ -47,11 +48,11 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         private Dictionary<char, TtfCharacter> _characterSet { get; set; }
 
         private Point _cursor;
-        private double _bondLength;
-        private string _atomPath;
-        private string _parentPath;
+        private readonly double _bondLength;
+        private readonly string _atomPath;
+        private readonly string _parentPath;
 
-        private TtfCharacter _hydrogenCharacter;
+        private readonly TtfCharacter _hydrogenCharacter;
 
         public GroupOfCharacters(Point cursor, string atomPath, string parentPath, Dictionary<char, TtfCharacter> characterSet, double bondLength)
         {
@@ -69,6 +70,30 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             foreach (char character in value)
             {
                 AddCharacter(character, colour);
+            }
+        }
+
+        public void AddParts(List<FunctionalGroupPart> parts, string colour)
+        {
+            foreach (var part in parts)
+            {
+                foreach (char c in part.Text)
+                {
+                    switch (part.Type)
+                    {
+                        case FunctionalGroupPartType.Normal:
+                            AddCharacter(c, colour);
+                            break;
+
+                        case FunctionalGroupPartType.Subscript:
+                            AddCharacter(c, colour, true);
+                            break;
+
+                        case FunctionalGroupPartType.Superscript:
+                            AddCharacter(c, colour, isSuperScript: true);
+                            break;
+                    }
+                }
             }
         }
 
@@ -138,6 +163,12 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             _boundingBox.Offset(adjust);
         }
 
+        public void NewLine(double xOffset = 0)
+        {
+            _cursor = BoundingBox.BottomLeft;
+            _cursor.Offset(xOffset, OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Height * 1.25, _bondLength));
+        }
+
         public void Nudge(CompassPoints direction, double pixels = 0)
         {
             double moveBy = pixels;
@@ -145,7 +176,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             {
                 moveBy = _bondLength / 16;
             }
-            
+
             var destination = Centre;
             switch (direction)
             {
@@ -165,9 +196,13 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
                     destination = new Point(Centre.X - moveBy, Centre.Y);
                     break;
             }
-            
+
             AdjustPosition(destination - Centre);
         }
+
+        // Add the (negative) OriginY to raise the character by it
+        private Point GetCharacterPosition(Point cursorPosition, TtfCharacter character) =>
+            new Point(cursorPosition.X, cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, _bondLength));
 
         public override string ToString()
         {
@@ -179,9 +214,5 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             sb.Append($"size {SafeDouble.AsString4(BoundingBox.Size.Width)}x{SafeDouble.AsString4(BoundingBox.Size.Height)}");
             return sb.ToString();
         }
-
-        // Add the (negative) OriginY to raise the character by it
-        private Point GetCharacterPosition(Point cursorPosition, TtfCharacter character) =>
-            new Point(cursorPosition.X, cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, _bondLength));
     }
 }

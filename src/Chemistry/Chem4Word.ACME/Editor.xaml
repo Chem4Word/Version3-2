@@ -1,14 +1,14 @@
 ﻿<UserControl
     x:Class="Chem4Word.ACME.Editor"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:acme="clr-namespace:Chem4Word.ACME"
     xmlns:behaviors="clr-namespace:Chem4Word.ACME.Behaviors"
     xmlns:control="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="AcmeControl"
     Width="1024"
     Height="768"
@@ -23,7 +23,16 @@
                 <ResourceDictionary Source="Resources/ControlStyles.xaml" />
                 <ResourceDictionary Source="Resources/ACMEResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
+            <Style x:Key="MainTextStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="FontSize" Value="7" />
+                <Setter Property="FontFamily" Value="Calibri" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="SubscriptStyle" TargetType="{x:Type Run}">
+                <Setter Property="FontSize" Value="3.5" />
+                <Setter Property="FontFamily" Value="Calibri" />
+                <Setter Property="BaselineAlignment" Value="Subscript" />
+            </Style>
             <converters:DoNothingConverter x:Key="DoNothing" />
             <!--  styles  -->
             <Style TargetType="{x:Type control:ZoomBox}">
@@ -360,7 +369,7 @@
                     </Style.Triggers>
                 </Style>
             </ToolBarTray.Resources>
-            <ToolBar x:Name="SelectorToolbar" Height="40">
+            <ToolBar x:Name="SelectorToolbar" Height="40" ToolTip="Drawing">
                 <ComboBox
                     x:Name="AtomCombo"
                     Width="Auto"
@@ -771,19 +780,9 @@
                     Click="ModeButton_OnChecked"
                     GroupName="Actions"
                     Style="{StaticResource ToolbarButtonStyle}"
-                    TextBlock.FontSize="6"
+                    HorizontalContentAlignment="Center"
                     ToolTip="Draw Reaction">
                     <RadioButton.Resources>
-                        <Style x:Key="MainTextStyle" TargetType="{x:Type TextBlock}">
-                            <Setter Property="FontSize" Value="7" />
-                            <Setter Property="FontFamily" Value="Arial" />
-                            <Setter Property="HorizontalAlignment" Value="Center" />
-                        </Style>
-                        <Style x:Key="SubscriptStyle" TargetType="{x:Type Run}">
-                            <Setter Property="FontSize" Value="3.5" />
-                            <Setter Property="FontFamily" Value="Arial" />
-                            <Setter Property="BaselineAlignment" Value="Subscript" />
-                        </Style>
                     </RadioButton.Resources>
                     <Viewbox Stretch="Uniform">
                         <Grid>
@@ -800,22 +799,25 @@
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
+                                Padding="0,0,0,2"
                                 Style="{StaticResource MainTextStyle}">
                                 NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
                             </TextBlock>
                             <graphics:StraightArrow
                                 Grid.Row="1"
                                 Grid.Column="1"
+                                
                                 ArrowHeadClosed="True"
                                 Fill="Black"
                                 HeadAngle="35"
                                 HeadLength="2"
                                 Stroke="Black"
                                 StrokeThickness="0.75"
-                                StartPoint="0,0"
-                                EndPoint="15,0" />
+                                StartPoint="0,2"
+                                EndPoint="12,2" />
                             <TextBlock
                                 Grid.Row="2"
+                                Padding="0,2"
                                 Grid.Column="1"
                                 Style="{StaticResource MainTextStyle}">H<Run Style="{StaticResource SubscriptStyle}">2</Run>O</TextBlock>
                         </Grid>
@@ -1057,7 +1059,8 @@
                 x:Name="ReactionToolbar"
                 Width="Auto"
                 Height="40"
-                Band="2"
+                Band="1"
+                ToolTip="Reactions"
                 BandIndex="1">
                 <ComboBox
                     Name="ReactionSelector"
@@ -1066,6 +1069,7 @@
                     ItemsSource="{StaticResource ReactionOptions}"
                     SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveController.SelectedReactionType, Mode=TwoWay}"
                     SelectedValuePath="ReactionType"
+                    ToolTip="Reaction Type"
                     Style="{StaticResource StandardCombo}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -1081,10 +1085,89 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                <Separator />
+                <ToggleButton
+                    x:Name="ReagentsButton"
+                    TextBlock.FontSize="6"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.EditReagentsCommand}"
+                    ToolTip="Edit reagents">
+                    <Viewbox Stretch="Uniform">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="8"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Padding="0,0,0,1"
+                                Style="{StaticResource MainTextStyle}" HorizontalAlignment="Right">
+                                NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
+                            </TextBlock>
+                            <graphics:StraightArrow
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                ArrowHeadClosed="True"
+                                Fill="Black"
+                                HeadAngle="35"
+                                HeadLength="2"
+                                Stroke="Black"
+                                StrokeThickness="0.75"
+                                StartPoint="0,1"
+                                EndPoint="13,1" />
+                            <Rectangle  Grid.Column="1" Grid.Row="2" Width="6" Height="6" Fill="LightGray" Margin="2" />
+                        </Grid>
+                    </Viewbox>
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="ConditionsButton"
+                    TextBlock.FontSize="6"
+                    ToolTip="Edit conditions"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.EditConditionsCommand}">
+                    <Viewbox Stretch="Uniform">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="8"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Style="{StaticResource MainTextStyle}">
+                                H<Run Style="{StaticResource SubscriptStyle}">2</Run>O
+                            </TextBlock>
+                            <graphics:StraightArrow
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                ArrowHeadClosed="True"
+                                Fill="Black"
+                                HeadAngle="35"
+                                HeadLength="2"
+                                Stroke="Black"
+                                StrokeThickness="0.75"
+                                StartPoint="0,1"
+                                EndPoint="12,1" />
+                            <Rectangle Grid.Column="1" Grid.Row="0" Width="6" Height="6" Fill="LightGray" Margin="2" />
+                        </Grid>
+                    </Viewbox>
+                </ToggleButton>
             </ToolBar>
             <ToolBar
                 x:Name="AlignToolbar"
-                Band="2"
+                Band="1"
+                ToolTip="Align objects"
                 BandIndex="2">
                 <Button
                     x:Name="AlignLeftButton"
@@ -1209,13 +1292,90 @@
                         </Grid>
                     </Viewbox>
                 </Button>
+                <Separator />
+            </ToolBar>
+            <ToolBar x:Name="FormattingToolbar"
+                Band="1"
+                ToolTip="Formatting"
+                BandIndex="3">
+                <RadioButton Style="{StaticResource ToolbarButtonStyle}" HorizontalContentAlignment="Center">
+                    <Viewbox  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                        <Grid>
+                            <Path Data="M13.192001,0L32,0 31.286011,1.6350098 30.821014,1.6350098C29.375,1.6350098 28.481003,1.7249756 27.915009,1.9199829 26.999008,2.2049561 26.307007,2.5949707 25.847,3.0899658 25.347,3.6149902 24.690002,4.8609619 23.879013,6.7659912L15.977005,25.593994C15.105011,27.69397 14.925003,28.503967 14.925003,28.803955 14.925003,29.10498 15.024002,29.344971 15.236008,29.554993 15.447006,29.75 15.804001,29.914978 16.304001,30.034973 16.692001,30.125 17.649002,30.26001 20,30.36499L20.719009,30.394958 20.024002,32 0,32 0.90100098,30.36499 1.2890015,30.36499C3.526001,30.334961 4.4330139,30.184998 4.8010101,30.079956 5.7000122,29.839966 6.3510132,29.524963 6.7470093,29.133972 7.4480133,28.44397 8.1940002,27.18396 8.9560089,25.383972L16.891006,6.5410156C17.548004,5.026001 17.879013,3.8709717 17.879013,3.1049805 17.879013,2.789978 17.772003,2.5349731 17.548004,2.3250122 17.331009,2.1149902 16.974014,1.9500122 16.494003,1.8299561 16.128006,1.7399902 15.265015,1.6350098 13.205002,1.6350098L12.416,1.6350098z" Stretch="Uniform" Fill="Black" Width="12" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </RadioButton>
+                <RadioButton Style="{StaticResource ToolbarButtonStyle}" HorizontalContentAlignment="Center">
+                    <Viewbox  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                        <Grid>
+                            <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
+                                <Rectangle Fill="Transparent" Name="Rect" Visibility="Visible" />
+                            </Grid>
+                            <Path Data="M6.4600046,18.050003L6.4600046,26.610001 12.441998,26.610001C14.77,26.610001 16.247004,26.540001 16.872996,26.410004 17.833994,26.235001 18.615,25.809998 19.219996,25.135002 19.824,24.459999 20.126993,23.550003 20.126993,22.415001 20.126993,21.455002 19.893,20.639999 19.426005,19.970001 18.960993,19.305 18.288004,18.815002 17.409006,18.510002 16.527994,18.205002 14.617,18.050003 11.678005,18.050003z M6.4600046,5.3249969L6.4600046,12.724998 10.695996,12.724998C13.212993,12.724998 14.777004,12.690002 15.387996,12.614998 16.493998,12.485001 17.365,12.105003 17.997004,11.470001 18.629999,10.840004 18.947001,10.004997 18.947001,8.9700012 18.947001,7.9800034 18.674006,7.1800003 18.128,6.5599976 17.583002,5.9400024 16.771006,5.5650024 15.695995,5.4349976 15.055003,5.3600006 13.212993,5.3249969 10.171993,5.3249969z M0,0L12.790997,0C15.324001,0 17.212,0.10499954 18.456003,0.31499863 19.699991,0.52500153 20.814005,0.96500015 21.795998,1.6350021 22.777992,2.3050003 23.596993,3.1949997 24.251992,4.3099976 24.90699,5.4250031 25.232994,6.6699982 25.232994,8.0550003 25.232994,9.5500031 24.829003,10.925003 24.023003,12.18 23.213997,13.43 22.118996,14.370003 20.738001,14.995003 22.687004,15.565002 24.185997,16.529999 25.232994,17.900002 26.28199,19.264999 26.805001,20.875 26.805001,22.724998 26.805001,24.18 26.467003,25.595001 25.790993,26.970001 25.113991,28.345001 24.189003,29.445 23.017998,30.264999 21.846993,31.084999 20.402003,31.595001 18.685999,31.779999 17.609003,31.900002 15.010005,31.970001 10.893002,32L0,32z" Stretch="Uniform" Fill="Black" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </RadioButton>
+                <RadioButton Style="{StaticResource ToolbarButtonStyle}" HorizontalContentAlignment="Center">
+                    <Viewbox  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                        <Grid Height="32" Width="32">
+                            <Path Data="M27.875,11.07201C29.158997,11.07201 30.162003,11.412005 30.897995,12.091998 31.625992,12.774004 31.998001,13.624986 31.998001,14.637009 31.998001,15.215011 31.888,15.764997 31.684998,16.289991 31.472,16.811994 31.140991,17.355999 30.686996,17.926983 30.384995,18.306988 29.83699,18.853006 29.057999,19.564005 28.270996,20.271006 27.772003,20.746986 27.563995,20.979988 27.354004,21.21598 27.181992,21.441994 27.054001,21.663002L32,21.663002 31.996994,21.665993 31.996994,23.952001 23.268997,23.952001C23.365997,23.088995 23.649002,22.265999 24.121002,21.495003 24.595001,20.724983 25.524994,19.700998 26.919998,18.422008 28.039993,17.388988 28.729996,16.689009 28.985992,16.322004 29.32399,15.814985 29.498993,15.310012 29.498993,14.814986 29.498993,14.264999 29.348999,13.844987 29.050995,13.551011 28.753998,13.254014 28.341003,13.108994 27.813995,13.108994 27.297989,13.108994 26.882004,13.262986 26.57399,13.571 26.270996,13.880998 26.091003,14.395004 26.043991,15.113997L23.561996,14.866988C23.709991,13.517991 24.175995,12.541002 24.955994,11.952014 25.733002,11.364001 26.707993,11.07201 27.875,11.07201z M0.32299805,0L7.2720032,0 11.07399,5.9120115 15.080002,0 21.761002,0 14.47699,10.180989 22.432999,21.484993 15.447998,21.484993 11.071991,14.831984 6.6609955,21.486977 0,21.486977 0.00099182129,21.486 7.7549896,10.421009z" Stretch="Uniform" Fill="Black" Width="15" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
+                                            <TranslateTransform X="0" Y="2" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </RadioButton>
+                <RadioButton  Style="{StaticResource ToolbarButtonStyle}" HorizontalContentAlignment="Center">
+                    <Viewbox  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                        <Grid>
+                            <Path Data="M0.31499481,8.4949982L7.1100006,8.4949982 10.833,14.274999 14.756996,8.4949982 21.299995,8.4949982 14.162994,18.454017 21.951996,29.52 15.119995,29.52 10.834999,23.006997 6.5149994,29.52 0,29.52 7.5859985,18.691993z M27.960999,0C29.218994,-2.2532367E-07 30.198997,0.33200063 30.918999,1.0020141 31.631996,1.6700138 31.994995,2.5020149 31.994995,3.4960031 31.994995,4.0599987 31.889,4.5979936 31.686996,5.1080034 31.480995,5.6180131 31.156998,6.1520102 30.710999,6.7139914 30.417,7.0880148 29.883995,7.6220119 29.117996,8.3200104 28.349998,9.0159943 27.860001,9.4760163 27.653999,9.703006 27.449997,9.9350006 27.283997,10.160007 27.156998,10.369998L31.995995,10.369998 31.995995,12.61002 23.454994,12.61002C23.543999,11.767002 23.823997,10.963993 24.283997,10.204013 24.747993,9.4509919 25.659996,8.4440033 27.028,7.1919882 28.124001,6.1839926 28.797997,5.498018 29.043999,5.135988 29.379997,4.6390092 29.549995,4.1480114 29.549995,3.6660166 29.549995,3.126008 29.405998,2.7130134 29.110001,2.4259953 28.818001,2.1359868 28.412994,1.9920049 27.903,1.9920049 27.389999,1.9920049 26.987,2.1459966 26.686996,2.4479985 26.386993,2.7520149 26.218994,3.2550058 26.167,3.9580088L23.738998,3.7160044C23.881996,2.3900154 24.338997,1.4419864 25.101997,0.86401366 25.867996,0.28698717 26.818001,-2.2532367E-07 27.960999,0z" Stretch="Uniform" Fill="Black" Width="12" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>                                          
+                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
+                                            <TranslateTransform X="0" Y="-1.5" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                </RadioButton>
+                <RadioButton  Style="{StaticResource ToolbarButtonStyle}" HorizontalContentAlignment="Center">
+                    <TextBlock FontWeight="Bold" FontFamily="Arial" ><Run Foreground="DarkRed">°</Run>C</TextBlock>
+                </RadioButton>
+                <RadioButton Style="{StaticResource ToolbarButtonStyle}" HorizontalContentAlignment="Center">
+                    <TextBlock HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Symbol" >D</TextBlock>
+                </RadioButton>
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Row="1" Height="Auto">
             <Grid.Resources>
                 <converters:DoNothingConverter x:Key="SnoopConverter" />
             </Grid.Resources>
-            <!--  actual drawing area  -->
+            <!--  scrolls the drawing area  -->
             <ScrollViewer
                 Name="DrawingArea"
                 Width="Auto"
@@ -1223,12 +1383,23 @@
                 Background="White"
                 HorizontalScrollBarVisibility="Auto"
                 VerticalScrollBarVisibility="Auto">
-                <control:EditorCanvas
+                <!-- the HostingCanvas is purely to field controls that cannot be hosted on 
+                the ChemCanvas, such as the reagent/conditions editor. 
+                The coordinate system maps to that of the ChemCanvas -->
+                <Canvas x:Name="HostingCanvas" 
+                        MinHeight="{Binding ElementName=ChemCanvas, Path=MinHeight}"
+                        MinWidth="{Binding ElementName=ChemCanvas, Path=MinWidth}"
+                        Height="{Binding ElementName=ChemCanvas, Path=Height}"
+                        Width="{Binding ElementName=ChemCanvas, Path=Width}">
+                    <!-- this is the drawing surface-->
+                    <control:EditorCanvas
                     x:Name="ChemCanvas"
-                    MinWidth="2000"
-                    MinHeight="1500"
+                    MinWidth="3000"
+                    MinHeight="2250"
                     Background="White"
-                    DisplayOverbondedAtoms="True" />
+                    DisplayOverbondedAtoms="True">
+                    </control:EditorCanvas>
+                </Canvas>
             </ScrollViewer>
             <control:ZoomBox
                 x:Name="ZoomBox"

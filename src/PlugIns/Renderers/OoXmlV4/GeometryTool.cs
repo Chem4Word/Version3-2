@@ -1,5 +1,4 @@
-﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+﻿//  Copyright (c) 2021, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -9,21 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Chem4Word.Model2;
 
 namespace Chem4Word.Renderer.OoXmlV4
 {
     /// <summary>
     /// Methods to calculate various values derived from sets of atoms/bonds etc
     /// </summary>
-    internal class GeometryTool
+    public static class GeometryTool
     {
-        // For debugging.
-        private static Point[] _minMaxCorners;
-
-        private static Rect _minMaxBox;
-        private static Point[] _nonCulledPoints;
-
         // modified from http://csharphelper.com/blog/2014/07/find-the-convex-hull-of-a-set-of-points-in-c/
 
         // Return the points that make up a polygon's convex hull.
@@ -46,8 +38,10 @@ namespace Chem4Word.Renderer.OoXmlV4
             }
 
             // Move this point to the convex hull.
-            List<Point> hull = new List<Point>();
-            hull.Add(bestPt);
+            List<Point> hull = new List<Point>
+                               {
+                                   bestPt
+                               };
             points.Remove(bestPt);
 
             // Start wrapping up the other points.
@@ -132,8 +126,6 @@ namespace Chem4Word.Renderer.OoXmlV4
                     lr = pt;
                 }
             }
-
-            _minMaxCorners = new Point[] { ul, ur, lr, ll }; // For debugging.
         }
 
         // Find a box that fits inside the MinMax quadrilateral.
@@ -175,7 +167,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             {
                 result = new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
             }
-            _minMaxBox = result;    // For debugging.
+
             return result;
         }
 
@@ -203,14 +195,12 @@ namespace Chem4Word.Renderer.OoXmlV4
                     results.Add(pt);
                 }
             }
-
-            _nonCulledPoints = new Point[results.Count];   // For debugging.
-            results.CopyTo(_nonCulledPoints);              // For debugging.
+            
             return results;
         }
 
         // Return a number that gives the ordering of angles
-        // WRST horizontal from the point (x1, y1) to (x2, y2).
+        // WEST horizontal from the point (x1, y1) to (x2, y2).
         // In other words, AngleValue(x1, y1, x2, y2) is not
         // the angle, but if:
         //   Angle(x1, y1, x2, y2) > Angle(x1, y1, x2, y2)
@@ -251,7 +241,7 @@ namespace Chem4Word.Renderer.OoXmlV4
         // http://csharphelper.com/blog/2016/01/clip-a-line-segment-to-a-polygon-in-c/
 
         // Return points where the segment enters and leaves the polygon.
-        public static Point[] ClipLineWithPolygon(Point point1, Point point2, List<Point> points, out bool startsOutsidePolygon)
+        public static Point[] ClipLineWithPolygon(Point point1, Point point2, List<Point> points, out bool lineStartsOutsidePolygon)
         {
             // Make lists to hold points of
             // intersection and their t values.
@@ -261,7 +251,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             // Add the segment's starting point.
             intersections.Add(point1);
             tValues.Add(0f);
-            startsOutsidePolygon = !PointIsInPolygon(point1.X, point1.Y, points.ToArray());
+            lineStartsOutsidePolygon = !PointIsInPolygon(point1.X, point1.Y, points.ToArray());
 
             // Examine the polygon's edges.
             for (int i1 = 0; i1 < points.Count; i1++)
@@ -327,6 +317,22 @@ namespace Chem4Word.Renderer.OoXmlV4
             // if the point is outside the polygon.
             // The following statement was changed. See the comments.
             return (Math.Abs(totalAngle) > 1);
+        }
+
+        // https://stackoverflow.com/questions/1119451/how-to-tell-if-a-line-intersects-a-polygon-in-c
+        public static bool IsOutside(Point lineP1, Point lineP2, List<Point> region)
+        {
+            if (region == null || !region.Any())
+            {
+                return true;
+            }
+            var side = GetSide(lineP1, lineP2, region.First());
+            return side != 0 && region.All(x => GetSide(lineP1, lineP2, x) == side);
+        }
+
+        public static int GetSide(Point lineP1, Point lineP2, Point queryP)
+        {
+            return Math.Sign((lineP2.X - lineP1.X) * (queryP.Y - lineP1.Y) - (lineP2.Y - lineP1.Y) * (queryP.X - lineP1.X));
         }
 
         // Return the angle ABC.

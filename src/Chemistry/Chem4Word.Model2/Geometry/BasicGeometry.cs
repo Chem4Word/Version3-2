@@ -47,9 +47,9 @@ namespace Chem4Word.Model2.Geometry
                     throw new ArgumentException("coincident points in GetAngle");
                 }
 
-                Vector from = point0.Value - point1.Value;
-                Vector to = point2.Value - point1.Value;
-                angle = Vector.AngleBetween(from, to);
+                Vector fromVector = point0.Value - point1.Value;
+                Vector toVector = point2.Value - point1.Value;
+                angle = Vector.AngleBetween(fromVector, toVector);
             }
 
             return angle;
@@ -203,9 +203,9 @@ namespace Chem4Word.Model2.Geometry
             var points = hull.ToArray();
 
             Path path = new Path
-            {
-                StrokeThickness = 0.0,
-            };
+                        {
+                            StrokeThickness = 0.0,
+                        };
 
             if (points.Length == 0)
             {
@@ -218,18 +218,18 @@ namespace Chem4Word.Model2.Geometry
                 pathSegments.Add(new LineSegment(points[i], true));
             }
             path.Data = new PathGeometry
-            {
-                Figures = new PathFigureCollection
-                {
-                    new PathFigure
-                    {
-                        StartPoint = points[0],
-                        Segments = pathSegments,
-                        IsClosed = isClosed,
-                        IsFilled = true
-                    }
-                }
-            };
+                        {
+                            Figures = new PathFigureCollection
+                                      {
+                                          new PathFigure
+                                          {
+                                              StartPoint = points[0],
+                                              Segments = pathSegments,
+                                              IsClosed = isClosed,
+                                              IsFilled = true
+                                          }
+                                      }
+                        };
 
             return path;
         }
@@ -361,6 +361,62 @@ namespace Chem4Word.Model2.Geometry
                 result[i] = new Point(fig.Left + fig.Width / 2.0, fig.Top + fig.Height / 2.0);
             }
             return result;
+        }
+
+        
+        //determines whether a rectangle clips a line
+        public static bool RectClips(Rect rect, Point startPoint, Point endPoint)
+        {
+            Point? intersection;
+            intersection = LineSegmentsIntersect(rect.TopLeft, rect.TopRight, startPoint, endPoint);
+            if (intersection != null)
+            {
+                return true;
+            }
+            intersection = LineSegmentsIntersect(rect.TopRight, rect.BottomRight, startPoint, endPoint);
+            if (intersection != null)
+            {
+                return true;
+            }
+
+            intersection = LineSegmentsIntersect(rect.BottomRight, rect.BottomLeft, startPoint, endPoint);
+            if (intersection != null)
+            {
+                return true;
+            }
+
+            intersection = LineSegmentsIntersect(rect.BottomLeft, rect.TopLeft, startPoint, endPoint);
+            if (intersection != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        //determines the point at which a line drawn into a block clips the boundary
+
+        public static Point? GetClippingPoint(Rect blockBounds, Point blockCentre, Point rectMidPoint)
+        {
+            Point? intersection;
+            intersection = LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.TopLeft, blockBounds.TopRight);
+            if (intersection is null)
+            {
+                intersection = LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.TopRight, blockBounds.BottomRight);
+            }
+
+            if (intersection is null)
+            {
+                intersection =
+                    LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.BottomRight, blockBounds.BottomLeft);
+            }
+
+            if (intersection is null)
+            {
+                intersection = LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.BottomLeft, blockBounds.TopLeft);
+            }
+
+            return intersection;
         }
     }
 }
