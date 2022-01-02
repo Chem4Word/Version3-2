@@ -113,7 +113,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
                 if (isSmaller)
                 {
                     // Assume that it's SubScript so move it down by drop factor
-                    thisCharacterPosition.Offset(0, OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Height * OoXmlHelper.SUBSCRIPT_DROP_FACTOR, _bondLength));
+                    thisCharacterPosition.Offset(0, OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Height * OoXmlHelper.SubscriptDropFactor, _bondLength));
 
                     // If it is SuperScript move it back up by height of 'H'
                     if (isSuperScript)
@@ -133,8 +133,8 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
                 if (isSmaller)
                 {
-                    size.Width *= OoXmlHelper.SUBSCRIPT_SCALE_FACTOR;
-                    size.Height *= OoXmlHelper.SUBSCRIPT_SCALE_FACTOR;
+                    size.Width *= OoXmlHelper.SubscriptScaleFactor;
+                    size.Height *= OoXmlHelper.SubscriptScaleFactor;
                 }
 
                 Rect thisBoundingBox = new Rect(thisCharacterPosition, size);
@@ -144,7 +144,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
                 // We ought to be able to use ttfCharacter.IncrementX, but this does not work with strings such as "Bowl"
                 if (isSmaller)
                 {
-                    _cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.IncrementX, _bondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR, 0);
+                    _cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.IncrementX, _bondLength) * OoXmlHelper.SubscriptScaleFactor, 0);
                 }
                 else
                 {

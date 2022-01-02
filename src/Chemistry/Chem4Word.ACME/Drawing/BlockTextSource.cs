@@ -14,8 +14,8 @@ namespace Chem4Word.ACME.Drawing
 {
     public class BlockTextSource : TextSource
     {
-        private string _colour;
-        private List<LabelTextSourceRun> _runs = new List<LabelTextSourceRun>();
+        private readonly string _colour;
+        private readonly List<LabelTextSourceRun> _runs = new List<LabelTextSourceRun>();
         public string Text { get; private set; }
         public int MaxLineLength { get; private set; }
 

@@ -96,7 +96,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         private double BondOffset(double medianBondLength)
         {
-            return medianBondLength * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE;
+            return medianBondLength * OoXmlHelper.MultipleBondOffsetPercentage;
         }
 
         public List<Point> WedgeOutline()

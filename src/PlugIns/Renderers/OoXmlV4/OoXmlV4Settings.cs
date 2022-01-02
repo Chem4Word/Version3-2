@@ -193,7 +193,6 @@ namespace Chem4Word.Renderer.OoXmlV4
             ShowHydrogens.Checked = RendererOptions.ShowHydrogens;
             ShowAllCarbonAtoms.Checked = RendererOptions.ShowCarbons;
             ShowMoleculeCaptions.Checked = RendererOptions.ShowMoleculeCaptions;
-            RenderCaptionsAsTextBox.Checked = RendererOptions.RenderCaptionsAsTextBox;
 
             // Debugging Options
             ClipLines.Checked = RendererOptions.ClipLines;
@@ -298,7 +297,6 @@ namespace Chem4Word.Renderer.OoXmlV4
             try
             {
                 RendererOptions.ShowMoleculeCaptions = ShowMoleculeCaptions.Checked;
-                RenderCaptionsAsTextBox.Enabled = ShowMoleculeCaptions.Checked;
                 _dirty = true;
             }
             catch (Exception ex)
@@ -344,21 +342,6 @@ namespace Chem4Word.Renderer.OoXmlV4
             try
             {
                 RendererOptions.ShowBondDirection = ShowBondDirection.Checked;
-                _dirty = true;
-            }
-            catch (Exception ex)
-            {
-                new ReportError(Telemetry, TopLeft, module, ex).ShowDialog();
-            }
-        }
-
-        private void RenderCaptionsAsTextBox_CheckedChanged(object sender, EventArgs e)
-        {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-
-            try
-            {
-                RendererOptions.RenderCaptionsAsTextBox = RenderCaptionsAsTextBox.Checked;
                 _dirty = true;
             }
             catch (Exception ex)

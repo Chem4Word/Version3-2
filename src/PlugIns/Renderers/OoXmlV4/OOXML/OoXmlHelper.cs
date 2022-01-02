@@ -16,34 +16,36 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         // http://lcorneliussen.de/raw/dashboards/ooxml/
 
         // Fixed values
-        public const int EMUS_PER_WORD_POINT = 12700;
+        public const int EmusPerWordPoint = 12700;
+
+        public const string Black = "000000";
 
         // Margins are in CML Points
-        public const double DRAWING_MARGIN = 5; // 5 is a good value to use (Use 0 to compare with AMC diagrams)
+        public const double DrawingMargin = 5; // 5 is a good value to use (Use 0 to compare with AMC diagrams)
 
-        public const double CML_CHARACTER_MARGIN = 1.25; // margin in cml pixels
+        public const double CmlCharacterMargin = 1.25; // margin in cml pixels
 
-        public const double SUBSCRIPT_SCALE_FACTOR = 0.6;
-        public const double SUBSCRIPT_DROP_FACTOR = 0.75;
-        public const double CS_SUPERSCRIPT_RAISE_FACTOR = 0.3;
+        public const double SubscriptScaleFactor = 0.6;
+        public const double SubscriptDropFactor = 0.75;
+        public const double CsSuperscriptRaiseFactor = 0.3;
 
-        private const double BRACKET_OFFSET_PERCENTAGE = 0.2;
+        private const double BracketOffsetPercentage = 0.2;
 
         // Percentage of average (median) bond length
         // V3 == 0.2 -> ACS == 0.18
-        public const double MULTIPLE_BOND_OFFSET_PERCENTAGE = 0.18;
+        public const double MultipleBondOffsetPercentage = 0.18;
 
-        public const double LINE_SHRINK_PIXELS = 1.75; // cml pixels
+        public const double LineShrinkPixels = 1.75; // cml pixels
 
         // V3 == 0.75 -> ACS == 0.6
         // This makes bond line width equal to ACS Guide of 0.6pt
-        public const double ACS_LINE_WIDTH = 0.6;
+        public const double AcsLineWidth = 0.6;
 
-        public const double ACS_LINE_WIDTH_EMUS = ACS_LINE_WIDTH * EMUS_PER_WORD_POINT;
+        public const double AcsLineWidthEmus = AcsLineWidth * EmusPerWordPoint;
 
         // V3 == 9500 -> ACS == 9144
         // This makes cml bond length of 20 equal ACS guide 0.2" (0.508cm)
-        private const double EMUS_PER_CML_POINT = 9144;
+        private const double EmusPerCmlPoint = 9144;
 
         /// <summary>
         /// Scales a CML X or Y co-ordinate to DrawingML Units (EMU)
@@ -52,13 +54,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <returns></returns>
         public static Int64Value ScaleCmlToEmu(double XorY)
         {
-            double scaled = XorY * EMUS_PER_CML_POINT;
+            double scaled = XorY * EmusPerCmlPoint;
             return Int64Value.FromInt64((long)scaled);
         }
 
         public static double BracketOffset(double bondLength)
         {
-            return Math.Round(bondLength) * BRACKET_OFFSET_PERCENTAGE;
+            return Math.Round(bondLength) * BracketOffsetPercentage;
         }
 
         #region C# TTF
@@ -127,11 +129,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             if (bondLength > 0.1)
             {
-                return EmusPerCsTtfPoint(Math.Round(bondLength)) * SUBSCRIPT_SCALE_FACTOR;
+                return EmusPerCsTtfPoint(Math.Round(bondLength)) * SubscriptScaleFactor;
             }
             else
             {
-                return EmusPerCsTtfPoint(20) * SUBSCRIPT_SCALE_FACTOR;
+                return EmusPerCsTtfPoint(20) * SubscriptScaleFactor;
             }
         }
 
@@ -139,11 +141,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             if (bondLength > 0.1)
             {
-                return EMUS_PER_CML_POINT / EmusPerCsTtfPoint(Math.Round(bondLength));
+                return EmusPerCmlPoint / EmusPerCsTtfPoint(Math.Round(bondLength));
             }
             else
             {
-                return EMUS_PER_CML_POINT / EmusPerCsTtfPoint(20);
+                return EmusPerCmlPoint / EmusPerCsTtfPoint(20);
             }
         }
 

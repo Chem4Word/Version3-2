@@ -30,10 +30,10 @@ namespace Chem4Word.Model2
 
         public readonly List<Ring> Rings;
         public readonly ReadOnlyDictionary<Guid, Atom> Atoms; //keyed by InternalId
-        private Dictionary<Guid, Atom> _atoms;
+        private readonly Dictionary<Guid, Atom> _atoms;
         public readonly ReadOnlyCollection<Bond> Bonds; //this is the edge list
-        private List<Bond> _bonds;
-        private Dictionary<Guid, Molecule> _molecules;
+        private readonly List<Bond> _bonds;
+        private readonly Dictionary<Guid, Molecule> _molecules;
         public readonly ReadOnlyDictionary<Guid, Molecule> Molecules;
         public ObservableCollection<TextualProperty> Formulas { get; internal set; }
         public ObservableCollection<TextualProperty> Names { get; internal set; }
@@ -830,16 +830,14 @@ namespace Chem4Word.Model2
 
             foreach (var property in properties)
             {
-                if (!string.IsNullOrEmpty(property.Id))
+                if (!string.IsNullOrEmpty(property.Id)
+                    && property.Id.Contains("."))
                 {
-                    if (property.Id.Contains("."))
-                    {
-                        var parts = property.Id.Split('.');
-                        prefix = parts[0];
-                        suffix = parts[1].Substring(0, 1);
-                        int n = int.Parse(parts[1].Substring(1));
-                        max = Math.Max(max, n);
-                    }
+                    var parts = property.Id.Split('.');
+                    prefix = parts[0];
+                    suffix = parts[1].Substring(0, 1);
+                    int n = int.Parse(parts[1].Substring(1));
+                    max = Math.Max(max, n);
                 }
             }
 
@@ -1306,16 +1304,6 @@ namespace Chem4Word.Model2
             }
         } //have we calculated the rings yet?
 
-        //private void RefreshRingBonds()
-        //{
-        //    foreach (Ring ring in Rings)
-        //    {
-        //        foreach (Bond ringBond in ring.Bonds)
-        //        {
-        //            ringBond.NotifyPlacementChanged();
-        //        }
-        //    }
-        //}
         /// <summary>
         /// Cleaves off a degree 1 atom from the working set.
         /// Reduces the adjacent atoms' degree by one
@@ -1382,10 +1370,6 @@ namespace Chem4Word.Model2
             // -------------- //
             void RebuildRingsFigueras()
             {
-#if DEBUG
-                //Stopwatch sw = new Stopwatch();
-                //sw.Start();
-#endif
                 Rings.Clear();
 
                 if (HasRings || force)
@@ -1408,16 +1392,10 @@ namespace Chem4Word.Model2
                             Rings.Add(nextRing); //add the ring to the set
                             foreach (Atom a in nextRing.Atoms.ToList())
                             {
-                                //if (!a.Rings.Contains(nextRing))
-                                //{
-                                //    a.Rings.Add(nextRing);
-                                //}
-
                                 if (workingSet.ContainsKey(a))
                                 {
                                     workingSet.Remove(a);
                                 }
-
                                 //remove the atoms in the ring from the working set BUT NOT the graph!
                             }
                         }
@@ -1427,12 +1405,6 @@ namespace Chem4Word.Model2
                         } //the atom doesn't belong in a ring, remove it from the set.
                     }
                 }
-#if DEBUG
-                //Debug.WriteLine($"Molecule = {(ChemicalNames.Count > 0 ? this.ChemicalNames?[0].Name : this.ConciseFormula)},  Number of rings = {Rings.Count}");
-                //sw.Stop();
-                //Debug.WriteLine($"Elapsed {sw.ElapsedMilliseconds}");
-#endif
-                //RefreshRingBonds();
             }
         }
 
@@ -1762,7 +1734,6 @@ namespace Chem4Word.Model2
         {
             Names.Clear();
             Formulas.Clear();
-            //Captions.Clear();
         }
 
         /// <summary>

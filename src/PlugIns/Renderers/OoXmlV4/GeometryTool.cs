@@ -195,7 +195,7 @@ namespace Chem4Word.Renderer.OoXmlV4
                     results.Add(pt);
                 }
             }
-            
+
             return results;
         }
 

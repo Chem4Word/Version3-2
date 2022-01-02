@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -18,6 +19,8 @@ using IChem4Word.Contracts;
 
 namespace Chem4Word.Renderer.OoXmlV4.OOXML
 {
+    // ReSharper disable PossiblyMistakenUseOfParamsMethod
+    [SuppressMessage("Minor Code Smell", "S3220:Method calls should not resolve ambiguously to overloads with \"params\"", Justification = "<OoXml>")]
     public static class OoXmlFile
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];

@@ -127,14 +127,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 foreach (var group in _positionerOutputs.GroupBrackets)
                 {
                     string bracketColour = _options.ColouredAtoms ? "00bbff" : "000000";
-                    DrawGroupBrackets(group, _medianBondLength * 0.5, OoXmlHelper.ACS_LINE_WIDTH * 2, bracketColour);
+                    DrawGroupBrackets(group, _medianBondLength * 0.5, OoXmlHelper.AcsLineWidth * 2, bracketColour);
                 }
             }
 
             // Render molecule brackets
             foreach (var moleculeBracket in _positionerOutputs.MoleculeBrackets)
             {
-                DrawMoleculeBrackets(moleculeBracket, OoXmlHelper.ACS_LINE_WIDTH, "000000");
+                DrawMoleculeBrackets(moleculeBracket, OoXmlHelper.AcsLineWidth, "000000");
             }
 
             // Render reaction arrows
@@ -147,7 +147,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         case Globals.ReactionType.Normal:
                         case Globals.ReactionType.Blocked:
                         case Globals.ReactionType.Resonance:
-                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, "000000", OoXmlHelper.ACS_LINE_WIDTH);
+                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, "000000", OoXmlHelper.AcsLineWidth);
                             break;
 
                         default:
@@ -164,19 +164,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             switch (reaction.ReactionType)
                             {
                                 case Globals.ReactionType.ReversibleBiasedReverse:
-                                    CoordinateTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LINE_SHRINK_PIXELS);
+                                    CoordinateTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
                                     break;
 
                                 case Globals.ReactionType.ReversibleBiasedForward:
-                                    CoordinateTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LINE_SHRINK_PIXELS);
+                                    CoordinateTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
                                     break;
 
                                 case Globals.ReactionType.Reversible:
                                     break;
                             }
 
-                            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, "000000", OoXmlHelper.ACS_LINE_WIDTH);
-                            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, "000000", OoXmlHelper.ACS_LINE_WIDTH);
+                            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, "000000", OoXmlHelper.AcsLineWidth);
+                            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, "000000", OoXmlHelper.AcsLineWidth);
 
                             break;
                     }
@@ -236,8 +236,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         if (alc.IsSmaller)
                         {
                             thisBoundingBox = new Rect(alc.Position,
-                                                       new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR,
-                                                                OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR));
+                                                       new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor,
+                                                                OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor));
                         }
 
                         DrawBox(thisBoundingBox, "00ff00", 0.25);
@@ -256,11 +256,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 foreach (var rectangle in _positionerOutputs.Diagnostics.Rectangles)
                 {
-                    DrawBox(rectangle.BoundingBox, rectangle.Colour, OoXmlHelper.ACS_LINE_WIDTH / 2);
+                    DrawBox(rectangle.BoundingBox, rectangle.Colour, OoXmlHelper.AcsLineWidth / 2);
                 }
             }
 
-            double spotSize = _medianBondLength * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE / 3;
+            double spotSize = _medianBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 3;
 
             if (_options.ShowRingCentres)
             {
@@ -280,7 +280,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     foreach (var point in innerCircle.Points)
                     {
                         var vector = smallerCircle.Centre - point;
-                        var innerPoint = point + vector * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE;
+                        var innerPoint = point + vector * OoXmlHelper.MultipleBondOffsetPercentage;
                         smallerCircle.Points.Add(innerPoint);
 
                         //Rect extents = new Rect(new Point(innerPoint.X - spotSize, innerPoint.Y - spotSize),
@@ -386,18 +386,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 DrawCharacter(character);
             }
 
-            // Render Molecule Captions as TextBoxes
-            if (_options.ShowMoleculeCaptions && _options.RenderCaptionsAsTextBox)
-            {
-                foreach (var caption in _positionerOutputs.MoleculeCaptions)
-                {
-                    //DrawBox(moleculeCpation.Extents, "ff0000", 0.25)
-                    //caption.Colour = "ff0000"
-                    DrawTextBox(caption.Extents, caption.Value, caption.Colour);
-                }
-            }
-
-            // Any other general dignostics
+            // Any other general diagnostics
 
             // Finally draw any debugging diagnostics
             foreach (var line in _positionerOutputs.Diagnostics.Lines)
@@ -578,7 +567,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         private void DrawBondLine(Point bondStart, Point bondEnd, string bondPath,
                                   BondLineStyle lineStyle = BondLineStyle.Solid,
                                   string colour = "000000",
-                                  double lineWidth = OoXmlHelper.ACS_LINE_WIDTH)
+                                  double lineWidth = OoXmlHelper.AcsLineWidth)
         {
             switch (lineStyle)
             {
@@ -615,7 +604,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             Vector step = direction;
             step.Normalize();
-            step *= OoXmlHelper.ScaleCmlToEmu(15 * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE);
+            step *= OoXmlHelper.ScaleCmlToEmu(15 * OoXmlHelper.MultipleBondOffsetPercentage);
 
             int steps = (int)Math.Ceiling(direction.Length / step.Length);
             double stepLength = direction.Length / steps;
@@ -745,7 +734,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         }
 
         private void DrawShape(Rect cmlExtents, A.ShapeTypeValues shape, bool filled, string colour,
-                               double outlineWidth = OoXmlHelper.ACS_LINE_WIDTH)
+                               double outlineWidth = OoXmlHelper.AcsLineWidth)
         {
             Int64Value emuWidth = OoXmlHelper.ScaleCmlToEmu(cmlExtents.Width);
             Int64Value emuHeight = OoXmlHelper.ScaleCmlToEmu(cmlExtents.Height);
@@ -791,7 +780,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             else
             {
                 // Set shape outline and colour
-                Int32Value emuLineWidth = (Int32Value)(outlineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+                Int32Value emuLineWidth = (Int32Value)(outlineWidth * OoXmlHelper.EmusPerWordPoint);
                 A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
                 A.RgbColorModelHex rgbColorModelHex2 = new A.RgbColorModelHex { Val = colour };
                 A.SolidFill outlineFill = new A.SolidFill();
@@ -890,7 +879,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             shapeProperties.Append(insideFill);
 
             // Set shape outline colour
-            A.Outline outline = new A.Outline { Width = Int32Value.FromInt32((int)OoXmlHelper.ACS_LINE_WIDTH_EMUS), CapType = A.LineCapValues.Round };
+            A.Outline outline = new A.Outline { Width = Int32Value.FromInt32((int)OoXmlHelper.AcsLineWidthEmus), CapType = A.LineCapValues.Round };
             A.RgbColorModelHex rgbColorModelHex2 = new A.RgbColorModelHex { Val = colour };
             A.SolidFill outlineFill = new A.SolidFill();
             outlineFill.Append(rgbColorModelHex2);
@@ -974,7 +963,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             shapeProperties.Append(insideFill);
 
             // Set shape outline colour
-            A.Outline outline = new A.Outline { Width = Int32Value.FromInt32((int)OoXmlHelper.ACS_LINE_WIDTH_EMUS), CapType = A.LineCapValues.Round };
+            A.Outline outline = new A.Outline { Width = Int32Value.FromInt32((int)OoXmlHelper.AcsLineWidthEmus), CapType = A.LineCapValues.Round };
             A.RgbColorModelHex rgbColorModelHex2 = new A.RgbColorModelHex { Val = colour };
             A.SolidFill outlineFill = new A.SolidFill();
             outlineFill.Append(rgbColorModelHex2);
@@ -1082,7 +1071,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             shapeProperties.Append(CreateCustomGeometry(pathList));
 
-            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
             A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             A.SolidFill solidFill = new A.SolidFill();
@@ -1138,7 +1127,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 shapeProperties.Append(CreateCustomGeometry(pathList));
 
-                Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+                Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
                 A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
                 A.SolidFill solidFill = new A.SolidFill();
@@ -1258,7 +1247,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private void DrawBox(Rect cmlExtents,
                              string lineColour = "000000",
-                             double lineWidth = OoXmlHelper.ACS_LINE_WIDTH)
+                             double lineWidth = OoXmlHelper.AcsLineWidth)
         {
             if (cmlExtents != Rect.Empty)
             {
@@ -1325,7 +1314,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 shapeProperties.Append(CreateCustomGeometry(pathList));
 
-                Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+                Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
                 A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
                 A.SolidFill solidFill = new A.SolidFill();
@@ -1406,16 +1395,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             moveTo.Append(MakePoint(startingPoint, cmlExtents));
             path.Append(moveTo);
 
-            // Straight Lines
-            //foreach (var p in allpoints)
-            //{
-            //    //A.LineTo lineTo = new A.LineTo();
-            //    //A.Point point = MakePoint(p, cmlExtents);
-            //    //lineTo.Append(point);
-            //    //path.Append(lineTo);
-            //}
-
-            // Curved Lines
+            // Create the Curved Lines
             for (int i = 0; i < allpoints.Count; i += 3)
             {
                 var cubicBezierCurveTo = new A.CubicBezierCurveTo();
@@ -1432,7 +1412,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // End of the lines
 
-            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
             A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             A.SolidFill solidFill = new A.SolidFill();
@@ -1504,7 +1484,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // End of the lines
 
-            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
             A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             A.SolidFill solidFill = new A.SolidFill();
@@ -1559,7 +1539,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             pathList.Append(path);
 
-            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
             A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             A.SolidFill solidFill = new A.SolidFill();
@@ -1593,7 +1573,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 Vector shaftVector = cmlEndPoint - cmlStartPoint;
                 var midpoint = cmlStartPoint + shaftVector * 0.5;
 
-                double crossArmLength = OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE * _chemistryModel.MeanBondLength;
+                double crossArmLength = OoXmlHelper.MultipleBondOffsetPercentage * _chemistryModel.MeanBondLength;
                 Point[] points = new Point[4];
 
                 Matrix rotator = new Matrix();
@@ -1679,7 +1659,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // End of the lines
 
-            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
             A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             A.SolidFill solidFill = new A.SolidFill();
@@ -1817,16 +1797,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             moveTo.Append(firstPoint);
             path.Append(moveTo);
 
-            // Straight Lines
-            //foreach (var p in allpoints)
-            //{
-            //    A.LineTo lineTo = new A.LineTo();
-            //    A.Point point = new A.Point { X = OoXmlHelper.ScaleCmlToEmu(p.X + xOffset).ToString(), Y = OoXmlHelper.ScaleCmlToEmu(p.Y + yOffset).ToString() };
-            //    lineTo.Append(point);
-            //    path.Append(lineTo);
-            //}
-
-            // Curved Lines
+            // Create the Curved Lines
             for (int i = 0; i < allpoints.Count; i += 3)
             {
                 var cubicBezierCurveTo = new A.CubicBezierCurveTo();
@@ -1843,8 +1814,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // End of the lines
 
-            double lineWidth = OoXmlHelper.ACS_LINE_WIDTH;
-            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EMUS_PER_WORD_POINT);
+            double lineWidth = OoXmlHelper.AcsLineWidth;
+            Int32Value emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
             A.Outline outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             A.SolidFill solidFill = new A.SolidFill();
@@ -2041,8 +2012,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 if (alc.IsSubScript)
                 {
                     Rect r = new Rect(alc.Position,
-                                      new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR,
-                                               OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength) * OoXmlHelper.SUBSCRIPT_SCALE_FACTOR));
+                                      new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor,
+                                               OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor));
                     _boundingBoxOfEverything.Union(r);
                 }
                 else
@@ -2059,12 +2030,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 _boundingBoxOfEverything.Union(group.ExternalCharacterExtents);
             }
 
-            _boundingBoxOfEverything.Inflate(OoXmlHelper.DRAWING_MARGIN, OoXmlHelper.DRAWING_MARGIN);
+            _boundingBoxOfEverything.Inflate(OoXmlHelper.DrawingMargin, OoXmlHelper.DrawingMargin);
         }
 
         private double BondOffset()
         {
-            return _medianBondLength * OoXmlHelper.MULTIPLE_BOND_OFFSET_PERCENTAGE;
+            return _medianBondLength * OoXmlHelper.MultipleBondOffsetPercentage;
         }
 
         private static void ShutDownProgress(Progress pb)

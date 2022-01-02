@@ -14,9 +14,10 @@ using System.Windows;
 
 namespace Chem4Word.Model2
 {
-    /* NB: the Model currently supports only one reaction scheme. This should *always* be 
+    /* NB: the Model currently supports only one reaction scheme. This should *always* be
      * access by the DefaultReactionScheme property. Do not add more schemes to the Model!
      * We will review support for additional schemes as and when appropriate */
+
     public class ReactionScheme : INotifyPropertyChanged
     {
         public readonly ReadOnlyDictionary<Guid, Reaction> Reactions;
@@ -24,20 +25,25 @@ namespace Chem4Word.Model2
         public string Id { get; set; }
         public Guid InternalId { get; }
         public Model Parent { get; set; }
-        public IChemistryContainer Root => throw new System.NotImplementedException();
+        public IChemistryContainer Root => throw new NotImplementedException();
 
         public string Path
         {
             get
             {
+                string path = "";
+
                 if (Parent == null)
                 {
-                    return Id;
+                    path = Id;
                 }
-                else
+
+                if (Parent is Model model)
                 {
-                    return Parent.Path + "/" + Id;
+                    path = model.Path + Id;
                 }
+
+                return path;
             }
         }
 
@@ -49,7 +55,7 @@ namespace Chem4Word.Model2
         {
             InternalId = Guid.NewGuid();
             Id = InternalId.ToString("D");
-             
+
             _reactions = new Dictionary<Guid, Reaction>();
             Reactions = new ReadOnlyDictionary<Guid, Reaction>(_reactions);
         }
@@ -76,7 +82,7 @@ namespace Chem4Word.Model2
 
         public void RemoveReaction(Reaction reaction)
         {
-            bool result = _reactions.Remove(reaction.InternalId); ;
+            bool result = _reactions.Remove(reaction.InternalId);
             if (result)
             {
                 NotifyCollectionChangedEventArgs e =
@@ -141,8 +147,6 @@ namespace Chem4Word.Model2
         {
             ReactionScheme copy = new ReactionScheme();
 
-            Dictionary<string, Reaction> reactions = new Dictionary<string, Reaction>();
-
             foreach (var reaction in Reactions.Values)
             {
                 Reaction r = reaction.Copy();
@@ -154,7 +158,6 @@ namespace Chem4Word.Model2
 
         public void RepositionAll(double x, double y)
         {
-            var offsetVector = new Vector(-x, -y);
             foreach (Reaction r in Reactions.Values)
             {
                 r.RepositionAll(x, y);

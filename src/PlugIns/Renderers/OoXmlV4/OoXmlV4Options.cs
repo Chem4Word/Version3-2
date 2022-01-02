@@ -35,9 +35,6 @@ namespace Chem4Word.Renderer.OoXmlV4
         [JsonProperty]
         public bool ShowMoleculeCaptions { get; set; }
 
-        [JsonProperty]
-        public bool RenderCaptionsAsTextBox { get; set; }
-
         // Not editable here, kept in sync by file system watcher
         [JsonProperty]
         public int BondLength { get; set; }
@@ -191,7 +188,6 @@ namespace Chem4Word.Renderer.OoXmlV4
             ShowHydrogens = options.ShowHydrogens;
             ShowMoleculeGrouping = options.ShowMoleculeGrouping;
             ShowMoleculeCaptions = options.ShowMoleculeCaptions;
-            RenderCaptionsAsTextBox = options.RenderCaptionsAsTextBox;
             ShowCarbons = options.ShowCarbons;
 
             // Hidden
@@ -235,7 +231,6 @@ namespace Chem4Word.Renderer.OoXmlV4
             ColouredAtoms = true;
             ShowMoleculeGrouping = true;
             ShowMoleculeCaptions = false;
-            RenderCaptionsAsTextBox = false;
             ShowCarbons = false;
 
             // Hidden

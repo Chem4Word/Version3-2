@@ -85,7 +85,7 @@ namespace Chem4Word.ACME.Drawing
                     return _reagentsBlockRect.Value;
                 }
             }
-            private set {  _reagentsBlockRect = value;; }
+            private set {  _reagentsBlockRect = value; }
            
         }
 
@@ -296,7 +296,6 @@ namespace Chem4Word.ACME.Drawing
                             textLine.Draw(dc, linePosition, InvertAxes.None);
                         }
 
-                        var textBounds = textLine.GetTextBounds(0, textStore.MaxLineLength);
                         if (textLine.Width > maxWidth)
                         {
                             maxWidth = textLine.Width;
