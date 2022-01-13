@@ -23,7 +23,7 @@ namespace Chem4Word.ACME.Drawing
             public double[] UprightBaselineOffsets;
         }
 
-        private const string FamilyName = "Arial Unicode MS";
+        private const string FamilyName = "Arial";
         private static GlyphTypeface _glyphTypeface;
 
         public static GlyphTypeface GlyphTypeface

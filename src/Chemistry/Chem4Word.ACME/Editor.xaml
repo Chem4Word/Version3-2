@@ -1373,7 +1373,7 @@
                 </Button>
                 <Button x:Name="DeltaButton"  HorizontalContentAlignment="Center"
                         Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertDeltaCommand}">
-                    <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial Unicode MS" >Δ</TextBlock>
+                    <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >Δ</TextBlock>
                 </Button>
             </ToolBar>
         </ToolBarTray>
@@ -1418,7 +1418,7 @@
                         </control:AnnotationEditor.BorderBrush>
                         <control:AnnotationEditor.Resources>
                             <Style TargetType="{x:Type FlowDocument}">
-                                <Setter Property="FontFamily" Value="Arial Unicode MS" />
+                                <Setter Property="FontFamily" Value="Arial" />
                                 <Setter Property="FontSize" Value="{Binding BlockTextSize}" />
                                 <Setter Property="TextAlignment" Value="Center" />
                                 <Setter Property="PagePadding" Value="0" />
