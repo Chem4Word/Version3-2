@@ -98,6 +98,9 @@
     <Compile Include="Adorners\Selectors\ReactionSelectionAdorner.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\ReactionBehavior.cs" />
+    <Compile Include="Commands\Block Editing\InsertTextCommand.cs" />
+    <Compile Include="Commands\Block Editing\SuperscriptCommand.cs" />
+    <Compile Include="Commands\Block Editing\SubscriptCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignBottomsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignCentresCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignLeftsCommand.cs" />
@@ -207,7 +210,7 @@
     <Compile Include="Behaviors\BaseEditBehavior.cs" />
     <Compile Include="Behaviors\DeleteBehavior.cs" />
     <Compile Include="Behaviors\DrawBehavior.cs" />
-    <Compile Include="Behaviors\LassoBehaviour.cs" />
+    <Compile Include="Behaviors\SelectBehaviour.cs" />
     <Compile Include="Behaviors\RingBehavior.cs" />
     <Compile Include="Controls\BondOption.cs" />
     <Compile Include="Controls\FunctionalGroupBlock.cs" />

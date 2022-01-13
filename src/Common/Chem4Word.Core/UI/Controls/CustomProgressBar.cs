@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -363,10 +363,10 @@ namespace Chem4Word.Core.UI.Controls
 
                 if (_value > _minimum)
                 {
-                    int lngth = Convert.ToInt32((double)(this.Width / (double)(_maximum - _minimum)) * _value);
+                    int lngth = Convert.ToInt32((Width / (double)(_maximum - _minimum)) * _value);
                     if (_progressDirection == ProgressDir.Vertical)
                     {
-                        lngth = Convert.ToInt32((double)(this.Height / (double)(_maximum - _minimum)) * _value);
+                        lngth = Convert.ToInt32((Height / (double)(_maximum - _minimum)) * _value);
                         rec.Y = rec.Height - lngth;
                         rec.Height = lngth;
                     }
@@ -432,7 +432,7 @@ namespace Chem4Word.Core.UI.Controls
                     }
                 }
 
-                if (_showPercentage | _showText)
+                if (_showPercentage || _showText)
                 {
                     string perc = "";
                     if (_showText)

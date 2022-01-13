@@ -1,10 +1,26 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 using Chem4Word.ACME.Adorners.Selectors;
 using Chem4Word.ACME.Behaviors;
 using Chem4Word.ACME.Commands;
@@ -23,28 +39,10 @@ using Chem4Word.ACME.Utils;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using static Chem4Word.Model2.Helpers.Globals;
 using Constants = Chem4Word.ACME.Resources.Constants;
 
@@ -57,18 +55,19 @@ namespace Chem4Word.ACME
     /// </summary>
     public class EditController : Controller, INotifyPropertyChanged
     {
+        private const int BlockTextPadding = 10;
         private static readonly string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static readonly string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         #region Fields
 
-        public readonly Dictionary<object, Adorner> SelectionAdorners = new Dictionary<object, Adorner>();
+        private readonly Dictionary<object, Adorner> SelectionAdorners = new Dictionary<object, Adorner>();
         public MultiAtomBondAdorner MultiAdorner { get; private set; }
         private Dictionary<int, BondOption> _bondOptions = new Dictionary<int, BondOption>();
         private int? _selectedBondOptionId;
 
         public AcmeOptions EditorOptions { get; set; }
-        public IChem4WordTelemetry Telemetry { get; set; }
+        private IChem4WordTelemetry Telemetry { get; set; }
         private BaseEditBehavior _activeMode;
 
         #endregion Fields
@@ -148,6 +147,7 @@ namespace Chem4Word.ACME
 
         private ElementBase _selectedElement;
         private ReactionType? _selectedReactionType;
+        private ReactionVisual _selReactionVisual;
 
         public ElementBase SelectedElement
         {
@@ -181,6 +181,45 @@ namespace Chem4Word.ACME
                 OnPropertyChanged();
             }
         }
+
+        public Editor EditorControl { get; set; }
+        public EditorCanvas CurrentEditor { get; set; }
+        public Canvas CurrentHostingCanvas { get; }
+        public AnnotationEditor BlockEditor { get; }
+
+        private bool _selectionIsSubscript;
+
+        public bool SelectionIsSubscript
+        {
+            get
+            {
+                return _selectionIsSubscript;
+            }
+            set
+            {
+                _selectionIsSubscript = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _selectionIsSuperscript;
+
+        public bool SelectionIsSuperscript
+        {
+            get
+            {
+                return _selectionIsSuperscript;
+            }
+            set
+            {
+                _selectionIsSuperscript = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ClipboardMonitor ClipboardMonitor { get; }
+
+        public List<string> Used1DProperties { get; set; }
 
         /// <summary>
         /// returns a distinct list of selected elements
@@ -348,15 +387,6 @@ namespace Chem4Word.ACME
             return selOptions.ToList();
         }
 
-        public Editor EditorControl { get; set; }
-        public EditorCanvas CurrentEditor { get; set; }
-
-        public ClipboardMonitor ClipboardMonitor { get; }
-
-        public bool IsAligning { get; set; }
-
-        public List<string> Used1DProperties { get; set; }
-
         public BaseEditBehavior ActiveMode
         {
             get { return _activeMode; }
@@ -382,6 +412,36 @@ namespace Chem4Word.ACME
 
         public bool IsDirty => UndoManager.CanUndo;
 
+        private AnnotationEditor _annotationEditor;
+        private bool _isBlockEditing;
+        private const string EditingTextStatus = "[Shift-Enter] = new line; [Enter] = save text; [Esc] = cancel editing. ";
+
+        public AnnotationEditor ActiveBlockEditor
+        {
+            get
+            {
+                return _annotationEditor;
+            }
+            set
+            {
+                _annotationEditor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsBlockEditing
+        {
+            get
+            {
+                return _isBlockEditing;
+            }
+            set
+            {
+                _isBlockEditing = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion Properties
 
         #region Events
@@ -400,14 +460,6 @@ namespace Chem4Word.ACME
             {
                 // We don't care if this fails
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -537,9 +589,11 @@ namespace Chem4Word.ACME
         /// <param name="currentEditor"></param>
         /// <param name="used1DProperties"></param>
         /// <param name="telemetry"></param>
-        public EditController(Model model, EditorCanvas currentEditor, List<string> used1DProperties, IChem4WordTelemetry telemetry) : base(model)
+        public EditController(Model model, EditorCanvas currentEditor, Canvas hostingCanvas, AnnotationEditor annotationEditor, List<string> used1DProperties, IChem4WordTelemetry telemetry) : base(model)
         {
             CurrentEditor = currentEditor;
+            CurrentHostingCanvas = hostingCanvas;
+            BlockEditor = annotationEditor;
             Used1DProperties = used1DProperties;
             Telemetry = telemetry;
 
@@ -578,6 +632,8 @@ namespace Chem4Word.ACME
             SetupCommands();
 
             DefaultSettings();
+
+            IsBlockEditing = false;
         }
 
         private void DefaultSettings()
@@ -585,6 +641,8 @@ namespace Chem4Word.ACME
             _selectedBondOptionId = 1;
             _selectedReactionType = ReactionType.Normal;
             _selectedElement = Globals.PeriodicTable.C;
+            SelectionIsSubscript = false;
+            SelectionIsSuperscript = false;
         }
 
         private void SetupCommands()
@@ -4388,52 +4446,129 @@ namespace Chem4Word.ACME
         //edits the current reagent block
         public void EditReagents()
         {
-            CreateReagentsBlockEditor(SelectedItems[0] as Reaction);
+            CreateBlockEditor(SelectedItems[0] as Reaction, editingReagents: true);
         }
 
-        private void CreateReagentsBlockEditor(Reaction reaction)
+        private void CreateBlockEditor(Reaction reaction, bool editingReagents)
         {
-            string reagentText = reaction.ReagentText;
+            string blocktext;
+            Rect block;
+            _selReactionVisual = CurrentEditor.ChemicalVisuals[reaction] as ReactionVisual; //should NOT be null!
 
-            RichTextBox rtb = new RichTextBox();
-            if (reaction.ReagentsBlockOffset is null)
-            {
-               
-               CurrentEditor.Children.Add(rtb);
-               Canvas.SetLeft(rtb, 80);
-                Canvas.SetTop(rtb,80);
-                rtb.Height=80;
-                rtb.Width=80;
-            }
-        }
+            //remove the reaction from the selection, otherwise the adorner gets in the way
 
-        private Vector GetDefaultBlockOffset(Reaction reaction, AnnotationEditor annotationEditor, bool goingUp = true)
-        {
-            Vector reactionVector = reaction.HeadPoint - reaction.TailPoint;
-            double desiredOffset = annotationEditor.Height / 2;
-            Vector desiredCentreVector = reactionVector;
-            desiredCentreVector.Normalize();
-            desiredCentreVector *= desiredOffset;
-            Matrix rotator = new Matrix();
-            if (goingUp)
+            RemoveFromSelection(reaction);
+
+            //decide whether we're doing reagents or conditions
+            if (editingReagents)
             {
-                rotator.Rotate(-90);
+                block = _selReactionVisual.ReagentsBlockRect;
+                blocktext = reaction.ReagentText;
             }
             else
             {
-                rotator.Rotate(90);
+                block = _selReactionVisual.ConditionsBlockRect;
+                blocktext = reaction.ConditionsText;
             }
-            return reactionVector / 2 + desiredCentreVector * rotator;
+
+            //make the block a bit bigger
+            block.Inflate(BlockTextPadding, BlockTextPadding);
+
+            //locate the editor properly
+            BlockEditor.Controller = this;
+            BlockEditor.MinWidth = block.Width;
+            BlockEditor.MinHeight = block.Height;
+            BlockEditor.Visibility = Visibility.Visible;
+            BlockEditor.EditingReagents = editingReagents;
+            Canvas.SetLeft(BlockEditor, block.Left);
+            Canvas.SetTop(BlockEditor, block.Top);
+
+            if (!string.IsNullOrEmpty(blocktext))
+            {
+                BlockEditor.LoadDocument(blocktext);
+            }
+
+            ActiveBlockEditor = BlockEditor;
+            BlockEditor.Completed += BlockEditor_EditorClosed;
+            BlockEditor.SelectionChanged += BlockEditor_SelectionChanged;
+            IsBlockEditing = true;
+            SendStatus(EditingTextStatus);
+            BlockEditor.Focus();
+        }
+
+        private void BlockEditor_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            SelectionIsSubscript = BlockEditor.SelectionIsSubscript;
+            SelectionIsSuperscript = BlockEditor.SelectionIsSuperscript;
+        }
+
+        // Event handler on termination of the textblock editor
+        private void BlockEditor_EditorClosed(object sender, AnnotationEditorEventArgs e)
+        {
+            var activeEditor = (AnnotationEditor)sender;
+            if (e.Reason != AnnotationEditorEventArgs.AnnotationEditorExitArgsType.Aborted)
+            {
+                UpdateTextBlock(_selReactionVisual, activeEditor, activeEditor.EditingReagents);
+            }
+            activeEditor.Visibility = Visibility.Collapsed;
+            activeEditor.Clear();
+            activeEditor.Completed -= BlockEditor_EditorClosed;
+            activeEditor.SelectionChanged -= BlockEditor_SelectionChanged;
+            activeEditor.Controller = null;
+            IsBlockEditing = false;
+            ActiveBlockEditor = null;
+        }
+
+        private void UpdateTextBlock(ReactionVisual selReactionVisual, AnnotationEditor editor, bool editingReagents)
+        {
+            var reaction = selReactionVisual.ParentReaction;
+            string oldText;
+            if (editingReagents)
+            {
+                oldText = reaction.ReagentText?.Trim() ?? "";
+            }
+            else
+            {
+                oldText = reaction.ConditionsText?.Trim() ?? "";
+            }
+            //only commit the text if it's been chnaged.
+
+            string result = editor.GetDocument();
+            if (oldText != result)
+            {
+                Action redo = () =>
+                {
+                    if (editingReagents)
+                    {
+                        reaction.ReagentText = result;
+                    }
+                    else
+                    {
+                        reaction.ConditionsText = result;
+                    }
+                };
+                Action undo = () =>
+                {
+                    if (editingReagents)
+                    {
+                        reaction.ReagentText = oldText;
+                    }
+                    else
+                    {
+                        reaction.ConditionsText = oldText;
+                    }
+                };
+                UndoManager.BeginUndoBlock();
+                UndoManager.RecordAction(undo, redo, $"Update {(editingReagents ? "Reagents" : "Conditions")}");
+                redo();
+                UndoManager.EndUndoBlock();
+            }
         }
 
         //edits the current conditions block
         public void EditConditions()
         {
-            CreateConditionsBlockEditor(SelectedItems[0] as Reaction);
-        }
-
-        private void CreateConditionsBlockEditor(Reaction reaction)
-        {
+            CreateBlockEditor(SelectedItems[0] as Reaction, editingReagents: false);
         }
 
         #endregion Methods

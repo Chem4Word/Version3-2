@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -77,32 +77,39 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         {
             foreach (var part in parts)
             {
-                foreach (char c in part.Text)
+                foreach (var character in part.Text)
                 {
                     switch (part.Type)
                     {
                         case FunctionalGroupPartType.Normal:
-                            AddCharacter(c, colour);
+                            AddCharacter(character, colour);
                             break;
 
                         case FunctionalGroupPartType.Subscript:
-                            AddCharacter(c, colour, true);
+                            AddCharacter(character, colour, true);
                             break;
 
                         case FunctionalGroupPartType.Superscript:
-                            AddCharacter(c, colour, isSuperScript: true);
+                            AddCharacter(character, colour, isSuperScript: true);
                             break;
                     }
                 }
             }
         }
 
-        public void AddCharacter(char character, string colour, bool isSubScript = false, bool isSuperScript = false)
+        public void AddCharacter(char characterIn, string colour, bool isSubScript = false, bool isSuperScript = false)
         {
-            Text += character;
+            // Ensure we only create known characters
+            var knownCharacter = characterIn;
+            if (!_characterSet.ContainsKey(characterIn))
+            {
+                knownCharacter = '\u22a0';
+            }
+
+            Text += knownCharacter;
 
             // Create new AtomLabelCharacter and add to Characters
-            var ttfCharacter = _characterSet[character];
+            var ttfCharacter = _characterSet[knownCharacter];
             if (ttfCharacter != null)
             {
                 var isSmaller = isSubScript || isSuperScript;

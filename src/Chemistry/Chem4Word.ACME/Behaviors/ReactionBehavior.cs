@@ -1,17 +1,17 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
 
 namespace Chem4Word.ACME.Behaviors
 {

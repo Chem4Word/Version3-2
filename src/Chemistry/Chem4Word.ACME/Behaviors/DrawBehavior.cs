@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -144,12 +144,17 @@ namespace Chem4Word.ACME.Behaviors
             }
             else
             {
-                if (targetedVisual is GroupVisual gv) //can't draw on a group
+                if (targetedVisual is ReactionVisual) //can't draw on a group
+                {
+                    CurrentStatus = "Can't draw over an existing reaction.";
+                    CurrentEditor.Cursor = Cursors.No;
+                }
+                if (targetedVisual is GroupVisual) //can't draw on a group
                 {
                     CurrentStatus = "Ungroup before attempting to draw.";
                     CurrentEditor.Cursor = Cursors.No;
                 }
-                else if (targetedVisual is HydrogenVisual hv)
+                else if (targetedVisual is HydrogenVisual)
                 {
                     CurrentStatus = "Click to rotate hydrogen";
                     CurrentEditor.Cursor = Cursors.Hand;
@@ -166,7 +171,7 @@ namespace Chem4Word.ACME.Behaviors
                         CurrentStatus = "Click to sprout chain";
                     }
                 }
-                else if (targetedVisual is BondVisual bv)
+                else if (targetedVisual is BondVisual)
                 {
                     CurrentEditor.Cursor = CursorUtils.Pencil;
                     CurrentStatus = "Click to modify bond";
@@ -546,26 +551,29 @@ namespace Chem4Word.ACME.Behaviors
         private void CurrentEditor_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var position = e.GetPosition(CurrentEditor);
-            _currentAtomVisual = CurrentEditor.GetTargetedVisual(position) as AtomVisual;
+            ChemicalVisual chemicalVisual = CurrentEditor.GetTargetedVisual(position);
+            if (!(chemicalVisual is ReactionVisual))
+            {
+                _currentAtomVisual = chemicalVisual as AtomVisual;
+                IsDrawing = true;
 
-            IsDrawing = true;
-
-            if (_currentAtomVisual is null)
-            {
-                _angleSnapper = new Snapper(position, EditController);
-            }
-            else if (!(_currentAtomVisual is HydrogenVisual))
-            {
-                _angleSnapper = new Snapper(_currentAtomVisual.ParentAtom.Position, EditController);
-                Mouse.Capture(CurrentEditor);
-                _lastAtomVisual = _currentAtomVisual;
-            }
-            else //its a hydrogen visual
-            {
-                HydrogenVisual hv = (HydrogenVisual)_currentAtomVisual;
-                EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
-                IsDrawing = false;  //stops drop of an isolated atom
-                e.Handled = true;
+                if (_currentAtomVisual is null)
+                {
+                    _angleSnapper = new Snapper(position, EditController);
+                }
+                else if (!(_currentAtomVisual is HydrogenVisual))
+                {
+                    _angleSnapper = new Snapper(_currentAtomVisual.ParentAtom.Position, EditController);
+                    Mouse.Capture(CurrentEditor);
+                    _lastAtomVisual = _currentAtomVisual;
+                }
+                else //its a hydrogen visual
+                {
+                    HydrogenVisual hv = (HydrogenVisual)_currentAtomVisual;
+                    EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
+                    IsDrawing = false;  //stops drop of an isolated atom
+                    e.Handled = true;
+                }
             }
         }
 

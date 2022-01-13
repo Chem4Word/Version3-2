@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -20,7 +20,7 @@ namespace Chem4Word.ACME.Controls
         private Thumb _zoomThumb;
         private Canvas _zoomCanvas;
         private Slider _zoomSlider;
-        //private ScaleTransform ChemistryCanvas.LayoutTransform;
+        //private ScaleTransform Canvas.LayoutTransform;
 
         #region DPs
 
@@ -37,28 +37,28 @@ namespace Chem4Word.ACME.Controls
 
         #endregion ScrollViewer
 
-        #region ChemistryCanvas
+        #region Canvas
 
-        public static readonly DependencyProperty ChemistryCanvasProperty =
-            DependencyProperty.Register("ChemistryCanvas", typeof(ChemistryCanvas), typeof(ZoomBox),
+        public static readonly DependencyProperty CanvasProperty =
+            DependencyProperty.Register("Canvas", typeof(Canvas), typeof(ZoomBox),
                 new FrameworkPropertyMetadata(null,
-                    OnChemistryCanvasChanged));
+                    OnCanvasChanged));
 
-        public ChemistryCanvas ChemistryCanvas
+        public Canvas Canvas
         {
-            get => (ChemistryCanvas)GetValue(ChemistryCanvasProperty);
-            set => SetValue(ChemistryCanvasProperty, value);
+            get => (Canvas)GetValue(CanvasProperty);
+            set => SetValue(CanvasProperty, value);
         }
 
-        private static void OnChemistryCanvasChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnCanvasChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ZoomBox target = (ZoomBox)d;
-            ChemistryCanvas oldDesignerCanvas = (ChemistryCanvas)e.OldValue;
-            ChemistryCanvas newDesignerCanvas = target.ChemistryCanvas;
-            target.OnChemistryCanvasChanged(oldDesignerCanvas, newDesignerCanvas);
+            Canvas oldDesignerCanvas = (Canvas)e.OldValue;
+            Canvas newDesignerCanvas = target.Canvas;
+            target.OnCanvasChanged(oldDesignerCanvas, newDesignerCanvas);
         }
 
-        protected virtual void OnChemistryCanvasChanged(ChemistryCanvas oldDesignerCanvas, ChemistryCanvas newDesignerCanvas)
+        protected virtual void OnCanvasChanged(Canvas oldDesignerCanvas, Canvas newDesignerCanvas)
         {
             if (oldDesignerCanvas != null)
             {
@@ -70,11 +70,11 @@ namespace Chem4Word.ACME.Controls
             {
                 newDesignerCanvas.LayoutUpdated += DesignerCanvas_LayoutUpdated;
                 newDesignerCanvas.MouseWheel += DesignerCanvas_MouseWheel;
-                newDesignerCanvas.LayoutTransform = ChemistryCanvas.LayoutTransform;
+                newDesignerCanvas.LayoutTransform = Canvas.LayoutTransform;
             }
         }
 
-        #endregion ChemistryCanvas
+        #endregion Canvas
 
         #endregion DPs
 
@@ -110,7 +110,7 @@ namespace Chem4Word.ACME.Controls
 
             _zoomThumb.DragDelta += Thumb_DragDelta;
             _zoomSlider.ValueChanged += ZoomSlider_ValueChanged;
-            ChemistryCanvas.LayoutTransform = new ScaleTransform();
+            Canvas.LayoutTransform = new ScaleTransform();
         }
 
         private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -120,8 +120,8 @@ namespace Chem4Word.ACME.Controls
             double newVerticalOffset = ((ScrollViewer.VerticalOffset + halfViewportHeight) * scale - halfViewportHeight);
             double halfViewportWidth = ScrollViewer.ViewportWidth / 2;
             double newHorizontalOffset = ((ScrollViewer.HorizontalOffset + halfViewportWidth) * scale - halfViewportWidth);
-            (ChemistryCanvas.LayoutTransform as ScaleTransform).ScaleX *= scale;
-            (ChemistryCanvas.LayoutTransform as ScaleTransform).ScaleY *= scale;
+            (Canvas.LayoutTransform as ScaleTransform).ScaleX *= scale;
+            (Canvas.LayoutTransform as ScaleTransform).ScaleY *= scale;
             InvalidateScale(out _, out _, out _);
             ScrollViewer.ScrollToHorizontalOffset(newHorizontalOffset);
             ScrollViewer.ScrollToVerticalOffset(newVerticalOffset);
@@ -164,7 +164,7 @@ namespace Chem4Word.ACME.Controls
 
         private void InvalidateScale(out double scale, out double xOffset, out double yOffset)
         {
-            if (ChemistryCanvas == null || !(ChemistryCanvas.LayoutTransform is ScaleTransform st))
+            if (Canvas == null || !(Canvas.LayoutTransform is ScaleTransform st))
             {
                 scale = 1.0;
                 xOffset = 0d;
@@ -172,8 +172,8 @@ namespace Chem4Word.ACME.Controls
             }
             else
             {
-                double w = ChemistryCanvas.ActualWidth * st.ScaleX;
-                double h = ChemistryCanvas.ActualHeight * st.ScaleY;
+                double w = Canvas.ActualWidth * st.ScaleX;
+                double h = Canvas.ActualHeight * st.ScaleY;
 
                 // zoom canvas size
                 double x = _zoomCanvas.ActualWidth;

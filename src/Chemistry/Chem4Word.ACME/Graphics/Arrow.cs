@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -267,14 +267,21 @@ namespace Chem4Word.ACME.Graphics
             PathGeometry geometry = new PathGeometry(pfc2);
             drawingContext.DrawGeometry(headFillBrush, outlinePen, geometry);
             overlay = geometry.GetWidenedPathGeometry(overlayPen);
+
             drawingContext.DrawGeometry(overlayBrush, overlayPen, overlay);
         }
 
         public void GetOverlayPen(out Brush overlayBrush, out Pen pen)
         {
+#if SHOWBOUNDS
+            overlayBrush = Brushes.Green;
+#else
             overlayBrush = Brushes.Transparent;
-            double overlayWidth = 4 * HeadLength * Math.Sin(HeadAngle / 360 * 2 * Math.PI);
+#endif
+            double overlayWidth = 2 * HeadLength * Math.Sin(HeadAngle / 360 * 2 * Math.PI);
             pen = new Pen(overlayBrush, overlayWidth);
+            pen.StartLineCap = PenLineCap.Round;
+            pen.EndLineCap = PenLineCap.Round;
         }
     }
 }

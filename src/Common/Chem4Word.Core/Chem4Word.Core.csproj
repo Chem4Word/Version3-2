@@ -81,6 +81,7 @@
     <Compile Include="Helpers\ResourceHelper.cs" />
     <Compile Include="Helpers\SafeDate.cs" />
     <Compile Include="Helpers\SafeDouble.cs" />
+    <Compile Include="Helpers\XAMLHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

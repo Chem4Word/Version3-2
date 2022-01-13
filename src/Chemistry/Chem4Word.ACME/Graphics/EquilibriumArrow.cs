@@ -1,21 +1,22 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
-using Chem4Word.Model2.Geometry;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Graphics
 {
     public enum EquilibriumBias
     {
-        None =0,
+        None = 0,
         Forward = 1,
-        Backward =2
+        Backward = 2
     }
+
     public class EquilibriumArrow : StraightArrow
     {
         public double Separation
@@ -23,12 +24,10 @@ namespace Chem4Word.ACME.Graphics
             get { return (double)GetValue(SeparationProperty); }
             set { SetValue(SeparationProperty, value); }
         }
-        
+
         // Using a DependencyProperty as the backing store for Separation.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SeparationProperty =
             DependencyProperty.Register("Separation", typeof(double), typeof(EquilibriumArrow), new PropertyMetadata(4d));
-
-
 
         public EquilibriumBias Bias
         {
@@ -39,8 +38,6 @@ namespace Chem4Word.ACME.Graphics
         // Using a DependencyProperty as the backing store for Bias.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BiasProperty =
             DependencyProperty.Register("Bias", typeof(EquilibriumBias), typeof(EquilibriumArrow), new PropertyMetadata(EquilibriumBias.None));
-
-
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -54,14 +51,12 @@ namespace Chem4Word.ACME.Graphics
             var perp = vector.Perpendicular();
             perp.Normalize();
 
-
             Vector bottomOffset = new Vector(0, 0), topOffset = new Vector(0, 0);
             double topScale = 1d, bottomScale = 1d;
             if (Bias == EquilibriumBias.Forward)
             {
                 bottomOffset = vector * 0.2;
                 bottomScale = 0.8;
-
             }
             else if (Bias == EquilibriumBias.Backward)
             {

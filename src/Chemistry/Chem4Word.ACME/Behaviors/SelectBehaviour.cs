@@ -1,16 +1,10 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Adorners;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.ACME.Enums;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Model2;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,10 +12,16 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Chem4Word.ACME.Adorners;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Enums;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
 
 namespace Chem4Word.ACME.Behaviors
 {
-    public class LassoBehaviour : BaseEditBehavior
+    public class SelectBehaviour : BaseEditBehavior
     {
         private const string DefaultText =
             "Click to select; [Shift]-click to multselect; drag to select range; double-click to select molecule.";
@@ -42,9 +42,9 @@ namespace Chem4Word.ACME.Behaviors
 
         private Point _startpoint;
         private List<object> _lassoHits;
-        public bool IsDragging { get; private set; }
+        private bool IsDragging { get; set; }
 
-        public Point StartPoint { get; set; }
+        private Point StartPoint { get; set; }
 
         public bool RectMode
         {
@@ -53,7 +53,7 @@ namespace Chem4Word.ACME.Behaviors
         }
 
         public static readonly DependencyProperty RectModeProperty =
-            DependencyProperty.Register("RectMode", typeof(bool), typeof(LassoBehaviour), new PropertyMetadata(default(bool)));
+            DependencyProperty.Register("RectMode", typeof(bool), typeof(SelectBehaviour), new PropertyMetadata(default(bool)));
 
         protected override void OnAttached()
         {
@@ -217,6 +217,7 @@ namespace Chem4Word.ACME.Behaviors
                 case GroupVisual selGroup:
                     _lassoHits.Add(selGroup.ParentMolecule);
                     break;
+
                 case AtomVisual av:
                     {
                         var selAtom = av.ParentAtom;
@@ -255,7 +256,6 @@ namespace Chem4Word.ACME.Behaviors
                         _mouseTrack = new PointCollection();
                     }
 
-                    StreamGeometry outline = null;
                     if (!RectMode)
                     {
                         //just add the most recent point to the track
@@ -271,7 +271,7 @@ namespace Chem4Word.ACME.Behaviors
                         _mouseTrack.Add(new Point(StartPoint.X, pos.Y));
                     }
 
-                    outline = GetPolyGeometry();
+                    StreamGeometry outline = GetPolyGeometry();
 
                     if (_lassoAdorner == null)
                     {
@@ -289,7 +289,16 @@ namespace Chem4Word.ACME.Behaviors
                 else
                 {
                     var target = CurrentObject(e);
-                    
+                    if (target is Reaction r)
+                    {
+                        //don't drag the reaction if hitting a text block
+                        ReactionVisual rv = (ReactionVisual)CurrentEditor.ChemicalVisuals[r];
+                        if (rv.ReagentsBlockRect.Contains(pos) || rv.ConditionsBlockRect.Contains(pos))
+                        {
+                            IsDragging = false;
+                            return;
+                        }
+                    }
                     if (_initialTarget != target)
                     {
                         IsDragging = true;
@@ -474,23 +483,50 @@ namespace Chem4Word.ACME.Behaviors
 
         private void CurrentEditor_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
-            if (visual is HydrogenVisual hv)
+            ChemicalVisual visual = CurrentEditor.GetTargetedVisual(e.GetPosition(CurrentEditor));
+            if (e.ClickCount == 1)
             {
-                EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
-            }
-            else
-            {
-                var currentObject = CurrentObject(e);
-
-                if (!(currentObject != null || KeyboardUtils.HoldingDownShift()))
+                if (visual is HydrogenVisual hv)
                 {
-                    EditController.ClearSelection();
+                    EditController.RotateHydrogen(hv.ParentVisual.ParentAtom);
                 }
+                else
+                {
+                    var currentObject = CurrentObject(e);
 
-                StartPoint = e.GetPosition(CurrentEditor);
+                    if (!(currentObject != null || KeyboardUtils.HoldingDownShift()))
+                    {
+                        EditController.ClearSelection();
+                    }
 
-                _initialTarget = CurrentObject(e);
+                    StartPoint = e.GetPosition(CurrentEditor);
+
+                    _initialTarget = CurrentObject(e);
+                }
+            }
+            else if (e.ClickCount == 2)
+            {
+                if (visual is ReactionVisual rv)
+                //edit the reagents/conditions
+                {
+                    //make sure that the reaction visual is selected
+                    EditController.AddToSelection(rv.ParentReaction);
+
+                    var originalLocation = e.GetPosition(CurrentEditor);
+                    if (e.ClickCount == 2)
+                    {
+                        if (rv.ConditionsBlockRect.Contains(originalLocation))
+                        {
+                            EditController.EditConditions();
+                            e.Handled = true;
+                        }
+                        else if (rv.ReagentsBlockRect.Contains(originalLocation))
+                        {
+                            EditController.EditReagents();
+                            e.Handled = true;
+                        }
+                    }
+                }
             }
         }
 
@@ -501,11 +537,6 @@ namespace Chem4Word.ACME.Behaviors
         }
 
         private bool MouseIsDown(MouseEventArgs e) => e.LeftButton == MouseButtonState.Pressed;
-
-        private void ModifySelection(StreamGeometry outline)
-        {
-            VisualTreeHelper.HitTest(CurrentEditor, null, HitTestCallback, new GeometryHitTestParameters(outline));
-        }
 
         private void RemoveAdorner(Adorner adorner)
         {
@@ -656,9 +687,6 @@ namespace Chem4Word.ACME.Behaviors
                     break;
             }
         }
-
-        private HitTestResult GetTarget(MouseButtonEventArgs e) =>
-            VisualTreeHelper.HitTest(CurrentEditor, e.GetPosition(CurrentEditor));
 
         private HitTestResultBehavior HitTestCallback(HitTestResult result)
         {

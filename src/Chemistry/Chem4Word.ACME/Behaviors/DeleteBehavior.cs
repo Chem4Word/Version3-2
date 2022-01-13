@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -87,7 +87,7 @@ namespace Chem4Word.ACME.Behaviors
             else if (hitTestResult is ReactionVisual reactionVisual)
             {
                 var reaction = reactionVisual.ParentReaction;
-                EditController.DeleteReactions(new[] {reaction });
+                EditController.DeleteReactions(new[] { reaction });
                 CurrentStatus = "Bond deleted";
             }
             EditController.ClearSelection();

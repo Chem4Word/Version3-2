@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -113,68 +113,73 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             // 1. Generate characters
             foreach (var term in terms)
             {
-                // 1.1 Measure
-                var measure = new GroupOfCharacters(new Point(0, 0), null, null,
-                                                    Inputs.TtfCharacterSet, Inputs.MeanBondLength);
-                measure.AddParts(term.Parts, OoXmlHelper.Black);
-
-                if (lineNumber++ > 0)
+                if (term.Parts.Any())
                 {
-                    // 1.2 Apply NewLine with measured offset
-                    switch (justification)
+                    // 1.1 Measure
+                    var measure = new GroupOfCharacters(new Point(0, 0), null, null,
+                                                        Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+                    measure.AddParts(term.Parts, OoXmlHelper.Black);
+
+                    if (lineNumber++ > 0)
                     {
-                        case TextBlockJustification.Left:
-                            lines.NewLine();
-                            break;
+                        // 1.2 Apply NewLine with measured offset
+                        switch (justification)
+                        {
+                            case TextBlockJustification.Left:
+                                lines.NewLine();
+                                break;
 
-                        case TextBlockJustification.Centre:
-                            lines.NewLine(lines.BoundingBox.Width / 2 - measure.BoundingBox.Width / 2);
-                            break;
+                            case TextBlockJustification.Centre:
+                                lines.NewLine(lines.BoundingBox.Width / 2 - measure.BoundingBox.Width / 2);
+                                break;
 
-                        case TextBlockJustification.Right:
-                            lines.NewLine(lines.BoundingBox.Width - measure.BoundingBox.Width);
-                            break;
+                            case TextBlockJustification.Right:
+                                lines.NewLine(lines.BoundingBox.Width - measure.BoundingBox.Width);
+                                break;
+                        }
                     }
-                }
 
-                // 1.3 Add Characters for real
-                lines.AddParts(term.Parts, OoXmlHelper.Black);
+                    // 1.3 Add Characters for real
+                    lines.AddParts(term.Parts, OoXmlHelper.Black);
+                }
             }
 
-            // 2. Position characters
-
-            // 2.1 Centre group on reaction midpoint
-            lines.AdjustPosition(reaction.MidPoint - lines.Centre);
-            Debug.WriteLine(lines.BoundingBox);
-
-            // 2.2 March away from reaction midpoint
-            var vector = OffsetVector(reaction, isReagent);
-            Debug.WriteLine($"{path} {lines.BoundingBox}");
-
-            bool isOutside;
-            int maxLoops = 0;
-            do
+            if (lines.Characters.Any())
             {
-                lines.AdjustPosition(vector);
-                var hull = ConvexHull(lines.Characters);
-                isOutside = GeometryTool.IsOutside(reaction.HeadPoint, reaction.TailPoint, hull);
-                Debug.WriteLine($"{path} {lines.BoundingBox} {isOutside} {maxLoops}");
-                if (maxLoops++ >= 10)
+                // 2. Position characters
+                // 2.1 Centre group on reaction midpoint
+                lines.AdjustPosition(reaction.MidPoint - lines.Centre);
+                Debug.WriteLine(lines.BoundingBox);
+
+                // 2.2 March away from reaction midpoint
+                var vector = OffsetVector(reaction, isReagent);
+                Debug.WriteLine($"{path} {lines.BoundingBox}");
+
+                bool isOutside;
+                int maxLoops = 0;
+                do
                 {
-                    break;
+                    lines.AdjustPosition(vector);
+                    var hull = ConvexHull(lines.Characters);
+                    isOutside = GeometryTool.IsOutside(reaction.HeadPoint, reaction.TailPoint, hull);
+                    Debug.WriteLine($"{path} {lines.BoundingBox} {isOutside} {maxLoops}");
+                    if (maxLoops++ >= 10)
+                    {
+                        break;
+                    }
+                } while (!isOutside);
+                lines.AdjustPosition(vector);
+
+                // 3. Transfer to output
+                foreach (var character in lines.Characters)
+                {
+                    Outputs.AtomLabelCharacters.Add(character);
                 }
-            } while (!isOutside);
-            lines.AdjustPosition(vector);
 
-            // 3. Transfer to output
-            foreach (var character in lines.Characters)
-            {
-                Outputs.AtomLabelCharacters.Add(character);
+                // Finally create diagnostics
+                Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(lines.BoundingBox, OoXmlHelper.AcsLineWidth / 2), "00b050"));
+                Outputs.ConvexHulls.Add(path, ConvexHull(path));
             }
-
-            // Finally create diagnostics
-            Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(lines.BoundingBox, OoXmlHelper.AcsLineWidth / 2), "00b050"));
-            Outputs.ConvexHulls.Add(path, ConvexHull(path));
         }
 
         private Vector OffsetVector(Reaction reaction, bool isReagent)
@@ -232,21 +237,24 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     case "Run":
                         var part = new FunctionalGroupPart();
                         part.Text = node.InnerText;
-                        if (node.Attributes?["BaselineAlignment"] != null)
+                        if (!string.IsNullOrEmpty(part.Text))
                         {
-                            var alignment = node.Attributes["BaselineAlignment"].Value;
-                            switch (alignment)
+                            if (node.Attributes?["BaselineAlignment"] != null)
                             {
-                                case "Subscript":
-                                    part.Type = FunctionalGroupPartType.Subscript;
-                                    break;
+                                var alignment = node.Attributes["BaselineAlignment"].Value;
+                                switch (alignment)
+                                {
+                                    case "Subscript":
+                                        part.Type = FunctionalGroupPartType.Subscript;
+                                        break;
 
-                                case "Superscript":
-                                    part.Type = FunctionalGroupPartType.Superscript;
-                                    break;
+                                    case "Superscript":
+                                        part.Type = FunctionalGroupPartType.Superscript;
+                                        break;
+                                }
                             }
+                            term.Parts.Add(part);
                         }
-                        term.Parts.Add(part);
                         break;
 
                     case "LineBreak":

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -407,22 +407,25 @@ namespace Chem4Word.Model2.Converters.CML
                 case Globals.ReactionType.Blocked:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueBlocked));
                     break;
-                 case Globals.ReactionType.Resonance:
+
+                case Globals.ReactionType.Resonance:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueResonance));
                     break;
             }
 
-            if(!string.IsNullOrEmpty(reaction.ReagentText))
+            if (!string.IsNullOrEmpty(reaction.ReagentText) && !XAMLHelper.IsEmptyDocument(reaction.ReagentText))
             {
                 XElement reagentText = new XElement(CMLNamespaces.c4w + CMLConstants.TagReagentText);
                 XElement reagentTextElement = XElement.Parse(reaction.ReagentText);
+                AddXAMLNamespaces(reagentTextElement);
                 reagentText.Add(reagentTextElement);
                 reactionElement.Add(reagentText);
             }
-             if(!string.IsNullOrEmpty(reaction.ConditionsText))
+            if (!string.IsNullOrEmpty(reaction.ConditionsText) && !XAMLHelper.IsEmptyDocument(reaction.ConditionsText))
             {
                 XElement conditionsText = new XElement(CMLNamespaces.c4w + CMLConstants.TagConditionsText);
-                 XElement conditionsTextElement = XElement.Parse(reaction.ConditionsText);
+                XElement conditionsTextElement = XElement.Parse(reaction.ConditionsText);
+                AddXAMLNamespaces(conditionsTextElement);
                 conditionsText.Add(conditionsTextElement);
                 reactionElement.Add(conditionsText);
             }
@@ -521,6 +524,26 @@ namespace Chem4Word.Model2.Converters.CML
             return result;
         }
 
+         // adds mc:Ignorable="c4w" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:c4w="http://www.chem4word.com/cml"
+        private void AddXAMLNamespaces(XElement elem)
+        {
+            if (elem.Attribute(XNamespace.Xmlns + "c4w") is null)
+            {
+                elem.Add(new XAttribute(XNamespace.Xmlns + "c4w", CMLNamespaces.c4w.NamespaceName));
+            }
+            if (elem.Attribute(XNamespace.Xmlns + "mc") is null)
+            {
+                elem.Add(new XAttribute(XNamespace.Xmlns + "mc", CMLNamespaces.mc.NamespaceName));
+            }
+            if (elem.Attribute(CMLNamespaces.mc + "Ignorable") is null)
+            {
+                elem.Add(new XAttribute(CMLNamespaces.mc + "Ignorable", "c4w"));
+            }
+            if (elem.Attribute("xmlns") is null)
+            {
+                elem.Add(new XAttribute("xmlns", CMLNamespaces.xaml.NamespaceName));
+            }
+        }
         #endregion Export Helpers
 
         #region Import Helpers
@@ -815,6 +838,7 @@ namespace Chem4Word.Model2.Converters.CML
                             }
                         }
                         break;
+
                     case CMLConstants.AttrValueResonance:
                         reaction.ReactionType = Globals.ReactionType.Resonance;
                         break;
@@ -822,15 +846,15 @@ namespace Chem4Word.Model2.Converters.CML
             }
 
             XElement reagentElement = cmlElement.Element(CMLNamespaces.c4w + CMLConstants.TagReagentText);
-            string reagentText = reagentElement.ToString();
-            if(!string.IsNullOrEmpty(reagentText))
+            string reagentText = reagentElement?.ToString();
+            if (!string.IsNullOrEmpty(reagentText))
             {
                 reaction.ReagentText = reagentElement.CreateNavigator().InnerXml;
             }
 
             XElement conditionsElement = cmlElement.Element(CMLNamespaces.c4w + CMLConstants.TagConditionsText);
-            string conditionsText = conditionsElement.ToString();
-            if(!string.IsNullOrEmpty(reagentText))
+            string conditionsText = conditionsElement?.ToString();
+            if (!string.IsNullOrEmpty(conditionsText))
             {
                 reaction.ConditionsText = conditionsElement.CreateNavigator().InnerXml;
             }

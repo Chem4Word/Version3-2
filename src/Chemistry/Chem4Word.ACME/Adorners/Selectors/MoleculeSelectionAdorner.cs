@@ -1,23 +1,21 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Linq;
-using Chem4Word.ACME.Graphics;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Geometry;
+using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -50,7 +48,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
         private Snapper _rotateSnapper;
         private double _yPlacement;
         private double _xPlacement;
-
 
         public MoleculeSelectionAdorner(EditorCanvas currentEditor, List<ChemistryBase> chemistries)
             : base(currentEditor, chemistries)
@@ -318,10 +315,10 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 var ghost = CurrentEditor.GhostMolecules(AdornedMolecules);
                 ghost.Transform = LastOperation;
                 drawingContext.DrawGeometry(ghostBrush, ghostPen, ghost);
-                foreach(Reaction r in AdornedReactions)
+                foreach (Reaction r in AdornedReactions)
                 {
-                    var arrow = ReactionSelectionAdorner.GetArrowShape(LastOperation.Transform(r.TailPoint), LastOperation.Transform(r.HeadPoint),r);
-                    arrow.DrawArrowGeometry(drawingContext,ghostPen,ghostBrush);
+                    var arrow = ReactionSelectionAdorner.GetArrowShape(LastOperation.Transform(r.TailPoint), LastOperation.Transform(r.HeadPoint), r);
+                    arrow.DrawArrowGeometry(drawingContext, ghostPen, ghostBrush);
                 }
             }
         }

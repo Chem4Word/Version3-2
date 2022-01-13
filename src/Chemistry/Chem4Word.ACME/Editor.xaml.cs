@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -271,7 +271,7 @@ namespace Chem4Word.ACME
             {
                 _model.RescaleForXaml(false, EditorOptions.BondLength);
 
-                ActiveController = new EditController(_model, ChemCanvas, _used1DProperties, Telemetry);
+                ActiveController = new EditController(_model, ChemCanvas, HostingCanvas, ReactionBoxEditor, _used1DProperties, Telemetry);
                 ActiveController.EditorControl = this;
                 ActiveController.Model.CentreInCanvas(new Size(ChemCanvas.ActualWidth, ChemCanvas.ActualHeight));
                 ActiveController.EditorOptions = EditorOptions;
@@ -459,7 +459,6 @@ namespace Chem4Word.ACME
 
         private void ReagentsButton_Click(object sender, RoutedEventArgs e)
         {
-
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -23,6 +23,7 @@ namespace Chem4Word.ACME.Drawing
             public double[] UprightBaselineOffsets;
         }
 
+        private const string FamilyName = "Arial Unicode MS";
         private static GlyphTypeface _glyphTypeface;
 
         public static GlyphTypeface GlyphTypeface
@@ -33,15 +34,17 @@ namespace Chem4Word.ACME.Drawing
             }
         }
 
-        public static Typeface SymbolTypeface { get; } = new Typeface(new FontFamily("Arial"),
-                                                                       FontStyles.Normal,
-                                                                       FontWeights.Bold,
-                                                                       FontStretches.Normal);
-        public static Typeface BlockTypeface { get; } = new Typeface(new FontFamily("Arial"),
+        public static Typeface SymbolTypeface { get; } = new Typeface(new FontFamily(FamilyName),
                                                                        FontStyles.Normal,
                                                                        FontWeights.Normal,
                                                                        FontStretches.Normal);
-        public static Typeface MoleculelabelTypeface { get; } = new Typeface(new FontFamily("Arial"),
+
+        public static Typeface BlockTypeface { get; } = new Typeface(new FontFamily(FamilyName),
+                                                                       FontStyles.Normal,
+                                                                       FontWeights.Normal,
+                                                                       FontStretches.Normal);
+
+        public static Typeface MoleculelabelTypeface { get; } = new Typeface(new FontFamily(FamilyName),
                                                                              FontStyles.Normal,
                                                                              FontWeights.Normal,
                                                                              FontStretches.Normal);

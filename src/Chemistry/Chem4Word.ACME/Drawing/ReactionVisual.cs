@@ -1,18 +1,19 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Graphics;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
+using Chem4Word.ACME.Graphics;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Helpers;
 using static Chem4Word.Model2.Geometry.BasicGeometry;
 
 namespace Chem4Word.ACME.Drawing
@@ -36,7 +37,7 @@ namespace Chem4Word.ACME.Drawing
         public ReactionVisual(Reaction reaction)
         {
             ParentReaction = reaction;
-            _conditionsBlockRect =null;
+            _conditionsBlockRect = null;
             _reagentsBlockRect = null;
         }
 
@@ -47,7 +48,7 @@ namespace Chem4Word.ACME.Drawing
         {
             get
             {
-                if (_conditionsBlockRect is null)
+                if (_conditionsBlockRect is null || _conditionsBlockRect == Rect.Empty)
                 {
                     return GetDefaultBlockRect(false);
                 }
@@ -76,7 +77,7 @@ namespace Chem4Word.ACME.Drawing
         {
             get
             {
-                if (_reagentsBlockRect is null)
+                if (_reagentsBlockRect is null || _reagentsBlockRect == Rect.Empty)
                 {
                     return GetDefaultBlockRect(true);
                 }
@@ -85,8 +86,7 @@ namespace Chem4Word.ACME.Drawing
                     return _reagentsBlockRect.Value;
                 }
             }
-            private set {  _reagentsBlockRect = value; }
-           
+            private set { _reagentsBlockRect = value; }
         }
 
         public override void Render()
@@ -123,13 +123,23 @@ namespace Chem4Word.ACME.Drawing
                 arrow.DrawArrowGeometry(dc, new Pen(Brushes.Black, 1), Brushes.Black);
 
                 //now do any text
-                if (!string.IsNullOrEmpty(ParentReaction.ReagentText))
+                if (!(string.IsNullOrEmpty(ParentReaction.ReagentText) || XAMLHelper.IsEmptyDocument(ParentReaction.ReagentText)))
                 {
-                   ReagentsBlockRect= DrawTextBlock(dc, ParentReaction.ReagentText, ParentReaction.ReagentsBlockOffset);
+                    ReagentsBlockRect = DrawTextBlock(dc, ParentReaction.ReagentText, ParentReaction.ReagentsBlockOffset);
                 }
-                if (!string.IsNullOrEmpty(ParentReaction.ConditionsText))
+                else
+                {
+                    //draw a transparent overlay over the block: this will help hit testing for empty blocks
+                    dc.DrawRectangle(Brushes.Transparent, null, GetDefaultBlockRect(true));
+                }
+                if (!(string.IsNullOrEmpty(ParentReaction.ConditionsText) || XAMLHelper.IsEmptyDocument(ParentReaction.ConditionsText)))
                 {
                     ConditionsBlockRect = DrawTextBlock(dc, ParentReaction.ConditionsText, ParentReaction.ConditionsBlockOffset, false);
+                }
+                else
+                {
+                    //draw a transparent overlay over the block: this will help hit testing for empty blocks
+                    dc.DrawRectangle(Brushes.Transparent, null, GetDefaultBlockRect(false));
                 }
                 dc.Close();
             }
@@ -153,6 +163,7 @@ namespace Chem4Word.ACME.Drawing
 
             //measure the text and work out the offset vector
             Rect blockBounds = DrawText(dc, blockXaml, new Point(0, 0), blockColour, true);
+
             var blockOffset = GetBlockOffset(reagentsBlockOffset, aboveArrow, blockBounds, out var reactionVector, out var startingPoint, out var adjustedPerp);
 
             //now, the reaction arrow might clip the text box. If so, we need to nudge the box out until it doesn't
@@ -163,7 +174,15 @@ namespace Chem4Word.ACME.Drawing
             //make the nudge factor dependent on the bond offset
             Vector nudge = adjustedPerp;
             nudge.Normalize();
-            nudge *= ParentReaction.Parent.Parent.MeanBondLength * Globals.BondOffsetPercentage;
+            Model model = ParentReaction.Parent.Parent;
+            if (model != null)
+            {
+                nudge *= model.MeanBondLength * Globals.BondOffsetPercentage;
+            }
+            else
+            {
+                nudge = adjustedPerp / 10;
+            }
             //check for a clip
             while (RectClips(blockRect, ParentReaction.TailPoint, ParentReaction.HeadPoint))
             {
@@ -172,9 +191,9 @@ namespace Chem4Word.ACME.Drawing
                 startingPoint = ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp + blockOffset;
                 blockRect = DrawText(dc, blockXaml, startingPoint, blockColour, true);
             }
-
             //Draw the text to the screen for real
             return DrawText(dc, blockXaml, startingPoint, blockColour);
+
 #if SHOWBOUNDS
             Pen offsetPen = new Pen(Brushes.Blue, 1);
             dc.DrawLine(offsetPen, ParentReaction.TailPoint + reactionVector / 2, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp);
@@ -199,7 +218,7 @@ namespace Chem4Word.ACME.Drawing
             //work out the initial offset assuming the block is centre
             Vector blockOffset = -(blockBounds.BottomRight - blockBounds.TopLeft) / 2;
             //now pull the block to the left
-            blockOffset = blockOffset - new Vector(blockBounds.Left, 0);
+            blockOffset -= new Vector(blockBounds.Left, 0);
             //get the reaction vector
             reactionVector = ParentReaction.ReactionVector;
             //find the perpendicular and normalise it
@@ -226,16 +245,19 @@ namespace Chem4Word.ACME.Drawing
 
             Vector perp = reactionVector;
             perp.Normalize();
+
             //multiply the perpendicular by the max of half the height or width of the text block
             perp *= (blockBounds.Width + blockBounds.Height) / 4;
             perp *= rotator;
+
             //and add in the block offset to get the top left staring point for the text block
             topLeft = ParentReaction.TailPoint + reactionVector / 2 + perp + blockOffset;
+
             //now we adjust the starting point to pad appropriately
             Rect tempbounds = blockBounds;
             tempbounds.Offset(topLeft.X, topLeft.Y);
-
             adjustedPerp = CalcProperOffset(tempbounds, ParentReaction.MidPoint);
+
             //recalculate the offset after taking into account the adjustment
             topLeft = ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp + blockOffset;
             return blockOffset;
@@ -286,7 +308,7 @@ namespace Chem4Word.ACME.Drawing
             {
                 FunctionalGroupTextSource.GenericTextParagraphProperties paraprops = DefaultParaProps(colour);
                 BlockTextSource textStore = DefaultTextSourceProps(blockText, colour);
-                while (textStorePos < textStore.Text.Length)
+                while (textStorePos <= textStore.Text.Length)
                 {
                     using (TextLine textLine = textFormatter.FormatLine(textStore, textStorePos, DefaultBlockWidth(), paraprops, null))
                     {

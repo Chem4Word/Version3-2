@@ -1,21 +1,20 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Graphics;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -25,21 +24,21 @@ namespace Chem4Word.ACME.Adorners.Selectors
         private static double _halfThumbWidth;
 
         private static Snapper _resizeSnapper;
-        protected readonly DrawingVisual HeadHandle = new DrawingVisual(); //these do the resizing
-        protected readonly DrawingVisual TailHandle = new DrawingVisual();    //these do the resizing
+        private readonly DrawingVisual HeadHandle = new DrawingVisual(); //these do the resizing
+        private readonly DrawingVisual TailHandle = new DrawingVisual();    //these do the resizing
         private DrawingVisual _draggedVisual;
-        protected bool Resizing;
-        protected bool Dragging;
+        private bool Resizing;
+        private bool Dragging;
         private SolidColorBrush _solidColorBrush;
         private Pen _dashPen;
-        private bool MouseIsDown { get; set; }
+
         private const string UnlockStatus = "[Shift] = unlock length; [Ctrl] = unlock angle; [Esc] = cancel.";
         private const string DefaultStatus = "Drag a handle to resize; drag shaft to reposition.";
-        private const string EditReagentsStatus = "Click box to edit reagents.";
-        private const string EditConditionsStatus = "Click box to edit conditions";
+        private const string EditReagentsStatus = "Double-click box to edit reagents.";
+        private const string EditConditionsStatus = "Double-click box to edit conditions";
 
-        public Point OriginalLocation { get; private set; }
-        public Point CurrentLocation { get; set; }
+        private Point OriginalLocation { get; set; }
+        private Point CurrentLocation { get; set; }
 
         public ReactionSelectionAdorner(EditorCanvas currentEditor, ReactionVisual reactionVisual) : base(currentEditor)
         {
@@ -54,14 +53,14 @@ namespace Chem4Word.ACME.Adorners.Selectors
             EditController.SendStatus(DefaultStatus);
         }
 
-        public ReactionVisual AdornedReactionVisual { get; }
+        private ReactionVisual AdornedReactionVisual { get; }
 
         public Reaction AdornedReaction { get; }
 
-        public Vector HeadDisplacement { get; private set; }
-        public Vector TailDisplacement { get; private set; }
+        private Vector HeadDisplacement { get; set; }
+        private Vector TailDisplacement { get; set; }
 
-        protected void DisableHandlers()
+        private void DisableHandlers()
         {
             //detach the handlers to stop them interfering with dragging
             MouseLeftButtonDown -= BaseSelectionAdorner_MouseLeftButtonDown;
@@ -83,26 +82,25 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void ReactionSelectionAdorner_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            
             OriginalLocation = e.GetPosition(CurrentEditor);
             CurrentLocation = OriginalLocation;
-            //Mouse.Capture((ReactionSelectionAdorner)sender);
-            if(AdornedReactionVisual.ConditionsBlockRect.Contains(CurrentLocation))
+
+            if (e.ClickCount == 2)
             {
-                MessageBox.Show("Clicked Conditions box");
-                e.Handled=true;
-            }
-            else if (AdornedReactionVisual.ReagentsBlockRect.Contains(CurrentLocation))
-            {
-                MessageBox.Show("Clicked Reagents box");
-                e.Handled = true;   
+                if (AdornedReactionVisual.ConditionsBlockRect.Contains(CurrentLocation))
+                {
+                    e.Handled = true;
+                }
+                else if (AdornedReactionVisual.ReagentsBlockRect.Contains(CurrentLocation))
+                {
+                    e.Handled = true;
+                }
             }
         }
 
         private void ReactionSelectionAdorner_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            _visualsHit.Clear();
 
             OriginalLocation = e.GetPosition(CurrentEditor);
             CurrentLocation = OriginalLocation;
@@ -113,7 +111,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             //get rid of the original handles
             RemoveHandle(HeadHandle);
             RemoveHandle(TailHandle);
-           
 
             if ((CurrentLocation - AdornedReaction.HeadPoint).LengthSquared <= _halfThumbWidth * _halfThumbWidth)
             {
@@ -142,7 +139,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
             }
             else
             {
-                Dragging = true;
+                //don't drag if we're on the text blocks
+                Dragging = !(AdornedReactionVisual.ReagentsBlockRect.Contains(OriginalLocation) | AdornedReactionVisual.ConditionsBlockRect.Contains(OriginalLocation));
                 Resizing = false;
             }
             e.Handled = true;
@@ -192,12 +190,12 @@ namespace Chem4Word.ACME.Adorners.Selectors
             e.Handled = true;
         }
 
-
         private void ReactionSelectionAdorner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            MouseIsDown = false;
-
-            EditController.MoveReaction(AdornedReaction, AdornedReaction.TailPoint + TailDisplacement, AdornedReaction.HeadPoint + HeadDisplacement);
+            if (Resizing || Dragging)
+            {
+                EditController.MoveReaction(AdornedReaction, AdornedReaction.TailPoint + TailDisplacement, AdornedReaction.HeadPoint + HeadDisplacement);
+            }
 
             Resizing = false;
             Dragging = false;
@@ -207,8 +205,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             e.Handled = true;
             EditController.SendStatus(DefaultStatus);
         }
-
-        private List<DrawingVisual> _visualsHit = new List<DrawingVisual>();
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -250,6 +246,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 DrawConditionsBlockOutline(drawingContext);
             }
         }
+
         /// <summary>
         /// Draws a dashed highlight around the conditions block
         /// </summary>
@@ -269,6 +266,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Pen handleBorderPen = new Pen { Brush = (Brush)FindResource(Globals.AdornerBorderBrush), DashStyle = DashStyles.Dash };
             drawingContext.DrawRectangle((Brush)FindResource(Globals.AdornerFillBrush), handleBorderPen, blockBounds);
         }
+
         /// <summary>
         /// Draws a dashed highlight around the reagents block
         /// </summary>
@@ -277,6 +275,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         {
             DrawBlockRect(drawingContext, AdornedReactionVisual.ReagentsBlockRect);
         }
+
         /// <summary>
         /// builds a grab handle for the tail or head of the arrow
         /// </summary>
@@ -302,27 +301,27 @@ namespace Chem4Word.ACME.Adorners.Selectors
             switch (adornedReaction.ReactionType)
             {
                 case Globals.ReactionType.Reversible:
-                    arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
+                    arrowVisual = new EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
 
                 case Globals.ReactionType.ReversibleBiasedForward:
-                    arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Forward };
+                    arrowVisual = new EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Forward };
                     break;
 
                 case Globals.ReactionType.ReversibleBiasedReverse:
-                    arrowVisual = new Graphics.EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Backward };
+                    arrowVisual = new EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Backward };
                     break;
 
                 case Globals.ReactionType.Blocked:
-                    arrowVisual = new Graphics.BlockedArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
+                    arrowVisual = new BlockedArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
 
                 case Globals.ReactionType.Resonance:
-                    arrowVisual = new Graphics.StraightArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, ArrowEnds = Enums.ArrowEnds.Both };
+                    arrowVisual = new StraightArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, ArrowEnds = Enums.ArrowEnds.Both };
                     break;
 
                 default:
-                    arrowVisual = new Graphics.StraightArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
+                    arrowVisual = new StraightArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
             }
 

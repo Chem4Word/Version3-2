@@ -27,8 +27,8 @@
     <SolidColorBrush x:Key="BlockedAdornerBrush" Color="LightGray" />
 
     <LinearGradientBrush x:Key="HatchBondBrush" MappingMode="Absolute" SpreadMethod="Repeat" StartPoint="50,0" EndPoint="50,5">
-        <GradientStop Offset="0" Color="{StaticResource {x:Static SystemColors.WindowTextBrushKey}}" />
-        <GradientStop Offset="0.1" Color="{StaticResource {x:Static SystemColors.WindowTextBrushKey}}" />
+        <GradientStop Offset="0" Color="{x:Static SystemColors.WindowColor}" />
+        <GradientStop Offset="0.1" Color="{x:Static SystemColors.WindowColor}" />
         <GradientStop Offset="0.1" Color="Transparent" />
         <GradientStop Offset="0.2" Color="Transparent" />
     </LinearGradientBrush>

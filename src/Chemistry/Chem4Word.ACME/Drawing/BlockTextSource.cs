@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -12,15 +12,22 @@ using System.Xml.Linq;
 
 namespace Chem4Word.ACME.Drawing
 {
+    /// <summary>
+    /// Provides a text source for the TextFormatter
+    /// based on a string of a FlowDocument
+    /// </summary>
     public class BlockTextSource : TextSource
     {
         private readonly string _colour;
         private readonly List<LabelTextSourceRun> _runs = new List<LabelTextSourceRun>();
         public string Text { get; private set; }
-        public int MaxLineLength { get; private set; }
+        public List<LabelTextSourceRun> Runs => _runs;
+        private int MaxLineLength { get; set; }
 
         public BlockTextSource(string blockText, string colour)
         {
+            /*NB: when adding non-printing TextSourceRuns representing a specific class such as TextEndOfLine,
+             * you *must* add a single placeholder character: this stops GetTextRun() from losing sync. */
             MaxLineLength = 0;
             int currentLineLength = 0;
             Text = "";
@@ -38,10 +45,10 @@ namespace Chem4Word.ACME.Drawing
                             string text = xe.CreateReader().ReadInnerXml();
                             _runs.Add(new LabelTextSourceRun
                             {
-                                Text = text,
-                                IsEndParagraph = true
+                                Text = "␍",
+                                IsEndOfLine = true
                             });
-
+                            Text += "␍";//add a placeholder
                             currentLineLength = 0;
                             break;
 
@@ -85,6 +92,10 @@ namespace Chem4Word.ACME.Drawing
         public override TextRun GetTextRun(int textSourceCharacterIndex)
         {
             int pos = 0;
+            if (textSourceCharacterIndex >= Text.Length)
+            {
+                return new TextEndOfParagraph(1);
+            }
             foreach (var currentRun in _runs)
             {
                 if (textSourceCharacterIndex < pos + currentRun.Length)
@@ -93,7 +104,10 @@ namespace Chem4Word.ACME.Drawing
                     {
                         return new TextEndOfParagraph(1);
                     }
-
+                    if (currentRun.IsEndOfLine)
+                    {
+                        return new TextEndOfLine(1);
+                    }
                     TextRunProperties props;
                     if (currentRun.IsSubscript)
                     {

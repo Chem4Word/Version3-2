@@ -1,16 +1,16 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Annotations;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Utils;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Chem4Word.ACME.Annotations;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Utils;
 using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.ACME.Adorners.Sketching
@@ -76,9 +76,11 @@ namespace Chem4Word.ACME.Adorners.Sketching
                 case ReactionType.Blocked:
                     arrowVisual = new Graphics.BlockedArrow { StartPoint = StartPoint, EndPoint = EndPoint };
                     break;
+
                 case ReactionType.Resonance:
-                    arrowVisual = new Graphics.StraightArrow { StartPoint = StartPoint, EndPoint = EndPoint, ArrowEnds=Enums.ArrowEnds.Both };
+                    arrowVisual = new Graphics.StraightArrow { StartPoint = StartPoint, EndPoint = EndPoint, ArrowEnds = Enums.ArrowEnds.Both };
                     break;
+
                 default:
                     arrowVisual = new Graphics.StraightArrow { StartPoint = StartPoint, EndPoint = EndPoint };
                     break;

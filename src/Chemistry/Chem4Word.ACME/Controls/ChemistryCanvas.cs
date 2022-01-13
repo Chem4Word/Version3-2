@@ -1,14 +1,10 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2021, The .NET Foundation.
+//  Copyright (c) 2022, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Adorners.Feedback;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -19,6 +15,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Chem4Word.ACME.Adorners.Feedback;
+using Chem4Word.ACME.Drawing;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -654,10 +654,10 @@ namespace Chem4Word.ACME.Controls
                 DeleteVisual(rv);
             }
             ChemicalVisuals[reaction] = new ReactionVisual(reaction)
-                                        {
-                                            TextSize = Controller.BlockTextSize,
-                                            ScriptSize = Controller.BlockTextSize * Controller.ScriptScalingFactor
-                                        };
+            {
+                TextSize = Controller.BlockTextSize,
+                ScriptSize = Controller.BlockTextSize * Controller.ScriptScalingFactor
+            };
             rv = (ReactionVisual)ChemicalVisuals[reaction];
             rv.ChemicalVisuals = ChemicalVisuals;
             rv.Render();
