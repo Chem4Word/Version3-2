@@ -1515,11 +1515,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             Rect boundingBox = Rect.Empty;
             Point cursor = new Point(startPoint.X, startPoint.Y);
 
-            TtfCharacter i = Inputs.TtfCharacterSet['i'];
-
             for (int idx = 0; idx < text.Length; idx++)
             {
-                TtfCharacter c = Inputs.TtfCharacterSet['?'];
+                TtfCharacter c = Inputs.TtfCharacterSet[OoXmlHelper.DefaultCharacter];
                 char chr = text[idx];
                 if (Inputs.TtfCharacterSet.ContainsKey(chr))
                 {
@@ -1539,8 +1537,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     if (idx < text.Length - 1)
                     {
                         // Move to next Character position
-                        // We ought to be able to use c.IncrementX, but this does not work with string such as "Bowl"
-                        cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(c.Width + i.Width, Inputs.MeanBondLength), 0);
+                        cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(c.IncrementX, Inputs.MeanBondLength), 0);
                     }
                 }
             }
@@ -1552,11 +1549,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             Point cursor = new Point(startPoint.X, startPoint.Y);
 
-            TtfCharacter i = Inputs.TtfCharacterSet['i'];
-
             for (int idx = 0; idx < text.Length; idx++)
             {
-                TtfCharacter c = Inputs.TtfCharacterSet['?'];
+                TtfCharacter c = Inputs.TtfCharacterSet[OoXmlHelper.DefaultCharacter];
                 char chr = text[idx];
                 if (Inputs.TtfCharacterSet.ContainsKey(chr))
                 {
@@ -1573,8 +1568,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     if (idx < text.Length - 1)
                     {
                         // Move to next Character position
-                        // We ought to be able to use c.IncrementX, but this does not work with string such as "Bowl"
-                        cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(c.Width + i.Width, Inputs.MeanBondLength), 0);
+                        cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(c.IncrementX, Inputs.MeanBondLength), 0);
                     }
                 }
             }
@@ -1620,8 +1614,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private Point GetCharacterPosition(Point cursorPosition, TtfCharacter character)
         {
-            // Add the (negative) OriginY to raise the character by it
-            return new Point(cursorPosition.X, cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, Inputs.MeanBondLength));
+            Point position = new Point(cursorPosition.X + OoXmlHelper.ScaleCsTtfToCml(character.OriginX, Inputs.MeanBondLength),
+                                       cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, Inputs.MeanBondLength));
+
+            return position;
         }
     }
 }

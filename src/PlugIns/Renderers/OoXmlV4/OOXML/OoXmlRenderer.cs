@@ -228,27 +228,40 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 {
                     List<AtomLabelCharacter> chars = _positionerOutputs.AtomLabelCharacters.FindAll(a => a.ParentAtom.Equals(atom.Path));
                     Rect atomCharsRect = Rect.Empty;
-                    foreach (var alc in chars)
-                    {
-                        Rect thisBoundingBox = new Rect(alc.Position,
-                                                      new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength),
-                                                               OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength)));
-                        if (alc.IsSmaller)
-                        {
-                            thisBoundingBox = new Rect(alc.Position,
-                                                       new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor,
-                                                                OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor));
-                        }
-
-                        DrawBox(thisBoundingBox, "00ff00", 0.25);
-
-                        atomCharsRect.Union(thisBoundingBox);
-                    }
-
+                    AddCharacterBoundingBoxes(chars, atomCharsRect);
                     if (!atomCharsRect.IsEmpty)
                     {
                         DrawBox(atomCharsRect, "ffa500", 0.5);
                     }
+
+                    List<AtomLabelCharacter> reactionCharacters = _positionerOutputs.AtomLabelCharacters.FindAll(a => a.ParentAtom.StartsWith("/rs"));
+                    atomCharsRect = Rect.Empty;
+                    AddCharacterBoundingBoxes(reactionCharacters, atomCharsRect);
+
+                    // Local Function
+                    void AddCharacterBoundingBoxes(List<AtomLabelCharacter> atomLabelCharacters, Rect rect)
+                    {
+                        foreach (var alc in atomLabelCharacters)
+                        {
+                            Rect thisBoundingBox = new Rect(alc.Position,
+                                                            new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength),
+                                                                     OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength)));
+                            if (alc.IsSmaller)
+                            {
+                                thisBoundingBox = new Rect(alc.Position,
+                                                           new Size(
+                                                               OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) *
+                                                               OoXmlHelper.SubscriptScaleFactor,
+                                                               OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, _medianBondLength) *
+                                                               OoXmlHelper.SubscriptScaleFactor));
+                            }
+
+                            DrawBox(thisBoundingBox, "00ff00", 0.25);
+
+                            rect.Union(thisBoundingBox);
+                        }
+                    }
+
                 }
             }
 

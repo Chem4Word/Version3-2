@@ -20,6 +20,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         public const string Black = "000000";
 
+        // This character is used to replace any which have not been extracted to Arial.json
+        public const char DefaultCharacter = '⊠'; // https://www.compart.com/en/unicode/U+22A0
+
         // Margins are in CML Points
         public const double DrawingMargin = 5; // 5 is a good value to use (Use 0 to compare with AMC diagrams)
 
@@ -43,7 +46,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         public const double AcsLineWidthEmus = AcsLineWidth * EmusPerWordPoint;
 
-        // V3 == 9500 -> ACS == 9144
+        // V3 == 9500 -> V3.1 [ACS] == 9144
         // This makes cml bond length of 20 equal ACS guide 0.2" (0.508cm)
         private const double EmusPerCmlPoint = 9144;
 
@@ -60,7 +63,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         public static double BracketOffset(double bondLength)
         {
-            return Math.Round(bondLength) * BracketOffsetPercentage;
+            return bondLength * BracketOffsetPercentage;
         }
 
         #region C# TTF
@@ -75,7 +78,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             if (bondLength > 0.1)
             {
-                double scaled = XorY * EmusPerCsTtfPoint(Math.Round(bondLength));
+                double scaled = XorY * EmusPerCsTtfPoint(bondLength);
                 return Int64Value.FromInt64((long)scaled);
             }
             else
@@ -87,12 +90,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         /// <summary>
         /// Scales a CS TTF SubScript X or Y co-ordinate to DrawingML Units (EMU)
+        /// <param name="XorY"></param>
+        /// <param name="bondLength"></param>
         /// </summary>
         public static Int64Value ScaleCsTtfSubScriptToEmu(double XorY, double bondLength)
         {
             if (bondLength > 0.1)
             {
-                double scaled = XorY * EmusPerCsTtfPointSubscript(Math.Round(bondLength));
+                double scaled = XorY * EmusPerCsTtfPointSubscript(bondLength);
                 return Int64Value.FromInt64((long)scaled);
             }
             else
@@ -106,12 +111,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// Scales a C# TTF X or Y co-ordinate to CML Units
         /// </summary>
         /// <param name="XorY"></param>
+        /// <param name="bondLength"></param>
         /// <returns></returns>
         public static double ScaleCsTtfToCml(double XorY, double bondLength)
         {
             if (bondLength > 0.1)
             {
-                return XorY / CsTtfToCml(Math.Round(bondLength));
+                return XorY / CsTtfToCml(bondLength);
             }
             else
             {
@@ -122,14 +128,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         // These calculations yield a font which has a point size of 8 at a bond length of 20
         public static double EmusPerCsTtfPoint(double bondLength)
         {
-            return Math.Round(bondLength) / 2.5;
+            return bondLength / 2.5;
         }
 
         private static double EmusPerCsTtfPointSubscript(double bondLength)
         {
             if (bondLength > 0.1)
             {
-                return EmusPerCsTtfPoint(Math.Round(bondLength)) * SubscriptScaleFactor;
+                return EmusPerCsTtfPoint(bondLength) * SubscriptScaleFactor;
             }
             else
             {
@@ -141,7 +147,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             if (bondLength > 0.1)
             {
-                return EmusPerCmlPoint / EmusPerCsTtfPoint(Math.Round(bondLength));
+                return EmusPerCmlPoint / EmusPerCsTtfPoint(bondLength);
             }
             else
             {

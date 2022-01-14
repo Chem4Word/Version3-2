@@ -103,7 +103,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             var knownCharacter = characterIn;
             if (!_characterSet.ContainsKey(characterIn))
             {
-                knownCharacter = '\u22a0';
+                knownCharacter = OoXmlHelper.DefaultCharacter;
             }
 
             Text += knownCharacter;
@@ -148,7 +148,6 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
                 _boundingBox.Union(thisBoundingBox);
 
                 // Move to next Character position
-                // We ought to be able to use ttfCharacter.IncrementX, but this does not work with strings such as "Bowl"
                 if (isSmaller)
                 {
                     _cursor.Offset(OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.IncrementX, _bondLength) * OoXmlHelper.SubscriptScaleFactor, 0);
@@ -207,9 +206,13 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             AdjustPosition(destination - Centre);
         }
 
-        // Add the (negative) OriginY to raise the character by it
-        private Point GetCharacterPosition(Point cursorPosition, TtfCharacter character) =>
-            new Point(cursorPosition.X, cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, _bondLength));
+        private Point GetCharacterPosition(Point cursorPosition, TtfCharacter character)
+        {
+            Point position = new Point(cursorPosition.X + OoXmlHelper.ScaleCsTtfToCml(character.OriginX, _bondLength),
+                                       cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, _bondLength));
+
+            return position;
+        }
 
         public override string ToString()
         {
