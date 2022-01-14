@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using Chem4Word.Model2;
@@ -56,9 +57,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             string fileName = string.Empty;
 
-            bool canRender = model.TotalAtomsCount > 0
-                             && (model.TotalBondsCount == 0
-                                 || model.MeanBondLength > Core.Helpers.Constants.BondLengthTolerance / 2);
+            var canRender = model.ReactionSchemes.Any()
+                                || model.TotalAtomsCount > 0
+                                    && (model.TotalBondsCount == 0
+                                        || model.MeanBondLength > Core.Helpers.Constants.BondLengthTolerance / 2);
 
             if (canRender)
             {
@@ -67,18 +69,17 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 string bookmarkName = Core.Helpers.Constants.OoXmlBookmarkPrefix + guid;
 
                 // Create a Wordprocessing document.
-                using (WordprocessingDocument package = WordprocessingDocument.Create(fileName, WordprocessingDocumentType.Document))
+                using (WordprocessingDocument document = WordprocessingDocument.Create(fileName, WordprocessingDocumentType.Document))
                 {
                     // Add a new main document part.
-                    MainDocumentPart mdp = package.AddMainDocumentPart();
-                    mdp.Document = new Document(new Body());
-                    Body docbody = package.MainDocumentPart.Document.Body;
+                    var mainDocumentPart = document.AddMainDocumentPart();
+                    mainDocumentPart.Document = new Document(new Body());
+                    var body = document.MainDocumentPart.Document.Body;
 
-                    // This will be live
-                    AddPictureFromModel(docbody, model, bookmarkName, options, telemetry, topLeft);
+                    AddPictureFromModel(body, model, bookmarkName, options, telemetry, topLeft);
 
                     // Save changes to the main document part.
-                    package.MainDocumentPart.Document.Save();
+                    document.MainDocumentPart.Document.Save();
                 }
             }
 
@@ -96,23 +97,27 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <param name="topLeft"></param>
         private static void AddPictureFromModel(Body docbody, Model model, string bookmarkName, OoXmlV4Options options, IChem4WordTelemetry telemetry, Point topLeft)
         {
-            Paragraph paragraph1 = new Paragraph();
+            var paragraph1 = new Paragraph();
             if (!string.IsNullOrEmpty(bookmarkName))
             {
-                BookmarkStart bookmarkstart = new BookmarkStart();
-                bookmarkstart.Name = bookmarkName;
-                bookmarkstart.Id = "1";
-                paragraph1.Append(bookmarkstart);
+                var bookmarkStart = new BookmarkStart
+                {
+                    Name = bookmarkName,
+                    Id = "1"
+                };
+                paragraph1.Append(bookmarkStart);
             }
 
-            OoXmlRenderer renderer = new OoXmlRenderer(model, options, telemetry, topLeft);
+            var renderer = new OoXmlRenderer(model, options, telemetry, topLeft);
             paragraph1.Append(renderer.GenerateRun());
 
             if (!string.IsNullOrEmpty(bookmarkName))
             {
-                BookmarkEnd bookmarkend = new BookmarkEnd();
-                bookmarkend.Id = "1";
-                paragraph1.Append(bookmarkend);
+                var bookmarkEnd = new BookmarkEnd
+                {
+                    Id = "1"
+                };
+                paragraph1.Append(bookmarkEnd);
             }
 
             docbody.Append(paragraph1);
