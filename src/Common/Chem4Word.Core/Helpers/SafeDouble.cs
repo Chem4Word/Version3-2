@@ -14,14 +14,36 @@ namespace Chem4Word.Core.Helpers
         public static string Duration(double duration)
             => AsString(duration);
 
+        /// <summary>
+        /// Formats a double as "#,##0.00" without any culture.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string AsString(double value)
             => value.ToString("#,##0.00", CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// Formats a double as "#,##0.0000" without any culture.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string AsString4(double value)
             => value.ToString("#,##0.0000", CultureInfo.InvariantCulture);
 
-        public static object AsCMLString(double value) => value.ToString("0.0###", CultureInfo.InvariantCulture);
+        /// <summary>
+        /// Formats a double as "0.0###" without any culture.
+        /// We are writing co-ordinates in CML with 4 decimal places to be consistent with industry standard MDL format
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string AsCMLString(double value)
+            => value.ToString("0.0###", CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// Formats a double as "#,##0" without any culture.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string AsString0(double value)
             => value.ToString("#,##0", CultureInfo.InvariantCulture);
     }

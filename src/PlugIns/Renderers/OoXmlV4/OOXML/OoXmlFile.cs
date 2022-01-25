@@ -40,7 +40,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            CMLConverter cc = new CMLConverter();
+            var cc = new CMLConverter();
             Model model = cc.Import(cml);
             if (model.AllErrors.Count > 0 || model.AllWarnings.Count > 0)
             {
@@ -55,12 +55,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
-            string fileName = string.Empty;
+            var fileName = string.Empty;
 
-            var canRender = model.ReactionSchemes.Any()
-                                || model.TotalAtomsCount > 0
-                                    && (model.TotalBondsCount == 0
-                                        || model.MeanBondLength > Core.Helpers.Constants.BondLengthTolerance / 2);
+            bool canRender = model.ReactionSchemes.Any()
+                             || model.Annotations.Any()
+                             || model.TotalAtomsCount > 0
+                             && (model.TotalBondsCount == 0
+                                 || model.MeanBondLength > Core.Helpers.Constants.BondLengthTolerance / 2);
 
             if (canRender)
             {
@@ -69,12 +70,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 string bookmarkName = Core.Helpers.Constants.OoXmlBookmarkPrefix + guid;
 
                 // Create a Wordprocessing document.
-                using (WordprocessingDocument document = WordprocessingDocument.Create(fileName, WordprocessingDocumentType.Document))
+                using (var document = WordprocessingDocument.Create(fileName, WordprocessingDocumentType.Document))
                 {
                     // Add a new main document part.
-                    var mainDocumentPart = document.AddMainDocumentPart();
+                    MainDocumentPart mainDocumentPart = document.AddMainDocumentPart();
                     mainDocumentPart.Document = new Document(new Body());
-                    var body = document.MainDocumentPart.Document.Body;
+                    Body body = document.MainDocumentPart.Document.Body;
 
                     AddPictureFromModel(body, model, bookmarkName, options, telemetry, topLeft);
 
@@ -89,13 +90,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <summary>
         /// Creates the DrawingML objects and adds them to the document
         /// </summary>
-        /// <param name="docbody"></param>
+        /// <param name="body"></param>
         /// <param name="model"></param>
         /// <param name="bookmarkName"></param>
         /// <param name="options"></param>
         /// <param name="telemetry"></param>
         /// <param name="topLeft"></param>
-        private static void AddPictureFromModel(Body docbody, Model model, string bookmarkName, OoXmlV4Options options, IChem4WordTelemetry telemetry, Point topLeft)
+        private static void AddPictureFromModel(Body body, Model model, string bookmarkName, OoXmlV4Options options, IChem4WordTelemetry telemetry, Point topLeft)
         {
             var paragraph1 = new Paragraph();
             if (!string.IsNullOrEmpty(bookmarkName))
@@ -120,7 +121,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 paragraph1.Append(bookmarkEnd);
             }
 
-            docbody.Append(paragraph1);
+            body.Append(paragraph1);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Chem4Word.Model2
         {
             get
             {
-                string path = "";
+                var path = "";
 
                 if (Parent == null)
                 {
@@ -70,11 +70,8 @@ namespace Chem4Word.Model2
             {
                 _xaml = value;
                 XDocument flowDoc = XDocument.Parse(value);
-                if (flowDoc != null)
-                {
-                    var content = flowDoc.Descendants().OfType<XText>().Aggregate("", (a, b) => a + b);
-                    EstLength = content.Length;
-                }
+                var content = flowDoc.Descendants().OfType<XText>().Aggregate("", (a, b) => a + b);
+                EstLength = content.Length;
                 OnPropertyChanged();
             }
         }
@@ -85,7 +82,7 @@ namespace Chem4Word.Model2
             set { _position = value; OnPropertyChanged(); }
         }
 
-        public int EstLength { get; private set; }
+        private int EstLength { get; set; }
         public double? SymbolSize { get; set; }
 
         #endregion Properties
@@ -115,11 +112,16 @@ namespace Chem4Word.Model2
         }
 
         //tries to get an estimated bounding box for each atom symbol
-        public Rect BoundingBox(double fontsize)
+        public Rect BoundingBox(double fontSize)
         {
-            double width = fontsize * EstLength;
-            Rect rect = new Rect(Position, new Size(width, fontsize));
-            return rect;
+            double width = fontSize * EstLength;
+            var boundingBox = new Rect(Position, new Size(width, fontSize));
+            return boundingBox;
+        }
+
+        public void ReLabel(ref int annotationCount)
+        {
+            Id = $"t{++annotationCount}";
         }
 
         public void ReLabelGuids(ref int annotationCount)
@@ -133,11 +135,13 @@ namespace Chem4Word.Model2
 
         public Annotation Copy()
         {
-            Annotation copy = new Annotation();
-            copy.Id = Id;
-            copy.IsEditable = IsEditable;
-            copy.Position = Position;
-            copy.Xaml = Xaml;
+            var copy = new Annotation
+            {
+                Id = Id,
+                IsEditable = IsEditable,
+                Position = Position,
+                Xaml = Xaml
+            };
             return copy;
         }
 

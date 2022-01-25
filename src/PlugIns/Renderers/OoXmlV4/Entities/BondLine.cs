@@ -29,7 +29,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public BondLineStyle Style { get; private set; }
 
-        public string Colour { get; set; } = "000000";
+        public string Colour { get; set; } = OoXmlHelper.Black;
 
         /// <summary>
         /// For a Wedge or Hatch bond this is the nose of the wedge

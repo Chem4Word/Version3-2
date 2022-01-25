@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cml:cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
+    <cml:molecule>
+        <cml:formula concise="C 6 H 6" />
+        <cml:formula convention="chemspider:Smiles" inline="c1ccccc1" concise="C 6 H 6" />
+        <cml:formula convention="chemspider:Formula" inline="C6H6" concise="C 6 H 6" />
+        <cml:name dictRef="chemspider:Synonym">Benzene</cml:name>
+        <cml:name dictRef="chemspider:Inchikey">UHOVQNZJYSORNB-UHFFFAOYSA-N</cml:name>
+        <cml:name dictRef="nameDict:unknown">benzene</cml:name>
+        <cml:label dictRef="chem4word:Caption" value="Caption 1" />
+        <cml:label dictRef="chem4word:Caption" value="Caption 2" />
+        <cml:atomArray>
+            <cml:atom id="a1" elementType="C" x2="347.5" y2="145.0">
+                <cml:label value="1" dictRef="cmlDict:locant" />
+            </cml:atom>
+            <cml:atom id="a2" elementType="C" x2="373.4808" y2="160.0">
+                <cml:label value="2" dictRef="cmlDict:locant" />
+                <cml:label value="ortho" dictRef="cmlDict:locant" />
+            </cml:atom>
+            <cml:atom id="a3" elementType="C" x2="373.4808" y2="190.0">
+                <cml:label value="3" dictRef="cmlDict:locant" />
+                <cml:label value="meta" dictRef="cmlDict:locant" />
+            </cml:atom>
+            <cml:atom id="a4" elementType="C" x2="347.5" y2="205.0">
+                <cml:label value="4" dictRef="cmlDict:locant" />
+                <cml:label value="para" dictRef="cmlDict:locant" />
+            </cml:atom>
+            <cml:atom id="a5" elementType="C" x2="321.5192" y2="190.0">
+                <cml:label value="5" dictRef="cmlDict:locant" />
+            </cml:atom>
+            <cml:atom id="ac6" elementType="C" x2="321.5192" y2="160.0">
+                <cml:label value="6" dictRef="cmlDict:locant" />
+            </cml:atom>
+        </cml:atomArray>
+        <cml:bondArray>
+            <cml:bond id="" atomRefs2="a1 a2" order="D" />
+            <cml:bond id="a2_a3" atomRefs2="a2 a3" order="S" />
+            <cml:bond atomRefs2="a3 a4" order="D" />
+            <cml:bond id="a4_a5" atomRefs2="a4 a5" order="S" />
+            <cml:bond atomRefs2="a5 ac6" order="D" />
+            <cml:bond id="a1_aa6" atomRefs2="a1 ac6" order="S" />
+        </cml:bondArray>
+    </cml:molecule>
+</cml:cml>

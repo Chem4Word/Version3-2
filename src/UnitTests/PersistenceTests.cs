@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System.Linq;
+using System.Text;
 using System.Windows;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
@@ -48,7 +49,7 @@ namespace Chem4WordTests
         [InlineData("CopperPhthalocyanine.xml", 1, 57, 68, 12, 12, 1, 0)]
         public void CmlImport(string file, int molecules, int atoms, int bonds, int allRings, int placementRings, int names, int formulas)
         {
-            CMLConverter mc = new CMLConverter();
+            var mc = new CMLConverter();
             Model model = mc.Import(ResourceHelper.GetStringResource(file));
 
             Assert.True(model.Molecules.Count == molecules, $"Expected {molecules} Molecules; Got {model.Molecules.Count}");
@@ -65,6 +66,31 @@ namespace Chem4WordTests
         }
 
         [Fact]
+        public void CheckMissingIdsGenerated()
+        {
+            var mc = new CMLConverter();
+            Model model = mc.Import(ResourceHelper.GetStringResource("Benzene-With-Missing-Ids.xml"));
+
+            // Basic Sanity Checks
+            Assert.True(model.Molecules.Count == 1, $"Expected 1 Molecule; Got {model.Molecules.Count}");
+            Molecule molecule = model.Molecules.Values.First();
+            Assert.True(molecule.Atoms.Count == 6, $"Expected 6 Atoms; Got {molecule.Atoms.Count}");
+            Assert.True(molecule.Bonds.Count == 6, $"Expected 6 Bonds; Got {molecule.Bonds.Count}");
+
+            Assert.True(molecule.Formulas.Count == 2, $"Expected 2 Formulas; Got {molecule.Formulas.Count}");
+            Assert.True(molecule.Names.Count == 3, $"Expected 3 Names; Got {molecule.Names.Count}");
+            Assert.True(molecule.Captions.Count == 2, $"Expected 2 Captions; Got {molecule.Captions.Count}");
+
+            Assert.True(molecule.Atoms.Last().Value.Id == "a6", $"Expected Id of 'a6'; Got Id of '{molecule.Atoms.Last().Value.Id}'");
+            Assert.True(molecule.Bonds[5].Id == "b6", $"Expected Id of 'b6'; Got Id of '{molecule.Bonds[5].Id}'");
+
+            Assert.True(molecule.Formulas[1].Id == "m1.f2", $"Expected Id of 'm1.f2'; Got Id of '{molecule.Formulas[1].Id}'");
+            Assert.True(molecule.Names[2].Id == "m1.n3", $"Expected Id of 'm1.n3'; Got Id of '{molecule.Names[2].Id}'");
+
+            Assert.True(molecule.Captions[1].Id == "m1.l2", $"Expected Id of 'm1.l2'; Got Id of '{molecule.Captions[1].Id}'");
+        }
+
+        [Fact]
         public void CmlImportNested()
         {
             CMLConverter mc = new CMLConverter();
@@ -74,7 +100,7 @@ namespace Chem4WordTests
             Assert.True(model.Molecules.Count == 1, $"Expected 1 Molecule; Got {model.Molecules.Count}");
             // Check molecule m0 has 4 child molecules and no atoms
             Molecule molecule = model.Molecules.Values.First();
-            Assert.True(molecule.Molecules.Count == 4, $"Expected 4 Molecule; Got {molecule.Molecules.Count}");
+            Assert.True(molecule.Molecules.Count == 4, $"Expected 4 Molecules; Got {molecule.Molecules.Count}");
             Assert.True(molecule.Atoms.Count == 0, $"Expected 0 Atoms; Got {molecule.Atoms.Count}");
             // Check molecule m2 has no child molecules and 6 atoms
             molecule = model.Molecules.Values.First().Molecules.Values.ToList()[1];

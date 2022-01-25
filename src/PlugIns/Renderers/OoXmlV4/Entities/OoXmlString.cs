@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System.Windows;
+using Chem4Word.Renderer.OoXmlV4.OOXML;
 
 namespace Chem4Word.Renderer.OoXmlV4.Entities
 {
@@ -14,7 +15,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         public string ParentMolecule { get; set; }
         public Rect Extents { get; set; }
         public string Value { get; set; }
-        public string Colour { get; set; } = "000000";
+        public string Colour { get; set; } = OoXmlHelper.Black;
 
         public OoXmlString(Rect extents, string value, string parentMolecule)
         {

@@ -126,7 +126,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 foreach (var group in _positionerOutputs.GroupBrackets)
                 {
-                    string bracketColour = _options.ColouredAtoms ? "00bbff" : "000000";
+                    string bracketColour = _options.ColouredAtoms ? "00bbff" : OoXmlHelper.Black;
                     DrawGroupBrackets(group, _medianBondLength * 0.5, OoXmlHelper.AcsLineWidth * 2, bracketColour);
                 }
             }
@@ -134,7 +134,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             // Render molecule brackets
             foreach (var moleculeBracket in _positionerOutputs.MoleculeBrackets)
             {
-                DrawMoleculeBrackets(moleculeBracket, OoXmlHelper.AcsLineWidth, "000000");
+                DrawMoleculeBrackets(moleculeBracket, OoXmlHelper.AcsLineWidth, OoXmlHelper.Black);
             }
 
             // Render reaction arrows
@@ -147,7 +147,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         case Globals.ReactionType.Normal:
                         case Globals.ReactionType.Blocked:
                         case Globals.ReactionType.Resonance:
-                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, "000000", OoXmlHelper.AcsLineWidth);
+                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
                             break;
 
                         default:
@@ -175,8 +175,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                     break;
                             }
 
-                            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, "000000", OoXmlHelper.AcsLineWidth);
-                            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, "000000", OoXmlHelper.AcsLineWidth);
+                            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
+                            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
 
                             break;
                     }
@@ -210,7 +210,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
 
                 DrawBox(_boundingBoxOfAllAtoms, "ff0000", .25);
-                DrawBox(_boundingBoxOfEverything, "000000", .25);
+                DrawBox(_boundingBoxOfEverything, OoXmlHelper.Black, .25);
             }
 
             if (_options.ShowHulls)
@@ -579,7 +579,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private void DrawBondLine(Point bondStart, Point bondEnd, string bondPath,
                                   BondLineStyle lineStyle = BondLineStyle.Solid,
-                                  string colour = "000000",
+                                  string colour = OoXmlHelper.Black,
                                   double lineWidth = OoXmlHelper.AcsLineWidth)
         {
             switch (lineStyle)
@@ -812,7 +812,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         }
 
         private void DrawHatchBond(List<Point> points, string bondPath,
-                                   string colour = "000000")
+                                   string colour = OoXmlHelper.Black)
         {
             Rect cmlExtents = new Rect(points[0], points[points.Count - 1]);
 
@@ -920,7 +920,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         }
 
         private void DrawWedgeBond(List<Point> points, string bondPath,
-                                   string colour = "000000")
+                                   string colour = OoXmlHelper.Black)
         {
             Rect cmlExtents = new Rect(points[0], points[points.Count - 1]);
 
@@ -1259,7 +1259,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         }
 
         private void DrawBox(Rect cmlExtents,
-                             string lineColour = "000000",
+                             string lineColour = OoXmlHelper.Black,
                              double lineWidth = OoXmlHelper.AcsLineWidth)
         {
             if (cmlExtents != Rect.Empty)

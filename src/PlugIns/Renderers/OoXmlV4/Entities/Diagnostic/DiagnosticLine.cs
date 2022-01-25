@@ -7,6 +7,7 @@
 
 using System.Windows;
 using Chem4Word.Renderer.OoXmlV4.Enums;
+using Chem4Word.Renderer.OoXmlV4.OOXML;
 
 namespace Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic
 {
@@ -20,7 +21,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic
 
         public string Colour { get; }
 
-        public DiagnosticLine(Point startPoint, Point endPoint, BondLineStyle style, string colour = "000000")
+        public DiagnosticLine(Point startPoint, Point endPoint, BondLineStyle style, string colour = OoXmlHelper.Black)
         {
             Start = startPoint;
             End = endPoint;
