@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Text;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
 

@@ -5,19 +5,19 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Models;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Core;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Behaviors
 {
@@ -29,17 +29,11 @@ namespace Chem4Word.ACME.Behaviors
         private FixedRingAdorner _currentAdorner;
 
         private Window _parent;
-        private Cursor _lastCursor;
+
         public bool Clashing { get; private set; } = false;
 
         public RingBehavior()
         {
-        }
-
-        public RingBehavior(string ringspec) : this()
-        {
-            RingSize = int.Parse(ringspec[0].ToString());
-            Unsaturated = ringspec[1] == 'U';
         }
 
         public int RingSize { get; set; }
@@ -49,23 +43,17 @@ namespace Chem4Word.ACME.Behaviors
             get => _currentAdorner;
             set
             {
-                RemoveRingAdorner();
+                if (_currentAdorner != null)
+                {
+                    var layer = AdornerLayer.GetAdornerLayer(CurrentEditor);
+                    layer.Remove(_currentAdorner);
+                    _currentAdorner.MouseLeftButtonDown -= CurrentAdornerOnMouseLeftButtonDown;
+                    _currentAdorner = null;
+                }
                 _currentAdorner = value;
                 if (_currentAdorner != null)
                 {
                     _currentAdorner.MouseLeftButtonDown += CurrentAdornerOnMouseLeftButtonDown;
-                }
-
-                //local function
-                void RemoveRingAdorner()
-                {
-                    if (_currentAdorner != null)
-                    {
-                        var layer = AdornerLayer.GetAdornerLayer(CurrentEditor);
-                        layer.Remove(_currentAdorner);
-                        _currentAdorner.MouseLeftButtonDown -= CurrentAdornerOnMouseLeftButtonDown;
-                        _currentAdorner = null;
-                    }
                 }
             }
         }
@@ -80,7 +68,6 @@ namespace Chem4Word.ACME.Behaviors
             CurrentEditor = (EditorCanvas)AssociatedObject;
             _parent = Application.Current.MainWindow;
 
-            _lastCursor = CurrentEditor.Cursor;
             CurrentEditor.Cursor = CursorUtils.Pencil;
 
             CurrentEditor.MouseLeftButtonDown += CurrentEditor_MouseLeftButtonDown;

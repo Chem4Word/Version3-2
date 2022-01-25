@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
@@ -26,10 +27,6 @@ namespace Chem4Word.ACME.Adorners.Sketching
         public Globals.BondStereo Stereo { get; set; }
 
         public string BondOrder { get; set; }
-        public double DragXTravel { get; private set; }
-        public double DragYTravel { get; private set; }
-        public Vector? StartDisplacement { get; private set; }
-        public Vector? EndDisplacement { get; private set; }
 
         public Point StartPoint
         {
@@ -187,16 +184,16 @@ namespace Chem4Word.ACME.Adorners.Sketching
                 return descriptor;
             }
 
-            var ordervalue = Bond.OrderToOrderValue(order);
+            var orderValue = Bond.OrderToOrderValue(order);
             //single or dotted bond
-            if (ordervalue <= 1)
+            if (orderValue <= 1)
             {
                 descriptor = new BondLayout { Start = startPoint, End = endPoint };
                 BondGeometry.GetSingleBondGeometry(descriptor, CurrentEditor.Controller.Standoff);
             }
 
             //double bond
-            if (ordervalue == 2 || ordervalue == 1.5)
+            if (orderValue == 2 || orderValue == 1.5)
             {
                 DoubleBondLayout dbd = new DoubleBondLayout { Start = startPoint, End = endPoint };
                 if (stereo == Globals.BondStereo.Indeterminate)
@@ -214,7 +211,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
             }
 
             //tripe bond
-            if (ordervalue == 2.5 || ordervalue == 3)
+            if (orderValue == 2.5 || orderValue == 3)
             {
                 var tbd = new TripleBondLayout { Start = startPoint, End = endPoint };
                 BondGeometry.GetTripleBondGeometry(tbd, bondLength, CurrentEditor.Controller.Standoff);

@@ -91,11 +91,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adorners\Feedback\ReactionHoverAdorner.cs" />
+    <Compile Include="Adorners\Sketching\FloatingSymbolAdorner.cs" />
     <Compile Include="Adorners\Sketching\DrawReactionAdorner.cs" />
     <Compile Include="Adorners\Feedback\BaseHoverAdorner.cs" />
     <Compile Include="Adorners\Feedback\HRotatorAdorner.cs" />
     <Compile Include="Adorners\Selectors\MultiAtomBondAdorner.cs" />
     <Compile Include="Adorners\Selectors\ReactionSelectionAdorner.cs" />
+    <Compile Include="Behaviors\AnnotationBehavior.cs" />
+    <Compile Include="Behaviors\CandidatePlacement.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\ReactionBehavior.cs" />
     <Compile Include="Commands\Block Editing\InsertTextCommand.cs" />
@@ -121,9 +124,11 @@
     </Compile>
     <Compile Include="Controls\DesignTimeModels\BpeDesigner.cs" />
     <Compile Include="Controls\DesignTimeModels\ApeDesigner.cs" />
-    <Compile Include="Drawing\BlockTextSource.cs" />
-    <Compile Include="Drawing\BlockTextRunProperties.cs" />
-    <Compile Include="Drawing\ReactionVisual.cs" />
+    <Compile Include="Drawing\Text\BlockTextSource.cs" />
+    <Compile Include="Drawing\Text\BlockTextRunProperties.cs" />
+    <Compile Include="Drawing\Text\TextSupport.cs" />
+    <Compile Include="Drawing\Visuals\ReactionVisual.cs" />
+    <Compile Include="Drawing\Visuals\AnnotationVisual.cs" />
     <Compile Include="Graphics\BlockedArrow.cs" />
     <Compile Include="Graphics\EquilibriumArrow.cs" />
     <Compile Include="Graphics\Harpoon.cs" />
@@ -141,8 +146,8 @@
     <Compile Include="Adorners\Feedback\GroupHoverAdorner.cs" />
     <Compile Include="Adorners\Selectors\GroupSelectionAdorner.cs" />
     <Compile Include="Adorners\Selectors\MoleculeSelectionAdorner.cs" />
-    <Compile Include="Adorners\Selectors\MultiChemistryAdorner.cs" />
-    <Compile Include="Adorners\Selectors\SingleAtomSelectionAdorner.cs" />
+    <Compile Include="Adorners\Selectors\MultiObjectAdorner.cs" />
+    <Compile Include="Adorners\Selectors\SingleObjectSelectionAdorner.cs" />
     <Compile Include="Adorners\Selectors\SingleChemistryAdorner.cs" />
     <Compile Include="Controls\SketcherHost.xaml.cs">
       <DependentUpon>SketcherHost.xaml</DependentUpon>
@@ -170,15 +175,15 @@
     <Compile Include="Converters\NullableEnumToBooleanConverter.cs" />
     <Compile Include="Converters\TreeViewLineConverter.cs" />
     <Compile Include="Converters\ValueToStringConverter.cs" />
-    <Compile Include="Drawing\ChargeVisual.cs" />
-    <Compile Include="Drawing\ChildTextVisual.cs" />
-    <Compile Include="Drawing\HydrogenVisual.cs" />
-    <Compile Include="Drawing\IsotopeVisual.cs" />
-    <Compile Include="Drawing\GroupVisual.cs" />
-    <Compile Include="Drawing\MoleculeLabelVisual.cs" />
-    <Compile Include="Drawing\MoleculeVisual.cs" />
+    <Compile Include="Drawing\Visuals\ChargeVisual.cs" />
+    <Compile Include="Drawing\Visuals\ChildTextVisual.cs" />
+    <Compile Include="Drawing\Visuals\HydrogenVisual.cs" />
+    <Compile Include="Drawing\Visuals\IsotopeVisual.cs" />
+    <Compile Include="Drawing\Visuals\GroupVisual.cs" />
+    <Compile Include="Drawing\Visuals\MoleculeLabelVisual.cs" />
+    <Compile Include="Drawing\Visuals\MoleculeVisual.cs" />
     <Compile Include="Enums\ChemistryItemMode.cs" />
-    <Compile Include="Drawing\SubscriptedGroup.cs" />
+    <Compile Include="Drawing\Text\SubscriptedGroup.cs" />
     <Compile Include="Graphics\BezierArrow.cs" />
     <Compile Include="Graphics\QuadraticArrow.cs" />
     <Compile Include="Graphics\StraightArrow.cs" />
@@ -189,10 +194,10 @@
     <Compile Include="Controls\NamesEditor.xaml.cs">
       <DependentUpon>NamesEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Drawing\BondLayout.cs" />
-    <Compile Include="Drawing\DoubleBondLayout.cs" />
-    <Compile Include="Drawing\TripleBondLayout.cs" />
-    <Compile Include="Drawing\WedgeBondLayout.cs" />
+    <Compile Include="Drawing\LayoutSupport\BondLayout.cs" />
+    <Compile Include="Drawing\LayoutSupport\DoubleBondLayout.cs" />
+    <Compile Include="Drawing\LayoutSupport\TripleBondLayout.cs" />
+    <Compile Include="Drawing\LayoutSupport\WedgeBondLayout.cs" />
     <Compile Include="Enums\2Point5BondType.cs" />
     <Compile Include="Adorners\Feedback\BondHoverAdorner.cs" />
     <Compile Include="Adorners\Feedback\AtomHoverAdorner.cs" />
@@ -260,16 +265,16 @@
     <Compile Include="Enums\SingleBondType.cs" />
     <Compile Include="Converters\EnumToBooleanConverter.cs" />
     <Compile Include="Drawing\FatArrowGeometry.cs" />
-    <Compile Include="Drawing\SuperscriptTextRunProperties.cs" />
-    <Compile Include="Drawing\SubscriptTextRunProperties.cs" />
-    <Compile Include="Drawing\LabelTextRunProperties.cs" />
-    <Compile Include="Drawing\FunctionalGroupTextSource.cs" />
-    <Compile Include="Drawing\LabelTextSourceRun.cs" />
-    <Compile Include="Drawing\FunctionalGroupVisual.cs" />
-    <Compile Include="Drawing\GenericTextParagraphProperties.cs" />
-    <Compile Include="Drawing\SuperscriptTextRunTypographyProperties.cs" />
-    <Compile Include="Drawing\SubscriptTextRunTypographyProperties.cs" />
-    <Compile Include="Drawing\LabelTextRunTypographyProperties.cs" />
+    <Compile Include="Drawing\Text\SuperscriptTextRunProperties.cs" />
+    <Compile Include="Drawing\Text\SubscriptTextRunProperties.cs" />
+    <Compile Include="Drawing\Text\LabelTextRunProperties.cs" />
+    <Compile Include="Drawing\Text\FunctionalGroupTextSource.cs" />
+    <Compile Include="Drawing\Text\LabelTextSourceRun.cs" />
+    <Compile Include="Drawing\Visuals\FunctionalGroupVisual.cs" />
+    <Compile Include="Drawing\Text\GenericTextParagraphProperties.cs" />
+    <Compile Include="Drawing\Text\SuperscriptTextRunTypographyProperties.cs" />
+    <Compile Include="Drawing\Text\SubscriptTextRunTypographyProperties.cs" />
+    <Compile Include="Drawing\Text\LabelTextRunTypographyProperties.cs" />
     <Compile Include="Models\ChemistryObject.cs" />
     <Compile Include="Models\MoleculePropertiesModel.cs" />
     <Compile Include="Models\NamesModel.cs" />
@@ -290,15 +295,16 @@
     <Compile Include="Utils\ClipboardMonitor.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Utils\CursorUtils.cs" />
+    <Compile Include="Utils\GraphicsHelpers.cs" />
     <Compile Include="Utils\RegistryHelper.cs" />
     <Compile Include="Utils\TextUtils.cs" />
     <Compile Include="Utils\TriggerTracing.cs" />
     <Compile Include="Utils\UIUtils.cs" />
     <Compile Include="Controller.cs" />
-    <Compile Include="Drawing\AtomVisual.cs" />
+    <Compile Include="Drawing\Visuals\AtomVisual.cs" />
     <Compile Include="Drawing\BondGeometry.cs" />
-    <Compile Include="Drawing\BondVisual.cs" />
-    <Compile Include="Drawing\ChemicalVisual.cs" />
+    <Compile Include="Drawing\Visuals\BondVisual.cs" />
+    <Compile Include="Drawing\Visuals\ChemicalVisual.cs" />
     <Compile Include="Controls\ChemistryCanvas.cs" />
     <Compile Include="Controls\ZoomBox.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
@@ -313,8 +319,8 @@
     <Compile Include="Display.xaml.cs">
       <DependentUpon>Display.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Drawing\GlyphText.cs" />
-    <Compile Include="Drawing\GlyphUtils.cs" />
+    <Compile Include="Drawing\Text\GlyphText.cs" />
+    <Compile Include="Drawing\Text\GlyphUtils.cs" />
     <Compile Include="Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>

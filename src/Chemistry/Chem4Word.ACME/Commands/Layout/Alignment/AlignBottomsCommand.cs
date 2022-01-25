@@ -18,7 +18,7 @@ namespace Chem4Word.ACME.Commands.Layout.Alignment
 
         public override void Execute(object parameter)
         {
-            EditController.AlignBottoms(EditController.SelectedItems.OfType<Molecule>().ToList());
+            EditController.AlignBottoms(EditController.SelectedItems.OfType<BaseObject>().ToList());
         }
     }
 }

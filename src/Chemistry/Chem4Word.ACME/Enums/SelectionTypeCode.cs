@@ -16,6 +16,7 @@ namespace Chem4Word.ACME.Enums
         Atom = 1,
         Bond = 2,
         Molecule = 4,
-        Reaction = 8
+        Reaction = 8,
+        Annotation = 16
     }
 }

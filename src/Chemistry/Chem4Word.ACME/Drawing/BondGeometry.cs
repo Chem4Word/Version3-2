@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
@@ -455,16 +456,6 @@ namespace Chem4Word.ACME.Drawing
                     startPoint = new Point(tempPoint.X, tempPoint.Y);
                 }
             }
-        }
-
-        private static List<PathFigure> GetSingleBondSegment(Point startPoint, Point endPoint)
-        {
-            var segments = new List<PathSegment> { new LineSegment(endPoint, false) };
-
-            var figures = new List<PathFigure>();
-            var pf = new PathFigure(startPoint, segments, true);
-            figures.Add(pf);
-            return figures;
         }
 
         /// <summary>

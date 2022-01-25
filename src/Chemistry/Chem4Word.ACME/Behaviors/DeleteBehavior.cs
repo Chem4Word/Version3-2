@@ -8,7 +8,7 @@
 using System.Windows;
 using System.Windows.Input;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
 
 namespace Chem4Word.ACME.Behaviors
@@ -61,35 +61,51 @@ namespace Chem4Word.ACME.Behaviors
         private void CurrentEditor_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var hitTestResult = CurrentEditor.ActiveVisual;
-            if (hitTestResult is HydrogenVisual)
+            switch (hitTestResult)
             {
-                //bail out - we shouldn't be deleting implicit Hs
-                return;
+                case HydrogenVisual _:
+                    //bail out - we shouldn't be deleting implicit Hs
+                    return;
+                case GroupVisual gv:
+                    {
+                        var parent = gv.ParentMolecule;
+                        EditController.DeleteMolecule(parent);
+                        CurrentStatus = "Group deleted";
+                        break;
+                    }
+
+                case AtomVisual atomVisual:
+                    {
+                        var atom = atomVisual.ParentAtom;
+                        EditController.DeleteAtoms(new[] { atom });
+                        CurrentStatus = "Atom deleted.";
+                        break;
+                    }
+
+                case BondVisual bondVisual:
+                    {
+                        var bond = bondVisual.ParentBond;
+                        EditController.DeleteBonds(new[] { bond });
+                        CurrentStatus = "Bond deleted";
+                        break;
+                    }
+
+                case ReactionVisual reactionVisual:
+                    {
+                        var reaction = reactionVisual.ParentReaction;
+                        EditController.DeleteReactions(new[] { reaction });
+                        CurrentStatus = "Bond deleted";
+                        break;
+                    }
+                case AnnotationVisual annotationVisual:
+                    {
+                        var annotation = annotationVisual.ParentAnnotation;
+                        EditController.DeleteAnnotations(new[] {annotation });
+                        CurrentStatus = "Annotation deleted.";
+                        break;
+                    }
             }
-            if (hitTestResult is GroupVisual gv)
-            {
-                var parent = gv.ParentMolecule;
-                EditController.DeleteMolecule(parent);
-                CurrentStatus = "Group deleted";
-            }
-            else if (hitTestResult is AtomVisual atomVisual)
-            {
-                var atom = atomVisual.ParentAtom;
-                EditController.DeleteAtoms(new[] { atom });
-                CurrentStatus = "Atom deleted.";
-            }
-            else if (hitTestResult is BondVisual bondVisual)
-            {
-                var bond = bondVisual.ParentBond;
-                EditController.DeleteBonds(new[] { bond });
-                CurrentStatus = "Bond deleted";
-            }
-            else if (hitTestResult is ReactionVisual reactionVisual)
-            {
-                var reaction = reactionVisual.ParentReaction;
-                EditController.DeleteReactions(new[] { reaction });
-                CurrentStatus = "Bond deleted";
-            }
+
             EditController.ClearSelection();
         }
 

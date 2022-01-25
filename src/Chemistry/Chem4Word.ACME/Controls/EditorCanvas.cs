@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Chem4Word.ACME.Adorners.Selectors;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 
@@ -42,10 +42,10 @@ namespace Chem4Word.ACME.Controls
             return union;
         }
 
-        public Rect GetCombinedBoundingBox(List<ChemistryBase> chemistries)
+        public Rect GetCombinedBoundingBox(List<BaseObject> chemistries)
         {
             Rect union = Rect.Empty;
-            foreach (ChemistryBase cb in chemistries)
+            foreach (BaseObject cb in chemistries)
             {
                 Rect boundingBox = Rect.Empty;
                 if (cb is Molecule molecule)
@@ -58,6 +58,10 @@ namespace Chem4Word.ACME.Controls
                     {
                         boundingBox = GetMoleculeBoundingBox(molecule);
                     }
+                }
+                else if (cb is Annotation annotation)
+                {
+                    boundingBox = GetDrawnBoundingBox(annotation);
                 }
                 else if (cb is Reaction reaction)
                 {

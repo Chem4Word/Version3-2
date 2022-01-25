@@ -18,7 +18,7 @@ using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2
 {
-    public class Bond : ChemistryBase, INotifyPropertyChanged, IEquatable<Bond>
+    public class Bond : BaseObject, INotifyPropertyChanged, IEquatable<Bond>
     {
         #region Properties
 

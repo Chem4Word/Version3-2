@@ -176,5 +176,16 @@ namespace Chem4Word.Model2
                 r.ReLabelGuids(ref reactionCount);
             }
         }
+
+        public void SetMissingIds()
+        {
+            foreach (var reaction in Reactions.Values)
+            {
+                if (string.IsNullOrEmpty(reaction.Id))
+                {
+                    //reaction.Id = GetNextId(Reactions, "r");
+                }
+            }
+        }
     }
 }

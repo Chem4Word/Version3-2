@@ -45,12 +45,22 @@ namespace Chem4Word.Model2.Converters.CML
                     AddMolecule(newModel, newMol);
                     newMol.Parent = newModel;
                 }
+
                 var schemeElements = CMLHelper.GetReactionSchemes(root);
                 foreach (XElement schemeElement in schemeElements)
                 {
                     var newScheme = GetReactionScheme(schemeElement);
                     AddReactionScheme(newModel, newScheme);
                     newScheme.Parent = newModel;
+                }
+
+                //load any model-level annotations
+                var annotationElements = CMLHelper.GetAnnotations(root);
+                foreach (XElement annElement in annotationElements)
+                {
+                    Annotation newAnnotation = GetAnnotation(annElement);
+                    AddAnnotation(newModel, newAnnotation);
+                    newAnnotation.Parent = newModel;
                 }
 
                 #region Handle 1D Labels
@@ -72,6 +82,38 @@ namespace Chem4Word.Model2.Converters.CML
             }
 
             return newModel;
+        }
+
+        private void AddAnnotation(Model newModel, Annotation newAnnotation)
+        {
+            newModel.AddAnnotation(newAnnotation);
+        }
+
+        private Annotation GetAnnotation(XElement cmlElement)
+        {
+            Annotation newAnnotation = new Annotation();
+
+            string xaml = cmlElement.CreateNavigator().InnerXml;
+            if (!string.IsNullOrEmpty(xaml))
+            {
+                newAnnotation.Xaml = xaml;
+            }
+
+            string idValue = cmlElement.Attribute(CMLConstants.AttributeId)?.Value;
+            if (!string.IsNullOrEmpty(idValue))
+            {
+                newAnnotation.Id = idValue;
+            }
+
+            newAnnotation.Position = CMLHelper.GetPosn(cmlElement, out _);
+
+            string symbolSize = cmlElement.Attribute(name: CMLConstants.AttributeSymbolSize)?.Value;
+            if (!string.IsNullOrEmpty(symbolSize))
+            {
+                newAnnotation.SymbolSize = double.Parse(symbolSize);
+            }
+
+            return newAnnotation;
         }
 
         private void AddReactionScheme(Model newModel, ReactionScheme newScheme)
@@ -105,6 +147,11 @@ namespace Chem4Word.Model2.Converters.CML
                 foreach (ReactionScheme scheme in model.ReactionSchemes.Values)
                 {
                     root.Add(GetXElement(scheme));
+                }
+
+                foreach (Annotation ann in model.Annotations.Values)
+                {
+                    root.Add(GetXElement(ann));
                 }
             }
             else
@@ -524,7 +571,30 @@ namespace Chem4Word.Model2.Converters.CML
             return result;
         }
 
-         // adds mc:Ignorable="c4w" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:c4w="http://www.chem4word.com/cml"
+        private XElement GetXElement(Annotation annotation)
+        {
+            XElement result = new XElement(CMLNamespaces.c4w + CMLConstants.TagAnnotation);
+            if (annotation != null)
+            {
+                if (!string.IsNullOrEmpty(annotation.Xaml) && !XAMLHelper.IsEmptyDocument(annotation.Xaml))
+                {
+                    XElement flowDocElement = XElement.Parse(annotation.Xaml);
+                    AddXAMLNamespaces(flowDocElement);
+                    result.Add(flowDocElement);
+                }
+                result.Add(new XAttribute(CMLConstants.AttributeId, annotation.Id));
+                result.Add(new XAttribute(CMLConstants.AttributeX2, annotation.Position.X.ToString("0.0###", CultureInfo.InvariantCulture)));
+                result.Add(new XAttribute(CMLConstants.AttributeY2, annotation.Position.Y.ToString("0.0###", CultureInfo.InvariantCulture)));
+                result.Add(new XAttribute(CMLConstants.AttributeIsEditable, annotation.IsEditable));
+                if (annotation.SymbolSize != null)
+                {
+                    result.Add(new XAttribute(CMLConstants.AttributeSymbolSize, annotation.SymbolSize));
+                }
+            }
+            return result;
+        }
+
+        // adds mc:Ignorable="c4w" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:c4w="http://www.chem4word.com/cml"
         private void AddXAMLNamespaces(XElement elem)
         {
             if (elem.Attribute(XNamespace.Xmlns + "c4w") is null)
@@ -544,6 +614,7 @@ namespace Chem4Word.Model2.Converters.CML
                 elem.Add(new XAttribute("xmlns", CMLNamespaces.xaml.NamespaceName));
             }
         }
+
         #endregion Export Helpers
 
         #region Import Helpers

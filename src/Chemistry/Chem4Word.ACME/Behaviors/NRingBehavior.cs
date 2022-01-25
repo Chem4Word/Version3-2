@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Models;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
@@ -32,7 +32,7 @@ namespace Chem4Word.ACME.Behaviors
         private Window _parent;
         private NRingAdorner _currentAdorner;
         private List<Point> _preferredPlacements;
-        private Cursor _lastCursor;
+
         private const string DefaultStatusText = "Drag on atom, bond or free space to draw ring.";
 
         public NRingBehavior()
@@ -217,7 +217,6 @@ namespace Chem4Word.ACME.Behaviors
         /// <param name="input">Input vector to project onto</param>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        /// <param name="minval">Minmum value vector to return</param>
         /// <returns></returns>
         private Vector GetProjection(Vector input, Point startPoint, Point endPoint)
         {
@@ -229,8 +228,7 @@ namespace Chem4Word.ACME.Behaviors
         /// Gets a vector projected onto the line connecting the start and end points
         /// </summary>
         /// <param name="input">Input vector to project onto</param>
-        /// <param name="startPoint"></param>
-        /// <param name="endPoint"></param>
+        /// <param name="offset">vector to project onto the other vector</param>
         /// <returns></returns>
         private static Vector GetProjection(Vector input, Vector offset)
         {
@@ -335,7 +333,7 @@ namespace Chem4Word.ACME.Behaviors
             CurrentEditor = (EditorCanvas)AssociatedObject;
 
             _parent = Application.Current.MainWindow;
-            _lastCursor = CurrentEditor.Cursor;
+
             CurrentEditor.Cursor = CursorUtils.Pencil;
 
             CurrentEditor.MouseLeftButtonDown += CurrentEditor_MouseLeftButtonDown;

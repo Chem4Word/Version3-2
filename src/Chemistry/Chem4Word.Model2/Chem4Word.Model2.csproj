@@ -62,10 +62,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Annotation.cs" />
     <Compile Include="Atom.cs" />
     <Compile Include="AtomData.cs" />
     <Compile Include="Bond.cs" />
-    <Compile Include="ChemistryBase.cs" />
+    <Compile Include="BaseObject.cs" />
     <Compile Include="Converters\CML\CMLConstants.cs" />
     <Compile Include="Converters\CML\CMLNamespaces.cs" />
     <Compile Include="Converters\JSON\JSONConverter.cs" />

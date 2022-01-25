@@ -7,7 +7,7 @@
 
 using System.Windows;
 using System.Windows.Media;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {

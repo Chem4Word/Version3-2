@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners.Feedback;
+using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -15,10 +19,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners.Feedback;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -70,7 +70,7 @@ namespace Chem4Word.ACME.Controls
         public ReactionVisual ActiveReactionVisual => ActiveVisual as ReactionVisual;
         public BondVisual ActiveBondVisual => ActiveVisual as BondVisual;
 
-        public ChemistryBase ActiveChemistry
+        public BaseObject ActiveChemistry
         {
             get
             {
@@ -264,6 +264,30 @@ namespace Chem4Word.ACME.Controls
             _controller.Model.ReactionsChanged += Model_ReactionsChanged;
             _controller.Model.ReactionSchemesChanged += Model_ReactionSchemesChanged;
             _controller.Model.PropertyChanged += Model_PropertyChanged;
+            _controller.Model.AnnotationsChanged += Model_AnnotationsChanged;
+        }
+
+        private void Model_AnnotationsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var eNewItem in e.NewItems)
+                {
+                    Annotation a = (Annotation)eNewItem;
+
+                    AnnotationAdded(a);
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (var eNewItem in e.OldItems)
+                {
+                    Annotation b = (Annotation)eNewItem;
+
+                    AnnotationRemoved(b);
+                }
+            }
         }
 
         private void Model_ReactionSchemesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -280,7 +304,6 @@ namespace Chem4Word.ACME.Controls
                 {
                     case Atom a:
                         RedrawAtom(a);
-
                         break;
 
                     case Bond b:
@@ -293,6 +316,10 @@ namespace Chem4Word.ACME.Controls
 
                     case Reaction r:
                         RedrawReaction(r);
+                        break;
+
+                    case Annotation an:
+                        RedrawAnnotation(an);
                         break;
                 }
 
@@ -403,7 +430,7 @@ namespace Chem4Word.ACME.Controls
         }
 
         private void Model_MoleculesChanged(object sender,
-                                            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+                                            NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -427,7 +454,7 @@ namespace Chem4Word.ACME.Controls
         }
 
         private void Model_BondsChanged(object sender,
-                                        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+                                        NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -451,7 +478,7 @@ namespace Chem4Word.ACME.Controls
         }
 
         private void Model_AtomsChanged(object sender,
-                                        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+                                        NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -475,7 +502,7 @@ namespace Chem4Word.ACME.Controls
         }
 
         private void Model_ReactionsChanged(object sender,
-                                          System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+                                          NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -620,6 +647,8 @@ namespace Chem4Word.ACME.Controls
         //bookkeeping collection
         public Dictionary<object, DrawingVisual> ChemicalVisuals { get; }
 
+        public double TextSize { get; private set; }
+
         /// <summary>
         /// Draws the chemistry
         /// </summary>
@@ -641,8 +670,62 @@ namespace Chem4Word.ACME.Controls
                         ReactionAdded(reaction);
                     }
                 }
+                if (controller.Model.Annotations.Any())
+                {
+                    foreach (Annotation annotation in controller.Model.Annotations.Values)
+                    {
+                        AnnotationAdded(annotation);
+                    }
+                }
                 InvalidateMeasure();
             }
+        }
+
+        private void AnnotationAdded(Annotation annotation)
+        {
+            AnnotationVisual av;
+            if (ChemicalVisuals.ContainsKey(annotation)) //it's already in the list
+            {
+                av = (AnnotationVisual)ChemicalVisuals[annotation];
+                DeleteVisual(av);
+            }
+            ChemicalVisuals[annotation] = new AnnotationVisual(annotation)
+            {
+                TextSize = annotation.SymbolSize ?? Controller.BlockTextSize,
+                ScriptSize = TextSize * Controller.ScriptScalingFactor
+            };
+            av = (AnnotationVisual)ChemicalVisuals[annotation];
+            av.ChemicalVisuals = ChemicalVisuals;
+            av.Render();
+            AddVisual(av);
+        }
+
+        private void AnnotationRemoved(Annotation annotation)
+        {
+            if (ChemicalVisuals.TryGetValue(annotation, out DrawingVisual dv))
+            {
+                var av = (AnnotationVisual)dv;
+
+                DeleteVisual(av);
+                ChemicalVisuals.Remove(annotation);
+            }
+        }
+
+        private void RedrawAnnotation(Annotation annotation)
+        {
+            int refCount = 1;
+            AnnotationVisual av;
+            if (ChemicalVisuals.ContainsKey(annotation))
+            {
+                av = (AnnotationVisual)ChemicalVisuals[annotation];
+                refCount = av.RefCount;
+                AnnotationRemoved(annotation);
+            }
+
+            AnnotationAdded(annotation);
+
+            av = (AnnotationVisual)ChemicalVisuals[annotation];
+            av.RefCount = refCount;
         }
 
         private void ReactionAdded(Reaction reaction)
@@ -715,6 +798,15 @@ namespace Chem4Word.ACME.Controls
             boundingBox.Union(reactionVisual.ContentBounds);
             boundingBox.Inflate(Spacing, Spacing);
 
+            return boundingBox;
+        }
+
+        public Rect GetDrawnBoundingBox(Annotation annotation)
+        {
+            Rect boundingBox = Rect.Empty;
+            var annotationVisual = ChemicalVisuals[annotation];
+            boundingBox.Union(annotationVisual.ContentBounds);
+            boundingBox.Inflate(Spacing, Spacing);
             return boundingBox;
         }
 

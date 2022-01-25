@@ -842,6 +842,7 @@
                         <behaviors:DeleteBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
+                
                 <Separator Margin="5" />
 
                 <Button
@@ -1162,6 +1163,33 @@
                         </Grid>
                     </Viewbox>
                 </ToggleButton>
+                <RadioButton x:Name="PlusToolButton" Click="ModeButton_OnChecked"
+                    GroupName="Actions"
+                    Style="{StaticResource ToolbarButtonStyle}"
+                    HorizontalContentAlignment="Center"
+                    ToolTip="Draw Plus Sign">
+                    <Viewbox >
+                        <Grid>
+                            <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
+                                <Rectangle Name="Rect" Visibility="Visible" />
+                            </Grid>
+                            <Path Data="M12.126984,0L19.872009,0 19.872009,12.128 32,12.128 32,19.872999 19.872009,19.872999 19.872009,31.999 12.126984,31.999 12.126984,19.872999 0,19.872999 0,12.128 12.126984,12.128z" Stretch="Uniform" Fill="Black" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+                     <RadioButton.Tag>
+                        <behaviors:AnnotationBehavior DefaultText="+" StatusText="Click to insert a + sign" IsEditable="False"
+                            EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
+                    </RadioButton.Tag>
+                </RadioButton>
             </ToolBar>
             <ToolBar
                 x:Name="AlignToolbar"
@@ -1412,7 +1440,8 @@
                                                   FontSize="{Binding BlockTextSize}"
                                                   FontWeight="Normal"
                                               Language="en-GB" xml:lang="en-GB"
-                                              Background="{x:Static SystemColors.WindowBrush}">
+                                              Background="{x:Static SystemColors.WindowBrush}"
+                                              >
                         <control:AnnotationEditor.BorderBrush>
                             <SolidColorBrush Color="DarkOrange" Opacity="50" />
                         </control:AnnotationEditor.BorderBrush>

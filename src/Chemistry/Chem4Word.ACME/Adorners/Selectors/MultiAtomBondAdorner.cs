@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿// ---------------------------------------------------------------------------
+//  Copyright (c) 2022, The .NET Foundation.
+//  This software is released under the Apache License, Version 2.0.
+//  The license and further copyright text can be found in the file LICENSE.md
+//  at the root directory of the distribution.
+// ---------------------------------------------------------------------------
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;
 
@@ -12,18 +18,18 @@ namespace Chem4Word.ACME.Adorners.Selectors
     /// <summary>
     /// Creates a single Adorner to span all selected atoms and bonds
     /// </summary>
-    public class MultiAtomBondAdorner : MultiChemistryAdorner
+    public class MultiAtomBondAdorner : MultiObjectAdorner
     {
         public CombinedGeometry OverallGeometry { get; }
         private double RenderRadius => (EditController.Model.XamlBondLength * Globals.FontSizePercentageBond) / 4;
 
-        public MultiAtomBondAdorner(EditorCanvas currentEditor, List<ChemistryBase> chemistries) : base(currentEditor, chemistries)
+        public MultiAtomBondAdorner(EditorCanvas currentEditor, List<BaseObject> chemistries) : base(currentEditor, chemistries)
         {
             //first, create an empty PathGeometry to hold the summed-up atoms and bonds
             OverallGeometry = new CombinedGeometry();
 
             //iterate through each of the adorned atoms and bonds
-            foreach (ChemistryBase adornedChemistry in AdornedChemistries)
+            foreach (BaseObject adornedChemistry in AdornedObjects)
             {
                 switch (adornedChemistry)
                 {

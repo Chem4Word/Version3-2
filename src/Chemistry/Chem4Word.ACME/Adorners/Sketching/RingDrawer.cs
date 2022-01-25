@@ -10,6 +10,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.ACME.Models;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
@@ -55,8 +56,6 @@ namespace Chem4Word.ACME.Adorners.Sketching
                             && !(oldAtomPlacement.ExistingAtom?.IsUnsaturated ?? false)
                             && !(newAtomPlacement.ExistingAtom?.IsUnsaturated ?? false))
                         {
-                            List<Point> dummy = new List<Point>();
-
                             DoubleBondLayout dbd = new DoubleBondLayout
                             {
                                 Start = oldAtomPlacement.Position,
@@ -79,8 +78,6 @@ namespace Chem4Word.ACME.Adorners.Sketching
                             BondGeometry.GetSingleBondGeometry(sbd, _fixedRingAdorner.CurrentEditor.Controller.Standoff);
                             BasicGeometry.DrawGeometry(sgc, sbd.DefiningGeometry);
                         }
-
-                        oldAtomPlacement = newAtomPlacement;
                     }
 
                     sgc.Close();

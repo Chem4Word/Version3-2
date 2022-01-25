@@ -5,6 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.ACME.Enums;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,12 +18,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.ACME.Enums;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Model2;
 
 namespace Chem4Word.ACME.Behaviors
 {
@@ -180,7 +180,7 @@ namespace Chem4Word.ACME.Behaviors
                     _lassoHits = new List<object>();
                     GatherSelection(_lassoAdorner.Outline);
                     _lassoHits = _lassoHits.Distinct().ToList();
-                    EditController.AddToSelection(_lassoHits.Cast<ChemistryBase>().ToList());
+                    EditController.AddObjectListToSelection(_lassoHits.Cast<BaseObject>().ToList());
                 }
                 if (EditController.SelectedItems.Any())
                 {
@@ -232,6 +232,10 @@ namespace Chem4Word.ACME.Behaviors
 
                 case ReactionVisual rv:
                     _lassoHits.Add(rv.ParentReaction);
+                    break;
+
+                case AnnotationVisual anv:
+                    _lassoHits.Add(anv.ParentAnnotation);
                     break;
             }
             return HitTestResultBehavior.Continue;
@@ -459,23 +463,32 @@ namespace Chem4Word.ACME.Behaviors
 
             object currentObject = null;
 
-            if (visual is AtomVisual av)
+            switch (visual)
             {
-                currentObject = av.ParentAtom;
-            }
-            else if (visual is BondVisual bv)
-            {
-                currentObject = bv.ParentBond;
-            }
-            else if (visual is GroupVisual gv)
-            {
-                currentObject = gv.ParentMolecule;
-            }
-            else if (visual is ReactionVisual rv)
-            {
-                currentObject = rv.ParentReaction;
-            }
+                case AtomVisual av:
+                    currentObject = av.ParentAtom;
+                    break;
 
+                case BondVisual bv:
+                    currentObject = bv.ParentBond;
+                    break;
+
+                case GroupVisual gv:
+                    currentObject = gv.ParentMolecule;
+                    break;
+
+                case ReactionVisual rv:
+                    currentObject = rv.ParentReaction;
+                    break;
+
+                case AnnotationVisual anv:
+                    currentObject = anv.ParentAnnotation;
+                    break;
+
+                default:
+                    currentObject = null;
+                    break;
+            }
             return currentObject;
         }
 
@@ -681,75 +694,24 @@ namespace Chem4Word.ACME.Behaviors
                         }
                         break;
                     }
+                case AnnotationVisual anv:
+                    {
+                        var annotation = anv.ParentAnnotation;
+                        if (!EditController.SelectedItems.Contains(anv))
+                        {
+                            EditController.AddToSelection(annotation);
+                        }
+                        else
+                        {
+                            EditController.RemoveFromSelection(annotation);
+                        }
+                        break;
+                    }
                 default:
                     EditController.ClearSelection();
                     CurrentStatus = DefaultText;
                     break;
             }
-        }
-
-        private HitTestResultBehavior HitTestCallback(HitTestResult result)
-        {
-            var id = ((GeometryHitTestResult)result).IntersectionDetail;
-
-            var myShape = result.VisualHit;
-            if (myShape is GroupVisual selGroup)
-            {
-                EditController.AddToSelection(selGroup.ParentMolecule);
-                return HitTestResultBehavior.Continue;
-            }
-            if (myShape is AtomVisual || myShape is BondVisual)
-            {
-                switch (id)
-                {
-                    case IntersectionDetail.FullyContains:
-                    case IntersectionDetail.Intersects:
-                    case IntersectionDetail.FullyInside:
-                        var selAtom = (myShape as AtomVisual)?.ParentAtom;
-                        var selBond = (myShape as BondVisual)?.ParentBond;
-
-                        if (!(EditController.SelectedItems.Contains(selAtom) ||
-                              EditController.SelectedItems.Contains(selBond)))
-                        {
-                            if (selAtom != null)
-                            {
-                                EditController.AddToSelection(selAtom);
-                            }
-
-                            if (selBond != null)
-                            {
-                                EditController.AddToSelection(selBond);
-                            }
-                        }
-
-                        return HitTestResultBehavior.Continue;
-
-                    case IntersectionDetail.Empty:
-                        selAtom = (myShape as AtomVisual)?.ParentAtom;
-                        selBond = (myShape as BondVisual)?.ParentBond;
-
-                        if (EditController.SelectedItems.Contains(selAtom) ||
-                            EditController.SelectedItems.Contains(selBond))
-                        {
-                            if (selAtom != null)
-                            {
-                                EditController.RemoveFromSelection(selAtom);
-                            }
-
-                            if (selBond != null)
-                            {
-                                EditController.RemoveFromSelection(selBond);
-                            }
-                        }
-
-                        return HitTestResultBehavior.Continue;
-
-                    default:
-                        return HitTestResultBehavior.Stop;
-                }
-            }
-
-            return HitTestResultBehavior.Continue;
         }
 
         protected override void OnDetaching()

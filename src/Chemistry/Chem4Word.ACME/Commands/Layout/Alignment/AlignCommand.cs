@@ -18,7 +18,9 @@ namespace Chem4Word.ACME.Commands.Layout.Alignment
 
         public override bool CanExecute(object parameter)
         {
-            return EditController.SelectedItems.OfType<Molecule>().Count() + EditController.SelectedItems.OfType<Reaction>().Count() > 1;
+            return EditController.SelectedItems.OfType<Molecule>().Count()
+                + EditController.SelectedItems.OfType<Annotation>().Count() 
+                + EditController.SelectedItems.OfType<Reaction>().Count() > 1;
         }
 
         public override void Execute(object parameter)

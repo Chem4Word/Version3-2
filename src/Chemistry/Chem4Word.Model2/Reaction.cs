@@ -16,7 +16,7 @@ using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.Model2
 {
-    public class Reaction : ChemistryBase, INotifyPropertyChanged
+    public class Reaction : BaseObject, INotifyPropertyChanged
     {
         #region Internal Constructs
 
@@ -263,7 +263,7 @@ namespace Chem4Word.Model2
 
         public void UpdateVisual()
         {
-            OnPropertyChanged(nameof(ReactionType));
+           OnPropertyChanged(nameof(ReactionType));
         }
 
         #endregion Methods

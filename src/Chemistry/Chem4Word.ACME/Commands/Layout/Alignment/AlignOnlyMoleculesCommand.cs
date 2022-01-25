@@ -18,12 +18,13 @@ namespace Chem4Word.ACME.Commands.Layout.Alignment
 
         public override bool CanExecute(object parameter)
         {
-            return EditController.SelectionType == Enums.SelectionTypeCode.Molecule && EditController.SelectedItems.Count > 1;
+            return ((EditController.SelectionType & Enums.SelectionTypeCode.Molecule) == Enums.SelectionTypeCode.Molecule 
+                || (EditController.SelectionType & Enums.SelectionTypeCode.Annotation) == Enums.SelectionTypeCode.Annotation) && EditController.SelectedItems.Count > 1;
         }
 
         public override void Execute(object parameter)
         {
-            EditController.AlignCentres(EditController.SelectedItems.OfType<ChemistryBase>().ToList());
+            EditController.AlignCentres(EditController.SelectedItems.OfType<BaseObject>().ToList());
         }
     }
 }

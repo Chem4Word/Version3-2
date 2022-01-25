@@ -23,7 +23,6 @@ namespace Chem4Word.Core.Helpers
                                             {
                                                 IgnoreWhitespace = true,
                                             }))
-
             {
                 xmlReader.Read();
                 string s = xmlReader.ReadOuterXml();
@@ -41,6 +40,7 @@ namespace Chem4Word.Core.Helpers
             var doctext = new TextRange(doc.ContentStart, doc.ContentEnd).Text;
             return string.IsNullOrWhiteSpace(doctext);
         }
+
         #endregion
     }
 }

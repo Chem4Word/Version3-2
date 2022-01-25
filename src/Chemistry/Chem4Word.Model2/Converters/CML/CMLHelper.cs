@@ -185,6 +185,17 @@ namespace Chem4Word.Model2.Converters.CML
             return result;
         }
 
+        internal static List<XElement> GetAnnotations(XElement doc)
+        {
+             List<XElement> result = new List<XElement>();
+
+            var ann = from XElement xe in doc.Elements(CMLConstants.TagAnnotation) select xe;
+            var ann2 = from XElement xe2 in doc.Elements(CMLNamespaces.c4w + CMLConstants.TagAnnotation) select xe2;
+            result = ann.Union(ann2).ToList();
+
+            return result;
+        }
+
         internal static int? GetFormalCharge(XElement cmlElement)
         {
             int formalCharge;
@@ -236,7 +247,7 @@ namespace Chem4Word.Model2.Converters.CML
 
             if (!found)
             {
-                message = $"No atom co-ordinates found for atom '{symbol}' with id of '{id}'.";
+                message = $"No co-ordinates found for object '{symbol}' with id of '{id}'.";
             }
             return result;
         }

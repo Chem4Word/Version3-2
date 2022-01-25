@@ -5,20 +5,19 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows;
-using System.Windows.Media;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {
     public class BondHoverAdorner : BaseHoverAdorner
     {
         private Bond TargetedBond { get; }
-        public EditorCanvas CurrentEditor { get; }
 
         public BondHoverAdorner(UIElement adornedElement, BondVisual targetedVisual) : base(adornedElement, targetedVisual)
         {
@@ -47,12 +46,9 @@ namespace Chem4Word.ACME.Adorners.Feedback
             //this tells us how much to rotate the brackets at the end of the bond
             double bondAngle = TargetedBond.Angle;
 
-            Vector offsetVector1 = new Vector(offset, 0d);
-
             Matrix rotator = new Matrix();
             rotator.Rotate(bondAngle);
-
-            offsetVector1 = offsetVector1 * rotator;
+            Vector offsetVector1 = new Vector(offset, 0d) * rotator;
 
             Vector twiddle = -offsetVector1.Perpendicular();
             twiddle.Normalize();

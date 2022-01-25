@@ -22,7 +22,7 @@ using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
-    public class Molecule : ChemistryBase, IChemistryContainer, INotifyPropertyChanged
+    public class Molecule : BaseObject, IChemistryContainer, INotifyPropertyChanged
     {
         #region Fields
 
@@ -231,7 +231,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        public ChemistryBase GetFromPath(string path)
+        public BaseObject GetFromPath(string path)
         {
             //first part of the path has to be a molecule
             if (path.StartsWith("/"))
@@ -937,6 +937,8 @@ namespace Chem4Word.Model2
                 mol.SetMissingIds();
             }
         }
+
+    
 
         public void SetProtectedLabels(List<string> protectedLabels)
         {

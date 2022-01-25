@@ -19,7 +19,7 @@ using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
-    public class MoleculeSelectionAdorner : SingleAtomSelectionAdorner
+    public class MoleculeSelectionAdorner : SingleObjectSelectionAdorner
     {
         //static as they need to be set only when the adorner is first created
         private static double? _thumbWidth;
@@ -49,12 +49,12 @@ namespace Chem4Word.ACME.Adorners.Selectors
         private double _yPlacement;
         private double _xPlacement;
 
-        public MoleculeSelectionAdorner(EditorCanvas currentEditor, List<ChemistryBase> chemistries)
-            : base(currentEditor, chemistries)
+        public MoleculeSelectionAdorner(EditorCanvas currentEditor, List<BaseObject> objects)
+            : base(currentEditor, objects)
         {
-            if (chemistries is null)
+            if (objects is null)
             {
-                throw new ArgumentNullException(nameof(chemistries));
+                throw new ArgumentNullException(nameof(objects));
             }
 
             if (_thumbWidth == null)
@@ -172,7 +172,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void SetCentroid()
         {
-            _centroid = BasicGeometry.GetCentroid(CurrentEditor.GetCombinedBoundingBox(AdornedChemistries));
+            _centroid = BasicGeometry.GetCentroid(CurrentEditor.GetCombinedBoundingBox(AdornedObjects));
             _rotateSnapper = new Snapper(_centroid, CurrentEditor.Controller as EditController);
         }
 
@@ -184,7 +184,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
             if (LastOperation != null)
             {
-                EditController.TransformChemistries(LastOperation, AdornedChemistries);
+                EditController.TransformObjects(LastOperation, AdornedObjects);
 
                 SetBoundingBox();
                 ResizeCompleted?.Invoke(this, dragCompletedEventArgs);
@@ -196,7 +196,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void SetBoundingBox()
         {
-            BoundingBox = CurrentEditor.GetCombinedBoundingBox(AdornedChemistries);
+            BoundingBox = CurrentEditor.GetCombinedBoundingBox(AdornedObjects);
             //and work out the aspect ratio for later resizing
             AspectRatio = BoundingBox.Width / BoundingBox.Height;
         }
@@ -227,7 +227,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         {
             // desiredWidth and desiredHeight are the width and height of the element that's being adorned.
             // These will be used to place the ResizingAdorner at the corners of the adorned element.
-            var boundingBox = CurrentEditor.GetCombinedBoundingBox(AdornedChemistries);
+            var boundingBox = CurrentEditor.GetCombinedBoundingBox(AdornedObjects);
 
             if (LastOperation != null)
             {
@@ -384,8 +384,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
         // Handler for resizing from the top-left.
         private void TopLeftHandleDragDelta(object sender, DragDeltaEventArgs args)
         {
-            Thumb hitThumb = sender as Thumb;
-
             IncrementDragging(args);
             if (NotDraggingBackwards())
             {

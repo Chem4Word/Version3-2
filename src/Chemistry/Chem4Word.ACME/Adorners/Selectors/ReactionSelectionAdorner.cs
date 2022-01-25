@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Graphics;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
@@ -217,7 +217,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Point newTailPoint = AdornedReaction.TailPoint;
             Point newHeadPoint = AdornedReaction.HeadPoint;
 
-            Arrow arrowVisual;
             base.OnRender(drawingContext);
             if (Resizing || Dragging)
             {
@@ -232,7 +231,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 BuildHandle(drawingContext, TailHandle, newTailPoint, handleFillBrush, handleBorderPen);
             }
 
-            arrowVisual = GetArrowShape(newTailPoint, newHeadPoint, AdornedReaction);
+            Arrow arrowVisual = GetArrowShape(newTailPoint, newHeadPoint, AdornedReaction);
             arrowVisual.DrawArrowGeometry(drawingContext, _dashPen, _solidColorBrush);
             arrowVisual.GetOverlayPen(out Brush overlayBrush, out Pen overlayPen);
             arrowVisual.DrawArrowGeometry(drawingContext, overlayPen, overlayBrush);

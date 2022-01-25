@@ -8,7 +8,7 @@
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
 

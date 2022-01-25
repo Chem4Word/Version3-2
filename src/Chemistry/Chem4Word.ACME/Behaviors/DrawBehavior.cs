@@ -5,18 +5,18 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners.Sketching;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Adorners.Sketching;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Geometry;
 using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.ACME.Behaviors
@@ -26,7 +26,6 @@ namespace Chem4Word.ACME.Behaviors
     /// </summary>
     public class DrawBehavior : BaseEditBehavior
     {
-        private readonly TranslateTransform _transform = new TranslateTransform();
 
         private AtomVisual _currentAtomVisual;
         private bool IsDrawing { get; set; }
@@ -236,18 +235,10 @@ namespace Chem4Word.ACME.Behaviors
                     {
                         if (parentAtom != null)
                         {
-                            if (_currentAtomVisual != null)
-                            {
-                                //so just sprout a chain off it at two-o-clock
-                                EditController.AddAtomChain(
-                                    parentAtom, _angleSnapper.SnapBond(newAtomPos),
-                                    ClockDirections.II);
-                            }
-                            else
-                            {
-                                //otherwise create a singleton
-                                EditController.AddAtomChain(null, newAtomPos, ClockDirections.II);
-                            }
+                            //so just sprout a chain off it at two-o-clock
+                            EditController.AddAtomChain(
+                                parentAtom, _angleSnapper.SnapBond(newAtomPos),
+                                ClockDirections.II);
                         }
                         else
                         {
@@ -352,18 +343,9 @@ namespace Chem4Word.ACME.Behaviors
         /// tells you where to put a new atom
         /// </summary>
         /// <param name="lastAtomVisual"></param>
-        /// <param name="congestedPositions">Places to avoid dumping the new atom</param>
         /// <returns></returns>
         private (Point NewPos, ClockDirections sproutDir) GetNewChainEndPos(AtomVisual lastAtomVisual)
         {
-            ClockDirections GetGeneralDir(Vector bondVector)
-            {
-                double bondAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth, bondVector);
-
-                ClockDirections hour = (ClockDirections)BasicGeometry.SnapToClock(bondAngle);
-                return hour;
-            }
-
             var lastAtom = lastAtomVisual.ParentAtom;
             Vector newDirection;
 
@@ -378,7 +360,7 @@ namespace Chem4Word.ACME.Behaviors
             {
                 Vector bondVector = lastAtom.Position - lastAtom.Neighbours.First().Position;
 
-                var hour = GetGeneralDir(bondVector);
+                var hour = SnapToHour(bondVector);
 
                 if (VirginAtom(lastAtom)) //it hasn't yet sprouted
                 {
@@ -395,7 +377,7 @@ namespace Chem4Word.ACME.Behaviors
 
                     var balancingVector = -(vecA + vecB);
                     balancingVector.Normalize();
-                    newTag = GetGeneralDir(balancingVector);
+                    newTag = SnapToHour(balancingVector);
                     newDirection = balancingVector * EditController.Model.XamlBondLength;
                 }
             }
@@ -404,25 +386,24 @@ namespace Chem4Word.ACME.Behaviors
                 var balancingVector = lastAtom.BalancingVector();
                 balancingVector.Normalize();
                 newDirection = balancingVector * EditController.Model.XamlBondLength;
-                newTag = GetGeneralDir(balancingVector);
+                newTag = SnapToHour(balancingVector);
             }
             else //lastAtom.Degree >= 2:  could get congested
             {
                 FindOpenSpace(lastAtom, EditController.Model.XamlBondLength, out newDirection);
-                newTag = GetGeneralDir(newDirection);
+                newTag = SnapToHour(newDirection);
             }
 
             return (newDirection + lastAtom.Position, newTag);
-        }
 
-        private class CandidatePlacement
-        {
-            public int Separation { get; set; }
-            public Vector Orientation { get; set; }
-            public int NeighbourWeights { get; set; }
-            public ClockDirections Direction => GetGeneralDir(Orientation);
-            public Point PossiblePlacement { get; set; }
-            public bool Crowding { get; set; }
+            //local function
+            ClockDirections SnapToHour(Vector bondVector)
+            {
+                double bondAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth, bondVector);
+
+                ClockDirections hour = (ClockDirections)BasicGeometry.SnapToClock(bondAngle);
+                return hour;
+            }
         }
 
         /// <summary>
@@ -580,11 +561,6 @@ namespace Chem4Word.ACME.Behaviors
         private bool Dragging(MouseEventArgs e)
         {
             return e.LeftButton == MouseButtonState.Pressed & IsDrawing;
-        }
-
-        private HitTestResult GetTarget(Point p)
-        {
-            return VisualTreeHelper.HitTest(CurrentEditor, p);
         }
 
         protected override void OnDetaching()

@@ -32,6 +32,8 @@ namespace Chem4Word.Model2
 
         public event NotifyCollectionChangedEventHandler ReactionsChanged;
 
+        public event NotifyCollectionChangedEventHandler AnnotationsChanged;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion Fields
@@ -81,7 +83,7 @@ namespace Chem4Word.Model2
             OnPropertyChanged(sender, e);
         }
 
-        //transmits the proerty being changed on an object
+        //transmits the property being changed on an object
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (!InhibitEvents)
@@ -92,6 +94,43 @@ namespace Chem4Word.Model2
                     temp.Invoke(sender, e);
                 }
             }
+        }
+
+        public Annotation AddAnnotation(Annotation newAnnotation)
+        {
+            _annotations[newAnnotation.InternalId] = newAnnotation;
+            NotifyCollectionChangedEventArgs e =
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<Annotation> { newAnnotation });
+            UpdateAnnotationsEventHandlers(e);
+            OnAnnotationsChanged(this, e);
+            return newAnnotation;
+        }
+
+        private void Annotations_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnAnnotationsChanged(sender, e);
+        }
+
+        private void OnAnnotationsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!InhibitEvents)
+            {
+                var temp = AnnotationsChanged;
+                if (temp != null)
+                {
+                    temp.Invoke(sender, e);
+                }
+            }
+        }
+
+        public void RemoveAnnotation(Annotation annotation)
+        {
+            _annotations.Remove(annotation.InternalId);
+            NotifyCollectionChangedEventArgs e =
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+                    new List<Annotation> { annotation });
+            UpdateAnnotationsEventHandlers(e);
+            OnAnnotationsChanged(this, e);
         }
 
         //responds to bonds being added or removed
@@ -385,6 +424,11 @@ namespace Chem4Word.Model2
                         boundingBox.Union(reactionRect);
                     }
                 }
+                foreach (var ann in Annotations.Values)
+                {
+                    Rect annRect = ann.BoundingBox(FontSize);
+                    boundingBox.Union(annRect);
+                }
                 return boundingBox;
             }
         }
@@ -402,7 +446,7 @@ namespace Chem4Word.Model2
         public double MaxY => BoundingBoxWithFontSize.Bottom;
 
         /// <summary>
-        /// Overall bounding box for all atoms allowing for Font Size
+        /// Overall bounding box for all objects allowing for Font Size
         /// </summary>
         public Rect BoundingBoxWithFontSize
         {
@@ -433,6 +477,11 @@ namespace Chem4Word.Model2
                             Rect reactionRect = new Rect(reaction.TailPoint, reaction.HeadPoint);
                             _boundingBox.Union(reactionRect);
                         }
+                    }
+
+                    foreach(Annotation ann in Annotations.Values)
+                    {
+                        _boundingBox.Union(ann.BoundingBox(FontSize));
                     }
                 }
 
@@ -466,6 +515,9 @@ namespace Chem4Word.Model2
 
         private readonly Dictionary<Guid, ReactionScheme> _reactionSchemes;
         public ReadOnlyDictionary<Guid, ReactionScheme> ReactionSchemes;
+
+        private readonly Dictionary<Guid, Annotation> _annotations;
+        public ReadOnlyDictionary<Guid, Annotation> Annotations;
         public string CustomXmlPartGuid { get; set; }
 
         public List<string> GeneralErrors { get; set; }
@@ -623,8 +675,13 @@ namespace Chem4Word.Model2
         {
             _molecules = new Dictionary<Guid, Molecule>();
             Molecules = new ReadOnlyDictionary<Guid, Molecule>(_molecules);
+
             _reactionSchemes = new Dictionary<Guid, ReactionScheme>();
             ReactionSchemes = new ReadOnlyDictionary<Guid, ReactionScheme>(_reactionSchemes);
+
+            _annotations = new Dictionary<Guid, Annotation>();
+            Annotations = new ReadOnlyDictionary<Guid, Annotation>(_annotations);
+
             GeneralErrors = new List<string>();
         }
 
@@ -647,6 +704,10 @@ namespace Chem4Word.Model2
             {
                 rs.RepositionAll(x, y);
             }
+            foreach (Annotation annotation in Annotations.Values)
+            {
+                annotation.RepositionAll(x,y);
+            }
             _boundingBox = Rect.Empty;
         }
 
@@ -658,7 +719,7 @@ namespace Chem4Word.Model2
             RepositionAll(displacement.X, displacement.Y);
         }
 
-        public ChemistryBase GetFromPath(string path)
+        public BaseObject GetFromPath(string path)
         {
             try
             {
@@ -671,15 +732,15 @@ namespace Chem4Word.Model2
                 string molID = path.UpTo("/");
 
                 Molecule foundMol = null;
-                foreach(Molecule m in Molecules.Values)
+                foreach (Molecule m in Molecules.Values)
                 {
-                    if (m.Id ==molID)
+                    if (m.Id == molID)
                     {
-                        foundMol =m;
+                        foundMol = m;
                         break;
                     }
                 }
-                
+
                 if (molID is null)
                 {
                     throw new ArgumentException("First child is not a molecule");
@@ -737,6 +798,11 @@ namespace Chem4Word.Model2
             {
                 m.SetMissingIds();
             }
+
+            foreach (ReactionScheme rs in ReactionSchemes.Values)
+            {
+                rs.SetMissingIds();
+            }
         }
 
         public void SetProtectedLabels(List<string> protectedLabels)
@@ -749,8 +815,8 @@ namespace Chem4Word.Model2
 
         public void ReLabelGuids()
         {
-            int bondCount = 0, atomCount = 0, 
-                molCount = 0, reactionSchemeCount=0, reactionCount=0;
+            int bondCount = 0, atomCount = 0, annotationCount =0,
+                molCount = 0, reactionSchemeCount = 0, reactionCount = 0;
 
             foreach (var molecule in GetAllMolecules())
             {
@@ -811,6 +877,11 @@ namespace Chem4Word.Model2
             {
                 rs.ReLabelGuids(ref reactionSchemeCount, ref reactionCount);
             }
+
+            foreach (Annotation an in Annotations.Values)
+            {
+                an.ReLabelGuids(ref annotationCount);
+            }
         }
 
         private IEnumerable<Reaction> GetAllReactions()
@@ -853,17 +924,26 @@ namespace Chem4Word.Model2
         public Model Copy()
         {
             Model modelCopy = new Model();
+            
             foreach (var child in Molecules.Values)
             {
                 Molecule molCopy = child.Copy();
                 modelCopy.AddMolecule(molCopy);
                 molCopy.Parent = modelCopy;
             }
+            
             foreach (var rs in ReactionSchemes.Values)
             {
                 ReactionScheme schemeCopy = rs.Copy();
                 modelCopy.AddReactionScheme(schemeCopy);
                 schemeCopy.Parent = modelCopy;
+            }
+
+            foreach (var ann in Annotations.Values)
+            {
+                Annotation annCopy = ann.Copy();
+                modelCopy.AddAnnotation(annCopy);
+                annCopy.Parent = modelCopy;
             }
             modelCopy.ScaledForXaml = ScaledForXaml;
             modelCopy.CustomXmlPartGuid = CustomXmlPartGuid;
@@ -1008,10 +1088,12 @@ namespace Chem4Word.Model2
             {
                 double scale = newLength / MeanBondLength;
                 var allAtoms = GetAllAtoms();
+
                 foreach (var atom in allAtoms)
                 {
                     atom.Position = new Point(atom.Position.X * scale, atom.Position.Y * scale);
                 }
+
                 foreach (var scheme in ReactionSchemes.Values)
                 {
                     foreach (var reaction in scheme.Reactions.Values)
@@ -1019,6 +1101,11 @@ namespace Chem4Word.Model2
                         reaction.TailPoint = new Point(reaction.TailPoint.X * scale, reaction.TailPoint.Y * scale);
                         reaction.HeadPoint = new Point(reaction.HeadPoint.X * scale, reaction.HeadPoint.Y * scale);
                     }
+                }
+
+                foreach (Annotation annotation in Annotations.Values)
+                {
+                    annotation.Position = new Point(annotation.Position.X * scale, annotation.Position.Y * scale);
                 }
                 _boundingBox = Rect.Empty;
             }
@@ -1230,7 +1317,6 @@ namespace Chem4Word.Model2
                 {
                     var rs = ((ReactionScheme)oldItem);
                     rs.ReactionsChanged -= Reactions_CollectionChanged;
-
                     rs.PropertyChanged -= ChemObject_PropertyChanged;
                 }
             }
@@ -1246,6 +1332,27 @@ namespace Chem4Word.Model2
             }
         }
 
+        private void UpdateAnnotationsEventHandlers(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems)
+                {
+                    var ann = ((Annotation)oldItem);
+
+                    ann.PropertyChanged -= ChemObject_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (var newItem in e.NewItems)
+                {
+                    var ann = ((Annotation)newItem);
+                    ann.PropertyChanged += ChemObject_PropertyChanged;
+                }
+            }
+        }
         private void Reactions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnReactionsChanged(sender, e);

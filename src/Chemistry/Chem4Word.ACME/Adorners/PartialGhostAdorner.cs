@@ -12,7 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
@@ -21,9 +21,6 @@ namespace Chem4Word.ACME.Adorners
 {
     public class PartialGhostAdorner : Adorner
     {
-        [NotNull]
-        private Geometry _outline;
-
         [NotNull]
         private SolidColorBrush _ghostBrush;
 
@@ -65,16 +62,6 @@ namespace Chem4Word.ACME.Adorners
         private void PartialGhostAdorner_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             CurrentEditor.RaiseEvent(e);
-        }
-
-        public Geometry Ghost
-        {
-            get { return _outline; }
-            set
-            {
-                _outline = value;
-                InvalidateVisual();
-            }
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -121,7 +108,6 @@ namespace Chem4Word.ACME.Adorners
 
             foreach (Bond bond in bondSet)
             {
-                List<Point> throwaway = new List<Point>();
                 var startAtomPosition = transformedPositions[bond.StartAtom];
                 var endAtomPosition = transformedPositions[bond.EndAtom];
                 if (bond.OrderValue != 1.0 ||
@@ -137,8 +123,8 @@ namespace Chem4Word.ACME.Adorners
                                                                   CurrentEditor.Controller.Standoff);
                     descriptor.Start = startAtomPosition;
                     descriptor.End = endAtomPosition;
-                    var bondgeom = descriptor.DefiningGeometry;
-                    drawingContext.DrawGeometry(_ghostBrush, _ghostPen, bondgeom);
+                    var bondGeometry = descriptor.DefiningGeometry;
+                    drawingContext.DrawGeometry(_ghostBrush, _ghostPen, bondGeometry);
                 }
                 else
                 {

@@ -15,7 +15,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         #region Shared Properties
 
         //what the adorner attaches to.  Can be an atom or a bond
-        protected ChemistryBase AdornedChemistry { get; }
+        protected BaseObject AdornedChemistry { get; }
 
         #endregion Shared Properties
 
@@ -24,7 +24,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         protected SingleChemistryAdorner(EditorCanvas currentEditor) : base(currentEditor)
         { }
 
-        protected SingleChemistryAdorner(EditorCanvas currentEditor, ChemistryBase adornedChemistry) : this(currentEditor)
+        protected SingleChemistryAdorner(EditorCanvas currentEditor, BaseObject adornedChemistry) : this(currentEditor)
         {
             AdornedChemistry = adornedChemistry;
         }

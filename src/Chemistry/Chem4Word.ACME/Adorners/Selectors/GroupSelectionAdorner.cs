@@ -16,7 +16,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 {
     public class GroupSelectionAdorner : MoleculeSelectionAdorner
     {
-        public GroupSelectionAdorner(EditorCanvas currentEditor, List<ChemistryBase> molecules)
+        public GroupSelectionAdorner(EditorCanvas currentEditor, List<BaseObject> molecules)
             : base(currentEditor, molecules)
         {
         }
