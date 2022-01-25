@@ -3930,10 +3930,10 @@ namespace Chem4Word.ACME
 
             CMLConverter cc = new CMLConverter();
             Model buffer = cc.Import(pastedCml);
-            PasteModel(buffer);
+            PasteModel(buffer, true);
         }
 
-        public void PasteModel(Model buffer)
+        public void PasteModel(Model buffer, bool fromCML= false)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -3943,7 +3943,8 @@ namespace Chem4Word.ACME
                 buffer.Relabel(true);
                 // above should be buffer.StripLabels(true)
                 buffer.ScaleToAverageBondLength(Model.XamlBondLength);
-                if (buffer.Molecules.Count > 1)
+                
+                if (!fromCML && buffer.Molecules.Count > 1)
                 {
                     Packer packer = new Packer();
                     packer.Model = buffer;
@@ -3951,6 +3952,9 @@ namespace Chem4Word.ACME
                 }
 
                 var molList = buffer.Molecules.Values.ToList();
+                var reactionList = buffer.DefaultReactionScheme.Reactions.Values.ToList();
+                var annotationList = buffer.Annotations.Values.ToList();
+
                 //grab the metrics of the editor's viewport
                 var editorControlHorizontalOffset = EditorControl.HorizontalOffset;
                 var editorControlViewportWidth = EditorControl.ViewportWidth;
@@ -3972,6 +3976,20 @@ namespace Chem4Word.ACME
                         Model.RemoveMolecule(mol);
                         mol.Parent = null;
                     }
+                    foreach (var reaction in reactionList)
+                    {
+                        RemoveFromSelection(reaction);
+                        Model.DefaultReactionScheme.RemoveReaction(reaction);
+                        reaction.Parent =null;
+                    }
+                    foreach (var annotation in annotationList)
+                    {
+                        RemoveFromSelection(annotation);
+                        Model.RemoveAnnotation(annotation); 
+                        annotation.Parent = null;
+                    }
+
+
                 };
                 Action redo = () =>
                 {
@@ -3981,6 +3999,18 @@ namespace Chem4Word.ACME
                         mol.Parent = Model;
                         Model.AddMolecule(mol);
                         AddToSelection(mol);
+                    }
+                    foreach (var reaction in reactionList)
+                    {
+                        reaction.Parent = Model.DefaultReactionScheme;
+                        Model.DefaultReactionScheme.AddReaction(reaction);
+                        AddToSelection(reaction);
+                    }
+                    foreach (var annotation in annotationList)
+                    {
+                        annotation.Parent = Model;
+                        Model.AddAnnotation(annotation);
+                        AddToSelection(annotation);
                     }
                 };
 
@@ -4301,11 +4331,16 @@ namespace Chem4Word.ACME
             {
                 selection.Add(mol);
             }
+
             foreach (var r in Model.DefaultReactionScheme.Reactions.Values)
             {
                 selection.Add(r);
             }
-
+            
+            foreach (var a in Model.Annotations.Values)
+            {
+                selection.Add(a);
+            }
             AddObjectListToSelection(selection);
         }
 
