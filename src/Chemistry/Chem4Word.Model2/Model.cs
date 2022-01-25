@@ -483,11 +483,6 @@ namespace Chem4Word.Model2
                     {
                         _boundingBox.Union(ann.BoundingBox(FontSize));
                     }
-
-                    foreach(Annotation ann in Annotations.Values)
-                    {
-                        _boundingBox.Union(ann.BoundingBox(FontSize));
-                    }
                 }
 
                 return _boundingBox;
@@ -1113,12 +1108,6 @@ namespace Chem4Word.Model2
                 {
                     annotation.Position = new Point(annotation.Position.X * scale, annotation.Position.Y * scale);
                 }
-
-                foreach (Annotation annotation in Annotations.Values)
-                {
-                    annotation.Position = new Point(annotation.Position.X * scale, annotation.Position.Y * scale);
-                }
-                _boundingBox = Rect.Empty;
             }
         }
 
