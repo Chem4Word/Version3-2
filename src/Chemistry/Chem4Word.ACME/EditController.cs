@@ -4612,7 +4612,7 @@ namespace Chem4Word.ACME
             double molscentre = 0, annotationscentre = 0;
             if (molsToAlign.Any())
             {
-                molscentre = molsToAlign.Average(m => m.Centre.Y);
+                molscentre = molsToAlign.Average(m => m.Centre.X);
             }
             if (annotationsToAlign.Any())
             {
