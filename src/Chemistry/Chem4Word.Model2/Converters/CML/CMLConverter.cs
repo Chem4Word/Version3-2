@@ -179,7 +179,7 @@ namespace Chem4Word.Model2.Converters.CML
                 // Handle case where id's are null
                 foreach (Molecule molecule in model.Molecules.Values)
                 {
-                    if (molecule.Id == null)
+                    if (string.IsNullOrEmpty(molecule.Id))
                     {
                         relabelRequired = true;
                         break;
@@ -187,7 +187,7 @@ namespace Chem4Word.Model2.Converters.CML
 
                     foreach (Atom atom in molecule.Atoms.Values)
                     {
-                        if (atom.Id == null)
+                        if (string.IsNullOrEmpty(atom.Id))
                         {
                             relabelRequired = true;
                             break;
@@ -196,29 +196,42 @@ namespace Chem4Word.Model2.Converters.CML
 
                     foreach (Bond bond in molecule.Bonds)
                     {
-                        if (bond.Id == null)
+                        if (string.IsNullOrEmpty(bond.Id))
                         {
                             relabelRequired = true;
                             break;
                         }
                     }
                 }
+
                 foreach (ReactionScheme scheme in model.ReactionSchemes.Values)
                 {
-                    if (scheme.Id == null)
+                    if (string.IsNullOrEmpty(scheme.Id))
                     {
                         relabelRequired = true;
                         break;
                     }
+
                     foreach (Reaction reaction in scheme.Reactions.Values)
                     {
-                        if (reaction.Id == null)
+                        if (string.IsNullOrEmpty(reaction.Id))
                         {
                             relabelRequired = true;
                             break;
                         }
                     }
                 }
+
+                foreach (Annotation annotation in model.Annotations.Values)
+                {
+                    if (string.IsNullOrEmpty(annotation.Id))
+                    {
+                        relabelRequired = true;
+                        break;
+                    }
+                }
+
+                // Finally do the re label if required
                 if (relabelRequired)
                 {
                     model.Relabel(false);
