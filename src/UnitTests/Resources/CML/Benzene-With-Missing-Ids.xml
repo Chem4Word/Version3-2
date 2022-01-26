@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cml:cml xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:cmlDict="http://www.xml-cml.org/dictionary/cml/" xmlns:nameDict="http://www.xml-cml.org/dictionary/cml/name/" xmlns:c4w="http://www.chem4word.com/cml" conventions="convention:molecular">
     <cml:molecule>
-        <cml:formula concise="C 6 H 6" />
-        <cml:formula convention="chemspider:Smiles" inline="c1ccccc1" concise="C 6 H 6" />
+        <cml:formula id="m1.f0" concise="C 6 H 6" />
+        <cml:formula id="m1.fx" convention="chemspider:Smiles" inline="c1ccccc1" concise="C 6 H 6" />
         <cml:formula convention="chemspider:Formula" inline="C6H6" concise="C 6 H 6" />
         <cml:name dictRef="chemspider:Synonym">Benzene</cml:name>
-        <cml:name dictRef="chemspider:Inchikey">UHOVQNZJYSORNB-UHFFFAOYSA-N</cml:name>
+        <cml:name id="m1.nx" dictRef="chemspider:Inchikey">UHOVQNZJYSORNB-UHFFFAOYSA-N</cml:name>
         <cml:name dictRef="nameDict:unknown">benzene</cml:name>
-        <cml:label dictRef="chem4word:Caption" value="Caption 1" />
-        <cml:label dictRef="chem4word:Caption" value="Caption 2" />
+        <cml:label id="m1.lx" dictRef="chem4word:Caption" value="Caption 1" />
+        <cml:label id="m1.l9" dictRef="chem4word:Caption" value="Caption 2" />
+        <cml:label dictRef="chem4word:Caption" value="Caption 3" />
         <cml:atomArray>
             <cml:atom id="a1" elementType="C" x2="347.5" y2="145.0">
                 <cml:label value="1" dictRef="cmlDict:locant" />

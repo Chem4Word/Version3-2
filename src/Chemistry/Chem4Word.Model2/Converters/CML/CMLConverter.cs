@@ -67,6 +67,8 @@ namespace Chem4Word.Model2.Converters.CML
 
                 if (protectedLabels != null && protectedLabels.Count >= 1)
                 {
+                    newModel.Relabel(false);
+                    newModel.SetAnyMissingNameIds();
                     newModel.SetProtectedLabels(protectedLabels);
                 }
                 else if (relabel)

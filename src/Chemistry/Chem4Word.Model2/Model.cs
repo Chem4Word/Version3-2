@@ -903,6 +903,7 @@ namespace Chem4Word.Model2
             {
                 m.ReLabel(ref molCount, ref atomCount, ref bondCount, includeNames);
             }
+
             foreach (ReactionScheme scheme in ReactionSchemes.Values)
             {
                 scheme.ReLabel(ref reactionSchemeCount, ref reactionCount);
@@ -1131,6 +1132,14 @@ namespace Chem4Word.Model2
             }
 
             return allBonds;
+        }
+
+        public void SetAnyMissingNameIds()
+        {
+            foreach (Molecule m in Molecules.Values)
+            {
+                m.SetAnyMissingNameIds();
+            }
         }
 
         public TextualProperty GetTextPropertyById(string id)

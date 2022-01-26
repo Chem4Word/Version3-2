@@ -830,8 +830,11 @@ namespace Chem4Word.Model2
                     string[] parts = property.Id.Split('.');
                     prefix = parts[0];
                     suffix = parts[1].Substring(0, 1);
-                    int n = int.Parse(parts[1].Substring(1));
-                    max = Math.Max(max, n);
+                    int n;
+                    if (int.TryParse(parts[1].Substring(1), out n))
+                    {
+                        max = Math.Max(max, n);
+                    }
                 }
             }
 
@@ -884,6 +887,39 @@ namespace Chem4Word.Model2
             }
 
             return molecules;
+        }
+
+        public void SetAnyMissingNameIds()
+        {
+            // Fix any missing Ids of 1D labels (aka Names)
+            foreach (TextualProperty formula in Formulas)
+            {
+                if (string.IsNullOrEmpty(formula.Id))
+                {
+                    formula.Id = GetNextId(Formulas, "f");
+                }
+            }
+
+            foreach (TextualProperty name in Names)
+            {
+                if (string.IsNullOrEmpty(name.Id))
+                {
+                    name.Id = GetNextId(Names, "n");
+                }
+            }
+
+            foreach (TextualProperty label in Captions)
+            {
+                if (string.IsNullOrEmpty(label.Id))
+                {
+                    label.Id = GetNextId(Captions, "l");
+                }
+            }
+
+            foreach (Molecule mol in Molecules.Values)
+            {
+                mol.SetAnyMissingNameIds();
+            }
         }
 
         public void SetProtectedLabels(List<string> protectedLabels)

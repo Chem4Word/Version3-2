@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -65,11 +66,28 @@ namespace Chem4WordTests
             Assert.True(list.Count == placementRings, $"Expected {placementRings} Placement Rings; Got {list.Count}");
         }
 
-        [Fact]
-        public void CheckMissingIdsGenerated()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CheckMissingIdsGenerated(bool hasUsed1D)
         {
             var mc = new CMLConverter();
-            Model model = mc.Import(ResourceHelper.GetStringResource("Benzene-With-Missing-Ids.xml"));
+            var used1dLabels = new List<string>
+                               {
+                                   "m1.fx", // Used formula
+                                   "m1.nx", // Used name
+                                   "m1.lx"  // Used caption
+                               };
+
+            Model model;
+            if (hasUsed1D)
+            {
+                model = mc.Import(ResourceHelper.GetStringResource("Benzene-With-Missing-Ids.xml"), used1dLabels, false);
+            }
+            else
+            {
+                model = mc.Import(ResourceHelper.GetStringResource("Benzene-With-Missing-Ids.xml"));
+            }
 
             // Basic Sanity Checks
             Assert.True(model.Molecules.Count == 1, $"Expected 1 Molecule; Got {model.Molecules.Count}");
@@ -79,15 +97,38 @@ namespace Chem4WordTests
 
             Assert.True(molecule.Formulas.Count == 2, $"Expected 2 Formulas; Got {molecule.Formulas.Count}");
             Assert.True(molecule.Names.Count == 3, $"Expected 3 Names; Got {molecule.Names.Count}");
-            Assert.True(molecule.Captions.Count == 2, $"Expected 2 Captions; Got {molecule.Captions.Count}");
+            Assert.True(molecule.Captions.Count == 3, $"Expected 3 Captions; Got {molecule.Captions.Count}");
 
+            // Expect atoms and bonds to always be re-labeled
             Assert.True(molecule.Atoms.Last().Value.Id == "a6", $"Expected Id of 'a6'; Got Id of '{molecule.Atoms.Last().Value.Id}'");
             Assert.True(molecule.Bonds[5].Id == "b6", $"Expected Id of 'b6'; Got Id of '{molecule.Bonds[5].Id}'");
 
-            Assert.True(molecule.Formulas[1].Id == "m1.f2", $"Expected Id of 'm1.f2'; Got Id of '{molecule.Formulas[1].Id}'");
-            Assert.True(molecule.Names[2].Id == "m1.n3", $"Expected Id of 'm1.n3'; Got Id of '{molecule.Names[2].Id}'");
+            if (hasUsed1D)
+            {
+                Assert.True(molecule.Formulas[0].Id == "m1.fx", $"Expected Id of 'm1.fx'; Got Id of '{molecule.Formulas[0].Id}'");
+                Assert.True(molecule.Formulas[1].Id == "m1.f1", $"Expected Id of 'm1.f1'; Got Id of '{molecule.Formulas[1].Id}'");
 
-            Assert.True(molecule.Captions[1].Id == "m1.l2", $"Expected Id of 'm1.l2'; Got Id of '{molecule.Captions[1].Id}'");
+                Assert.True(molecule.Names[0].Id == "m1.n1", $"Expected Id of 'm1.n1'; Got Id of '{molecule.Names[0].Id}'");
+                Assert.True(molecule.Names[1].Id == "m1.nx", $"Expected Id of 'm1.nx'; Got Id of '{molecule.Names[1].Id}'");
+                Assert.True(molecule.Names[2].Id == "m1.n2", $"Expected Id of 'm1.n2'; Got Id of '{molecule.Names[2].Id}'");
+
+                Assert.True(molecule.Captions[0].Id == "m1.lx", $"Expected Id of 'm1.lx'; Got Id of '{molecule.Captions[0].Id}'");
+                Assert.True(molecule.Captions[1].Id == "m1.l9", $"Expected Id of 'm1.l9'; Got Id of '{molecule.Captions[1].Id}'");
+                Assert.True(molecule.Captions[2].Id == "m1.l10", $"Expected Id of 'm1.l10'; Got Id of '{molecule.Captions[2].Id}'");
+            }
+            else
+            {
+                Assert.True(molecule.Formulas[0].Id == "m1.f1", $"Expected Id of 'm1.f1'; Got Id of '{molecule.Formulas[0].Id}'");
+                Assert.True(molecule.Formulas[1].Id == "m1.f2", $"Expected Id of 'm1.f2'; Got Id of '{molecule.Formulas[1].Id}'");
+
+                Assert.True(molecule.Names[0].Id == "m1.n1", $"Expected Id of 'm1.n1'; Got Id of '{molecule.Names[0].Id}'");
+                Assert.True(molecule.Names[1].Id == "m1.n2", $"Expected Id of 'm1.n2'; Got Id of '{molecule.Names[1].Id}'");
+                Assert.True(molecule.Names[2].Id == "m1.n3", $"Expected Id of 'm1.n3'; Got Id of '{molecule.Names[2].Id}'");
+
+                Assert.True(molecule.Captions[0].Id == "m1.l1", $"Expected Id of 'm1.l1'; Got Id of '{molecule.Captions[0].Id}'");
+                Assert.True(molecule.Captions[1].Id == "m1.l2", $"Expected Id of 'm1.l2'; Got Id of '{molecule.Captions[1].Id}'");
+                Assert.True(molecule.Captions[2].Id == "m1.l3", $"Expected Id of 'm1.l3'; Got Id of '{molecule.Captions[2].Id}'");
+            }
         }
 
         [Fact]
