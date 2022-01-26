@@ -1399,10 +1399,59 @@
                         Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertDegreeCommand}">
                     <TextBlock HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" FontFamily="Arial" >°C</TextBlock>
                 </Button>
-                <Button x:Name="DeltaButton"  HorizontalContentAlignment="Center"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertDeltaCommand}">
-                    <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >Δ</TextBlock>
+                <Button x:Name="SymbolButton"  HorizontalContentAlignment="Center"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertSymbolCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial">
+                    <Button.Content>Δ</Button.Content>
+                    <Button.Tag>Δ</Button.Tag>
                 </Button>
+                 <Button
+                    Name="SymbolDropdown"
+                    Width="10"
+                    Click="SymbolDropdown_Click"
+                    ToolTip="Select Symbol">
+                    <Viewbox Stretch="Uniform">
+                        <Path Data="M -7.5,0 l 15,0 l -7.5, 7.5 Z" Fill="{StaticResource ResourceKey=Chem4WordBrush}" />
+                    </Viewbox>
+                </Button>
+                <Popup
+                    x:Name="SymbolPopup"
+                    PlacementTarget="{Binding ElementName=SymbolButton}"
+                    StaysOpen="False">
+                    <Border>
+                        <UniformGrid Background="{x:Static SystemColors.WindowBrush}" Columns="3" Rows="2">
+                            <UniformGrid.Resources>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Setters>
+                                        <Setter Property="Background" Value="Transparent" />
+
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="Height" Value="Auto" />
+                                        <EventSetter Event="Click" Handler="SymbolSelButton_Click" />
+                                    </Style.Setters>
+                                </Style>
+                            </UniformGrid.Resources>
+                            <Button Name="DeltaButton" ToolTip="Delta" Tag="Δ">
+                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >Δ</TextBlock>
+                            </Button>
+                            <Button Name="AlphaButton" ToolTip="alpha" Tag="α">
+                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >α</TextBlock>
+                            </Button>
+                             <Button Name="BetaButton" ToolTip="beta" Tag="β">
+                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >β</TextBlock>
+                            </Button>
+                            <Button Name="GammaButton" ToolTip="gamma" Tag="γ">
+                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >γ</TextBlock>
+                            </Button>
+                             <Button Name="MuButton" ToolTip="mu" Tag="μ">
+                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >μ</TextBlock>
+                            </Button>
+                            <Button Name="NuButton" ToolTip="Degree" Tag="°">
+                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >°</TextBlock>
+                            </Button>
+                        </UniformGrid>
+                    </Border>
+                </Popup>
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Row="1" Height="Auto">

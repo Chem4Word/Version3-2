@@ -55,7 +55,7 @@ namespace Chem4Word.ACME.Controls
         public bool EditingReagents { get; internal set; }
         public SubscriptCommand MakeSubscriptCommand { get; }
         public SuperscriptCommand MakeSuperscriptCommand { get; }
-        public InsertTextCommand InsertDeltaCommand { get; }
+        public InsertTextCommand InsertSymbolCommand { get; }
         public InsertTextCommand InsertDegreeCommand { get; }
 
         #region Constructors
@@ -69,7 +69,7 @@ namespace Chem4Word.ACME.Controls
             TextChanged += AnnotationEditor_TextChanged;
             MakeSubscriptCommand = new SubscriptCommand(this);
             MakeSuperscriptCommand = new SuperscriptCommand(this);
-            InsertDeltaCommand = new InsertTextCommand(this, "Δ");
+            InsertSymbolCommand = new InsertTextCommand(this, "Δ");
             InsertDegreeCommand = new InsertTextCommand(this, "℃");
             SelectionChanged += AnnotationEditor_SelectionChanged;
             DataObject.AddPastingHandler(this, AnnotationEditor_Pasting);

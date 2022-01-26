@@ -460,5 +460,26 @@ namespace Chem4Word.ACME
         private void ReagentsButton_Click(object sender, RoutedEventArgs e)
         {
         }
+
+        private void SymbolDropdown_Click(object sender, RoutedEventArgs e)
+        {
+            SymbolPopup.IsOpen = true;
+            SymbolPopup.Closed += (senderClosed, eClosed) => { };
+        }
+
+        private void SymbolSelButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetSymbol(sender);
+            SymbolPopup.IsOpen = false;
+        }
+
+        
+
+        private void SetSymbol(object sender)
+        {
+            Button panelButton = sender as Button;
+            SymbolButton.Tag = panelButton.Tag;
+            SymbolButton.Content = panelButton.Tag;
+        }
     }
 }

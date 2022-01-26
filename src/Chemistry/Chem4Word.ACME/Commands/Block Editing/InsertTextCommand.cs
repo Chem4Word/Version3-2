@@ -15,7 +15,7 @@ namespace Chem4Word.ACME.Commands.Block_Editing
     {
         public event EventHandler CanExecuteChanged;
 
-        public string Text { get; }
+        public string Text { get; set; }
 
         public AnnotationEditor Editor { get; }
 
@@ -32,7 +32,15 @@ namespace Chem4Word.ACME.Commands.Block_Editing
 
         public void Execute(object parameter)
         {
-            Editor.Selection.Text = Text;
+            if (parameter != null)
+            {
+                Editor.Selection.Text = (string)parameter;
+            }
+            else
+            {
+                Editor.Selection.Text = Text;
+            }
+            Editor.Selection.Select(Editor.Selection.End, Editor.Selection.End);    
         }
 
         public void RaiseCanExecChanged()
