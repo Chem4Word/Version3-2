@@ -129,9 +129,10 @@ namespace Chem4Word.ACME.Drawing.Visuals
             arrow.DrawArrowGeometry(dc, outlinePen, fill);
 
             //now do any text
+            string blockColour = fill.ToString();
             if (!(string.IsNullOrEmpty(reagentText) || XAMLHelper.IsEmptyDocument(reagentText)))
             {
-                ReagentsBlockRect = DrawTextBlock(dc, reagentText);
+                ReagentsBlockRect = DrawTextBlock(dc, reagentText, blockColour);
             }
             else
             {
@@ -140,7 +141,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             }
             if (!(string.IsNullOrEmpty(conditionsText) || XAMLHelper.IsEmptyDocument(conditionsText)))
             {
-                ConditionsBlockRect = DrawTextBlock(dc, conditionsText, false);
+                ConditionsBlockRect = DrawTextBlock(dc, conditionsText, blockColour, false);
             }
             else
             {
@@ -159,11 +160,10 @@ namespace Chem4Word.ACME.Drawing.Visuals
         /// </summary>
         /// <param name="dc">DrawingContext obtained from hosting ReactionVisual</param>
         /// <param name="blockXaml">String containing a FlowDocument specification of the text</param>
+        /// <param name="blockColour"></param>
         /// <param name="aboveArrow">true=text goes above arrow, false=text goes below</param>
-        private Rect DrawTextBlock(DrawingContext dc, string blockXaml, bool aboveArrow = true)
+        private Rect DrawTextBlock(DrawingContext dc, string blockXaml, string blockColour, bool aboveArrow = true)
         {
-            const string blockColour = "#000000";
-
             //measure the text and work out the offset vector
             Rect blockBounds = TextSupport.DrawText(dc, blockXaml, new Point(0, 0), blockColour, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
 

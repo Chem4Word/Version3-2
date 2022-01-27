@@ -222,10 +222,25 @@ namespace Chem4Word.ACME.Adorners.Selectors
             {
                 newTailPoint = AdornedReaction.TailPoint + TailDisplacement;
                 newHeadPoint = AdornedReaction.HeadPoint + HeadDisplacement;
+                Debug.WriteLine($"New Tail Point = {newTailPoint}, New Head Point = {newHeadPoint}");
+                var tempReaction = new Reaction()
+                {
+                    ConditionsText = AdornedReaction.ConditionsText,
+                    HeadPoint = newHeadPoint,
+                    ReactionType = AdornedReaction.ReactionType,
+                    ReagentText = AdornedReaction.ReagentText,
+                    TailPoint = newTailPoint
+                };
+                var rv = new ReactionVisual(tempReaction);
+                rv.TextSize = EditController.BlockTextSize;
+                rv.ScriptSize = EditController.BlockTextSize * Controller.ScriptScalingFactor;
+                rv.RenderFullGeometry(AdornedReaction.ReactionType, AdornedReaction.TailPoint,
+                                      AdornedReaction.HeadPoint,
+                                      drawingContext, AdornedReaction.ReagentText, AdornedReaction.ConditionsText,
+                                      _dashPen,
+                                      _solidColorBrush);
             }
-
-            Debug.WriteLine($"New Tail Point = {newTailPoint}, New Head Point = {newHeadPoint}");
-            if (!(Resizing || Dragging))
+            else
             {
                 BuildHandle(drawingContext, HeadHandle, newHeadPoint, handleFillBrush, handleBorderPen);
                 BuildHandle(drawingContext, TailHandle, newTailPoint, handleFillBrush, handleBorderPen);

@@ -12,6 +12,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
@@ -317,7 +318,30 @@ namespace Chem4Word.ACME.Adorners.Selectors
                 drawingContext.DrawGeometry(ghostBrush, ghostPen, ghost);
                 foreach (Reaction r in AdornedReactions)
                 {
-                    var arrow = ReactionSelectionAdorner.GetArrowShape(LastOperation.Transform(r.TailPoint), LastOperation.Transform(r.HeadPoint), r);
+                    var newEndPoint = LastOperation.Transform(r.HeadPoint);
+                    var newStartPoint = LastOperation.Transform(r.TailPoint);
+
+                    //create temporary Reactions and visuals and throw them away afterwards
+                    var tempReaction = new Reaction()
+                                       {
+                                           ConditionsText = r.ConditionsText,
+                                           HeadPoint = newEndPoint,
+                                           ReactionType = r.ReactionType,
+                                           ReagentText = r.ReagentText, TailPoint = newStartPoint
+                                       };
+                    
+                    var rv = new ReactionVisual(tempReaction)
+                             {
+                                 TextSize = EditController.BlockTextSize,
+                                 ScriptSize = EditController.BlockTextSize * Controller.ScriptScalingFactor
+                             };
+                    rv.RenderFullGeometry(r.ReactionType, newStartPoint,
+                                          newEndPoint,
+                                          drawingContext, r.ReagentText, r.ConditionsText, ghostPen,
+                                          ghostBrush);
+
+                    var arrow = ReactionSelectionAdorner.GetArrowShape(newStartPoint,
+                                                                       newEndPoint, r);
                     arrow.DrawArrowGeometry(drawingContext, ghostPen, ghostBrush);
                 }
             }
