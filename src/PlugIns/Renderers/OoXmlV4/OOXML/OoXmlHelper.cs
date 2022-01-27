@@ -57,7 +57,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <returns></returns>
         public static Int64Value ScaleCmlToEmu(double XorY)
         {
-            double scaled = XorY * EmusPerCmlPoint;
+            var scaled = XorY * EmusPerCmlPoint;
             return Int64Value.FromInt64((long)scaled);
         }
 
@@ -78,12 +78,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             if (bondLength > 0.1)
             {
-                double scaled = XorY * EmusPerCsTtfPoint(bondLength);
+                var scaled = XorY * EmusPerCsTtfPoint(bondLength);
                 return Int64Value.FromInt64((long)scaled);
             }
             else
             {
-                double scaled = XorY * EmusPerCsTtfPoint(20);
+                var scaled = XorY * EmusPerCsTtfPoint(20);
                 return Int64Value.FromInt64((long)scaled);
             }
         }
@@ -97,12 +97,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             if (bondLength > 0.1)
             {
-                double scaled = XorY * EmusPerCsTtfPointSubscript(bondLength);
+                var scaled = XorY * EmusPerCsTtfPointSubscript(bondLength);
                 return Int64Value.FromInt64((long)scaled);
             }
             else
             {
-                double scaled = XorY * EmusPerCsTtfPointSubscript(20);
+                var scaled = XorY * EmusPerCsTtfPointSubscript(20);
                 return Int64Value.FromInt64((long)scaled);
             }
         }

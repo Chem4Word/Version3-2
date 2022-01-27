@@ -38,10 +38,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <returns></returns>
         public static string CreateFromCml(string cml, string guid, OoXmlV4Options options, IChem4WordTelemetry telemetry, Point topLeft)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             var cc = new CMLConverter();
-            Model model = cc.Import(cml);
+            var model = cc.Import(cml);
             if (model.AllErrors.Count > 0 || model.AllWarnings.Count > 0)
             {
                 if (model.AllErrors.Count > 0)
@@ -57,25 +57,25 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             var fileName = string.Empty;
 
-            bool canRender = model.ReactionSchemes.Any()
-                             || model.Annotations.Any()
-                             || model.TotalAtomsCount > 0
-                             && (model.TotalBondsCount == 0
-                                 || model.MeanBondLength > Core.Helpers.Constants.BondLengthTolerance / 2);
+            var canRender = model.ReactionSchemes.Any()
+                            || model.Annotations.Any()
+                            || model.TotalAtomsCount > 0
+                            && (model.TotalBondsCount == 0
+                                || model.MeanBondLength > Core.Helpers.Constants.BondLengthTolerance / 2);
 
             if (canRender)
             {
                 fileName = Path.Combine(Path.GetTempPath(), $"Chem4Word-V3-{guid}.docx");
 
-                string bookmarkName = Core.Helpers.Constants.OoXmlBookmarkPrefix + guid;
+                var bookmarkName = Core.Helpers.Constants.OoXmlBookmarkPrefix + guid;
 
                 // Create a Wordprocessing document.
                 using (var document = WordprocessingDocument.Create(fileName, WordprocessingDocumentType.Document))
                 {
                     // Add a new main document part.
-                    MainDocumentPart mainDocumentPart = document.AddMainDocumentPart();
+                    var mainDocumentPart = document.AddMainDocumentPart();
                     mainDocumentPart.Document = new Document(new Body());
-                    Body body = document.MainDocumentPart.Document.Body;
+                    var body = document.MainDocumentPart.Document.Body;
 
                     AddPictureFromModel(body, model, bookmarkName, options, telemetry, topLeft);
 

@@ -107,22 +107,22 @@ namespace Chem4Word.Renderer.OoXmlV4
         {
             try
             {
-                string path = FileSystemHelper.GetWritablePath(SettingsPath);
+                var path = FileSystemHelper.GetWritablePath(SettingsPath);
 
                 if (!string.IsNullOrEmpty(path))
                 {
-                    string optionsFile = GetFileName(path);
+                    var optionsFile = GetFileName(path);
 
                     if (File.Exists(optionsFile))
                     {
                         try
                         {
                             Debug.WriteLine($"Reading OoXmlV4 Options from {optionsFile}");
-                            string contents = File.ReadAllText(optionsFile);
+                            var contents = File.ReadAllText(optionsFile);
                             var options = JsonConvert.DeserializeObject<OoXmlV4Options>(contents);
                             SetValuesFromCopy(options);
 
-                            string temp = JsonConvert.SerializeObject(options, Formatting.Indented);
+                            var temp = JsonConvert.SerializeObject(options, Formatting.Indented);
                             if (!contents.Equals(temp))
                             {
                                 // Auto fix the file if required
@@ -158,10 +158,10 @@ namespace Chem4Word.Renderer.OoXmlV4
         /// </summary>
         public void Save()
         {
-            string path = FileSystemHelper.GetWritablePath(SettingsPath);
+            var path = FileSystemHelper.GetWritablePath(SettingsPath);
             if (!string.IsNullOrEmpty(path))
             {
-                string optionsFile = GetFileName(path);
+                var optionsFile = GetFileName(path);
                 PersistOptions(optionsFile);
             }
         }
@@ -171,7 +171,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             try
             {
                 Debug.WriteLine($"Saving OoXmlV4 Options to {optionsFile}");
-                string contents = JsonConvert.SerializeObject(this, Formatting.Indented);
+                var contents = JsonConvert.SerializeObject(this, Formatting.Indented);
                 File.WriteAllText(optionsFile, contents);
             }
             catch (Exception exception)
@@ -207,14 +207,14 @@ namespace Chem4Word.Renderer.OoXmlV4
 
         private string GetFileName(string path)
         {
-            string fileName = $"{_product}.json";
-            string optionsFile = Path.Combine(path, fileName);
+            var fileName = $"{_product}.json";
+            var optionsFile = Path.Combine(path, fileName);
             return optionsFile;
         }
 
         public OoXmlV4Options Clone()
         {
-            OoXmlV4Options clone = new OoXmlV4Options();
+            var clone = new OoXmlV4Options();
 
             // Copy serialised properties
             clone.SetValuesFromCopy(this);

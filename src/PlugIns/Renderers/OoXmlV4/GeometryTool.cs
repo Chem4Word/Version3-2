@@ -27,8 +27,8 @@ namespace Chem4Word.Renderer.OoXmlV4
 
             // Find the remaining point with the smallest Y value.
             // if (there's a tie, take the one with the smaller X value.
-            Point bestPt = points[0];
-            foreach (Point pt in points)
+            var bestPt = points[0];
+            foreach (var pt in points)
             {
                 if (pt.Y < bestPt.Y
                     || pt.Y == bestPt.Y && pt.X < bestPt.X)
@@ -38,10 +38,10 @@ namespace Chem4Word.Renderer.OoXmlV4
             }
 
             // Move this point to the convex hull.
-            List<Point> hull = new List<Point>
-                               {
-                                   bestPt
-                               };
+            var hull = new List<Point>
+                       {
+                           bestPt
+                       };
             points.Remove(bestPt);
 
             // Start wrapping up the other points.
@@ -50,15 +50,15 @@ namespace Chem4Word.Renderer.OoXmlV4
             {
                 // Find the point with smallest AngleValue
                 // from the last point.
-                double x1 = hull[hull.Count - 1].X;
-                double y1 = hull[hull.Count - 1].Y;
+                var x1 = hull[hull.Count - 1].X;
+                var y1 = hull[hull.Count - 1].Y;
                 bestPt = points[0];
                 double bestAngle = 3600;
 
                 // Search the rest of the points.
-                foreach (Point pt in points)
+                foreach (var pt in points)
                 {
-                    double testAngle = AngleValue(x1, y1, pt.X, pt.Y);
+                    var testAngle = AngleValue(x1, y1, pt.X, pt.Y);
                     if (testAngle >= sweepAngle
                         && bestAngle > testAngle)
                     {
@@ -69,7 +69,7 @@ namespace Chem4Word.Renderer.OoXmlV4
 
                 // See if the first point is better.
                 // If so, we are done.
-                double firstAngle = AngleValue(x1, y1, hull[0].X, hull[0].Y);
+                var firstAngle = AngleValue(x1, y1, hull[0].X, hull[0].Y);
                 if (firstAngle >= sweepAngle
                     && bestAngle >= firstAngle)
                 {
@@ -104,7 +104,7 @@ namespace Chem4Word.Renderer.OoXmlV4
             lr = ul;
 
             // Search the other points.
-            foreach (Point pt in points)
+            foreach (var pt in points)
             {
                 if (-pt.X - pt.Y > -ul.X - ul.Y)
                 {
@@ -162,7 +162,7 @@ namespace Chem4Word.Renderer.OoXmlV4
                 ymax = ll.Y;
             }
 
-            Rect result = new Rect();
+            var result = new Rect();
             if (xmax - xmin > 0 && ymax - ymin > 0)
             {
                 result = new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
@@ -178,11 +178,11 @@ namespace Chem4Word.Renderer.OoXmlV4
         private static List<Point> HullCull(List<Point> points)
         {
             // Find a culling box.
-            Rect cullingBox = GetMinMaxBox(points);
+            var cullingBox = GetMinMaxBox(points);
 
             // Cull the points.
-            List<Point> results = new List<Point>();
-            foreach (Point pt in points)
+            var results = new List<Point>();
+            foreach (var pt in points)
             {
                 // See if (this point lies outside of the culling box.
                 if (pt.X <= cullingBox.Left ||
@@ -245,8 +245,8 @@ namespace Chem4Word.Renderer.OoXmlV4
         {
             // Make lists to hold points of
             // intersection and their t values.
-            List<Point> intersections = new List<Point>();
-            List<double> tValues = new List<double>();
+            var intersections = new List<Point>();
+            var tValues = new List<double>();
 
             // Add the segment's starting point.
             intersections.Add(point1);
@@ -254,10 +254,10 @@ namespace Chem4Word.Renderer.OoXmlV4
             lineStartsOutsidePolygon = !PointIsInPolygon(point1.X, point1.Y, points.ToArray());
 
             // Examine the polygon's edges.
-            for (int i1 = 0; i1 < points.Count; i1++)
+            for (var i1 = 0; i1 < points.Count; i1++)
             {
                 // Get the end points for this edge.
-                int i2 = (i1 + 1) % points.Count;
+                var i2 = (i1 + 1) % points.Count;
 
                 // See where the edge intersects the segment.
                 bool segmentsIntersect;
@@ -283,8 +283,8 @@ namespace Chem4Word.Renderer.OoXmlV4
             tValues.Add(1f);
 
             // Sort the points of intersection by t value.
-            Point[] intersectionsArray = intersections.ToArray();
-            double[] tArray = tValues.ToArray();
+            var intersectionsArray = intersections.ToArray();
+            var tArray = tValues.ToArray();
             Array.Sort(tArray, intersectionsArray);
 
             // Return the intersections.
@@ -296,15 +296,15 @@ namespace Chem4Word.Renderer.OoXmlV4
         {
             // Get the angle between the point and the
             // first and last vertices.
-            int maxPoint = points.Length - 1;
-            double totalAngle = GetAngle(
+            var maxPoint = points.Length - 1;
+            var totalAngle = GetAngle(
                 points[maxPoint].X, points[maxPoint].Y,
                 x, y,
                 points[0].X, points[0].Y);
 
             // Add the angles from the point
             // to each other pair of vertices.
-            for (int i = 0; i < maxPoint; i++)
+            for (var i = 0; i < maxPoint; i++)
             {
                 totalAngle += GetAngle(
                     points[i].X, points[i].Y,
@@ -342,10 +342,10 @@ namespace Chem4Word.Renderer.OoXmlV4
         private static double GetAngle(double ax, double ay, double bx, double by, double cx, double cy)
         {
             // Get the dot product.
-            double dotProduct = DotProduct(ax, ay, bx, by, cx, cy);
+            var dotProduct = DotProduct(ax, ay, bx, by, cx, cy);
 
             // Get the cross product.
-            double crossProductLength = CrossProductLength(ax, ay, bx, by, cx, cy);
+            var crossProductLength = CrossProductLength(ax, ay, bx, by, cx, cy);
 
             // Calculate the angle.
             return Math.Atan2(crossProductLength, dotProduct);
@@ -356,10 +356,10 @@ namespace Chem4Word.Renderer.OoXmlV4
         private static double DotProduct(double ax, double ay, double bx, double by, double cx, double cy)
         {
             // Get the vectors' coordinates.
-            double bax = ax - bx;
-            double bay = ay - by;
-            double bcx = cx - bx;
-            double bcy = cy - by;
+            var bax = ax - bx;
+            var bay = ay - by;
+            var bcx = cx - bx;
+            var bcy = cy - by;
 
             // Calculate the dot product.
             return (bax * bcx + bay * bcy);
@@ -375,10 +375,10 @@ namespace Chem4Word.Renderer.OoXmlV4
         private static double CrossProductLength(double ax, double ay, double bx, double by, double cx, double cy)
         {
             // Get the vectors' coordinates.
-            double bax = ax - bx;
-            double bay = ay - by;
-            double bcx = cx - bx;
-            double bcy = cy - by;
+            var bax = ax - bx;
+            var bay = ay - by;
+            var bcx = cx - bx;
+            var bcy = cy - by;
 
             // Calculate the Z coordinate of the cross product.
             return (bax * bcy - bay * bcx);

@@ -43,22 +43,22 @@ namespace Chem4Word.Renderer.OoXmlV4
 
         public bool ChangeSettings(Point topLeft)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             try
             {
                 Telemetry.Write(module, "Verbose", "Called");
                 _rendererOptions = new OoXmlV4Options(SettingsPath);
 
-                OoXmlV4Settings settings = new OoXmlV4Settings();
+                var settings = new OoXmlV4Settings();
                 settings.Telemetry = Telemetry;
                 settings.TopLeft = topLeft;
 
-                OoXmlV4Options tempOptions = _rendererOptions.Clone();
+                var tempOptions = _rendererOptions.Clone();
                 settings.SettingsPath = SettingsPath;
                 settings.RendererOptions = tempOptions;
 
-                DialogResult dr = settings.ShowDialog();
+                var dr = settings.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
                     _rendererOptions = tempOptions.Clone();
@@ -75,7 +75,7 @@ namespace Chem4Word.Renderer.OoXmlV4
 
         public string Render()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             string result = null;
 
@@ -84,7 +84,7 @@ namespace Chem4Word.Renderer.OoXmlV4
                 Telemetry.Write(module, "Verbose", "Called");
                 _rendererOptions = new OoXmlV4Options(SettingsPath);
 
-                string guid = Properties["Guid"];
+                var guid = Properties["Guid"];
                 result = OoXmlFile.CreateFromCml(Cml, guid, _rendererOptions, Telemetry, TopLeft);
                 if (!File.Exists(result))
                 {

@@ -24,14 +24,14 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public SimpleLine GetParallel(double offset)
         {
-            double xDifference = Start.X - End.X;
-            double yDifference = Start.Y - End.Y;
-            double length = Math.Sqrt(Math.Pow(xDifference, 2) + Math.Pow(yDifference, 2));
+            var xDifference = Start.X - End.X;
+            var yDifference = Start.Y - End.Y;
+            var length = Math.Sqrt(Math.Pow(xDifference, 2) + Math.Pow(yDifference, 2));
 
-            Point newStartPoint = new Point((float)(Start.X - offset * yDifference / length),
-                                            (float)(Start.Y + offset * xDifference / length));
-            Point newEndPoint = new Point((float)(End.X - offset * yDifference / length),
-                                          (float)(End.Y + offset * xDifference / length));
+            var newStartPoint = new Point((float)(Start.X - offset * yDifference / length),
+                                          (float)(Start.Y + offset * xDifference / length));
+            var newEndPoint = new Point((float)(End.X - offset * yDifference / length),
+                                        (float)(End.Y + offset * xDifference / length));
 
             return new SimpleLine(newStartPoint, newEndPoint);
         }

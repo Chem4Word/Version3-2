@@ -67,7 +67,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public void AddString(string value, string colour)
         {
-            foreach (char character in value)
+            foreach (var character in value)
             {
                 AddCharacter(character, colour);
             }
@@ -135,8 +135,8 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
                 alc.IsSmaller = isSmaller;
                 Characters.Add(alc);
 
-                Size size = new Size(OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.Width, _bondLength),
-                                     OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.Height, _bondLength));
+                var size = new Size(OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.Width, _bondLength),
+                                    OoXmlHelper.ScaleCsTtfToCml(ttfCharacter.Height, _bondLength));
 
                 if (isSmaller)
                 {
@@ -144,7 +144,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
                     size.Height *= OoXmlHelper.SubscriptScaleFactor;
                 }
 
-                Rect thisBoundingBox = new Rect(thisCharacterPosition, size);
+                var thisBoundingBox = new Rect(thisCharacterPosition, size);
                 _boundingBox.Union(thisBoundingBox);
 
                 // Move to next Character position
@@ -161,7 +161,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public void AdjustPosition(Vector adjust)
         {
-            foreach (AtomLabelCharacter c in Characters)
+            foreach (var c in Characters)
             {
                 c.Position += adjust;
             }
@@ -177,7 +177,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public void Nudge(CompassPoints direction, double pixels = 0)
         {
-            double moveBy = pixels;
+            var moveBy = pixels;
             if (pixels == 0)
             {
                 moveBy = _bondLength / 16;
@@ -208,15 +208,15 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         private Point GetCharacterPosition(Point cursorPosition, TtfCharacter character)
         {
-            Point position = new Point(cursorPosition.X + OoXmlHelper.ScaleCsTtfToCml(character.OriginX, _bondLength),
-                                       cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, _bondLength));
+            var position = new Point(cursorPosition.X + OoXmlHelper.ScaleCsTtfToCml(character.OriginX, _bondLength),
+                                     cursorPosition.Y + OoXmlHelper.ScaleCsTtfToCml(character.OriginY, _bondLength));
 
             return position;
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append($"{Text}");
             sb.Append(" ");
             sb.Append($"at {PointHelper.AsString(BoundingBox.Location)}");

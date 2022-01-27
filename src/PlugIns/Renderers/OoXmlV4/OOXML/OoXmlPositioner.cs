@@ -53,9 +53,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             _hydrogenCharacter = Inputs.TtfCharacterSet['H'];
 
-            int moleculeNo = 0;
+            var moleculeNo = 0;
 
-            foreach (Molecule mol in Inputs.Model.Molecules.Values)
+            foreach (var mol in Inputs.Model.Molecules.Values)
             {
                 // Steps 1 .. 4
                 ProcessMolecule(mol, Inputs.Progress, ref moleculeNo);
@@ -82,19 +82,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private void ProcessReactionTexts()
         {
-            foreach (ReactionScheme scheme in Inputs.Model.ReactionSchemes.Values)
+            foreach (var scheme in Inputs.Model.ReactionSchemes.Values)
             {
-                foreach (Reaction reaction in scheme.Reactions.Values)
+                foreach (var reaction in scheme.Reactions.Values)
                 {
                     if (!string.IsNullOrEmpty(reaction.ReagentText))
                     {
-                        List<FunctionalGroupTerm> terms = TermsFromFlowDocument(reaction.ReagentText);
+                        var terms = TermsFromFlowDocument(reaction.ReagentText);
                         AddReactionCharacters(reaction, terms, true);
                     }
 
                     if (!string.IsNullOrEmpty(reaction.ConditionsText))
                     {
-                        List<FunctionalGroupTerm> terms = TermsFromFlowDocument(reaction.ConditionsText);
+                        var terms = TermsFromFlowDocument(reaction.ConditionsText);
                         AddReactionCharacters(reaction, terms, false);
                     }
                 }
@@ -104,9 +104,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         private void AddReactionCharacters(Reaction reaction, List<FunctionalGroupTerm> terms,
                                            bool isReagent = true, TextBlockJustification justification = TextBlockJustification.Centre)
         {
-            string path = reaction.Path + (isReagent ? "/reagent" : "/conditions");
+            var path = reaction.Path + (isReagent ? "/reagent" : "/conditions");
 
-            GroupOfCharacters groupOfCharacters = GroupOfCharactersFromTerms(reaction.MidPoint, path, terms, justification);
+            var groupOfCharacters = GroupOfCharactersFromTerms(reaction.MidPoint, path, terms, justification);
             if (groupOfCharacters.Characters.Any())
             {
                 // 2. Position characters
@@ -114,14 +114,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 groupOfCharacters.AdjustPosition(reaction.MidPoint - groupOfCharacters.Centre);
 
                 // 2.2 March away from reaction midpoint
-                Vector vector = OffsetVector(reaction, isReagent);
+                var vector = OffsetVector(reaction, isReagent);
 
                 bool isOutside;
                 var maxLoops = 0;
                 do
                 {
                     groupOfCharacters.AdjustPosition(vector);
-                    List<Point> hull = ConvexHull(groupOfCharacters.Characters);
+                    var hull = ConvexHull(groupOfCharacters.Characters);
                     isOutside = GeometryTool.IsOutside(reaction.HeadPoint, reaction.TailPoint, hull);
 
                     if (maxLoops++ >= 10)
@@ -132,7 +132,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 groupOfCharacters.AdjustPosition(vector);
 
                 // 3. Transfer to output
-                foreach (AtomLabelCharacter character in groupOfCharacters.Characters)
+                foreach (var character in groupOfCharacters.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
                 }
@@ -145,11 +145,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private void ProcessAnnotationTexts()
         {
-            foreach (Annotation annotation in Inputs.Model.Annotations.Values)
+            foreach (var annotation in Inputs.Model.Annotations.Values)
             {
                 if (!string.IsNullOrEmpty(annotation.Xaml))
                 {
-                    List<FunctionalGroupTerm> terms = TermsFromFlowDocument(annotation.Xaml);
+                    var terms = TermsFromFlowDocument(annotation.Xaml);
                     AddAnnotationCharacters(annotation, annotation.Path, terms);
                 }
             }
@@ -159,7 +159,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                              TextBlockJustification justification = TextBlockJustification.Left)
         {
             // 1. Position characters
-            GroupOfCharacters groupOfCharacters = GroupOfCharactersFromTerms(annotation.Position, annotation.Path, terms, justification);
+            var groupOfCharacters = GroupOfCharactersFromTerms(annotation.Position, annotation.Path, terms, justification);
 
             if (groupOfCharacters.Characters.Any())
             {
@@ -167,7 +167,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 groupOfCharacters.AdjustPosition(annotation.Position - groupOfCharacters.BoundingBox.TopLeft);
 
                 // 3. Transfer to output
-                foreach (AtomLabelCharacter character in groupOfCharacters.Characters)
+                foreach (var character in groupOfCharacters.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
                 }
@@ -188,7 +188,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             if (terms != null)
             {
                 // 1. Generate characters
-                foreach (FunctionalGroupTerm term in terms)
+                foreach (var term in terms)
                 {
                     if (term.Parts.Any())
                     {
@@ -229,7 +229,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private Vector OffsetVector(Reaction reaction, bool isReagent)
         {
-            bool arrowIsBackwards = reaction.TailPoint.X > reaction.HeadPoint.X;
+            var arrowIsBackwards = reaction.TailPoint.X > reaction.HeadPoint.X;
             double perpendicularAngle = 90;
             if (arrowIsBackwards)
             {
@@ -237,7 +237,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             var rotator = new Matrix();
-            Reaction.TextOffset? userOffset = isReagent ? reaction.ReagentsBlockOffset : reaction.ConditionsBlockOffset;
+            var userOffset = isReagent ? reaction.ReagentsBlockOffset : reaction.ConditionsBlockOffset;
             if (userOffset is null)
             {
                 // above or below the arrow
@@ -256,7 +256,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             // Create the perpendicular vector
-            Vector perpendicularVector = reaction.ReactionVector;
+            var perpendicularVector = reaction.ReactionVector;
             perpendicularVector.Normalize();
             perpendicularVector *= rotator;
 
@@ -272,7 +272,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             var xml = new XmlDocument();
             xml.LoadXml(flowDocument);
 
-            XmlNode root = xml.FirstChild.FirstChild;
+            var root = xml.FirstChild.FirstChild;
             var term = new FunctionalGroupTerm();
 
             foreach (XmlNode node in root.ChildNodes)
@@ -288,7 +288,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         {
                             if (node.Attributes?["BaselineAlignment"] != null)
                             {
-                                string alignment = node.Attributes["BaselineAlignment"].Value;
+                                var alignment = node.Attributes["BaselineAlignment"].Value;
                                 switch (alignment)
                                 {
                                     case "Subscript":
@@ -318,7 +318,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             // Add 'fake' space character to any blank lines
-            foreach (FunctionalGroupTerm line in result)
+            foreach (var line in result)
             {
                 if (line.Parts.Count == 0)
                 {
@@ -344,22 +344,22 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             pb.Value = 0;
             pb.Maximum = Outputs.ConvexHulls.Count;
 
-            foreach (KeyValuePair<string, List<Point>> hull in Outputs.ConvexHulls)
+            foreach (var hull in Outputs.ConvexHulls)
             {
                 pb.Increment(1);
 
                 // select lines which start or end with this atom
-                IEnumerable<BondLine> targeted = from l in Outputs.BondLines
-                                                 where (l.StartAtomPath == hull.Key || l.EndAtomPath == hull.Key)
-                                                 select l;
+                var targeted = from l in Outputs.BondLines
+                               where (l.StartAtomPath == hull.Key || l.EndAtomPath == hull.Key)
+                               select l;
 
-                foreach (BondLine bl in targeted.ToList())
+                foreach (var bl in targeted.ToList())
                 {
                     var start = new Point(bl.Start.X, bl.Start.Y);
                     var end = new Point(bl.End.X, bl.End.Y);
 
                     bool lineStartsOutsidePolygon;
-                    Point[] result = GeometryTool.ClipLineWithPolygon(start, end, hull.Value, out lineStartsOutsidePolygon);
+                    var result = GeometryTool.ClipLineWithPolygon(start, end, hull.Value, out lineStartsOutsidePolygon);
 
                     switch (result.Length)
                     {
@@ -400,18 +400,18 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             pb.Value = 0;
             pb.Maximum = Outputs.AtomLabelCharacters.Count;
 
-            foreach (AtomLabelCharacter alc in Outputs.AtomLabelCharacters)
+            foreach (var alc in Outputs.AtomLabelCharacters)
             {
                 pb.Increment(1);
 
-                double width = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, Inputs.MeanBondLength);
-                double height = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, Inputs.MeanBondLength);
+                var width = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, Inputs.MeanBondLength);
+                var height = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, Inputs.MeanBondLength);
 
                 if (alc.IsSubScript)
                 {
                     // Shrink bounding box
-                    width = width * OoXmlHelper.SubscriptScaleFactor;
-                    height = height * OoXmlHelper.SubscriptScaleFactor;
+                    width *= OoXmlHelper.SubscriptScaleFactor;
+                    height *= OoXmlHelper.SubscriptScaleFactor;
                 }
 
                 // Create rectangle of the bounding box with a suitable clipping margin
@@ -430,15 +430,15 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 //    Or (L.Top Between Cbb.Top And Cbb.Botton)
                 //    Or (L.Bottom Between Cbb.Top And Cbb.Botton)
 
-                IEnumerable<BondLine> targeted = from l in Outputs.BondLines
-                                                 where (cbb.Left <= l.BoundingBox.Right && l.BoundingBox.Right <= cbb.Right)
-                                                       || (cbb.Left <= l.BoundingBox.Left && l.BoundingBox.Left <= cbb.Right)
-                                                       || (cbb.Top <= l.BoundingBox.Top && l.BoundingBox.Top <= cbb.Bottom)
-                                                       || (cbb.Top <= l.BoundingBox.Bottom && l.BoundingBox.Bottom <= cbb.Bottom)
-                                                 select l;
+                var targeted = from l in Outputs.BondLines
+                               where (cbb.Left <= l.BoundingBox.Right && l.BoundingBox.Right <= cbb.Right)
+                                     || (cbb.Left <= l.BoundingBox.Left && l.BoundingBox.Left <= cbb.Right)
+                                     || (cbb.Top <= l.BoundingBox.Top && l.BoundingBox.Top <= cbb.Bottom)
+                                     || (cbb.Top <= l.BoundingBox.Bottom && l.BoundingBox.Bottom <= cbb.Bottom)
+                               select l;
                 targeted = targeted.ToList();
 
-                foreach (BondLine bl in targeted)
+                foreach (var bl in targeted)
                 {
                     var start = new Point(bl.Start.X, bl.Start.Y);
                     var end = new Point(bl.End.X, bl.End.Y);
@@ -462,9 +462,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         if (!bClipped && bl.Bond != null)
                         {
                             // Only convert to two bond lines if not wedge or hatch
-                            bool ignoreWedgeOrHatch = bl.Bond.Order == Globals.OrderSingle
-                                                      && bl.Bond.Stereo == Globals.BondStereo.Wedge
-                                                        || bl.Bond.Stereo == Globals.BondStereo.Hatch;
+                            var ignoreWedgeOrHatch = bl.Bond.Order == Globals.OrderSingle
+                                                     && bl.Bond.Stereo == Globals.BondStereo.Wedge
+                                                     || bl.Bond.Stereo == Globals.BondStereo.Hatch;
                             if (!ignoreWedgeOrHatch)
                             {
                                 // Line was clipped at both ends
@@ -483,7 +483,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
 
                 // Add any extra lines generated by this character into the List of Bond Lines
-                foreach (BondLine bl in extraBondLines)
+                foreach (var bl in extraBondLines)
                 {
                     Outputs.BondLines.Add(bl);
                 }
@@ -501,11 +501,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             ProcessBonds(mol, pb, molNumber);
 
             // Populate diagnostic data
-            foreach (Ring ring in mol.Rings)
+            foreach (var ring in mol.Rings)
             {
                 if (ring.Centroid.HasValue)
                 {
-                    Point centre = ring.Centroid.Value;
+                    var centre = ring.Centroid.Value;
                     Outputs.RingCenters.Add(centre);
 
                     var innerCircle = new InnerCircle();
@@ -517,7 +517,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             // Recurse into any child molecules
-            foreach (Molecule child in mol.Molecules.Values)
+            foreach (var child in mol.Molecules.Values)
             {
                 ProcessMolecule(child, pb, ref molNumber);
             }
@@ -536,8 +536,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 var boundingBox = Rect.Empty;
 
-                List<MoleculeExtents> childGroups = Outputs.AllMoleculeExtents.Where(g => g.Path.StartsWith($"{mol.Path}/")).ToList();
-                foreach (MoleculeExtents child in childGroups)
+                var childGroups = Outputs.AllMoleculeExtents.Where(g => g.Path.StartsWith($"{mol.Path}/")).ToList();
+                foreach (var child in childGroups)
                 {
                     boundingBox.Union(child.ExternalCharacterExtents);
                 }
@@ -555,14 +555,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             // 3.3 Add required Brackets
-            bool showBrackets = mol.ShowMoleculeBrackets.HasValue && mol.ShowMoleculeBrackets.Value
-                                || mol.Count.HasValue && mol.Count.Value > 0
-                                || mol.FormalCharge.HasValue && mol.FormalCharge.Value != 0
-                                || mol.SpinMultiplicity.HasValue && mol.SpinMultiplicity.Value > 1;
+            var showBrackets = mol.ShowMoleculeBrackets.HasValue && mol.ShowMoleculeBrackets.Value
+                               || mol.Count.HasValue && mol.Count.Value > 0
+                               || mol.FormalCharge.HasValue && mol.FormalCharge.Value != 0
+                               || mol.SpinMultiplicity.HasValue && mol.SpinMultiplicity.Value > 1;
 
-            Rect rect = thisMoleculeExtents.GroupBracketsExtents;
-            List<MoleculeExtents> children = Outputs.AllMoleculeExtents.Where(g => g.Path.StartsWith($"{mol.Path}/")).ToList();
-            foreach (MoleculeExtents child in children)
+            var rect = thisMoleculeExtents.GroupBracketsExtents;
+            var children = Outputs.AllMoleculeExtents.Where(g => g.Path.StartsWith($"{mol.Path}/")).ToList();
+            foreach (var child in children)
             {
                 rect.Union(child.GroupBracketsExtents);
             }
@@ -579,10 +579,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             if (mol.FormalCharge.HasValue && mol.FormalCharge.Value != 0)
             {
                 // Add FormalCharge at top right
-                int charge = mol.FormalCharge.Value;
-                int absCharge = Math.Abs(charge);
+                var charge = mol.FormalCharge.Value;
+                var absCharge = Math.Abs(charge);
 
-                string chargeSign = Math.Sign(charge) > 0 ? "+" : "-";
+                var chargeSign = Math.Sign(charge) > 0 ? "+" : "-";
                 characters = absCharge == 1 ? chargeSign : $"{absCharge}{chargeSign}";
             }
 
@@ -646,15 +646,15 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private Rect Inflate(Rect r, double x)
         {
-            Rect r1 = r;
+            var r1 = r;
             r1.Inflate(x, x);
             return r1;
         }
 
         private Rect CharacterExtents(Molecule mol, Rect existing)
         {
-            List<AtomLabelCharacter> chars = Outputs.AtomLabelCharacters.Where(m => m.ParentMolecule.StartsWith(mol.Path)).ToList();
-            foreach (AtomLabelCharacter c in chars)
+            var chars = Outputs.AtomLabelCharacters.Where(m => m.ParentMolecule.StartsWith(mol.Path)).ToList();
+            foreach (var c in chars)
             {
                 if (c.IsSmaller)
                 {
@@ -686,7 +686,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             pb.Value = 0;
             pb.Maximum = mol.Atoms.Count;
 
-            foreach (Atom atom in mol.Atoms.Values)
+            foreach (var atom in mol.Atoms.Values)
             {
                 pb.Increment(1);
                 if (atom.Element is Element)
@@ -711,7 +711,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             pb.Value = 0;
             pb.Maximum = mol.Bonds.Count;
 
-            foreach (Bond bond in mol.Bonds)
+            foreach (var bond in mol.Bonds)
             {
                 pb.Increment(1);
                 CreateLines(bond);
@@ -722,14 +722,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             // Implement beautification of semi open double bonds and double bonds touching rings
 
             // Obtain list of Double Bonds with Placement of BondDirection.None
-            List<Bond> doubleBonds = mol.Bonds.Where(b => b.OrderValue.HasValue && b.OrderValue.Value == 2 && b.Placement == Globals.BondDirection.None).ToList();
+            var doubleBonds = mol.Bonds.Where(b => b.OrderValue.HasValue && b.OrderValue.Value == 2 && b.Placement == Globals.BondDirection.None).ToList();
             if (doubleBonds.Count > 0)
             {
                 pb.Message = $"Processing Double Bonds in Molecule {moleculeNo}";
                 pb.Value = 0;
                 pb.Maximum = doubleBonds.Count;
 
-                foreach (Bond bond in doubleBonds)
+                foreach (var bond in doubleBonds)
                 {
                     BeautifyLines(bond.StartAtom, bond.Path);
                     BeautifyLines(bond.EndAtom, bond.Path);
@@ -743,8 +743,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 && element == Globals.PeriodicTable.C
                 && atom.Bonds.ToList().Count == 3)
             {
-                bool isInRing = atom.IsInRing;
-                List<BondLine> lines = Outputs.BondLines.Where(bl => bl.BondPath.Equals(bondPath)).ToList();
+                var isInRing = atom.IsInRing;
+                var lines = Outputs.BondLines.Where(bl => bl.BondPath.Equals(bondPath)).ToList();
                 if (lines.Any())
                 {
                     List<Bond> otherLines;
@@ -759,8 +759,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                     if (lines.Count == 2 && otherLines.Count == 2)
                     {
-                        BondLine line1 = Outputs.BondLines.First(bl => bl.BondPath.Equals(otherLines[0].Path));
-                        BondLine line2 = Outputs.BondLines.First(bl => bl.BondPath.Equals(otherLines[1].Path));
+                        var line1 = Outputs.BondLines.First(bl => bl.BondPath.Equals(otherLines[0].Path));
+                        var line2 = Outputs.BondLines.First(bl => bl.BondPath.Equals(otherLines[1].Path));
                         TrimLines(lines, line1, line2, isInRing);
                     }
                 }
@@ -799,8 +799,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             // If they intersect update the main line
             if (intersect)
             {
-                double l1 = CoordinateTool.DistanceBetween(intersection, leftOrRight.Start);
-                double l2 = CoordinateTool.DistanceBetween(intersection, leftOrRight.End);
+                var l1 = CoordinateTool.DistanceBetween(intersection, leftOrRight.Start);
+                var l2 = CoordinateTool.DistanceBetween(intersection, leftOrRight.End);
                 if (l1 > l2)
                 {
                     leftOrRight.End = new Point(intersection.X, intersection.Y);
@@ -831,7 +831,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            string atomLabel = atom.SymbolText;
+            var atomLabel = atom.SymbolText;
             if (Inputs.Options.ShowCarbons
                 && atom.Element is Element e
                 && e == Globals.PeriodicTable.C)
@@ -863,12 +863,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 // 2. Create other character groups
 
                 // 2.1 Determine position of implicit hydrogens if any
-                CompassPoints orientation = atom.ImplicitHPlacement;
+                var orientation = atom.ImplicitHPlacement;
 
                 // 2.2 Implicit Hydrogens
                 GroupOfCharacters hydrogens = null;
 
-                int implicitHCount = atom.ImplicitHydrogenCount;
+                var implicitHCount = atom.ImplicitHydrogenCount;
                 if (implicitHCount > 0)
                 {
                     hydrogens = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
@@ -911,8 +911,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 // 2.3 Charge
                 GroupOfCharacters charge = null;
 
-                int chargeValue = atom.FormalCharge ?? 0;
-                int absCharge = Math.Abs(chargeValue);
+                var chargeValue = atom.FormalCharge ?? 0;
+                var absCharge = Math.Abs(chargeValue);
 
                 if (absCharge > 0)
                 {
@@ -920,10 +920,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                                       Inputs.TtfCharacterSet, Inputs.MeanBondLength);
 
                     // Create characters
-                    string chargeSign = Math.Sign(chargeValue) > 0 ? "+" : "-";
-                    string digits = absCharge == 1 ? chargeSign : $"{absCharge}{chargeSign}";
+                    var chargeSign = Math.Sign(chargeValue) > 0 ? "+" : "-";
+                    var digits = absCharge == 1 ? chargeSign : $"{absCharge}{chargeSign}";
 
-                    foreach (char character in digits)
+                    foreach (var character in digits)
                     {
                         charge.AddCharacter(character, atomColour, true);
                     }
@@ -936,7 +936,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     }
                     else
                     {
-                        Point destination = main.BoundingBox.TopRight;
+                        var destination = main.BoundingBox.TopRight;
 
                         switch (orientation)
                         {
@@ -966,14 +966,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 // 2.4 Isotope
                 GroupOfCharacters isotope = null;
 
-                int isoValue = atom.IsotopeNumber ?? 0;
+                var isoValue = atom.IsotopeNumber ?? 0;
 
                 if (isoValue > 0)
                 {
                     isotope = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                     Inputs.TtfCharacterSet, Inputs.MeanBondLength);
 
-                    foreach (char character in isoValue.ToString())
+                    foreach (var character in isoValue.ToString())
                     {
                         isotope.AddCharacter(character, atomColour, true);
                     }
@@ -986,7 +986,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     }
                     else
                     {
-                        Point destination = main.BoundingBox.TopLeft;
+                        var destination = main.BoundingBox.TopLeft;
 
                         switch (orientation)
                         {
@@ -1014,7 +1014,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
 
                 // 3 transfer to output
-                foreach (AtomLabelCharacter character in main.Characters)
+                foreach (var character in main.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
                 }
@@ -1023,7 +1023,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 if (hydrogens != null)
                 {
-                    foreach (AtomLabelCharacter character in hydrogens.Characters)
+                    foreach (var character in hydrogens.Characters)
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
@@ -1033,7 +1033,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 if (charge != null)
                 {
-                    foreach (AtomLabelCharacter character in charge.Characters)
+                    foreach (var character in charge.Characters)
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
@@ -1043,7 +1043,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 if (isotope != null)
                 {
-                    foreach (AtomLabelCharacter character in isotope.Characters)
+                    foreach (var character in isotope.Characters)
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
@@ -1059,7 +1059,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         private void CreateFunctionalGroupCharacters(Atom atom)
         {
             var fg = atom.Element as FunctionalGroup;
-            bool reverse = atom.FunctionalGroupPlacement == CompassPoints.West;
+            var reverse = atom.FunctionalGroupPlacement == CompassPoints.West;
 
             #region Set Up Atom Colour
 
@@ -1076,7 +1076,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             if (fg != null)
             {
-                List<FunctionalGroupTerm> terms = fg.ExpandIntoTerms(reverse);
+                var terms = fg.ExpandIntoTerms(reverse);
 
                 var main = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                  Inputs.TtfCharacterSet, Inputs.MeanBondLength);
@@ -1085,7 +1085,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                                       Inputs.TtfCharacterSet, Inputs.MeanBondLength);
 
                 // 1. Generate characters
-                foreach (FunctionalGroupTerm term in terms)
+                foreach (var term in terms)
                 {
                     if (term.IsAnchor)
                     {
@@ -1120,14 +1120,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
 
                 // 3. Transfer to output
-                foreach (AtomLabelCharacter character in main.Characters)
+                foreach (var character in main.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
                 }
 
                 if (auxiliary.Characters.Any())
                 {
-                    foreach (AtomLabelCharacter character in auxiliary.Characters)
+                    foreach (var character in auxiliary.Characters)
                     {
                         Outputs.AtomLabelCharacters.Add(character);
                     }
@@ -1142,20 +1142,20 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             var measure = new Point(centrePoint.X, centrePoint.Y);
 
-            foreach (TextualProperty label in labels)
+            foreach (var label in labels)
             {
                 // 1. Measure string
-                Rect bb = MeasureString(label.Value, measure);
+                var boundingBox = MeasureString(label.Value, measure);
 
                 // 2. Place string characters such that they are hanging below the "line"
-                if (bb != Rect.Empty)
+                if (boundingBox != Rect.Empty)
                 {
-                    var place = new Point(measure.X - bb.Width / 2, measure.Y + (measure.Y - bb.Top));
+                    var place = new Point(measure.X - boundingBox.Width / 2, measure.Y + (measure.Y - boundingBox.Top));
                     PlaceString(label.Value, place, moleculePath);
                 }
 
                 // 3. Move to next line
-                measure.Offset(0, bb.Height + Inputs.MeanBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 2);
+                measure.Offset(0, boundingBox.Height + Inputs.MeanBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 2);
             }
         }
 
@@ -1166,24 +1166,24 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // Adjust size to allow for text box to be bigger than the text
 
-            foreach (TextualProperty label in labels)
+            foreach (var label in labels)
             {
                 // 1. Measure string
-                Rect bb = MeasureString(label.Value, measure);
+                var boundingBox = MeasureString(label.Value, measure);
 
                 // Adjustments to take into account text box margins
-                bb.Width = bb.Width + OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) * 2.5;
-                bb.Height = bb.Height * 1.5;
+                boundingBox.Width = boundingBox.Width + OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) * 2.5;
+                boundingBox.Height = boundingBox.Height * 1.5;
 
                 // 2. Place string characters such that they are hanging below the "line"
-                if (bb != Rect.Empty)
+                if (boundingBox != Rect.Empty)
                 {
-                    var place = new Point(measure.X - bb.Width / 2, measure.Y);
-                    Outputs.MoleculeCaptions.Add(new OoXmlString(new Rect(place, bb.Size), label.Value, moleculePath));
+                    var place = new Point(measure.X - boundingBox.Width / 2, measure.Y);
+                    Outputs.MoleculeCaptions.Add(new OoXmlString(new Rect(place, boundingBox.Size), label.Value, moleculePath));
                 }
 
                 // 3. Move to next line
-                measure.Offset(0, bb.Height + Inputs.MeanBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 2);
+                measure.Offset(0, boundingBox.Height + Inputs.MeanBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 2);
             }
         }
 
@@ -1193,9 +1193,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <param name="bond"></param>
         private void CreateLines(Bond bond)
         {
-            Point bondStart = bond.StartAtom.Position;
+            var bondStart = bond.StartAtom.Position;
 
-            Point bondEnd = bond.EndAtom.Position;
+            var bondEnd = bond.EndAtom.Position;
 
             #region Create Bond Line objects
 
@@ -1285,8 +1285,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         // Crossed lines
                         var d = new BondLine(BondLineStyle.Solid, bondStart, bondEnd, bond);
-                        BondLine d1 = d.GetParallel(-(BondOffset() / 2));
-                        BondLine d2 = d.GetParallel(BondOffset() / 2);
+                        var d1 = d.GetParallel(-(BondOffset() / 2));
+                        var d2 = d.GetParallel(BondOffset() / 2);
                         Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, new Point(d1.Start.X, d1.Start.Y), new Point(d2.End.X, d2.End.Y), bond));
                         Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, new Point(d2.Start.X, d2.Start.Y), new Point(d1.End.X, d1.End.Y), bond));
                     }
@@ -1309,11 +1309,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                 // Local Function
                                 BondLine PlaceSecondaryLine(BondLine primaryLine, BondLine secondaryLine)
                                 {
-                                    Point primaryMidpoint = CoordinateTool.GetMidPoint(primaryLine.Start, primaryLine.End);
-                                    Point secondaryMidpoint = CoordinateTool.GetMidPoint(secondaryLine.Start, secondaryLine.End);
+                                    var primaryMidpoint = CoordinateTool.GetMidPoint(primaryLine.Start, primaryLine.End);
+                                    var secondaryMidpoint = CoordinateTool.GetMidPoint(secondaryLine.Start, secondaryLine.End);
 
-                                    Point startPointa = secondaryLine.Start;
-                                    Point endPointa = secondaryLine.End;
+                                    var startPointa = secondaryLine.Start;
+                                    var endPointa = secondaryLine.End;
 
                                     Point? centre = null;
 
@@ -1324,20 +1324,20 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                     {
                                         // Get angle between bond and vector to primary ring centre
                                         centre = bond.PrimaryRing.Centroid.Value;
-                                        Vector primaryRingVector = primaryMidpoint - centre.Value;
-                                        double angle = CoordinateTool.AngleBetween(bond.BondVector, primaryRingVector);
+                                        var primaryRingVector = primaryMidpoint - centre.Value;
+                                        var angle = CoordinateTool.AngleBetween(bond.BondVector, primaryRingVector);
 
                                         // Does bond have a secondary ring?
                                         if (bond.SubsidiaryRing != null && bond.SubsidiaryRing.Centroid != null)
                                         {
                                             // Get angle between bond and vector to secondary ring centre
-                                            Point centre2 = bond.SubsidiaryRing.Centroid.Value;
-                                            Vector secondaryRingVector = primaryMidpoint - centre2;
-                                            double angle2 = CoordinateTool.AngleBetween(bond.BondVector, secondaryRingVector);
+                                            var centre2 = bond.SubsidiaryRing.Centroid.Value;
+                                            var secondaryRingVector = primaryMidpoint - centre2;
+                                            var angle2 = CoordinateTool.AngleBetween(bond.BondVector, secondaryRingVector);
 
                                             // Get angle in which the offset line has moved with respect to the bond line
-                                            Vector offsetVector = primaryMidpoint - secondaryMidpoint;
-                                            double offsetAngle = CoordinateTool.AngleBetween(bond.BondVector, offsetVector);
+                                            var offsetVector = primaryMidpoint - secondaryMidpoint;
+                                            var offsetAngle = CoordinateTool.AngleBetween(bond.BondVector, offsetVector);
 
                                             // If in the same direction as secondary ring centre, use it
                                             if (Math.Sign(angle2) == Math.Sign(offsetAngle))
@@ -1353,8 +1353,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                         }
 
                                         // Is secondary line outside of the "selected" ring
-                                        double distance1 = primaryRingVector.Length;
-                                        double distance2 = (secondaryMidpoint - centre.Value).Length;
+                                        var distance1 = primaryRingVector.Length;
+                                        var distance2 = (secondaryMidpoint - centre.Value).Length;
                                         if (distance2 > distance1)
                                         {
                                             clip = false;
@@ -1390,16 +1390,16 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                 // Local Function
                                 BondLine TrimSecondaryLine(BondLine bondLine)
                                 {
-                                    List<Bond> otherStartBonds = bond.StartAtom.Bonds.Except(new[] { bond }).ToList();
-                                    List<Bond> otherEndBonds = bond.EndAtom.Bonds.Except(new[] { bond }).ToList();
+                                    var otherStartBonds = bond.StartAtom.Bonds.Except(new[] { bond }).ToList();
+                                    var otherEndBonds = bond.EndAtom.Bonds.Except(new[] { bond }).ToList();
 
-                                    foreach (Bond otherBond in otherStartBonds)
+                                    foreach (var otherBond in otherStartBonds)
                                     {
                                         TrimSecondaryBondLine(bond.StartAtom.Position, bond.EndAtom.Position,
                                                               otherBond.OtherAtom(bond.StartAtom).Position);
                                     }
 
-                                    foreach (Bond otherBond in otherEndBonds)
+                                    foreach (var otherBond in otherEndBonds)
                                     {
                                         TrimSecondaryBondLine(bond.EndAtom.Position, bond.StartAtom.Position,
                                                               otherBond.OtherAtom(bond.EndAtom).Position);
@@ -1407,9 +1407,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                                     void TrimSecondaryBondLine(Point common, Point left, Point right)
                                     {
-                                        Vector v1 = left - common;
-                                        Vector v2 = right - common;
-                                        double angle = CoordinateTool.AngleBetween(v1, v2);
+                                        var v1 = left - common;
+                                        var v2 = right - common;
+                                        var angle = CoordinateTool.AngleBetween(v1, v2);
                                         var matrix = new Matrix();
                                         matrix.Rotate(angle / 2);
                                         v1 = v1 * 2 * matrix;
@@ -1445,9 +1445,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                     case Globals.BondStereo.Cis:
                                         var dcc = new BondLine(BondLineStyle.Solid, bond);
                                         Outputs.BondLines.Add(dcc);
-                                        BondLine blnewc = dcc.GetParallel(BondOffset());
-                                        Point startPointn = blnewc.Start;
-                                        Point endPointn = blnewc.End;
+                                        var blnewc = dcc.GetParallel(BondOffset());
+                                        var startPointn = blnewc.Start;
+                                        var endPointn = blnewc.End;
                                         CoordinateTool.AdjustLineAboutMidpoint(ref startPointn, ref endPointn, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                                         Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, startPointn, endPointn, bond));
                                         break;
@@ -1455,9 +1455,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                     case Globals.BondStereo.Trans:
                                         var dtt = new BondLine(BondLineStyle.Solid, bond);
                                         Outputs.BondLines.Add(dtt);
-                                        BondLine blnewt = dtt.GetParallel(BondOffset());
-                                        Point startPointt = blnewt.Start;
-                                        Point endPointt = blnewt.End;
+                                        var blnewt = dtt.GetParallel(BondOffset());
+                                        var startPointt = blnewt.Start;
+                                        var endPointt = blnewt.End;
                                         CoordinateTool.AdjustLineAboutMidpoint(ref startPointt, ref endPointt, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                                         Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, startPointt, endPointt, bond));
                                         break;
@@ -1558,8 +1558,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             for (var idx = 0; idx < text.Length; idx++)
             {
-                TtfCharacter c = Inputs.TtfCharacterSet[OoXmlHelper.DefaultCharacter];
-                char chr = text[idx];
+                var c = Inputs.TtfCharacterSet[OoXmlHelper.DefaultCharacter];
+                var chr = text[idx];
                 if (Inputs.TtfCharacterSet.ContainsKey(chr))
                 {
                     c = Inputs.TtfCharacterSet[chr];
@@ -1567,7 +1567,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 if (c != null)
                 {
-                    Point position = GetCharacterPosition(cursor, c);
+                    var position = GetCharacterPosition(cursor, c);
 
                     var thisRect = new Rect(new Point(position.X, position.Y),
                                             new Size(OoXmlHelper.ScaleCsTtfToCml(c.Width, Inputs.MeanBondLength),
@@ -1592,8 +1592,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             for (var idx = 0; idx < text.Length; idx++)
             {
-                TtfCharacter c = Inputs.TtfCharacterSet[OoXmlHelper.DefaultCharacter];
-                char chr = text[idx];
+                var c = Inputs.TtfCharacterSet[OoXmlHelper.DefaultCharacter];
+                var chr = text[idx];
                 if (Inputs.TtfCharacterSet.ContainsKey(chr))
                 {
                     c = Inputs.TtfCharacterSet[chr];
@@ -1601,7 +1601,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 if (c != null)
                 {
-                    Point position = GetCharacterPosition(cursor, c);
+                    var position = GetCharacterPosition(cursor, c);
 
                     var alc = new AtomLabelCharacter(position, c, OoXmlHelper.Black, path, path);
                     Outputs.AtomLabelCharacters.Add(alc);
@@ -1617,7 +1617,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private List<Point> ConvexHull(string atomPath)
         {
-            List<AtomLabelCharacter> chars = Outputs.AtomLabelCharacters.Where(m => m.ParentAtom == atomPath).ToList();
+            var chars = Outputs.AtomLabelCharacters.Where(m => m.ParentAtom == atomPath).ToList();
             return ConvexHull(chars);
         }
 
@@ -1625,8 +1625,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         {
             var points = new List<Point>();
 
-            double margin = OoXmlHelper.CmlCharacterMargin;
-            foreach (AtomLabelCharacter c in chars)
+            var margin = OoXmlHelper.CmlCharacterMargin;
+            foreach (var c in chars)
             {
                 // Top Left --
                 points.Add(new Point(c.Position.X - margin, c.Position.Y - margin));
