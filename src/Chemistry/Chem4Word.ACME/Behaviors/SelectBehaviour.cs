@@ -231,7 +231,12 @@ namespace Chem4Word.ACME.Behaviors
                     }
 
                 case ReactionVisual rv:
-                    _lassoHits.Add(rv.ParentReaction);
+                    //only add the reaction of it's entirely enclosed by the selection region
+                    if (_lassoAdorner.Outline.FillContains(rv.ParentReaction.HeadPoint) &&
+                        _lassoAdorner.Outline.FillContains(rv.ParentReaction.TailPoint))
+                    {
+                        _lassoHits.Add(rv.ParentReaction);
+                    }
                     break;
 
                 case AnnotationVisual anv:

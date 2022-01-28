@@ -25,6 +25,7 @@ namespace Chem4Word.ACME.Graphics
 
         protected Arrow()
         {
+            ClipToBounds = false;
         }
 
         #endregion "Constructors"
@@ -274,7 +275,7 @@ namespace Chem4Word.ACME.Graphics
         public void GetOverlayPen(out Brush overlayBrush, out Pen pen)
         {
 #if SHOWBOUNDS
-            overlayBrush = Brushes.Green;
+            overlayBrush = new SolidColorBrush(Colors.LightGreen) { Opacity = 0.4 };
 #else
             overlayBrush = Brushes.Transparent;
 #endif

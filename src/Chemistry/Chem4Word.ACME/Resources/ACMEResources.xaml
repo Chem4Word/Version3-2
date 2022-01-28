@@ -14,7 +14,8 @@
     <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
     <SolidColorBrush x:Key="PinkLace" Color="#FFDDF4" />
     <SolidColorBrush x:Key="ACMEToolbarBackground" Color="#F1F1F1" />
-
+    <SolidColorBrush x:Key="DiagnosticOverlay" Color="PaleGreen" Opacity="0.5"/>
+    
     <Style x:Key="WedgeBondStyle" TargetType="Path">
         <Setter Property="Fill" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
         <Setter Property="Height" Value="14" />

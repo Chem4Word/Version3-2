@@ -131,7 +131,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
 #if DEBUG
 #if SHOWBOUNDS
                         obb.Offset(new Vector(locus.X, locus.Y));
-                        dc.DrawRectangle(null, new Pen(new SolidColorBrush(Colors.BlueViolet), 1.0), obb);
+                        dc.DrawRectangle(null, new Pen(new SolidColorBrush(Colors.LightGreen) {Opacity = 0.4}, 1.0), obb);
 #endif
 #endif
                         var glyphRuns = myTextLine.GetIndexedGlyphRuns();
@@ -158,7 +158,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                             var rectCopy = rect;
 #if DEBUG
 #if SHOWBOUNDS
-                            dc.DrawRectangle(null, new Pen(new SolidColorBrush(Colors.DarkOrange), 1.0), rect);
+                            dc.DrawRectangle(null, new Pen(new SolidColorBrush(Colors.LightGreen) {Opacity = 0.4}, 1.0), rect);
 #endif
 #endif
                             var runOutline = currentRun.GetOutline();

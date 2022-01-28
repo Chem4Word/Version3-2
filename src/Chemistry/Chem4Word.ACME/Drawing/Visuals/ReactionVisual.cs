@@ -196,13 +196,14 @@ namespace Chem4Word.ACME.Drawing.Visuals
                                      DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
             }
             //Draw the text to the screen for real
-            return TextSupport.DrawText(dc, blockXaml, startingPoint, blockColour, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth());
-
 #if SHOWBOUNDS
-            Pen offsetPen = new Pen(Brushes.Blue, 1);
+            Pen offsetPen = new Pen(new SolidColorBrush(Colors.LightGreen) {Opacity = 0.4}, 1);
             dc.DrawLine(offsetPen, ParentReaction.TailPoint + reactionVector / 2, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp);
             dc.DrawLine(offsetPen, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp + blockOffset);
 #endif
+            return TextSupport.DrawText(dc, blockXaml, startingPoint, blockColour, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth());
+
+
         }
 
         /// <summary>

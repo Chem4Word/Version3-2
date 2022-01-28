@@ -58,7 +58,7 @@ namespace Chem4Word.ACME.Drawing.Text
 #if SHOWBOUNDS
             if (!measureOnly)
             {
-                dc.DrawRectangle(null, new Pen(Brushes.LightGreen, 1), rect);
+                dc.DrawRectangle(null, new Pen(new SolidColorBrush(Colors.LightGreen) {Opacity = 0.4}, 1), rect);
             }
 #endif
             return rect;

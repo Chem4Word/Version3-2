@@ -492,10 +492,14 @@ namespace Chem4Word.ACME.Drawing.Visuals
             //local function
             void DrawHitTestOverlay(DrawingContext dc)
             {
-                SolidColorBrush outliner = new SolidColorBrush(Colors.Salmon);
+                SolidColorBrush outliner;
 #if SHOWBOUNDS
-                outliner.Opacity = 0.2d;
+                outliner = new SolidColorBrush(Colors.LightGreen)
+                {
+                    Opacity = 0.4d
+                };
 #else
+                outliner = new SolidColorBrush(Colors.Transparent);
                 outliner.Opacity = 0d;
 #endif
 
