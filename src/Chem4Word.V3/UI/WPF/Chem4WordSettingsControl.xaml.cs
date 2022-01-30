@@ -24,7 +24,7 @@ using Chem4Word.Libraries.Database;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using IChem4Word.Contracts;
-using Ookii.Dialogs;
+using Ookii.Dialogs.WinForms;
 using Forms = System.Windows.Forms;
 
 namespace Chem4Word.UI.WPF

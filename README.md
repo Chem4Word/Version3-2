@@ -13,57 +13,70 @@ This solution has two main projects (use Set as Start Up then run the project), 
 2. WinForms.TestHarness this allows testing of a the Editing subset of operations without starting MS Word
 
 All unit tests are written with XUnit
+Must use VS2022 build agent
 
 ## List of NuGet packages
-| Package | Version | Licence |
-|--|--|--|
-|DocumentFormat.OpenXml|2.11.3|MIT|
-|DotNetProjects.WpfToolkit.Input|6.0.85|MS-PL|
-|EntityFramework|6.4.4|Apache-2.0|
-|Jacobslusser.ScintillaNET|3.6.3|MIT|
-|Microsoft.Azure.KeyVault.Core|3.0.5|MIT|
-|Microsoft.Azure.Services.AppAuthentication|1.6.0|MIT|
-|Microsoft.IdentityModel.Clients.ActiveDirectory|5.2.8|MIT|
-|Microsoft.IdentityModel.JsonWebTokens|6.8.0|MIT|
-|Microsoft.IdentityModel.Logging|6.8.0|MIT|
-|Microsoft.IdentityModel.Tokens|6.8.0|MIT|
-|Microsoft.Rest.ClientRuntime.Azure|3.3.19|MIT|
-|Microsoft.Rest.ClientRuntime|2.3.22|MIT|
-|Microsoft_VisualStudio_QualityTools_UnitTestFramework.STW|12.0.21005.1|Microsoft ?|
-|Newtonsoft.Json|12.0.3|MIT|
-|Ookii.Dialogs.WindowsForms|1.0|Public Domain|
-|Stub.System.Data.SQLite.Core.NetFramework|1.0.113.3|Public Domain|
-|System.Buffers|4.5.1|MIT|
-|System.Collections.Immutable|5.0.0|MIT|
-|System.Data.SQLite.Core|1.0.113.6|Public Domain|
-|System.Data.SQLite.EF6|1.0.113.0|Public Domain|
-|System.Data.SQLite.Linq|1.0.113.0|Public Domain|
-|System.Data.SQLite|1.0.113.6|Public Domain|
-|System.IdentityModel.Tokens.Jwt|6.8.0|MIT|
-|System.IO.FileSystem.Primitives|4.3.0|MS-.NET-Library License|
-|System.IO.Packaging|5.0.0|MIT|
-|System.Memory|4.5.4|MIT|
-|System.Net.Http|4.3.4|MS-.NET-Library License|
-|System.Numerics.Vectors|4.5.0|MIT|
-|System.Runtime.CompilerServices.Unsafe|5.0.0|MIT|
-|System.Security.Cryptography.Algorithms|4.3.1|MS-.NET-Library License|
-|System.Security.Cryptography.Encoding|4.3.0|MS-.NET-Library License|
-|System.Security.Cryptography.Primitives|4.3.0|MS-.NET-Library License|
-|System.Security.Cryptography.X509Certificates|4.3.2|MS-.NET-Library License|
-|System.ValueTuple|4.5.0|MIT|
-|System.Windows.Interactivity.WPF|2.0.20525|Inherits from MS Expression Blend 4 ??|
-|Unofficial.Ionic.Zip|1.9.1.8|Unknown ?|
-|VirtualizingWrapPanel|1.5.3|MIT|
-|WindowsAzure.ServiceBus|6.0.2|MS-.NET-Library License|
-|xunit.abstractions|2.0.3|Apache-2.0|
-|xunit.analyzers|0.10.0|Apache-2.0|
-|xunit.assert|2.4.1|Apache-2.0|
-|xunit.core|2.4.1|Apache-2.0|
-|xunit.extensibility.core|2.4.1|Apache-2.0|
-|xunit.extensibility.execution|2.4.1|Apache-2.0|
-|xunit.runner.console|2.4.1|Apache-2.0|
-|xunit.runner.visualstudio|2.4.2|Apache-2.0|
-|xunit|2.4.1|Apache-2.0|
+| Package | Version | Licence | Reference Count |
+|--|--|--|--|
+|Azure.Core|1.22.0|MIT|1|
+|Azure.Security.KeyVault.Secrets|4.2.0||1|
+|DocumentFormat.OpenXml|2.15.0|MIT|3|
+|DotNetProjects.WpfToolkit.Input|6.1.94|MS-PL|1|
+|EntityFramework|6.4.4|Apache-2.0|3|
+|Jacobslusser.ScintillaNET|3.6.3|MIT|1|
+|Microsoft.Azure.Services.AppAuthentication|1.6.2|MIT|2|
+|Microsoft.Bcl.AsyncInterfaces|6.0.0|MIT|1|
+|Microsoft.IdentityModel.Clients.ActiveDirectory|5.2.9|MIT|2|
+|Microsoft.IdentityModel.JsonWebTokens|6.15.1|MIT|2|
+|Microsoft.IdentityModel.Logging|6.15.1|MIT|2|
+|Microsoft.IdentityModel.Tokens|6.15.1|MIT|2|
+|Microsoft.NETCore.Platforms|6.0.1||2|
+|Microsoft.NETCore.Targets|5.0.0||2|
+|Microsoft.Rest.ClientRuntime.Azure|3.3.19|MIT|1|
+|Microsoft.Rest.ClientRuntime|2.3.23|MIT|2|
+|Microsoft_VisualStudio_QualityTools_UnitTestFramework.STW|12.0.21005.1|Microsoft|1|
+|Newtonsoft.Json|13.0.1|MIT|16|
+|Ookii.Dialogs.WinForms|4.0.0|Public Domain|1|
+|Stub.System.Data.SQLite.Core.NetFramework|1.0.115.5|Public Domain|3|
+|System.Buffers|4.5.1|MIT|2|
+|System.Collections.Immutable|6.0.0|MIT|1|
+|System.Data.SQLite.Core|1.0.115.5|Public Domain|3|
+|System.Data.SQLite.EF6|1.0.115.5|Public Domain|3|
+|System.Data.SQLite.Linq|1.0.115.5|Public Domain|3|
+|System.Data.SQLite|1.0.115.5|Public Domain|3|
+|System.Diagnostics.DiagnosticSource|6.0.0|MIT|1|
+|System.IdentityModel.Tokens.Jwt|6.15.1|MIT|2|
+|System.IO.FileSystem.Primitives|4.3.0|MS-.NET-Library License|3|
+|System.IO.Packaging|6.0.0|MIT|3|
+|System.Memory.Data|6.0.0|MIT|1|
+|System.Memory|4.5.4|MIT|2|
+|System.Net.Http|4.3.4|MS-.NET-Library License|5|
+|System.Numerics.Vectors|4.5.0|MIT|2|
+|System.Private.Uri|4.3.2||2|
+|System.Resources.Extensions|6.0.0||1|
+|System.Runtime.CompilerServices.Unsafe|6.0.0|MIT|2|
+|System.Runtime.InteropServices.RuntimeInformation|4.3.0||1|
+|System.Security.Cryptography.Algorithms|4.3.1|MS-.NET-Library License|5|
+|System.Security.Cryptography.Encoding|4.3.0|MS-.NET-Library License|5|
+|System.Security.Cryptography.Primitives|4.3.0|MS-.NET-Library License|5|
+|System.Security.Cryptography.X509Certificates|4.3.2|MS-.NET-Library License|4|
+|System.Text.Encodings.Web|6.0.0|MIT|1|
+|System.Text.Json|6.0.1|MIT|1|
+|System.Threading.Tasks.Extensions|4.5.4|MIT|1|
+|System.ValueTuple|4.5.0|MIT|4|
+|System.Windows.Interactivity.WPF|2.0.20525|Inherits from MS Expression Blend 4|1|
+|Unofficial.Ionic.Zip|1.9.1.8|Unknown ?|3|
+|VirtualizingWrapPanel|1.5.7|MIT|1|
+|WindowsAzure.ServiceBus|6.2.1|MS-.NET-Library License|2|
+|xunit.abstractions|2.0.3|Apache-2.0|1|
+|xunit.analyzers|0.10.0|Apache-2.0|1|
+|xunit.assert|2.4.1|Apache-2.0|1|
+|xunit.core|2.4.1|Apache-2.0|1|
+|xunit.extensibility.core|2.4.1|Apache-2.0|1|
+|xunit.extensibility.execution|2.4.1|Apache-2.0|1|
+|xunit.runner.console|2.4.1|Apache-2.0|1|
+|xunit.runner.visualstudio|2.4.3|Apache-2.0|1|
+|xunit|2.4.1|Apache-2.0|1|
 
 ## Acknowledgements
 1. [CEVOpen](https://github.com/petermr/CEVOpen) - This data represents about 2100 unique chemical names of volatile plant chemicals (essential oils) from the EssoilDB 1.0 database (compiled from the scientific literature over about 10 years in Dr Yadav's laboratory). They are made available for re-use by anyone for any purpose (CC0). We would appreciate acknowledgement of EssoilDB and the following people who extracted and cleaned the data during 2019. (Gitanjali Yadav, Ambarish Kumar, Peter Murray-Rust).

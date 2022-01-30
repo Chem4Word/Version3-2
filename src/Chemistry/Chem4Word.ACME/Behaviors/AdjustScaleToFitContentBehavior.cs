@@ -7,8 +7,8 @@
 
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Interactivity;
 using System.Windows.Media;
+using Microsoft.Xaml.Behaviors;
 
 namespace Chem4Word.ACME.Behaviors
 {

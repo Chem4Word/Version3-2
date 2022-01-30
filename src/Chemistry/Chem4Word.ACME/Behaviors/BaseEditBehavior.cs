@@ -10,9 +10,9 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interactivity;
 using Chem4Word.ACME.Controls;
 using Chem4Word.Model2.Annotations;
+using Microsoft.Xaml.Behaviors;
 
 namespace Chem4Word.ACME.Behaviors
 {
