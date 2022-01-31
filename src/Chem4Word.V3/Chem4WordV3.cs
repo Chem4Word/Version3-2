@@ -34,9 +34,9 @@ using Chem4Word.Telemetry;
 using IChem4Word.Contracts;
 using Microsoft.Office.Core;
 using Newtonsoft.Json;
-using Extensions = Microsoft.Office.Tools.Word.Extensions;
 using OfficeTools = Microsoft.Office.Tools;
 using Word = Microsoft.Office.Interop.Word;
+using WordExtensions = Microsoft.Office.Tools.Word.Extensions;
 using WordTools = Microsoft.Office.Tools.Word;
 
 namespace Chem4Word
@@ -1587,7 +1587,7 @@ namespace Chem4Word
 
                 if (Application.Documents.Count > 0)
                 {
-                    WordTools.Document doc = Extensions.DocumentExtensions.GetVstoObject(Application.ActiveDocument, Globals.Factory);
+                    WordTools.Document doc = WordExtensions.DocumentExtensions.GetVstoObject(Application.ActiveDocument, Globals.Factory);
                     Application.CustomizationContext = doc.AttachedTemplate;
 
                     foreach (string contextMenuName in ContextMenusTargets)
@@ -1637,7 +1637,7 @@ namespace Chem4Word
             {
                 if (Application.Documents.Count > 0)
                 {
-                    WordTools.Document doc = Extensions.DocumentExtensions.GetVstoObject(Application.ActiveDocument, Globals.Factory);
+                    WordTools.Document doc = WordExtensions.DocumentExtensions.GetVstoObject(Application.ActiveDocument, Globals.Factory);
                     Application.CustomizationContext = doc.AttachedTemplate;
 
                     foreach (string contextMenuName in ContextMenusTargets)
