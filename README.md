@@ -13,13 +13,13 @@ This solution has two main projects (use Set as Start Up then run the project), 
 2. WinForms.TestHarness this allows testing of a the Editing subset of operations without starting MS Word
 
 All unit tests are written with XUnit
-Must use VS2022 build agent
+Azure Devops Build must be set to use VS2022 build agent
 
 ## List of NuGet packages
 | Package | Version | Licence | Reference Count |
 |--|--|--|--|
 |Azure.Core|1.22.0|MIT|1|
-|Azure.Security.KeyVault.Secrets|4.2.0||1|
+|Azure.Security.KeyVault.Secrets|4.2.0|MIT|1|
 |DocumentFormat.OpenXml|2.15.0|MIT|3|
 |DotNetProjects.WpfToolkit.Input|6.1.94|MS-PL|1|
 |EntityFramework|6.4.4|Apache-2.0|3|
@@ -30,10 +30,11 @@ Must use VS2022 build agent
 |Microsoft.IdentityModel.JsonWebTokens|6.15.1|MIT|2|
 |Microsoft.IdentityModel.Logging|6.15.1|MIT|2|
 |Microsoft.IdentityModel.Tokens|6.15.1|MIT|2|
-|Microsoft.NETCore.Platforms|6.0.1||2|
-|Microsoft.NETCore.Targets|5.0.0||2|
+|Microsoft.NETCore.Platforms|6.0.1|MIT|2|
+|Microsoft.NETCore.Targets|5.0.0|MIT|2|
 |Microsoft.Rest.ClientRuntime.Azure|3.3.19|MIT|1|
 |Microsoft.Rest.ClientRuntime|2.3.23|MIT|2|
+|Microsoft.Xaml.Behaviors.Wpf|1.1.39|MIT|1|
 |Microsoft_VisualStudio_QualityTools_UnitTestFramework.STW|12.0.21005.1|Microsoft|1|
 |Newtonsoft.Json|13.0.1|MIT|16|
 |Ookii.Dialogs.WinForms|4.0.0|Public Domain|1|
@@ -50,21 +51,20 @@ Must use VS2022 build agent
 |System.IO.Packaging|6.0.0|MIT|3|
 |System.Memory.Data|6.0.0|MIT|1|
 |System.Memory|4.5.4|MIT|2|
-|System.Net.Http|4.3.4|MS-.NET-Library License|5|
+|System.Net.Http|4.3.4|MS-.NET-Library License|9|
 |System.Numerics.Vectors|4.5.0|MIT|2|
-|System.Private.Uri|4.3.2||2|
-|System.Resources.Extensions|6.0.0||1|
+|System.Private.Uri|4.3.2|MIT|2|
+|System.Resources.Extensions|6.0.0|MIT|1|
 |System.Runtime.CompilerServices.Unsafe|6.0.0|MIT|2|
 |System.Runtime.InteropServices.RuntimeInformation|4.3.0||1|
-|System.Security.Cryptography.Algorithms|4.3.1|MS-.NET-Library License|5|
-|System.Security.Cryptography.Encoding|4.3.0|MS-.NET-Library License|5|
-|System.Security.Cryptography.Primitives|4.3.0|MS-.NET-Library License|5|
-|System.Security.Cryptography.X509Certificates|4.3.2|MS-.NET-Library License|4|
+|System.Security.Cryptography.Algorithms|4.3.1|MS-.NET-Library License|9|
+|System.Security.Cryptography.Encoding|4.3.0|MS-.NET-Library License|9|
+|System.Security.Cryptography.Primitives|4.3.0|MS-.NET-Library License|9|
+|System.Security.Cryptography.X509Certificates|4.3.2|MS-.NET-Library License|9|
 |System.Text.Encodings.Web|6.0.0|MIT|1|
 |System.Text.Json|6.0.1|MIT|1|
 |System.Threading.Tasks.Extensions|4.5.4|MIT|1|
 |System.ValueTuple|4.5.0|MIT|4|
-|System.Windows.Interactivity.WPF|2.0.20525|Inherits from MS Expression Blend 4|1|
 |Unofficial.Ionic.Zip|1.9.1.8|Unknown ?|3|
 |VirtualizingWrapPanel|1.5.7|MIT|1|
 |WindowsAzure.ServiceBus|6.2.1|MS-.NET-Library License|2|

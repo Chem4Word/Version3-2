@@ -1,34 +1,200 @@
-﻿<Window x:Class="WPF.ShapeTester.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:shapes="clr-namespace:Chem4Word.ACME.Graphics;assembly=Chem4Word.ACME"
-        Title="MainWindow" Height="600" Width="800">
+﻿<Window
+    x:Class="WPF.ShapeTester.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shapes="clr-namespace:Chem4Word.ACME.Graphics;assembly=Chem4Word.ACME"
+    Title="MainWindow"
+    Width="800"
+    Height="600">
     <Canvas>
-        <!-- H Rotators +30 to +100 -->
-        <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="30" EndAngle="100" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
-        <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="120" EndAngle="190" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
-        <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="210" EndAngle="280" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" Fill="Green" />
-        <shapes:ArcArrow Center="500,100" Radius="40" StartAngle="-60" EndAngle="10" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Blue" Fill="Blue" />
+        <!--  H Rotators +30 to +100  -->
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="500,100"
+            EndAngle="100"
+            Fill="Black"
+            Radius="40"
+            StartAngle="30"
+            Stroke="Black"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="500,100"
+            EndAngle="190"
+            Fill="Red"
+            Radius="40"
+            StartAngle="120"
+            Stroke="Red"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="500,100"
+            EndAngle="280"
+            Fill="Green"
+            Radius="40"
+            StartAngle="210"
+            Stroke="Green"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="500,100"
+            EndAngle="10"
+            Fill="Blue"
+            Radius="40"
+            StartAngle="-60"
+            Stroke="Blue"
+            StrokeThickness="3" />
 
-        <!-- Reversed H Rotators -30 to -100 -->
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="-30" EndAngle="-100" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="60" EndAngle="-10" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="150" EndAngle="80" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" Fill="Green" />
-        <shapes:ArcArrow Center="600,100" Radius="40" StartAngle="-120" EndAngle="-190" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Blue" Fill="Blue" />
+        <!--  Reversed H Rotators -30 to -100  -->
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="600,100"
+            EndAngle="-100"
+            Fill="Black"
+            Radius="40"
+            StartAngle="-30"
+            Stroke="Black"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="600,100"
+            EndAngle="-10"
+            Fill="Red"
+            Radius="40"
+            StartAngle="60"
+            Stroke="Red"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="600,100"
+            EndAngle="80"
+            Fill="Green"
+            Radius="40"
+            StartAngle="150"
+            Stroke="Green"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="600,100"
+            EndAngle="-190"
+            Fill="Blue"
+            Radius="40"
+            StartAngle="-120"
+            Stroke="Blue"
+            StrokeThickness="3" />
 
-        <!-- Other random stuff -->
-        <shapes:ArcArrow Center="100,100" Radius="40" StartAngle="-90" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Black" Stroke="Black" />
-        <shapes:ArcArrow Center="200,100" Radius="40" StartAngle="90" EndAngle="270" HeadAngle="35" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Fill="Red" Stroke="Red" />
-        <shapes:ArcArrow Center="300,100" Radius="40" StartAngle="270" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="False" Stroke="Green" />
-        <shapes:ArcArrow Center="400,100" Radius="40" StartAngle="30" HeadLength="5" HeadAngle="30" EndAngle="90" StrokeThickness="3" ArrowEnds="End" ArrowHeadClosed="True" Stroke="Green" />
+        <!--  Other random stuff  -->
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="100,100"
+            EndAngle="90"
+            Fill="Black"
+            Radius="40"
+            StartAngle="-90"
+            Stroke="Black"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="200,100"
+            EndAngle="270"
+            Fill="Red"
+            HeadAngle="35"
+            Radius="40"
+            StartAngle="90"
+            Stroke="Red"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="False"
+            Center="300,100"
+            EndAngle="90"
+            Radius="40"
+            StartAngle="270"
+            Stroke="Green"
+            StrokeThickness="3" />
+        <shapes:ArcArrow
+            ArrowEnds="End"
+            ArrowHeadClosed="True"
+            Center="400,100"
+            EndAngle="90"
+            HeadAngle="30"
+            HeadLength="5"
+            Radius="40"
+            StartAngle="30"
+            Stroke="Green"
+            StrokeThickness="3" />
 
-        <!-- Lines and Curves -->
-        <shapes:EquilibriumArrow StartPoint="100,200" EndPoint="300,200" Stroke="DarkRed" StrokeThickness="3" Separation="5" HeadLength="25" Bias="Forward" />
-        <shapes:EquilibriumArrow StartPoint="100,250" EndPoint="300,250" Stroke="DarkRed" StrokeThickness="3" Separation="5" HeadLength="25" Bias="Backward" />
-        <shapes:EquilibriumArrow StartPoint="100,300" EndPoint="300,300" Stroke="DarkRed" StrokeThickness="3" Separation="5" HeadLength="25" Bias="None" />
-        <shapes:BlockedArrow StartPoint="100,350" EndPoint="300,400" Stroke="DarkRed" StrokeThickness="3" HeadLength="25" />
-        <shapes:QuadraticArrow StartPoint="400,200" FirstControlPoint="550,150" EndPoint="500,300" Stroke="OrangeRed" StrokeThickness="3" ArrowEnds="Both" ArrowHeadClosed="True" Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke }" />
-        <shapes:BezierArrow StartPoint="100,500" FirstControlPoint="200,300" SecondControlPoint="300,700" EndPoint="400,500" Stroke="Teal" StrokeThickness="3" ArrowEnds="Both" ArrowHeadClosed="True" Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke }" />
-        <shapes:ArcArrow ArrowEnds="Both" HeadLength="20" Center="400,400" Radius="60" EndAngle="120" Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke }" HeadAngle="45" ArrowHeadClosed="True" StartAngle="0" Stroke="#7FCA34" StrokeThickness="3"></shapes:ArcArrow>
+        <!--  Lines and Curves  -->
+        <shapes:EquilibriumArrow
+            Bias="Forward"
+            HeadLength="25"
+            Separation="5"
+            Stroke="DarkRed"
+            StrokeThickness="3"
+            StartPoint="100,200"
+            EndPoint="300,200" />
+        <shapes:EquilibriumArrow
+            Bias="Backward"
+            HeadLength="25"
+            Separation="5"
+            Stroke="DarkRed"
+            StrokeThickness="3"
+            StartPoint="100,250"
+            EndPoint="300,250" />
+        <shapes:EquilibriumArrow
+            Bias="None"
+            HeadLength="25"
+            Separation="5"
+            Stroke="DarkRed"
+            StrokeThickness="3"
+            StartPoint="100,300"
+            EndPoint="300,300" />
+        <shapes:BlockedArrow
+            HeadLength="25"
+            Stroke="DarkRed"
+            StrokeThickness="3"
+            StartPoint="100,350"
+            EndPoint="300,400" />
+        <shapes:QuadraticArrow
+            ArrowEnds="Both"
+            ArrowHeadClosed="True"
+            Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke}"
+            FirstControlPoint="550,150"
+            Stroke="OrangeRed"
+            StrokeThickness="3"
+            StartPoint="400,200"
+            EndPoint="500,300" />
+        <shapes:BezierArrow
+            ArrowEnds="Both"
+            ArrowHeadClosed="True"
+            Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke}"
+            FirstControlPoint="200,300"
+            SecondControlPoint="300,700"
+            Stroke="Teal"
+            StrokeThickness="3"
+            StartPoint="100,500"
+            EndPoint="400,500" />
+        <shapes:ArcArrow
+            ArrowEnds="Both"
+            ArrowHeadClosed="True"
+            Center="400,400"
+            EndAngle="120"
+            Fill="{Binding RelativeSource={RelativeSource Self}, Path=Stroke}"
+            HeadAngle="45"
+            HeadLength="20"
+            Radius="60"
+            StartAngle="0"
+            Stroke="#7FCA34"
+            StrokeThickness="3" />
     </Canvas>
 </Window>
