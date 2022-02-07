@@ -295,6 +295,7 @@
     </Compile>
     <Compile Include="Resources\Constants.cs" />
     <Compile Include="UndoHandler.cs" />
+    <Compile Include="Utils\BindingProxy.cs" />
     <Compile Include="Utils\ClipboardMonitor.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Utils\CursorUtils.cs" />

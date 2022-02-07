@@ -9,6 +9,7 @@
     xmlns:control="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
     xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
+    xmlns:utils="clr-namespace:Chem4Word.ACME.Utils"
     x:Name="AcmeControl"
     Width="1024"
     Height="768"
@@ -41,12 +42,12 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
-                            <Border x:Name="Border" Background="{Binding RelativeSource={RelativeSource AncestorType=control:ChemistryCanvas}, Path=Background}">
+                            <Border x:Name="Border" Background="White">
                                 <ContentPresenter />
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter TargetName="Border" Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=control:ChemistryCanvas}, Path=Background}" />
+                                    <Setter TargetName="Border" Property="Background" Value="White" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -199,7 +200,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type control:ZoomBox}">
                             <Border
-                                Background="{Binding RelativeSource={RelativeSource AncestorType=control:ChemistryCanvas}, Path=Background}"
+                                Background="White"
                                 BorderBrush="DimGray"
                                 BorderThickness="1"
                                 CornerRadius="1">
@@ -369,6 +370,9 @@
                 </Style>
             </ToolBarTray.Resources>
             <ToolBar x:Name="SelectorToolbar" Height="40" ToolTip="Drawing">
+                <ToolBar.Resources>
+                    <utils:BindingProxy x:Key="Proxy" Data="{Binding ElementName=AcmeControl}"/>
+                </ToolBar.Resources>
                 <ComboBox
                     x:Name="AtomCombo"
                     Width="Auto"
@@ -473,11 +477,11 @@
                 </RadioButton>
                 <Button
                     Name="SelectionDropdownButton"
-                    Width="10"
+                    Width="14"
                     Click="SelectionDropdownButton_OnClick"
                     ToolTip="Change Selection Mode">
-                    <Viewbox Stretch="Uniform">
-                        <Path Data="M -7.5,0 l 15,0 l -7.5, 7.5 Z" Fill="{StaticResource ResourceKey=Chem4WordBrush}" />
+                    <Viewbox Height="24" Stretch="Uniform">
+                        <Path Data="M0,0 L12,0 5,12z" Fill="Black" />
                     </Viewbox>
                 </Button>
                 <Popup
@@ -545,7 +549,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Button.Tag>
-                                    <behaviors:SelectBehaviour EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
+                                    <behaviors:SelectBehaviour EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}" />
                                 </Button.Tag>
                             </Button>
                             <Button
@@ -590,7 +594,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Button.Tag>
-                                    <behaviors:SelectBehaviour EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" RectMode="True" />
+                                    <behaviors:SelectBehaviour EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}" RectMode="True" />
                                 </Button.Tag>
                             </Button>
                         </Grid>
@@ -616,11 +620,11 @@
                 </RadioButton>
                 <Button
                     Name="RingDropdownButton"
-                    Width="10"
+                    Width="14"
                     Click="RingDropdown_OnClick"
                     ToolTip="Select Ring">
-                    <Viewbox Stretch="Uniform">
-                        <Path Data="M -7.5,0 l 15,0 l -7.5, 7.5 Z" Fill="{StaticResource ResourceKey=Chem4WordBrush}" />
+                    <Viewbox Height="24" Stretch="Uniform">
+                        <Path Data="M0,0 L12,0 5,12z" Fill="Black" />
                     </Viewbox>
                 </Button>
                 <!--  Print Toggle Button Popup  -->
@@ -647,7 +651,7 @@
                                 </Viewbox>
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="6"
                                         Unsaturated="True" />
                                 </Button.Tag>
@@ -656,7 +660,7 @@
                                 <StaticResource ResourceKey="CyclohexanePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="6"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -665,7 +669,7 @@
                                 <StaticResource ResourceKey="CyclopentanePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="5"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -674,7 +678,7 @@
                                 <StaticResource ResourceKey="CyclopentadienePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="5"
                                         Unsaturated="True" />
                                 </Button.Tag>
@@ -683,7 +687,7 @@
                                 <StaticResource ResourceKey="CycloheptanePath" />
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="7"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -700,7 +704,7 @@
                                 </Viewbox>
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="4"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -711,7 +715,7 @@
                                 </Viewbox>
                                 <Button.Tag>
                                     <behaviors:RingBehavior
-                                        EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                                        EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}"
                                         RingSize="3"
                                         Unsaturated="False" />
                                 </Button.Tag>
@@ -751,7 +755,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Button.Tag>
-                                    <behaviors:NRingBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
+                                    <behaviors:NRingBehavior EditController="{Binding Source={StaticResource Proxy}, Path=Data.ActiveController}" />
                                 </Button.Tag>
                             </Button>
                         </UniformGrid>
@@ -797,7 +801,7 @@
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                Padding="0,0,0,2"
+                                Padding="0, 0, 0, 1"
                                 FontFamily="Arial"
                                 Style="{StaticResource MainTextStyle}">
                                 NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
@@ -805,15 +809,14 @@
                             <graphics:StraightArrow
                                 Grid.Row="1"
                                 Grid.Column="1"
-
                                 ArrowHeadClosed="True"
                                 Fill="Black"
                                 HeadAngle="35"
                                 HeadLength="2"
                                 Stroke="Black"
                                 StrokeThickness="0.75"
-                                StartPoint="0,2"
-                                EndPoint="12,2" />
+                                StartPoint="0, 1"
+                                EndPoint="12, 1" />
                             <TextBlock
                                 Grid.Row="2"
                                 Padding="0,2"
@@ -1107,7 +1110,7 @@
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 FontFamily="Arial"
-                                Padding="0,0,0,1"
+                                Padding="0, 0, 0, 1"
                                 Style="{StaticResource MainTextStyle}" HorizontalAlignment="Right">
                                 NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
                             </TextBlock>
@@ -1120,8 +1123,8 @@
                                 HeadLength="2"
                                 Stroke="Black"
                                 StrokeThickness="0.75"
-                                StartPoint="0,1"
-                                EndPoint="13,1" />
+                                StartPoint="0, 1"
+                                EndPoint="13, 1" />
                             <Rectangle  Grid.Column="1" Grid.Row="2" Width="6" Height="6" Fill="LightGray" Margin="2" />
                         </Grid>
                     </Viewbox>
@@ -1437,11 +1440,11 @@
                 </Button>
                 <Button
                     Name="SymbolDropdown"
-                    Width="10"
+                    Width="14"
                     Click="SymbolDropdown_Click"
                     ToolTip="Select Symbol">
-                    <Viewbox Stretch="Uniform">
-                        <Path Data="M -7.5,0 l 15,0 l -7.5, 7.5 Z" Fill="{StaticResource ResourceKey=Chem4WordBrush}" />
+                    <Viewbox Height="24" Stretch="Uniform">
+                        <Path Data="M0,0 L12,0 5,12z" Fill="Black" />
                     </Viewbox>
                 </Button>
                 <Popup
@@ -1552,7 +1555,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Canvas="{Binding ElementName=HostingCanvas}"
-                FontFamily="Segoe UI"
+                FontFamily="Arial"
                 ScrollViewer="{Binding ElementName=DrawingArea}" />
         </Grid>
         <StatusBar
@@ -1562,7 +1565,7 @@
             Background="{x:Static SystemColors.WindowBrush}"
             Visibility="{Binding ElementName=AcmeControl, Path=ShowFeedback, Converter={StaticResource VisConverter}}">
             <TextBlock
-                FontFamily="Segoe UI"
+                FontFamily="Arial"
                 Foreground="Black"
                 Text="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveMode.CurrentStatus}" />
         </StatusBar>

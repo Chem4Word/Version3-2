@@ -8,7 +8,7 @@
     xmlns:model2="clr-namespace:Chem4Word.Model2;assembly=Chem4Word.Model2"
     Width="511.557"
     Height="260.771"
-    FontFamily="Segoe UI"
+    FontFamily="Arial"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
