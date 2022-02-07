@@ -49,7 +49,7 @@ namespace Chem4Word.Model2.Converters.CML
                 List<XElement> schemeElements = CMLHelper.GetReactionSchemes(root);
                 foreach (XElement schemeElement in schemeElements)
                 {
-                    ReactionScheme newScheme = GetReactionScheme(schemeElement);
+                    ReactionScheme newScheme = GetReactionScheme(schemeElement, newModel);
                     AddReactionScheme(newModel, newScheme);
                     newScheme.Parent = newModel;
                 }
@@ -449,32 +449,33 @@ namespace Chem4Word.Model2.Converters.CML
 
             switch (reaction.ReactionType)
             {
-                case Globals.ReactionType.Normal:
+                case ReactionType.Normal:
                     break;
 
-                case Globals.ReactionType.Reversible:
+                case ReactionType.Reversible:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueReversible));
                     break;
 
-                case Globals.ReactionType.ReversibleBiasedForward:
+                case ReactionType.ReversibleBiasedForward:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueReversible));
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionBias, CMLConstants.AttrValueBiasForward));
                     break;
 
-                case Globals.ReactionType.ReversibleBiasedReverse:
+                case ReactionType.ReversibleBiasedReverse:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueReversible));
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionBias, CMLConstants.AttrValueBiasReverse));
                     break;
 
-                case Globals.ReactionType.Blocked:
+                case ReactionType.Blocked:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueBlocked));
                     break;
 
-                case Globals.ReactionType.Resonance:
+                case ReactionType.Resonance:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueResonance));
                     break;
             }
 
+            //do the reagents and conditions
             if (!string.IsNullOrEmpty(reaction.ReagentText) && !XAMLHelper.IsEmptyDocument(reaction.ReagentText))
             {
                 var reagentText = new XElement(CMLNamespaces.c4w + CMLConstants.TagReagentText);
@@ -491,8 +492,34 @@ namespace Chem4Word.Model2.Converters.CML
                 conditionsText.Add(conditionsTextElement);
                 reactionElement.Add(conditionsText);
             }
+
+            //do the reactants and products
+            if(reaction.Reactants.Any())
+            {
+                var reactantListElement = new XElement(CMLNamespaces.cml + CMLConstants.TagReactantList);
+                foreach(var reactant in reaction.Reactants.Values)
+                {
+                    XElement reactantElement = new XElement(CMLNamespaces.cml + CMLConstants.TagReactant, new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeRef, reactant.Id));
+                    reactantListElement.Add(reactantElement);
+                }
+                reactionElement.Add(reactantListElement);
+            }
+
+            if(reaction.Products.Any())
+            {
+                 var productListElement = new XElement(CMLNamespaces.cml + CMLConstants.TagProductList);
+                foreach(var product in reaction.Products.Values)
+                {
+                    XElement productElement = new XElement(CMLNamespaces.cml + CMLConstants.TagProduct, new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeRef, product.Id));
+                    productListElement.Add(productElement);
+                }
+                reactionElement.Add(productListElement);
+            }
+                
             return reactionElement;
         }
+
+
 
         private XElement GetXElement(Atom atom)
         {
@@ -855,7 +882,7 @@ namespace Chem4Word.Model2.Converters.CML
             return bond;
         }
 
-        private static ReactionScheme GetReactionScheme(XElement cmlElement)
+        private static ReactionScheme GetReactionScheme(XElement cmlElement, Model newModel)
         {
             var scheme = new ReactionScheme();
             string idValue = cmlElement.Attribute(CMLConstants.AttributeId)?.Value;
@@ -866,14 +893,14 @@ namespace Chem4Word.Model2.Converters.CML
             List<XElement> reactionElements = CMLHelper.GetReactions(cmlElement);
             foreach (XElement reactionElement in reactionElements)
             {
-                Reaction newReaction = GetReaction(reactionElement);
+                Reaction newReaction = GetReaction(reactionElement, newModel);
                 scheme.AddReaction(newReaction);
                 newReaction.Parent = scheme;
             }
             return scheme;
         }
 
-        private static Reaction GetReaction(XElement cmlElement)
+        private static Reaction GetReaction(XElement cmlElement, Model model)
         {
             var reaction = new Reaction();
             string idValue = cmlElement.Attribute(CMLConstants.AttributeId)?.Value;
@@ -896,40 +923,41 @@ namespace Chem4Word.Model2.Converters.CML
 
             string reactionTypeValue = cmlElement.Attribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType)?.Value;
 
-            reaction.ReactionType = Globals.ReactionType.Normal;
+            reaction.ReactionType = ReactionType.Normal;
 
             if (!string.IsNullOrEmpty(reactionTypeValue))
             {
                 switch (reactionTypeValue)
                 {
                     case CMLConstants.AttrValueBlocked:
-                        reaction.ReactionType = Globals.ReactionType.Blocked;
+                        reaction.ReactionType = ReactionType.Blocked;
                         break;
 
                     case CMLConstants.AttrValueReversible:
-                        reaction.ReactionType = Globals.ReactionType.Reversible;
+                        reaction.ReactionType = ReactionType.Reversible;
                         {
                             string bias = cmlElement.Attribute(CMLNamespaces.cml + CMLConstants.AttributeReactionBias)?.Value;
                             if (!string.IsNullOrEmpty(bias))
                             {
                                 if (bias == CMLConstants.AttrValueBiasForward)
                                 {
-                                    reaction.ReactionType = Globals.ReactionType.ReversibleBiasedForward;
+                                    reaction.ReactionType = ReactionType.ReversibleBiasedForward;
                                 }
                                 else if (bias == CMLConstants.AttrValueBiasReverse)
                                 {
-                                    reaction.ReactionType = Globals.ReactionType.ReversibleBiasedReverse;
+                                    reaction.ReactionType = ReactionType.ReversibleBiasedReverse;
                                 }
                             }
                         }
                         break;
 
                     case CMLConstants.AttrValueResonance:
-                        reaction.ReactionType = Globals.ReactionType.Resonance;
+                        reaction.ReactionType = ReactionType.Resonance;
                         break;
                 }
             }
 
+            //text boxes that go above and below the arrow
             XElement reagentElement = cmlElement.Element(CMLNamespaces.c4w + CMLConstants.TagReagentText);
             var reagentText = reagentElement?.ToString();
             if (!string.IsNullOrEmpty(reagentText))
@@ -943,8 +971,54 @@ namespace Chem4Word.Model2.Converters.CML
             {
                 reaction.ConditionsText = conditionsElement.CreateNavigator().InnerXml;
             }
+
+            //reactants and products
+            XElement reactantListElement = cmlElement.Element(CMLNamespaces.cml + CMLConstants.TagReactantList);
+            if (reactantListElement != null)
+            {
+                foreach (var reactantElement in reactantListElement.Elements(CMLNamespaces.cml + CMLConstants.TagReactant))
+                {
+                    if (reactantElement.Attribute(CMLNamespaces.cml + CMLConstants.AttributeRef) != null)
+                    {
+                        Molecule reactant = GetParticipant(reactantElement, model);
+                        if(reactant!=null)
+                        {
+                            reaction.AddReactant(reactant);
+                        }
+
+                    }
+                }
+            }
+            XElement productListElement = cmlElement.Element(CMLNamespaces.cml + CMLConstants.TagProductList);
+            if (productListElement != null)
+            {
+                foreach (var productElement in productListElement.Elements(CMLNamespaces.cml + CMLConstants.TagProduct))
+                {
+                    if (productElement.Attribute(CMLNamespaces.cml + CMLConstants.AttributeRef) != null)
+                    {
+                        Molecule product = GetParticipant(productElement, model);
+                        if(product!=null)
+                        {
+                            reaction.AddProduct(product);
+                        }
+                    }
+                }
+            }
             return reaction;
         }
+        
+        private static Molecule GetParticipant(XElement participant, Model model)
+        {
+            foreach(var molecule in model.Molecules.Values)
+            {
+                if(molecule.Id==participant.Attribute(CMLNamespaces.cml + CMLConstants.AttributeRef).Value)
+                {
+                    return molecule;
+                }
+            }
+            return null;
+        }
+
 
         // <cml:formula id="m1.f1" convention="chemspider:Smiles" inline="m1.f1" concise="C 6 H 14 Li 1 N 1" />
         // <cml:formula id="m1.f0" concise="C 6 H 14 Li 1 N 1" />

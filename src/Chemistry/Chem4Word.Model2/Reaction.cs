@@ -203,9 +203,8 @@ namespace Chem4Word.Model2
             }
         }
 
-        public Reaction Copy()
+        public Reaction Copy(Model modelCopy=null)
         {
-            //TODO: Copy reactants and products
             Reaction newReaction = new Reaction();
             newReaction.ConditionsText = ConditionsText;
             newReaction.HeadPoint = HeadPoint;
@@ -213,6 +212,37 @@ namespace Chem4Word.Model2
             newReaction.ReactionType = ReactionType;
             newReaction.ReagentText = ReagentText;
             newReaction.TailPoint = TailPoint;
+
+            if(modelCopy != null)
+            {
+                if(Reactants.Count>0)
+                {
+                    foreach(var reactant in Reactants.Values)
+                    {
+                        foreach(Molecule molCopy in modelCopy.Molecules.Values)
+                        {
+                            if (molCopy.Id == reactant.Id)
+                            {
+                                newReaction.AddReactant(molCopy);
+                            }
+                        }
+                    }
+                }
+
+                if(Products.Count>0)
+                {
+                    foreach(var product in Products.Values)
+                    {
+                        foreach(Molecule molCopy in modelCopy.Molecules.Values)
+                        {
+                            if (molCopy.Id == product.Id)
+                            {
+                                newReaction.AddProduct(molCopy);
+                            }
+                        }
+                    }
+                }
+            }
             return newReaction;
         }
 
@@ -264,6 +294,26 @@ namespace Chem4Word.Model2
         public void UpdateVisual()
         {
            OnPropertyChanged(nameof(ReactionType));
+        }
+
+        public void ClearReactants()
+        {
+            Molecule[] reacts=new Molecule[_reactants.Values.Count];
+            _reactants.Values.CopyTo(reacts, 0);
+            foreach(var reactant in reacts)
+            {
+                RemoveReactant(reactant);
+            }
+        }
+
+        public void ClearProducts()
+        {
+            Molecule[] prods=new Molecule[_products.Values.Count];
+            _products.Values.CopyTo(prods, 0);
+            foreach(var product in prods)
+            {
+                RemoveProduct(product);
+            }
         }
 
         #endregion Methods

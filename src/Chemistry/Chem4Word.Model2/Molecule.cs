@@ -458,6 +458,59 @@ namespace Chem4Word.Model2
 
         #endregion Chemical properties
 
+        #region Reaction Properties
+        private SubstanceRole? _substanceRole;
+        public SubstanceRole? SubstanceRole
+        {
+            get 
+                {
+                return _substanceRole; 
+                }
+            set
+            {
+                if (_substanceRole != value)
+                {
+                    _substanceRole = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string _dictRef;
+        public string DictRef
+        {
+            get 
+                {
+                return _dictRef; 
+                }
+            set
+            {
+                if (_dictRef != value)
+                {
+                    _dictRef = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string _title;
+        public string Title
+        {
+            get 
+                {
+                return _title; 
+                }
+            set
+            {
+                if (_title != value)
+                {
+                    _title = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #endregion Properties
 
         #region Constructor

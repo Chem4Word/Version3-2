@@ -139,6 +139,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             rotateThumb.DragStarted += RotateStarted;
             rotateThumb.DragDelta += RotateThumb_DragDelta;
             rotateThumb.DragCompleted += HandleResizeCompleted;
+            rotateThumb.ToolTip = "Drag this to rotate molecule";
 
             VisualChildren.Add(rotateThumb);
         }
@@ -210,6 +211,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             }
 
             cornerThumb = new DragHandle(cursor: customizedCursor);
+            cornerThumb.ToolTip = "Drag this to resize";
             SetThumbStyle(cornerThumb);
             VisualChildren.Add(cornerThumb);
         }

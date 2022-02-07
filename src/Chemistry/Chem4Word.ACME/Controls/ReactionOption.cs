@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System.Windows;
-using Chem4Word.Model2.Helpers;
+using Chem4Word.Model2;
 
 namespace Chem4Word.ACME
 {
@@ -27,15 +27,15 @@ namespace Chem4Word.ACME
         public static readonly DependencyProperty IdProperty =
             DependencyProperty.Register("Id", typeof(int), typeof(ReactionOption), new PropertyMetadata(default(int)));
 
-        public Globals.ReactionType ReactionType
+        public ReactionType ReactionType
         {
-            get { return (Globals.ReactionType)GetValue(TypeProperty); }
+            get { return (ReactionType)GetValue(TypeProperty); }
             set { SetValue(TypeProperty, value); }
         }
 
         public static readonly DependencyProperty TypeProperty =
-            DependencyProperty.Register("Type", typeof(Globals.ReactionType), typeof(ReactionOption),
-                                        new PropertyMetadata(Globals.ReactionType.Normal));
+            DependencyProperty.Register("Type", typeof(ReactionType), typeof(ReactionOption),
+                                        new PropertyMetadata(ReactionType.Normal));
 
         public System.Windows.Media.Drawing ReactionGraphic
         {
@@ -57,25 +57,25 @@ namespace Chem4Word.ACME
             {
                 switch (ReactionType)
                 {
-                    case Globals.ReactionType.Normal:
+                    case ReactionType.Normal:
                         {
                             return "Normal reaction";
                         }
 
-                    case Globals.ReactionType.Reversible:
+                    case ReactionType.Reversible:
                         {
                             return "Equilibrium Reaction";
                         }
 
-                    case Globals.ReactionType.ReversibleBiasedForward:
+                    case ReactionType.ReversibleBiasedForward:
                         {
                             return "Forward-biased equilibrium";
                         }
-                    case Globals.ReactionType.ReversibleBiasedReverse:
+                    case ReactionType.ReversibleBiasedReverse:
                         {
                             return "Reverse-biasedequilibrium";
                         }
-                    case Globals.ReactionType.Blocked:
+                    case ReactionType.Blocked:
                         {
                             return "Blocked reaction";
                         }

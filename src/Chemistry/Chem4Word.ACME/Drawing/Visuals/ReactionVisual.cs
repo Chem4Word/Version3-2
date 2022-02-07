@@ -96,28 +96,28 @@ namespace Chem4Word.ACME.Drawing.Visuals
             }
         }
 
-        public void RenderFullGeometry(Globals.ReactionType reactionType, Point tailPoint, Point headPoint, DrawingContext dc, string reagentText, string conditionsText, Pen outlinePen, Brush fill)
+        public void RenderFullGeometry(ReactionType reactionType, Point tailPoint, Point headPoint, DrawingContext dc, string reagentText, string conditionsText, Pen outlinePen, Brush fill)
         {
             Arrow arrow;
             switch (reactionType)
             {
-                case Globals.ReactionType.Reversible:
+                case ReactionType.Reversible:
                     arrow = new EquilibriumArrow { StartPoint = tailPoint, EndPoint = headPoint };
                     break;
 
-                case Globals.ReactionType.ReversibleBiasedForward:
+                case ReactionType.ReversibleBiasedForward:
                     arrow = new EquilibriumArrow { StartPoint = tailPoint, EndPoint = headPoint, Bias = EquilibriumBias.Forward };
                     break;
 
-                case Globals.ReactionType.ReversibleBiasedReverse:
+                case ReactionType.ReversibleBiasedReverse:
                     arrow = new EquilibriumArrow { StartPoint = tailPoint, EndPoint = headPoint, Bias = EquilibriumBias.Backward };
                     break;
 
-                case Globals.ReactionType.Blocked:
+                case ReactionType.Blocked:
                     arrow = new BlockedArrow { StartPoint = tailPoint, EndPoint = headPoint };
                     break;
 
-                case Globals.ReactionType.Resonance:
+                case ReactionType.Resonance:
                     arrow = new StraightArrow { StartPoint = tailPoint, EndPoint = headPoint, ArrowEnds = Enums.ArrowEnds.Both };
                     break;
 

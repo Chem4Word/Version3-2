@@ -144,9 +144,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 {
                     switch (reaction.ReactionType)
                     {
-                        case Globals.ReactionType.Normal:
-                        case Globals.ReactionType.Blocked:
-                        case Globals.ReactionType.Resonance:
+                        case ReactionType.Normal:
+                        case ReactionType.Blocked:
+                        case ReactionType.Resonance:
                             DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
                             break;
 
@@ -163,15 +163,15 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                             switch (reaction.ReactionType)
                             {
-                                case Globals.ReactionType.ReversibleBiasedReverse:
+                                case ReactionType.ReversibleBiasedReverse:
                                     CoordinateTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
                                     break;
 
-                                case Globals.ReactionType.ReversibleBiasedForward:
+                                case ReactionType.ReversibleBiasedForward:
                                     CoordinateTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
                                     break;
 
-                                case Globals.ReactionType.Reversible:
+                                case ReactionType.Reversible:
                                     break;
                             }
 
@@ -1516,7 +1516,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             _wordprocessingGroup.Append(wordprocessingShape);
         }
 
-        private void DrawReactionArrow(Point lineStart, Point lineEnd, string reactionPath, Globals.ReactionType reactionType, string lineColour, double lineWidth)
+        private void DrawReactionArrow(Point lineStart, Point lineEnd, string reactionPath, ReactionType reactionType, string lineColour, double lineWidth)
         {
             var tuple = OffsetPoints(lineStart, lineEnd);
             var cmlStartPoint = tuple.Start;
@@ -1569,7 +1569,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                           };
             outline.Append(headEnd);
 
-            if (reactionType == Globals.ReactionType.Resonance)
+            if (reactionType == ReactionType.Resonance)
             {
                 var tailEnd = new A.TailEnd
                               {
@@ -1581,7 +1581,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             // Add the cross if required
-            if (reactionType == Globals.ReactionType.Blocked)
+            if (reactionType == ReactionType.Blocked)
             {
                 var shaftVector = cmlEndPoint - cmlStartPoint;
                 var midpoint = cmlStartPoint + shaftVector * 0.5;

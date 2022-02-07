@@ -114,6 +114,8 @@
     <Compile Include="Commands\Layout\Alignment\AlignRightsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignTopsCommand.cs" />
     <Compile Include="Commands\Editing\PickElementCommand.cs" />
+    <Compile Include="Commands\Reactions\AssignReactionRolesCommand.cs" />
+    <Compile Include="Commands\Reactions\ClearReactionRolesCommand.cs" />
     <Compile Include="Commands\Reactions\EditAnnotationCommand.cs" />
     <Compile Include="Commands\Reactions\EditConditionsCommand.cs" />
     <Compile Include="Commands\Reactions\EditReagentsCommand.cs" />

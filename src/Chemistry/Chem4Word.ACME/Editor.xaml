@@ -25,12 +25,12 @@
             </ResourceDictionary.MergedDictionaries>
             <Style x:Key="MainTextStyle" TargetType="{x:Type TextBlock}">
                 <Setter Property="FontSize" Value="7" />
-                <Setter Property="FontFamily" Value="Calibri" />
+                <Setter Property="FontFamily" Value="Arial" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
             </Style>
             <Style x:Key="SubscriptStyle" TargetType="{x:Type Run}">
                 <Setter Property="FontSize" Value="3.5" />
-                <Setter Property="FontFamily" Value="Calibri" />
+                <Setter Property="FontFamily" Value="Arial" />
                 <Setter Property="BaselineAlignment" Value="Subscript" />
             </Style>
             <converters:DoNothingConverter x:Key="DoNothing" />
@@ -799,6 +799,7 @@
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Padding="0,0,0,2"
+                                FontFamily="Arial"
                                 Style="{StaticResource MainTextStyle}">
                                 NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
                             </TextBlock>
@@ -842,7 +843,7 @@
                         <behaviors:DeleteBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
-                
+
                 <Separator Margin="5" />
 
                 <Button
@@ -1106,6 +1107,7 @@
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
+                                FontFamily="Arial"
                                 Padding="0,0,0,1"
                                 Style="{StaticResource MainTextStyle}" HorizontalAlignment="Right">
                                 NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
@@ -1145,6 +1147,7 @@
                             <TextBlock
                                 Grid.Row="2"
                                 Grid.Column="1"
+                                FontFamily="Arial"
                                 Style="{StaticResource MainTextStyle}">
                                 H<Run Style="{StaticResource SubscriptStyle}">2</Run>O
                             </TextBlock>
@@ -1168,7 +1171,7 @@
                     Style="{StaticResource ToolbarButtonStyle}"
                     HorizontalContentAlignment="Center"
                     ToolTip="Draw Plus Sign">
-                    <Viewbox >
+                    <Viewbox>
                         <Grid>
                             <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
                                 <Rectangle Name="Rect" Visibility="Visible" />
@@ -1185,11 +1188,39 @@
                             </Path>
                         </Grid>
                     </Viewbox>
-                     <RadioButton.Tag>
+                    <RadioButton.Tag>
                         <behaviors:AnnotationBehavior DefaultText="+" StatusText="Click to insert a + sign" IsEditable="False"
                             EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
                     </RadioButton.Tag>
                 </RadioButton>
+                <Button x:Name="AssignRolesButton"
+                        Style="{StaticResource CommandButtonStyle}"
+                        ToolTip="Assign Reaction Roles"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AssignReactionRolesCommand}"
+                        Padding="1">
+                    <Viewbox Height="24" Width="24" Stretch="Uniform" Margin="1">
+                        <Canvas  Height="24" Width="24">
+                            <Ellipse Canvas.Top="0" Canvas.Left="0" Width="8" Height="8" Fill="DarkBlue" Stroke="DarkBlue" />
+                            <graphics:StraightArrow  StartPoint="8,8" EndPoint="16,16" Fill="Black" Stroke="Black" HeadLength="4" HeadAngle="45" ArrowHeadClosed="False" />
+                            <Ellipse Canvas.Left="16" Width="8" Canvas.Top="16"  Height="8" StrokeThickness="1.5" Stroke="DarkRed" Fill="DarkRed" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
+                <Button x:Name="ClearRolesButton"
+                        Style="{StaticResource CommandButtonStyle}"
+                        ToolTip="Clear Reaction Roles"
+                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.ClearReactionRolesCommand}"
+                        Padding="1">
+                    <Viewbox Height="24" Width="24" Stretch="Uniform" Margin="1">
+                        <Canvas  Height="24" Width="24">
+                            <Ellipse Canvas.Top="0" Canvas.Left="0" Width="8" Height="8" Fill="DarkBlue" Stroke="DarkBlue" />
+                            <graphics:StraightArrow  StartPoint="8,8" EndPoint="16,16" Fill="Black" Stroke="Black" HeadLength="4" HeadAngle="45" ArrowHeadClosed="False" />
+                            <Ellipse Canvas.Left="16" Width="8" Canvas.Top="16"  Height="8" StrokeThickness="1.5" Stroke="DarkRed" Fill="DarkRed" />
+
+                            <Line X1="1" Y1="24" X2="24" Y2="0"  StrokeThickness="2" Stroke="Red" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
             </ToolBar>
             <ToolBar
                 x:Name="AlignToolbar"
@@ -1405,7 +1436,7 @@
                     <Button.Content>Δ</Button.Content>
                     <Button.Tag>Δ</Button.Tag>
                 </Button>
-                 <Button
+                <Button
                     Name="SymbolDropdown"
                     Width="10"
                     Click="SymbolDropdown_Click"
@@ -1437,13 +1468,13 @@
                             <Button Name="AlphaButton" ToolTip="alpha" Tag="α">
                                 <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >α</TextBlock>
                             </Button>
-                             <Button Name="BetaButton" ToolTip="beta" Tag="β">
+                            <Button Name="BetaButton" ToolTip="beta" Tag="β">
                                 <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >β</TextBlock>
                             </Button>
                             <Button Name="GammaButton" ToolTip="gamma" Tag="γ">
                                 <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >γ</TextBlock>
                             </Button>
-                             <Button Name="MuButton" ToolTip="mu" Tag="μ">
+                            <Button Name="MuButton" ToolTip="mu" Tag="μ">
                                 <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >μ</TextBlock>
                             </Button>
                             <Button Name="NuButton" ToolTip="Degree" Tag="°">
@@ -1489,8 +1520,7 @@
                                                   FontSize="{Binding BlockTextSize}"
                                                   FontWeight="Normal"
                                               Language="en-GB" xml:lang="en-GB"
-                                              Background="{x:Static SystemColors.WindowBrush}"
-                                              >
+                                              Background="{x:Static SystemColors.WindowBrush}">
                         <control:AnnotationEditor.BorderBrush>
                             <SolidColorBrush Color="DarkOrange" Opacity="50" />
                         </control:AnnotationEditor.BorderBrush>

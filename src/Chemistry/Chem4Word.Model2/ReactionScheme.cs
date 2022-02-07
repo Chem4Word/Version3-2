@@ -125,12 +125,12 @@ namespace Chem4Word.Model2
 
         private void Reaction_ProductsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            throw new System.NotImplementedException();
+            //don't do anything for now
         }
 
         private void Reaction_ReactantsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            throw new System.NotImplementedException();
+            //don't do anything for now
         }
 
         public void ReLabel(ref int schemeCount, ref int reactionCount)
@@ -143,13 +143,13 @@ namespace Chem4Word.Model2
             }
         }
 
-        public ReactionScheme Copy()
+        public ReactionScheme Copy(Model modelCopy=null)
         {
             ReactionScheme copy = new ReactionScheme();
 
             foreach (var reaction in Reactions.Values)
             {
-                Reaction r = reaction.Copy();
+                Reaction r = reaction.Copy(modelCopy);
                 copy.AddReaction(r);
                 r.Parent = copy;
             }

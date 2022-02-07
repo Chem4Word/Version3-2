@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -36,6 +37,9 @@ namespace Chem4Word.ACME.Adorners.Selectors
         private const string DefaultStatus = "Drag a handle to resize; drag shaft to reposition.";
         private const string EditReagentsStatus = "Double-click box to edit reagents.";
         private const string EditConditionsStatus = "Double-click box to edit conditions";
+
+        private const double MolPadding = 20d;
+        private const double indicatorOffset = 1.25;
 
         private Point OriginalLocation { get; set; }
         private Point CurrentLocation { get; set; }
@@ -244,6 +248,15 @@ namespace Chem4Word.ACME.Adorners.Selectors
             {
                 BuildHandle(drawingContext, HeadHandle, newHeadPoint, handleFillBrush, handleBorderPen);
                 BuildHandle(drawingContext, TailHandle, newTailPoint, handleFillBrush, handleBorderPen);
+
+                foreach (var reactant in AdornedReaction.Reactants.Values)
+                {
+                    BuildRoleIndicator(drawingContext, reactant, false);
+                }
+                foreach (var product in AdornedReaction.Products.Values)
+                {
+                    BuildRoleIndicator(drawingContext, product, true);
+                }
             }
 
             Arrow arrowVisual = GetArrowShape(newTailPoint, newHeadPoint, AdornedReaction);
@@ -259,6 +272,72 @@ namespace Chem4Word.ACME.Adorners.Selectors
             {
                 DrawConditionsBlockOutline(drawingContext);
             }
+        }
+
+        private void BuildRoleIndicator(DrawingContext drawingContext, Molecule mol, bool isProduct)
+        {
+            Brush productBrush = (Brush)FindResource("ProductIndicatorBrush");
+            Brush reactantBrush = (Brush)FindResource("ReactantIndicatorBrush");
+            Brush arrowBrush = (Brush)FindResource("ArrowIndicatorBrush");
+            //first draw the corner bracket
+            Rect boundingBox = mol.BoundingBox;
+
+            if(mol.IsGrouped) //it's a group
+            { 
+                var inflateFactor = mol.Model.XamlBondLength * Globals.GroupInflateFactor;
+                boundingBox = mol.BoundingBox;
+                boundingBox.Inflate(new Size(3*inflateFactor, 3*inflateFactor));
+                }
+            else
+            { 
+               boundingBox.Inflate(new Size(MolPadding, MolPadding));
+            }
+
+            Point topRight;
+            topRight= boundingBox.TopRight;
+            var bondLength = CurrentEditor.Controller.Model.XamlBondLength;
+            var linelength = bondLength / 2;
+
+            Pen handleBorderPen = (Pen)FindResource(Globals.AdornerBorderPen);
+            handleBorderPen.Thickness = linelength / 10;
+
+            Vector goLeft = new Vector(-linelength, 0);
+            Vector goRight = -goLeft;
+            Vector goDown = new Vector(0, linelength);
+            Vector goUp = -goDown;
+
+            drawingContext.DrawLine(handleBorderPen, topRight + goLeft, topRight);
+            drawingContext.DrawLine(handleBorderPen, topRight, topRight + goDown);
+
+            //now draw the role circles
+            Brush reactantFill = null;
+            Brush productFill = null;
+            if (isProduct)
+            {
+                productFill = productBrush;
+            }
+            else
+            {
+                reactantFill = reactantBrush;
+            }
+
+            double radius = linelength / 4;
+
+            Point reactantCenter = topRight + goUp * indicatorOffset;
+            Point productCenter = topRight + goRight * indicatorOffset;
+
+            drawingContext.DrawEllipse(reactantFill, new Pen(reactantBrush, linelength / 15), reactantCenter, radius, radius);
+
+            drawingContext.DrawEllipse(productFill, new Pen(productBrush, linelength / 15), productCenter, radius, radius);
+
+            //now draw the arrow
+            Vector arrowVector = productCenter - reactantCenter;
+            arrowVector.Normalize();
+            arrowVector *= radius * 1.5;
+            Point arrowStart = reactantCenter + arrowVector;
+            Point arrowEnd = productCenter - arrowVector;
+            Arrow arrowVisual = new StraightArrow { StartPoint = arrowStart, EndPoint = arrowEnd, HeadLength = radius * 1.6 };
+            arrowVisual.DrawArrowGeometry(drawingContext, new Pen(arrowBrush, linelength / 15), arrowBrush);
         }
 
         /// <summary>
@@ -314,23 +393,23 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Arrow arrowVisual;
             switch (adornedReaction.ReactionType)
             {
-                case Globals.ReactionType.Reversible:
+                case ReactionType.Reversible:
                     arrowVisual = new EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
 
-                case Globals.ReactionType.ReversibleBiasedForward:
+                case ReactionType.ReversibleBiasedForward:
                     arrowVisual = new EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Forward };
                     break;
 
-                case Globals.ReactionType.ReversibleBiasedReverse:
+                case ReactionType.ReversibleBiasedReverse:
                     arrowVisual = new EquilibriumArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, Bias = Graphics.EquilibriumBias.Backward };
                     break;
 
-                case Globals.ReactionType.Blocked:
+                case ReactionType.Blocked:
                     arrowVisual = new BlockedArrow { StartPoint = newStartPoint, EndPoint = newEndPoint };
                     break;
 
-                case Globals.ReactionType.Resonance:
+                case ReactionType.Resonance:
                     arrowVisual = new StraightArrow { StartPoint = newStartPoint, EndPoint = newEndPoint, ArrowEnds = Enums.ArrowEnds.Both };
                     break;
 

@@ -115,8 +115,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reaction.cs" />
     <Compile Include="ReactionScheme.cs" />
+    <Compile Include="ReactionType.cs" />
     <Compile Include="Ring.cs" />
     <Compile Include="MoleculePropertyBag.cs" />
+    <Compile Include="SubstanceRole.cs" />
     <Compile Include="TextualProperty.cs" />
   </ItemGroup>
   <ItemGroup>

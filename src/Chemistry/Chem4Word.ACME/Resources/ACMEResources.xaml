@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics">
+    xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
+    xmlns:selectors="clr-namespace:Chem4Word.ACME.Adorners.Selectors">
 
     <!--  Simple shapes for use in menus, buttons etc  -->
     <ResourceDictionary.MergedDictionaries>
@@ -15,7 +16,7 @@
     <SolidColorBrush x:Key="PinkLace" Color="#FFDDF4" />
     <SolidColorBrush x:Key="ACMEToolbarBackground" Color="#F1F1F1" />
     <SolidColorBrush x:Key="DiagnosticOverlay" Color="PaleGreen" Opacity="0.5"/>
-    
+
     <Style x:Key="WedgeBondStyle" TargetType="Path">
         <Setter Property="Fill" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
         <Setter Property="Height" Value="14" />
@@ -33,7 +34,11 @@
         <GradientStop Offset="0.1" Color="Transparent" />
         <GradientStop Offset="0.2" Color="Transparent" />
     </LinearGradientBrush>
-
+    
+    <!-- Reaction handling brushes-->
+    <SolidColorBrush x:Key="ReactantIndicatorBrush" Color="DarkBlue" Opacity="0.5"/>
+    <SolidColorBrush x:Key="ProductIndicatorBrush" Color="DarkRed" Opacity="0.5"/>
+    <SolidColorBrush x:Key="ArrowIndicatorBrush" Color="Black" Opacity="0.5"/>
     <Style
         x:Key="HatchBondStyle"
         BasedOn="{StaticResource WedgeBondStyle}"
@@ -381,6 +386,7 @@
         </Setter>
     </Style>
 
+    
     <!--  control styles  -->
     <Style TargetType="ToolBar">
 

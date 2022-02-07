@@ -936,7 +936,7 @@ namespace Chem4Word.Model2
             
             foreach (var rs in ReactionSchemes.Values)
             {
-                ReactionScheme schemeCopy = rs.Copy();
+                ReactionScheme schemeCopy = rs.Copy(modelCopy);
                 modelCopy.AddReactionScheme(schemeCopy);
                 schemeCopy.Parent = modelCopy;
             }

@@ -5,6 +5,24 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Chem4Word.ACME.Adorners.Selectors;
 using Chem4Word.ACME.Behaviors;
 using Chem4Word.ACME.Commands;
@@ -27,24 +45,6 @@ using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using static Chem4Word.Model2.Helpers.Globals;
 using Constants = Chem4Word.ACME.Resources.Constants;
 
@@ -584,6 +584,9 @@ namespace Chem4Word.ACME
         public EditReagentsCommand EditReagentsCommand { get; set; }
         public EditConditionsCommand EditConditionsCommand { get; set; }
 
+        public AssignReactionRolesCommand AssignReactionRolesCommand { get; set; }
+        public ClearReactionRolesCommand ClearReactionRolesCommand { get; set; }
+
         #endregion Commands
 
         #region Constructors
@@ -679,6 +682,8 @@ namespace Chem4Word.ACME
 
             EditConditionsCommand = new EditConditionsCommand(this);
             EditReagentsCommand = new EditReagentsCommand(this);
+            AssignReactionRolesCommand = new AssignReactionRolesCommand(this);
+            ClearReactionRolesCommand = new ClearReactionRolesCommand(this);
         }
 
         private void ClipboardMonitor_OnClipboardContentChanged(object sender, EventArgs e)
@@ -1197,10 +1202,10 @@ namespace Chem4Word.ACME
                                       WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
                                       moleculesToTransform[i].Transform(operation);
                                   }
-                                  
+
                                   WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
                                   WriteTelemetry(module, "Debug", $"Annotations: {countAnnotationString} Transform: {transform}");
-                                  
+
                                   foreach (Reaction reaction in reactions)
                                   {
                                       reaction.TailPoint = operation.Transform(reaction.TailPoint);
@@ -2023,6 +2028,9 @@ namespace Chem4Word.ACME
 
             EditReagentsCommand.RaiseCanExecChanged();
             EditConditionsCommand.RaiseCanExecChanged();
+
+            AssignReactionRolesCommand.RaiseCanExecChanged();
+            ClearReactionRolesCommand.RaiseCanExecChanged();
         }
 
         public void RemoveAllAdorners()
@@ -2773,6 +2781,42 @@ namespace Chem4Word.ACME
         public bool SingleMolSelected
         {
             get { return SelectedItems.Count == 1 && SelectedItems[0] is Molecule; }
+        }
+
+        public List<Molecule> ReactantsInSelection
+        {
+            get
+            {
+                List<Molecule> reactants = new List<Molecule>();
+                var molsSelected = SelectedItems.OfType<Molecule>().ToList();
+                var reactionSelected = SelectedItems.OfType<Reaction>().ToList()[0];
+                foreach (var mol in molsSelected)
+                {
+                    if ((mol.Centroid - reactionSelected.TailPoint).Length < (mol.Centroid - reactionSelected.HeadPoint).Length)
+                    {
+                        reactants.Add(mol);
+                    }
+                }
+                return reactants;
+            }
+        }
+
+        public List<Molecule> ProductsInSelection
+        {
+            get
+            {
+                List<Molecule> products = new List<Molecule>();
+                var molsSelected = SelectedItems.OfType<Molecule>().ToList();
+                var reactionSelected = SelectedItems.OfType<Reaction>().ToList()[0];
+                foreach (var mol in molsSelected)
+                {
+                    if ((mol.Centroid - reactionSelected.HeadPoint).Length < (mol.Centroid - reactionSelected.TailPoint).Length)
+                    {
+                        products.Add(mol);
+                    }
+                }
+                return products;
+            }
         }
 
         public void FlipMolecule(Molecule selMolecule, bool flipVertically, bool flipStereo)
@@ -3933,7 +3977,7 @@ namespace Chem4Word.ACME
             PasteModel(buffer, true);
         }
 
-        public void PasteModel(Model buffer, bool fromCML= false)
+        public void PasteModel(Model buffer, bool fromCML = false)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -3943,7 +3987,7 @@ namespace Chem4Word.ACME
                 buffer.Relabel(true);
                 // above should be buffer.StripLabels(true)
                 buffer.ScaleToAverageBondLength(Model.XamlBondLength);
-                
+
                 if (!fromCML && buffer.Molecules.Count > 1)
                 {
                     Packer packer = new Packer();
@@ -3980,16 +4024,14 @@ namespace Chem4Word.ACME
                     {
                         RemoveFromSelection(reaction);
                         Model.DefaultReactionScheme.RemoveReaction(reaction);
-                        reaction.Parent =null;
+                        reaction.Parent = null;
                     }
                     foreach (var annotation in annotationList)
                     {
                         RemoveFromSelection(annotation);
-                        Model.RemoveAnnotation(annotation); 
+                        Model.RemoveAnnotation(annotation);
                         annotation.Parent = null;
                     }
-
-
                 };
                 Action redo = () =>
                 {
@@ -4336,7 +4378,7 @@ namespace Chem4Word.ACME
             {
                 selection.Add(r);
             }
-            
+
             foreach (var a in Model.Annotations.Values)
             {
                 selection.Add(a);
@@ -4880,6 +4922,107 @@ namespace Chem4Word.ACME
             };
             redo();
             UndoManager.RecordAction(undo, redo, "Adding symbol");
+            UndoManager.EndUndoBlock();
+        }
+
+        public bool FullReactionSelected()
+        {
+            if (((SelectionType & SelectionTypeCode.Molecule) == SelectionTypeCode.Molecule)
+                && ((SelectionType & SelectionTypeCode.Reaction) == SelectionTypeCode.Reaction))
+            {
+                return SelectedItems.OfType<Reaction>().ToList().Count == 1 && (ReactantsInSelection.Any() & ProductsInSelection.Any());
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Assigns roles to molecules involved in a reaction
+        /// </summary>
+        /// 
+        public void AssignReactionRoles()
+        {
+            UndoManager.BeginUndoBlock();
+            var selectedReaction = SelectedItems.OfType<Reaction>().ToList()[0];
+
+            var currentReactants = ReactantsInSelection.ToArray();
+            var currentProducts = ProductsInSelection.ToArray();
+
+            Action redo = () =>
+            {
+                selectedReaction.ClearReactants();
+                selectedReaction.ClearProducts();
+                foreach (var reactant in currentReactants)
+                {
+                    selectedReaction.AddReactant(reactant);
+                }
+
+                foreach (var product in currentProducts)
+                {
+                    selectedReaction.AddProduct(product);
+                }
+                ClearSelection();
+                AddToSelection(selectedReaction);
+            };
+
+            Action undo = () =>
+            {
+                selectedReaction.ClearReactants();
+                selectedReaction.ClearProducts();
+                foreach (var reactant in currentReactants)
+                {
+                    selectedReaction.RemoveReactant(reactant);
+                }
+
+                foreach (var product in currentProducts)
+                {
+                    selectedReaction.RemoveProduct(product);
+                }
+                ClearSelection();
+                AddToSelection(selectedReaction);
+            };
+            redo();
+            UndoManager.RecordAction(undo, redo);
+            UndoManager.EndUndoBlock();
+        }
+
+        public bool SingleReactionSelected()
+        {
+            return SelectedReactions().Count == 1 && (SelectedReactions()[0].Reactants.Any() || SelectedReactions()[0].Products.Any());
+        }
+
+        public void ClearReactionRoles()
+        {
+            UndoManager.BeginUndoBlock();
+            var selectedReaction = SelectedItems.OfType<Reaction>().ToList()[0];
+
+            var currentReactants = selectedReaction.Reactants.Values.ToArray();
+            var currentProducts = selectedReaction.Products.Values.ToArray();
+
+            Action redo = () =>
+            {
+                selectedReaction.ClearReactants();
+                selectedReaction.ClearProducts();
+
+                ClearSelection();
+                AddToSelection(selectedReaction);
+            };
+
+            Action undo = () =>
+            {
+                foreach (var reactant in currentReactants)
+                {
+                    selectedReaction.AddReactant(reactant);
+                }
+
+                foreach (var product in currentProducts)
+                {
+                    selectedReaction.AddProduct(product);
+                }
+                ClearSelection();
+                AddToSelection(selectedReaction);
+            };
+            redo();
+            UndoManager.RecordAction(undo, redo);
             UndoManager.EndUndoBlock();
         }
 
