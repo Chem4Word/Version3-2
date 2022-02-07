@@ -744,7 +744,6 @@
                                             Margin="0"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Top"
-                                            Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type Viewbox}}, Path=Background}"
                                             FontSize="16"
                                             Foreground="{StaticResource DrawBondBrush}"
                                             Text="n"
