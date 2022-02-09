@@ -433,6 +433,10 @@ namespace Chem4Word.UI.WPF
                                     }
                                     lib.EndTransaction(transaction, false);
                                 }
+                                else
+                                {
+                                    lib.EndTransaction(transaction, true);
+                                }
 
                                 ProgressBarHolder.Visibility = Visibility.Collapsed;
                                 SetButtonState(true);
