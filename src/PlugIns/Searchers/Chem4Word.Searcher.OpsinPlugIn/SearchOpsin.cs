@@ -43,6 +43,10 @@ namespace Chem4Word.Searcher.OpsinPlugIn
             if (!string.IsNullOrEmpty(SearchFor.Text))
             {
                 Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
+
+                display1.Chemistry = null;
+                display1.Clear();
+
                 Cursor = Cursors.WaitCursor;
 
                 var securityProtocol = ServicePointManager.SecurityProtocol;
@@ -64,8 +68,8 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                     }
                     else
                     {
-                        ShowFailureMessage(
-                            $"An unexpected status code of {response.StatusCode} was returned by the server");
+                        Telemetry.Write(module, "Warning", $"Status code {response.StatusCode} was returned by the server");
+                        ShowFailureMessage($"An unexpected status code {response.StatusCode} was returned by the server");
                     }
                 }
                 catch (WebException ex)
@@ -74,17 +78,22 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                     switch (webResponse.StatusCode)
                     {
                         case HttpStatusCode.NotFound:
-                            ShowFailureMessage(
-                                $"No valid representation of the name '{SearchFor.Text}' has been found");
+                            ShowFailureMessage($"No valid representation of the name '{SearchFor.Text}' has been found");
                             break;
 
                         case HttpStatusCode.RequestTimeout:
                             ShowFailureMessage("Please try again later - the service has timed out");
                             break;
+
+                        default:
+                            Telemetry.Write(module, "Warning", $"Status code: {webResponse.StatusCode}  was returned by the server");
+                            break;
                     }
                 }
                 catch (Exception ex)
                 {
+                    Telemetry.Write(module, "Exception", ex.Message);
+                    Telemetry.Write(module, "Exception", ex.StackTrace);
                     ShowFailureMessage($"An unexpected error has occurred: {ex.Message}");
                 }
                 finally
@@ -114,11 +123,16 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                     string temp = sr.ReadToEnd();
 
                     CMLConverter cmlConverter = new CMLConverter();
-                    Model model = cmlConverter.Import(temp);
+                    var model = cmlConverter.Import(temp);
+                    if (model.MeanBondLength < Core.Helpers.Constants.MinimumBondLength - Core.Helpers.Constants.BondLengthTolerance
+                        || model.MeanBondLength > Core.Helpers.Constants.MaximumBondLength + Core.Helpers.Constants.BondLengthTolerance)
+                    {
+                        model.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
+                    }
+
                     Cml = cmlConverter.Export(model);
 
-                    model.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
-                    display1.Chemistry = model;
+                    display1.Chemistry = Cml;
                     ImportButton.Enabled = true;
                 }
             }
