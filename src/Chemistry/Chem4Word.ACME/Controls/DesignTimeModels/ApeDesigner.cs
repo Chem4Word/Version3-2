@@ -21,7 +21,28 @@ namespace Chem4Word.ACME.Controls.DesignTimeModels
         public bool IsElement { get; set; }
 
         public bool IsFunctionalGroup { get; set; }
-        public ElementBase Element { get; set; }
+
+        public Element SelectedElement { get; set; }
+
+        private ElementBase _element;
+
+        public ElementBase Element
+        {
+            get => _element;
+            set
+            {
+                if (value is Element element)
+                {
+                    SelectedElement = element;
+                }
+                else
+                {
+                    SelectedElement = null;
+                }
+                _element = value;
+            }
+        }
+
         public int? Charge { get; set; }
         public string Isotope { get; set; }
 

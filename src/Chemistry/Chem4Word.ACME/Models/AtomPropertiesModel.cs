@@ -53,11 +53,20 @@ namespace Chem4Word.ACME.Models
             get { return IsotopeMasses.Count > 1; }
         }
 
+        public Element SelectedElement { get; private set; }
         public ElementBase Element
         {
             get => _element;
             set
             {
+                if (value is Element element)
+                {
+                    SelectedElement = element;
+                }
+                else
+                {
+                    SelectedElement = null;
+                }
                 _element = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsotopeMasses));

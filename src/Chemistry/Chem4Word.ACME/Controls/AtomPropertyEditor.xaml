@@ -203,7 +203,7 @@
                                     <local:VisualPeriodicTable
                                         x:Name="AtomTable"
                                         ElementSelected="AtomTable_OnElementSelected"
-                                        SelectedElement="{Binding Element}" />
+                                        SelectedElement="{Binding SelectedElement}" />
                                 </Expander>
                                 <CheckBox
                                     x:Name="ExplicitCheckBox"
