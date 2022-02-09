@@ -194,6 +194,8 @@ namespace Chem4Word
             Ribbon = ribbon;
         }
 
+        private ReferenceKeeper _keeper;
+
         private void C4WAddIn_Startup(object sender, EventArgs e)
         {
             string module = $"{MethodBase.GetCurrentMethod().Name}()";
@@ -213,6 +215,8 @@ namespace Chem4Word
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
+
+                    _keeper = new ReferenceKeeper();
 
                     CheckIfWordIsActivated();
                     PerformStartUpActions();

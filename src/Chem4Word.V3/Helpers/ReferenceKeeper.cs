@@ -14,6 +14,11 @@ namespace Chem4Word.Helpers
     /// </summary>
     public class ReferenceKeeper
     {
-        public QueueClient Client { get; set; }
+        private QueueClient queueClient { get; }
+
+        public ReferenceKeeper()
+        {
+            // Nothing to do here ...
+        }
     }
 }
