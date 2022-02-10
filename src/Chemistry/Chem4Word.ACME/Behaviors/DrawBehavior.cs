@@ -5,18 +5,17 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.ACME.Behaviors
@@ -26,7 +25,6 @@ namespace Chem4Word.ACME.Behaviors
     /// </summary>
     public class DrawBehavior : BaseEditBehavior
     {
-
         private AtomVisual _currentAtomVisual;
         private bool IsDrawing { get; set; }
 
@@ -143,37 +141,43 @@ namespace Chem4Word.ACME.Behaviors
             }
             else
             {
-                if (targetedVisual is ReactionVisual) //can't draw on a group
+                if (targetedVisual != null)
                 {
-                    CurrentStatus = "Can't draw over an existing reaction.";
-                    CurrentEditor.Cursor = Cursors.No;
+                    switch (targetedVisual)
+                    {
+                        case ReactionVisual _:
+                            CurrentStatus = "Can't draw over an existing reaction.";
+                            CurrentEditor.Cursor = Cursors.No;
+                            break;
+                        case GroupVisual _:
+                            CurrentStatus = "Ungroup before attempting to draw.";
+                            CurrentEditor.Cursor = Cursors.No;
+                            break;
+                        case HydrogenVisual _:
+                            CurrentStatus = "Click to rotate hydrogen";
+                            CurrentEditor.Cursor = Cursors.Hand;
+                            break;
+                        case AtomVisual av:
+                            CurrentEditor.Cursor = CursorUtils.Pencil;
+                            if (EditController.SelectedElement != av.ParentAtom.Element)
+                            {
+                                CurrentStatus = "Click to set element.";
+                            }
+                            else
+                            {
+                                CurrentStatus = "Click to sprout chain";
+                            }
+                            break;
+                        case BondVisual _:
+                            CurrentEditor.Cursor = CursorUtils.Pencil;
+                            CurrentStatus = "Click to modify bond";
+                            break;
+                    }
                 }
-                if (targetedVisual is GroupVisual) //can't draw on a group
-                {
-                    CurrentStatus = "Ungroup before attempting to draw.";
-                    CurrentEditor.Cursor = Cursors.No;
-                }
-                else if (targetedVisual is HydrogenVisual)
-                {
-                    CurrentStatus = "Click to rotate hydrogen";
-                    CurrentEditor.Cursor = Cursors.Hand;
-                }
-                else if (targetedVisual is AtomVisual av)
+                else
                 {
                     CurrentEditor.Cursor = CursorUtils.Pencil;
-                    if (EditController.SelectedElement != av.ParentAtom.Element)
-                    {
-                        CurrentStatus = "Click to set element.";
-                    }
-                    else
-                    {
-                        CurrentStatus = "Click to sprout chain";
-                    }
-                }
-                else if (targetedVisual is BondVisual)
-                {
-                    CurrentEditor.Cursor = CursorUtils.Pencil;
-                    CurrentStatus = "Click to modify bond";
+                    CurrentStatus = "Click to draw atom";
                 }
             }
         }
