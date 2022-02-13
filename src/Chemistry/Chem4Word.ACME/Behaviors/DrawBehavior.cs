@@ -83,7 +83,7 @@ namespace Chem4Word.ACME.Behaviors
                 {
                     CurrentStatus = "[Shift] = unlock length; [Ctrl] = unlock angle; [Esc] = cancel.";
                     //are we already on top of an atom?
-                    if (targetedVisual is GroupVisual gv)
+                    if (targetedVisual is GroupVisual)
                     {
                         CurrentEditor.Cursor = Cursors.No;
                         lastPos = null;

@@ -6,7 +6,6 @@
 // ---------------------------------------------------------------------------
 
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -37,9 +36,6 @@ namespace Chem4Word.ACME.Adorners.Selectors
         private const string DefaultStatus = "Drag a handle to resize; drag shaft to reposition.";
         private const string EditReagentsStatus = "Double-click box to edit reagents.";
         private const string EditConditionsStatus = "Double-click box to edit conditions";
-
-        private const double MolPadding = 20d;
-        private const double indicatorOffset = 1.25;
 
         private Point OriginalLocation { get; set; }
         private Point CurrentLocation { get; set; }
@@ -279,56 +275,42 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Brush productBrush = (Brush)FindResource("ProductIndicatorBrush");
             Brush reactantBrush = (Brush)FindResource("ReactantIndicatorBrush");
             Brush arrowBrush = (Brush)FindResource("ArrowIndicatorBrush");
-            //first draw the corner bracket
-            Rect boundingBox = mol.BoundingBox;
-
-            if(mol.IsGrouped) //it's a group
-            { 
-                var inflateFactor = mol.Model.XamlBondLength * Globals.GroupInflateFactor;
-                boundingBox = mol.BoundingBox;
-                boundingBox.Inflate(new Size(3*inflateFactor, 3*inflateFactor));
-                }
-            else
-            { 
-               boundingBox.Inflate(new Size(MolPadding, MolPadding));
-            }
-
-            Point topRight;
-            topRight= boundingBox.TopRight;
+            Brush background = (Brush)FindResource("IndicatorBackgroundBrush");
+            //set up metrics
             var bondLength = CurrentEditor.Controller.Model.XamlBondLength;
-            var linelength = bondLength / 2;
-
-            Pen handleBorderPen = (Pen)FindResource(Globals.AdornerBorderPen);
-            handleBorderPen.Thickness = linelength / 10;
-
+            var linelength = bondLength;
+            var lineThickness = linelength / 10;
             Vector goLeft = new Vector(-linelength, 0);
             Vector goRight = -goLeft;
-            Vector goDown = new Vector(0, linelength);
-            Vector goUp = -goDown;
-
-            drawingContext.DrawLine(handleBorderPen, topRight + goLeft, topRight);
-            drawingContext.DrawLine(handleBorderPen, topRight, topRight + goDown);
 
             //now draw the role circles
             Brush reactantFill = null;
+            Pen reactantPen = null;
             Brush productFill = null;
+            Pen productPen = null;
             if (isProduct)
             {
                 productFill = productBrush;
+                reactantPen = new Pen(reactantBrush, lineThickness);
             }
             else
             {
                 reactantFill = reactantBrush;
+                productPen = new Pen(productBrush, lineThickness);
             }
 
             double radius = linelength / 4;
 
-            Point reactantCenter = topRight + goUp * indicatorOffset;
-            Point productCenter = topRight + goRight * indicatorOffset;
+            Point reactantCenter = mol.Centre + goLeft;
+            Point productCenter = mol.Centre + goRight;
 
-            drawingContext.DrawEllipse(reactantFill, new Pen(reactantBrush, linelength / 15), reactantCenter, radius, radius);
+            //draw the background
+            Pen backgroundPen = new Pen(background, radius*2.5) {EndLineCap = PenLineCap.Round, StartLineCap = PenLineCap.Round};
+            drawingContext.DrawLine(backgroundPen, reactantCenter,productCenter);
 
-            drawingContext.DrawEllipse(productFill, new Pen(productBrush, linelength / 15), productCenter, radius, radius);
+            //draw the indicators
+            drawingContext.DrawEllipse(reactantFill, reactantPen, reactantCenter, radius, radius);
+            drawingContext.DrawEllipse(productFill, productPen, productCenter, radius, radius);
 
             //now draw the arrow
             Vector arrowVector = productCenter - reactantCenter;
@@ -336,8 +318,9 @@ namespace Chem4Word.ACME.Adorners.Selectors
             arrowVector *= radius * 1.5;
             Point arrowStart = reactantCenter + arrowVector;
             Point arrowEnd = productCenter - arrowVector;
-            Arrow arrowVisual = new StraightArrow { StartPoint = arrowStart, EndPoint = arrowEnd, HeadLength = radius * 1.6 };
-            arrowVisual.DrawArrowGeometry(drawingContext, new Pen(arrowBrush, linelength / 15), arrowBrush);
+            Arrow arrowVisual = new StraightArrow { StartPoint = arrowStart, EndPoint = arrowEnd, HeadLength = radius * 1.6, ArrowHeadClosed = false };
+            Pen outlinePen = new Pen(arrowBrush, lineThickness);
+            arrowVisual.DrawArrowGeometry(drawingContext, outlinePen, null);
         }
 
         /// <summary>

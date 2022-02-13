@@ -40,6 +40,12 @@
         <Setter Property="Data" Value="M 0,7 L 25,10 l 0 -7 Z" />
     </Style>
 
+    <!-- Reaction handling brushes-->
+    <SolidColorBrush x:Key="ReactantIndicatorBrush" Color="DarkBlue"/>
+    <SolidColorBrush x:Key="ProductIndicatorBrush" Color="DarkRed"/>
+    <SolidColorBrush x:Key="ArrowIndicatorBrush" Color="Black"/>
+    <SolidColorBrush x:Key="IndicatorBackgroundBrush" Color="White" Opacity="0.75"/>
+
     <!--  styles for bond fills  -->
     <SolidColorBrush x:Key="BlockedAdornerBrush" Color="LightGray" />
 
@@ -49,11 +55,7 @@
         <GradientStop Offset="0.1" Color="Transparent" />
         <GradientStop Offset="0.2" Color="Transparent" />
     </LinearGradientBrush>
-    
-    <!-- Reaction handling brushes-->
-    <SolidColorBrush x:Key="ReactantIndicatorBrush" Color="DarkBlue" Opacity="0.5"/>
-    <SolidColorBrush x:Key="ProductIndicatorBrush" Color="DarkRed" Opacity="0.5"/>
-    <SolidColorBrush x:Key="ArrowIndicatorBrush" Color="Black" Opacity="0.5"/>
+
     <Style
         x:Key="HatchBondStyle"
         BasedOn="{StaticResource WedgeBondStyle}"
