@@ -837,10 +837,6 @@ namespace Chem4Word.ACME
                                 lastAtom.Element = value;
                                 lastAtom.IsotopeNumber = null;
                                 lastAtom.UpdateVisual();
-
-                                //reselect the atom to clear the adorner
-                                RemoveFromSelection(lastAtom);
-                                AddToSelection(lastAtom);
                             };
 
                             Action undo = () =>
@@ -848,14 +844,12 @@ namespace Chem4Word.ACME
                                 lastAtom.Element = lastElement;
                                 lastAtom.IsotopeNumber = currentIsotope;
                                 lastAtom.UpdateVisual();
-
-                                //reselect the atom to clear the adorner
-                                RemoveFromSelection(lastAtom);
-                                AddToSelection(lastAtom);
                             };
 
                             UndoManager.RecordAction(undo, redo, $"Set Element to {value?.Symbol ?? "null"}");
                             redo();
+
+                            ClearSelection();
 
                             foreach (Bond bond in lastAtom.Bonds)
                             {
@@ -944,7 +938,7 @@ namespace Chem4Word.ACME
                             bond.Order = bondOption.Order;
                             bond.Stereo = bondOption.Stereo.Value;
                         }
-
+                        ClearSelection();
                         UndoManager.EndUndoBlock();
                     }
                 }
