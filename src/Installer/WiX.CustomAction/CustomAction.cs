@@ -22,10 +22,10 @@ namespace WiX.CustomAction
     {
         private const string OfficeKey = @"Microsoft\Office";
         private const string WordAddinsKey = @"Word\Addins\Chem4Word V3";
-        private const string ProductShortName = "Chem4Word 2020";
+        private const string ProductShortName = "Chem4Word 2022";
         private const string ProductInstallFolder = "Chem4Word V3";
         private const string ProgramDataFolder = "Chem4Word.V3";
-        private const string ProductLongName = "Chemistry Add-In for Word (Chem4Word) 2020";
+        private const string ProductLongName = "Chemistry Add-In for Word (Chem4Word) 2022";
         private const string ManifestFile = "Chem4Word.V3.vsto";
 
         [CustomAction]

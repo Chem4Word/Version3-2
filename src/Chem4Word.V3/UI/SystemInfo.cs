@@ -55,7 +55,7 @@ namespace Chem4Word.UI
                     string[] parts = Globals.Chem4WordV3.ThisVersion.Root.Element("Number").Value.Split(' ');
                     string temp = Globals.Chem4WordV3.ThisVersion.Root.Element("Number").Value;
                     int idx = temp.IndexOf(" ");
-                    version = $"Chem4Word 2020 {temp.Substring(idx + 1)} - [{fvi.FileVersion}]";
+                    version = $"Chem4Word 2022 {temp.Substring(idx + 1)} - [{fvi.FileVersion}]";
                 }
                 else
                 {
@@ -69,6 +69,7 @@ namespace Chem4Word.UI
                 sb.AppendLine("");
                 sb.AppendLine($"Installation Id: {Globals.Chem4WordV3.Helper.MachineId}");
                 sb.AppendLine($"Operating System: {Globals.Chem4WordV3.Helper.SystemOs}");
+                sb.AppendLine($"Word Version: {Globals.Chem4WordV3.Helper.WordVersion}");
                 sb.AppendLine($"Word Product: {Globals.Chem4WordV3.Helper.WordProduct}");
                 sb.AppendLine($"Internet Explorer Version: {Globals.Chem4WordV3.Helper.BrowserVersion}");
                 sb.AppendLine($".Net Framework Runtime: {Globals.Chem4WordV3.Helper.DotNetVersion}");

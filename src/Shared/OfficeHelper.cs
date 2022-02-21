@@ -53,7 +53,7 @@ namespace Chem4Word.Shared
         }
 
         /// <summary>
-        /// Returns Word version Number Office 365 and 2019 return 2016
+        /// Returns Word version Number. For Office 365 and 2019 it returns 2016
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -64,9 +64,16 @@ namespace Chem4Word.Shared
                 path = GetWinWordPath();
             }
 
-            var fi = GetWinWordVersion(path);
+            if (path != null)
+            {
+                var fi = GetWinWordVersion(path);
 
-            return HumanOfficeVersion(fi.FileMajorPart);
+                return HumanOfficeVersion(fi.FileMajorPart);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public static string GetWordProduct(string clickToRun)

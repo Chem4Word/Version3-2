@@ -15,9 +15,9 @@ namespace Chem4Word.ACME.Drawing.Text
 {
     public static class TextSupport
     {
-           //draws text at the top-left specified, going down the page
+        //draws text at the top-left specified, going down the page
         //set measureOnly to true to just work out the bounds
-        public static Rect DrawText(DrawingContext dc, string blockText, Point topLeft, string colour,
+        public static Rect DrawText(DrawingContext dc, Point topLeft,
                               FunctionalGroupTextSource.GenericTextParagraphProperties paraProps,
                               BlockTextSource defaultTextSourceProps, double defaultBlockWidth,
                               bool measureOnly = false)
@@ -35,7 +35,6 @@ namespace Chem4Word.ACME.Drawing.Text
                 {
                     using (TextLine textLine = textFormatter.FormatLine(textStore, textStorePos, defaultBlockWidth, paraProps, null))
                     {
-                        Debug.WriteLine($"Text Line Start = {textLine.Start}");
                         if (!measureOnly)
                         {
                             textLine.Draw(dc, linePosition, InvertAxes.None);
@@ -62,20 +61,6 @@ namespace Chem4Word.ACME.Drawing.Text
             }
 #endif
             return rect;
-        }
-
-        public static FunctionalGroupTextSource.GenericTextParagraphProperties DefaultParaProps(string colour, BlockTextRunProperties textRunProps, double textSize)
-        {
-            //set up the default paragraph properties
-            return new FunctionalGroupTextSource.GenericTextParagraphProperties(
-                FlowDirection.LeftToRight,
-                TextAlignment.Center,
-                true,
-                false,
-                textRunProps,
-                TextWrapping.NoWrap,
-                textSize,
-                0d);
         }
     }
 }

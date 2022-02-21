@@ -1818,8 +1818,7 @@ namespace Chem4Word
 
                     Word.Application app = Globals.Chem4WordV3.Application;
 
-                    //System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+                    Cursor.Current = Cursors.WaitCursor;
                     try
                     {
                         AboutHost ah = new AboutHost();
@@ -1832,11 +1831,11 @@ namespace Chem4Word
                         {
                             string temp = Globals.Chem4WordV3.ThisVersion.Root.Element("Number").Value;
                             int idx = temp.IndexOf(" ", StringComparison.InvariantCulture);
-                            ah.VersionString = $"Chem4Word 2020 {temp.Substring(idx + 1)}";
+                            ah.VersionString = $"Chem4Word 2022 {temp.Substring(idx + 1)}";
                         }
                         else
                         {
-                            ah.VersionString = $"Chem4Word 2020 {fvi.FileVersion}";
+                            ah.VersionString = $"Chem4Word 2022 {fvi.FileVersion}";
                         }
                         ah.ShowDialog();
                     }

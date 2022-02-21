@@ -165,14 +165,14 @@ namespace Chem4Word.ACME.Drawing.Visuals
         private Rect DrawTextBlock(DrawingContext dc, string blockXaml, string blockColour, bool aboveArrow = true)
         {
             //measure the text and work out the offset vector
-            Rect blockBounds = TextSupport.DrawText(dc, blockXaml, new Point(0, 0), blockColour, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
+            Rect blockBounds = TextSupport.DrawText(dc, new Point(0, 0), DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
 
             var blockOffset = GetBlockOffset(aboveArrow, blockBounds, out var reactionVector, out var startingPoint, out var adjustedPerp);
 
             //now, the reaction arrow might clip the text box. If so, we need to nudge the box out until it doesn't
 
             //calculate the geometry of the adjusted text box
-            Rect blockRect = TextSupport.DrawText(dc, blockXaml, startingPoint, blockColour, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
+            Rect blockRect = TextSupport.DrawText(dc, startingPoint, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
 
             //make the nudge factor dependent on the bond offset
             Vector nudge = adjustedPerp;
@@ -192,7 +192,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                 adjustedPerp += nudge;
                 //recalculate the offset after taking into account the adjustment
                 startingPoint = ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp + blockOffset;
-                blockRect = TextSupport.DrawText(dc, blockXaml, startingPoint, blockColour, DefaultParaProps(blockColour),
+                blockRect = TextSupport.DrawText(dc, startingPoint, DefaultParaProps(blockColour),
                                      DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth(), true);
             }
             //Draw the text to the screen for real
@@ -201,7 +201,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             dc.DrawLine(offsetPen, ParentReaction.TailPoint + reactionVector / 2, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp);
             dc.DrawLine(offsetPen, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp + blockOffset);
 #endif
-            return TextSupport.DrawText(dc, blockXaml, startingPoint, blockColour, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth());
+            return TextSupport.DrawText(dc, startingPoint, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth());
 
 
         }

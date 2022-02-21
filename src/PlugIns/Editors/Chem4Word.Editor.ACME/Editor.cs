@@ -23,7 +23,7 @@ namespace Chem4Word.Editor.ACME
 
         public string Name => "ACME Structure Editor";
 
-        public string Description => "This is the standard editor for Chem4Word 2020 editor. ACME stands for Advanced CML-based Molecule Editor.";
+        public string Description => "This is the standard editor for Chem4Word 2022 editor. ACME stands for Advanced CML-based Molecule Editor.";
 
         public bool HasSettings => true;
 

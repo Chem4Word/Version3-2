@@ -150,6 +150,7 @@ namespace Chem4Word.Telemetry
             // Log Word Version
             FixUpWordVersion();
             WritePrivate("StartUp", "Information", _helper.WordProduct); // ** Used by Andy's Knime protocol
+            WritePrivate("StartUp", "Information", $"Internal Version {_helper.WordVersion}");
             if (!string.IsNullOrEmpty(_helper.Click2RunProductIds))
             {
                 WritePrivate("StartUp", "Information", _helper.Click2RunProductIds);

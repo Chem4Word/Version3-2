@@ -24,7 +24,7 @@ namespace Chem4Word.Renderer.OoXmlV4
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         public string Name => "Open Office Xml Renderer V4";
-        public string Description => "This is the standard renderer for Chem4Word 2020";
+        public string Description => "This is the standard renderer for Chem4Word 2022";
         public bool HasSettings => true;
 
         public Point TopLeft { get; set; }

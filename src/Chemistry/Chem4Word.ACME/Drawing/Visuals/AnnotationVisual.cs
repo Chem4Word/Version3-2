@@ -57,8 +57,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                   TextWrapping.NoWrap,
                   TextSize,
                   0d);
-                TextSupport.DrawText(dc, ParentAnnotation.Xaml, ParentAnnotation.Position, BlockColour,
-                                                     props, TextSource, TextSource.MaxLineLength, false);
+                TextSupport.DrawText(dc, ParentAnnotation.Position, props, TextSource, TextSource.MaxLineLength, false);
             }
         }
     }

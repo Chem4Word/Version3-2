@@ -33,8 +33,6 @@
 				<FileSearch Name="Chem4Word.AddIn.dll" MinVersion="0.0.0.0" MaxVersion="99.99.9999.9999" />
 			</DirectorySearch>
 		</Property>
-		<!-- Ensure Word 2010 or greater -->
-		<Condition Message="This application requires Microsoft Word 2010 (or greater). Please install it then run this installer again."><![CDATA[Installed OR WINWORDVERSION]]></Condition>
 		<!-- Ensure Word not running -->
 		<Condition Message="Word is running. Please close it then run this installer again."><![CDATA[Installed OR (NOT WINWORDPROCESSCOUNT)]]></Condition>
 		<!-- Ensure Chem4Word 2 removed -->
@@ -51,13 +49,11 @@
 		<!-- https://www.codeproject.com/Articles/132918/Creating-Custom-Action-for-WIX-Written-in-Managed -->
 		<Binary Id="WiX.CustomAction.dll" SourceFile="..\Wix.CustomAction\bin\x86\$(var.Configuration)\WiX.CustomAction.CA.dll" />
 		<CustomAction Id="WordProcessCount" BinaryKey="WiX.CustomAction.dll" DllEntry="WordProcessCount" Return="check" Execute="immediate" />
-		<CustomAction Id="FindWinwordPath" BinaryKey="WiX.CustomAction.dll" DllEntry="FindWord" Return="check" Execute="immediate" />
 		<CustomAction Id="CleanRegistry" BinaryKey="WiX.CustomAction.dll" DllEntry="CleanUserRegistry" Return="check" Execute="deferred" Impersonate="yes" />
 		<CustomAction Id="SetupChem4Word" BinaryKey="WiX.CustomAction.dll" DllEntry="SetupChem4Word" Return="check" Execute="deferred" Impersonate="no" />
 		<CustomAction Id="RemoveChem4Word" BinaryKey="WiX.CustomAction.dll" DllEntry="RemoveChem4Word" Return="check" Execute="deferred" Impersonate="no" />
 		<InstallUISequence>
 			<Custom Action="WordProcessCount" Before="LaunchConditions" />
-			<Custom Action="FindWinwordPath" Before="LaunchConditions" />
 		</InstallUISequence>
 		<InstallExecuteSequence>
 			<Custom Action="CleanRegistry" Before="InstallFinalize">NOT Installed</Custom>
