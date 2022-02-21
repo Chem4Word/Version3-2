@@ -416,6 +416,7 @@ namespace Chem4Word.Model2
                 {
                     boundingBox.Union(mol.BoundingBox);
                 }
+
                 foreach (ReactionScheme scheme in ReactionSchemes.Values)
                 {
                     foreach (Reaction reaction in scheme.Reactions.Values)
@@ -424,11 +425,14 @@ namespace Chem4Word.Model2
                         boundingBox.Union(reactionRect);
                     }
                 }
+
                 foreach (var ann in Annotations.Values)
                 {
-                    Rect annRect = ann.BoundingBox(FontSize);
-                    boundingBox.Union(annRect);
+                    // Use a very small rectangle here
+                    Rect rectangle = new Rect(ann.Position, new Size(0.1, 0.1));
+                    boundingBox.Union(rectangle);
                 }
+
                 return boundingBox;
             }
         }
@@ -456,33 +460,33 @@ namespace Chem4Word.Model2
                 {
                     var allAtoms = GetAllAtoms();
 
-                    Rect modelRect = Rect.Empty;
+                    Rect boundingBox = Rect.Empty;
 
                     if (allAtoms.Count > 0)
                     {
-                        modelRect = allAtoms[0].BoundingBox(FontSize);
+                        boundingBox = allAtoms[0].BoundingBox(FontSize);
                         for (int i = 1; i < allAtoms.Count; i++)
                         {
                             var atom = allAtoms[i];
-                            modelRect.Union(atom.BoundingBox(FontSize));
+                            boundingBox.Union(atom.BoundingBox(FontSize));
                         }
                     }
-
-                    _boundingBox = modelRect;
 
                     foreach (ReactionScheme scheme in ReactionSchemes.Values)
                     {
                         foreach (Reaction reaction in scheme.Reactions.Values)
                         {
                             Rect reactionRect = new Rect(reaction.TailPoint, reaction.HeadPoint);
-                            _boundingBox.Union(reactionRect);
+                            boundingBox.Union(reactionRect);
                         }
                     }
 
-                    foreach(Annotation ann in Annotations.Values)
+                    foreach (Annotation ann in Annotations.Values)
                     {
-                        _boundingBox.Union(ann.BoundingBox(FontSize));
+                        boundingBox.Union(ann.BoundingBox(FontSize));
                     }
+
+                    _boundingBox = boundingBox;
                 }
 
                 return _boundingBox;
@@ -1109,6 +1113,8 @@ namespace Chem4Word.Model2
                 {
                     annotation.Position = new Point(annotation.Position.X * scale, annotation.Position.Y * scale);
                 }
+
+                _boundingBox = Rect.Empty;
             }
         }
 

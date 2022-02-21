@@ -111,7 +111,7 @@ namespace Chem4Word.Model2
             Position += offsetVector;
         }
 
-        //tries to get an estimated bounding box for each atom symbol
+        //tries to get an estimated bounding box for each annotation
         public Rect BoundingBox(double fontSize)
         {
             double width = fontSize * EstLength;
