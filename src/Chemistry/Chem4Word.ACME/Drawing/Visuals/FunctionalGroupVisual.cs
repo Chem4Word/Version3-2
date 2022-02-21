@@ -72,7 +72,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             using (TextFormatter textFormatter = TextFormatter.Create())
             {
                 //set up the default paragraph properties
-                var paraprops = new FunctionalGroupTextSource.GenericTextParagraphProperties(
+                var paraprops = new GenericTextParagraphProperties(
                     FlowDirection.LeftToRight,
                     TextAlignment.Left,
                     true,

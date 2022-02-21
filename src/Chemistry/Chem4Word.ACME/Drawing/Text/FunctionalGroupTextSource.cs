@@ -12,7 +12,7 @@ using Chem4Word.Model2;
 
 namespace Chem4Word.ACME.Drawing.Text
 {
-    public partial class FunctionalGroupTextSource : TextSource
+    public class FunctionalGroupTextSource : TextSource
     {
         public List<LabelTextSourceRun> Runs = new List<LabelTextSourceRun>();
 

@@ -48,7 +48,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             var runProps = new BlockTextRunProperties(BlockColour, TextSize);
             using (DrawingContext dc = RenderOpen())
             {
-                var props = new FunctionalGroupTextSource.GenericTextParagraphProperties(
+                var props = new GenericTextParagraphProperties(
                   FlowDirection.LeftToRight,
                   TextAlignment.Left,
                   true,

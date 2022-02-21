@@ -91,7 +91,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
         {
             using (DrawingContext dc = RenderOpen())
             {
-                RenderFullGeometry(ParentReaction.ReactionType, ParentReaction.TailPoint,ParentReaction.HeadPoint, dc, ParentReaction.ReagentText, ParentReaction.ConditionsText, new Pen(Brushes.Black, 1), Brushes.Black);
+                RenderFullGeometry(ParentReaction.ReactionType, ParentReaction.TailPoint, ParentReaction.HeadPoint, dc, ParentReaction.ReagentText, ParentReaction.ConditionsText, new Pen(Brushes.Black, 1), Brushes.Black);
                 dc.Close();
             }
         }
@@ -202,8 +202,6 @@ namespace Chem4Word.ACME.Drawing.Visuals
             dc.DrawLine(offsetPen, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp, ParentReaction.TailPoint + reactionVector / 2 + adjustedPerp + blockOffset);
 #endif
             return TextSupport.DrawText(dc, startingPoint, DefaultParaProps(blockColour), DefaultTextSource(blockXaml, blockColour), DefaultBlockWidth());
-
-
         }
 
         /// <summary>
@@ -304,10 +302,10 @@ namespace Chem4Word.ACME.Drawing.Visuals
             };
         }
 
-        private FunctionalGroupTextSource.GenericTextParagraphProperties DefaultParaProps(string colour)
+        private GenericTextParagraphProperties DefaultParaProps(string colour)
         {
             //set up the default paragraph properties
-            return new FunctionalGroupTextSource.GenericTextParagraphProperties(
+            return new GenericTextParagraphProperties(
                 FlowDirection.LeftToRight,
                 TextAlignment.Center,
                 true,

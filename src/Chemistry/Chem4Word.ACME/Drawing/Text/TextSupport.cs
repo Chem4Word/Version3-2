@@ -6,7 +6,6 @@
 //  ---------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
@@ -18,7 +17,7 @@ namespace Chem4Word.ACME.Drawing.Text
         //draws text at the top-left specified, going down the page
         //set measureOnly to true to just work out the bounds
         public static Rect DrawText(DrawingContext dc, Point topLeft,
-                              FunctionalGroupTextSource.GenericTextParagraphProperties paraProps,
+                              GenericTextParagraphProperties paraProps,
                               BlockTextSource defaultTextSourceProps, double defaultBlockWidth,
                               bool measureOnly = false)
         {
