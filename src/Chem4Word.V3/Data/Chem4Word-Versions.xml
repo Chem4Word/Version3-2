@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- This file must be uploaded to https://www.chem4word.co.uk/files3-2/ folder as Chem4Word-Versions.xml -->
 <ChangeLog>
-  <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
-  <Version>
-    <Number>3.2.0 Alpha 0</Number>
-    <IsBeta>true</IsBeta>
-    <Released>31-Jan-2022</Released>
-    <Changes>
-      <Change>...</Change>
-      <Change>...</Change>
-      <Change>...</Change>
-      <Change>...</Change>
-      <Change>...</Change>
-      <Change>...</Change>
-    </Changes>
-  </Version>
-  <EndOfLife>31-Dec-2345</EndOfLife>
+    <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
+    <Version>
+        <Number>3.2.1 Beta 1</Number>
+        <IsBeta>true</IsBeta>
+        <Released>28-Feb-2022</Released>
+        <Changes>
+            <Change>First public beta of Chem4Word 2022 (V3.2)</Change>
+        </Changes>
+        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.1.Beta.1.msi</Url>
+    </Version>
+    <Version>
+        <Number>3.2.1 Alpha 0</Number>
+        <IsBeta>true</IsBeta>
+        <Released>21-Feb-2022</Released>
+        <Changes>
+            <Change>Private Alpha of Chem4Word 2022 (V3.2)</Change>
+        </Changes>
+    </Version>
+    <EndOfLife>31-Dec-2345</EndOfLife>
 </ChangeLog>

@@ -88,7 +88,7 @@
             // WordInstalled
             // 
             this.WordInstalled.BackColor = System.Drawing.Color.Transparent;
-            this.WordInstalled.Description = "Microsoft Word 2010 / 2013 / 2016";
+            this.WordInstalled.Description = "Microsoft Word 2000 or newer";
             this.WordInstalled.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WordInstalled.Indicator = global::Chem4WordSetup.Properties.Resources.Question;
             this.WordInstalled.Location = new System.Drawing.Point(178, 55);

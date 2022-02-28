@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -144,12 +145,9 @@ namespace Chem4Word.Telemetry
 
         private void WriteStartUpInfo()
         {
-            // Log Add-In Version
-            WritePrivate("StartUp", "Information", _helper.AddInVersion); // ** Used by Andy's Knime protocol ?
-
-            // Log Word Version
             FixUpWordVersion();
-            WritePrivate("StartUp", "Information", _helper.WordProduct); // ** Used by Andy's Knime protocol
+            AddKnimeProperies();
+
             WritePrivate("StartUp", "Information", $"Internal Version {_helper.WordVersion}");
             if (!string.IsNullOrEmpty(_helper.Click2RunProductIds))
             {
@@ -157,17 +155,7 @@ namespace Chem4Word.Telemetry
             }
             WritePrivate("StartUp", "Information", Environment.GetCommandLineArgs()[0]);
 
-            // Log System
-            WritePrivate("StartUp", "Information", _helper.SystemOs); // ** Used by Andy's Knime protocol
-            WritePrivate("StartUp", "Information", _helper.DotNetVersion);
             WritePrivate("StartUp", "Information", $"Browser Version: {_helper.BrowserVersion}");
-
-            // Log IP Address
-            if (!_helper.IpAddress.Contains("8.8.8.8"))
-            {
-                WritePrivate("StartUp", "Information", _helper.IpAddress); // ** Used by Andy's Knime protocol
-                WritePrivate("StartUp", "Information", _helper.IpObtainedFrom);
-            }
 
             if (_helper.StartUpTimings != null)
             {
@@ -284,26 +272,43 @@ namespace Chem4Word.Telemetry
             }
 #endif
 
-            #region Log critical System Info again to ensure we get it
+            // Add Knime Properies again to ensure they get sent
+            AddKnimeProperies();
 
-            // Log Add-In Version
-            WritePrivate("StartUp", "Information", _helper.AddInVersion); // ** Used by Andy's Knime protocol ?
+            _systemInfoSent = true;
+        }
 
-            // Log Word
-            WritePrivate("StartUp", "Information", _helper.WordProduct); // ** Used by Andy's Knime protocol
+        private void AddKnimeProperies()
+        {
+            // Used by Andy's Knime protocol
 
-            // Log System
-            WritePrivate("StartUp", "Information", _helper.SystemOs); // ** Used by Andy's Knime protocol
+            // OS Info
+            if (string.IsNullOrEmpty(_wmiHelper.OSVersion) || string.IsNullOrEmpty(_wmiHelper.OSCaption))
+            {
+                WritePrivate("StartUp", "Information", _helper.SystemOs);
+            }
+            else
+            {
+                string bits = Environment.Is64BitOperatingSystem ? "64bit" : "32bit";
+                string culture = CultureInfo.CurrentCulture.Name;
+                WritePrivate("StartUp", "Information", $"{_wmiHelper.OSCaption} {bits} [{_wmiHelper.OSVersion}] {culture}");
+            }
 
-            // Log IP Address
+            // Dot Net Version
+            WritePrivate("StartUp", "Information", _helper.DotNetVersion);
+
+            // Word Version
+            WritePrivate("StartUp", "Information", _helper.WordProduct);
+
+            // Add-In Version
+            WritePrivate("StartUp", "Information", _helper.AddInVersion);
+
+            // IP Address
             if (!_helper.IpAddress.Contains("8.8.8.8"))
             {
                 WritePrivate("StartUp", "Information", _helper.IpAddress); // ** Used by Andy's Knime protocol
+                WritePrivate("StartUp", "Information", _helper.IpObtainedFrom);
             }
-
-            #endregion Log critical System Info again to ensure we get it
-
-            _systemInfoSent = true;
         }
 
         private void WritePrivate(string operation, string level, string message)

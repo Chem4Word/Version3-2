@@ -93,6 +93,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                 {
                     Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
 
+                    ErrorsAndWarnings.Text = "";
                     display1.Chemistry = null;
                     display1.Clear();
 
