@@ -155,7 +155,7 @@ namespace Chem4Word.UI.WPF
 
             try
             {
-                Process.Start("https://github.com/Chem4Word/Version3-1");
+                Process.Start("https://github.com/Chem4Word/Version3-2");
             }
             catch (Exception ex)
             {

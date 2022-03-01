@@ -13,10 +13,11 @@ They sometimes get cleaned out of the %temp% folder !
 
 The symptoms you will see are that the assembly Chem4Word.Contracts builds every time.
 When this happens it's Post Build Event clears the PlugIns folder.
+The pre-build event for Chem4Word.Contracts now copies the files for you.
 
 Thus all hell breaks loose in the Word Add-In as there are no plug Ins
 
 The \1 \2 \3 folders are created by RDP Sessions and the nunmber varies
 
 %LOCALAPPDATA%
-copy C:\Dev\vsts\chem4word\Version3-1\src\Snippets\*.cs %temp%
+copy C:\Dev\vsts\chem4word\Version3-2\src\Snippets\*.cs %temp%

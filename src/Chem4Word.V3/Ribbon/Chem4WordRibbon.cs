@@ -1932,7 +1932,7 @@ namespace Chem4Word
             {
                 Globals.Chem4WordV3.EventsEnabled = false;
 
-                const string fileNameOfManual = "Chem4Word-Version3-1-User-Manual.docx";
+                const string fileNameOfManual = "Chem4Word-Version3-2-User-Manual.docx";
                 try
                 {
                     string userManual = Path.Combine(Globals.Chem4WordV3.AddInInfo.DeploymentPath, "Manual", fileNameOfManual);
