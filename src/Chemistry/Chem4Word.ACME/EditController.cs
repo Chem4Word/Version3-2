@@ -333,32 +333,46 @@ namespace Chem4Word.ACME
         }
 
         //sets all selected reactions to the currently applied type
-        public void SetReactionType(ReactionType value)
+        public void SetReactionType(ReactionType value, Reaction parentReaction = null)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var affectedReactions = SelectedItems.OfType<Reaction>().Count();
+                List<Reaction> reactions;
+                if (parentReaction is null)
+                {
+                    reactions = SelectedReactions().ToList();
+                }
+                else
+                {
+                    reactions = new List<Reaction> { parentReaction };
+                }
+                var affectedReactions = reactions.Count;
                 WriteTelemetry(module, "Debug", $"Type: {SelectedReactionType}; Affected Reactions {affectedReactions}");
 
-                if (SelectedItems.OfType<Reaction>().Any())
+                if (reactions.Any())
                 {
                     UndoManager.BeginUndoBlock();
-                    IEnumerable<Reaction> reactions = SelectedItems.OfType<Reaction>().ToList();
                     foreach (Reaction reaction in reactions)
                     {
                         Action redo = () =>
                          {
                              reaction.ReactionType = value;
-                             RemoveFromSelection(reaction);
-                             AddToSelection(reaction);
+                             if (SelectedReactions().Contains(reaction))
+                             {
+                                 RemoveFromSelection(reaction);
+                                 AddToSelection(reaction);
+                             }
                          };
                         var reactionType = reaction.ReactionType;
                         Action undo = () =>
                         {
-                            reaction.ReactionType = reactionType;
-                            RemoveFromSelection(reaction);
-                            AddToSelection(reaction);
+                             reaction.ReactionType = reactionType;
+                             if (SelectedReactions().Contains(reaction))
+                             {
+                                 RemoveFromSelection(reaction);
+                                 AddToSelection(reaction);
+                             }
                         };
                         redo();
                         UndoManager.RecordAction(undo, redo);
@@ -4932,7 +4946,7 @@ namespace Chem4Word.ACME
         /// <summary>
         /// Assigns roles to molecules involved in a reaction
         /// </summary>
-        /// 
+        ///
         public void AssignReactionRoles()
         {
             UndoManager.BeginUndoBlock();

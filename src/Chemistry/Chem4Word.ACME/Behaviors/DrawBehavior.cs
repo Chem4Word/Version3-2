@@ -146,8 +146,8 @@ namespace Chem4Word.ACME.Behaviors
                     switch (targetedVisual)
                     {
                         case ReactionVisual _:
-                            CurrentStatus = "Can't draw over an existing reaction.";
-                            CurrentEditor.Cursor = Cursors.No;
+                            CurrentStatus = "Click to set reaction type";
+                            CurrentEditor.Cursor = CursorUtils.Pencil;
                             break;
                         case GroupVisual _:
                             CurrentStatus = "Ungroup before attempting to draw.";
@@ -192,13 +192,12 @@ namespace Chem4Word.ACME.Behaviors
             }
             if (IsDrawing)
             {
-                var newAtomPos = e.GetPosition(CurrentEditor);
+                var newPos = e.GetPosition(CurrentEditor);
 
                 //first get the current active visuals
-                var landedGroupVisual = CurrentEditor.GetTargetedVisual(newAtomPos) as GroupVisual;
-                var landedAtomVisual = CurrentEditor.GetTargetedVisual(newAtomPos) as AtomVisual;
-                var landedBondVisual = CurrentEditor.GetTargetedVisual(newAtomPos) as BondVisual;
-
+                var landedGroupVisual = CurrentEditor.GetTargetedVisual(newPos) as GroupVisual;
+                var landedAtomVisual = CurrentEditor.GetTargetedVisual(newPos) as AtomVisual;
+                var landedBondVisual = CurrentEditor.GetTargetedVisual(newPos) as BondVisual;
                 if (landedAtomVisual is HydrogenVisual) //just exit
                 {
                     return;
@@ -241,14 +240,13 @@ namespace Chem4Word.ACME.Behaviors
                         {
                             //so just sprout a chain off it at two-o-clock
                             EditController.AddAtomChain(
-                                parentAtom, _angleSnapper.SnapBond(newAtomPos),
+                                parentAtom, _angleSnapper.SnapBond(newPos),
                                 ClockDirections.II);
                         }
                         else
                         {
-                            //create a singleton
                             //otherwise create a singleton
-                            EditController.AddAtomChain(null, newAtomPos, ClockDirections.II);
+                            EditController.AddAtomChain(null, newPos, ClockDirections.II);
                         }
                     }
                     else //we went mouse-up on an atom
@@ -537,7 +535,15 @@ namespace Chem4Word.ACME.Behaviors
         {
             var position = e.GetPosition(CurrentEditor);
             ChemicalVisual chemicalVisual = CurrentEditor.GetTargetedVisual(position);
-            if (!(chemicalVisual is ReactionVisual))
+            if (chemicalVisual is ReactionVisual rv) //we hit a reaction
+            {
+                //only bother modifying if the selected reaction type is different
+                if (EditController.SelectedReactionType.Value != rv.ParentReaction.ReactionType)
+                {
+                    EditController.SetReactionType(EditController.SelectedReactionType.Value, rv.ParentReaction);
+                }
+            }
+            else 
             {
                 _currentAtomVisual = chemicalVisual as AtomVisual;
                 IsDrawing = true;
