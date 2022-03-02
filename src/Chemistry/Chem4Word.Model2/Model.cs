@@ -177,6 +177,13 @@ namespace Chem4Word.Model2
 
         public bool InhibitEvents { get; set; }
 
+
+        /// <summary>
+        /// True if this model has any reactions
+        /// </summary>
+        public bool HasReactions => ReactionSchemes.Count > 0;
+
+
         /// <summary>
         /// True if this model has functional groups
         /// </summary>

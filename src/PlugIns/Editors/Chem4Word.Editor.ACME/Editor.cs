@@ -29,6 +29,7 @@ namespace Chem4Word.Editor.ACME
 
         public bool CanEditNestedMolecules => true;
         public bool CanEditFunctionalGroups => true;
+        public bool CanEditReactions => true;
         public bool RequiresSeedAtom => false;
 
         public string SettingsPath { get; set; }

@@ -670,9 +670,15 @@ namespace Chem4Word
                                             CMLConverter cmlConverter = new CMLConverter();
                                             Model beforeModel = cmlConverter.Import(beforeCml);
 
-                                            if (beforeModel.TotalAtomsCount == 0)
+                                            if (beforeModel.TotalAtomsCount == 0 && !beforeModel.HasReactions)
                                             {
                                                 UserInteractions.InformUser("This chemistry item has no 2D data to edit!\nPlease use the 'Edit Labels' button.");
+                                                return;
+                                            }
+
+                                            if (beforeModel.HasReactions & !editor.CanEditReactions)
+                                            {
+                                                UserInteractions.InformUser("This chemistry item has Reactions!\nPlease use ACME to edit this structure.");
                                                 return;
                                             }
 
@@ -1690,55 +1696,64 @@ namespace Chem4Word
                                     CMLConverter cmlConverter = new CMLConverter();
                                     Model model = cmlConverter.Import(beforeCml);
 
-                                    Packer packer = new Packer();
-                                    packer.Model = model;
-                                    packer.Pack(model.MeanBondLength * 2);
-
-                                    //Separator separator = new Separator(model)
-                                    //int loops = 0
-                                    //separator.Separate(model.MeanBondLength, 99, out loops)
-                                    //Debug.WriteLine($"Separate took {loops} loops")
-
-                                    string afterCml = cmlConverter.Export(model);
-
-                                    if (Globals.Chem4WordV3.SystemOptions == null)
+                                    if (model.HasReactions)
                                     {
-                                        Globals.Chem4WordV3.LoadOptions();
+                                        UserInteractions.InformUser("It is not appropriate to run the arrange function on chemistry which has reactions!");
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        Packer packer = new Packer();
+                                        packer.Model = model;
+                                        packer.Pack(model.MeanBondLength * 2);
+
+                                        //Separator separator = new Separator(model)
+                                        //int loops = 0
+                                        //separator.Separate(model.MeanBondLength, 99, out loops)
+                                        //Debug.WriteLine($"Separate took {loops} loops")
+
+                                        string afterCml = cmlConverter.Export(model);
+
+                                        if (Globals.Chem4WordV3.SystemOptions == null)
+                                        {
+                                            Globals.Chem4WordV3.LoadOptions();
+                                        }
+
+                                        renderer.Properties = new Dictionary<string, string>();
+                                        renderer.Properties.Add("Guid", guidString);
+                                        renderer.Cml = afterCml;
+
+                                        string tempfile = renderer.Render();
+
+                                        if (File.Exists(tempfile))
+                                        {
+                                            cc.LockContents = false;
+                                            cc.Range.Delete();
+                                            cc.Delete();
+
+                                            // Insert a new CC
+                                            cc = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+
+                                            cc.Title = Constants.ContentControlTitle;
+                                            cc.Tag = fullTag;
+
+                                            ChemistryHelper.UpdateThisStructure(doc, model, guidString, tempfile);
+
+                                            customXmlPart.Delete();
+                                            doc.CustomXMLParts.Add(afterCml);
+
+                                            // Delete the temporary file now we are finished with it
+                                            try
+                                            {
+                                                File.Delete(tempfile);
+                                            }
+                                            catch
+                                            {
+                                                // Not much we can do here
+                                            }
+                                        }
                                     }
 
-                                    renderer.Properties = new Dictionary<string, string>();
-                                    renderer.Properties.Add("Guid", guidString);
-                                    renderer.Cml = afterCml;
-
-                                    string tempfile = renderer.Render();
-
-                                    if (File.Exists(tempfile))
-                                    {
-                                        cc.LockContents = false;
-                                        cc.Range.Delete();
-                                        cc.Delete();
-
-                                        // Insert a new CC
-                                        cc = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
-
-                                        cc.Title = Constants.ContentControlTitle;
-                                        cc.Tag = fullTag;
-
-                                        ChemistryHelper.UpdateThisStructure(doc, model, guidString, tempfile);
-
-                                        customXmlPart.Delete();
-                                        doc.CustomXMLParts.Add(afterCml);
-
-                                        // Delete the temporary file now we are finished with it
-                                        try
-                                        {
-                                            File.Delete(tempfile);
-                                        }
-                                        catch
-                                        {
-                                            // Not much we can do here
-                                        }
-                                    }
                                 }
                             }
                         }

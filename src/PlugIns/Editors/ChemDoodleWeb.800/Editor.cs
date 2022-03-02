@@ -27,6 +27,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
         public bool HasSettings => true;
         public bool CanEditNestedMolecules => false;
         public bool CanEditFunctionalGroups => false;
+        public bool CanEditReactions => false;
         public bool RequiresSeedAtom => true;
 
         public string SettingsPath { get; set; }
