@@ -23,6 +23,8 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         private Rect _boundingBox = Rect.Empty;
         public Rect BoundingBox => _boundingBox;
 
+        private int? _firstCharacterOfLineOriginX;
+
         public List<AtomLabelCharacter> Characters { get; } = new List<AtomLabelCharacter>();
 
         public Point Centre =>
@@ -112,6 +114,10 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             var ttfCharacter = _characterSet[knownCharacter];
             if (ttfCharacter != null)
             {
+                if (_firstCharacterOfLineOriginX == null)
+                {
+                    _firstCharacterOfLineOriginX = ttfCharacter.OriginX;
+                }
                 var isSmaller = isSubScript || isSuperScript;
 
                 // Get character position as if it's standard size
@@ -172,6 +178,11 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         public void NewLine(double xOffset = 0)
         {
             _cursor = BoundingBox.BottomLeft;
+            if (_firstCharacterOfLineOriginX != null)
+            {
+                _cursor.Offset(-OoXmlHelper.ScaleCsTtfToCml(_firstCharacterOfLineOriginX.Value, _bondLength), 0);
+                _firstCharacterOfLineOriginX = null;
+            }
             _cursor.Offset(xOffset, OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Height * 1.25, _bondLength));
         }
 
