@@ -4833,7 +4833,7 @@ namespace Chem4Word.ACME
         private void BlockEditor_EditorClosed(object sender, AnnotationEditorEventArgs e)
         {
             var activeEditor = (AnnotationEditor)sender;
-            if (e.Reason != AnnotationEditorEventArgs.AnnotationEditorExitArgsType.Aborted)
+            if (e.Reason != AnnotationEditorExitArgsType.Aborted)
             {
                 UpdateTextBlock(_selReactionVisual, activeEditor, activeEditor.EditingReagents);
             }

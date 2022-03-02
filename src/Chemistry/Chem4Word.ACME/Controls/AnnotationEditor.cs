@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Commands.Block_Editing;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Converters.CML;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -12,10 +16,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xml.Linq;
-using Chem4Word.ACME.Commands.Block_Editing;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Converters.CML;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -36,8 +36,8 @@ namespace Chem4Word.ACME.Controls
         {
             get
             {
-                TextRange range = new TextRange(Selection.Start, Selection.End);
-                object alignment = range.GetPropertyValue(Inline.BaselineAlignmentProperty);
+                var range = new TextRange(Selection.Start, Selection.End);
+                var alignment = range.GetPropertyValue(Inline.BaselineAlignmentProperty);
                 return alignment != DependencyProperty.UnsetValue && (BaselineAlignment)alignment == BaselineAlignment.Subscript;
             }
         }
@@ -46,8 +46,8 @@ namespace Chem4Word.ACME.Controls
         {
             get
             {
-                TextRange range = new TextRange(Selection.Start, Selection.End);
-                object alignment = range.GetPropertyValue(Inline.BaselineAlignmentProperty);
+                var range = new TextRange(Selection.Start, Selection.End);
+                var alignment = range.GetPropertyValue(Inline.BaselineAlignmentProperty);
                 return alignment != DependencyProperty.UnsetValue && (BaselineAlignment)alignment == BaselineAlignment.Superscript;
             }
         }
@@ -75,6 +75,10 @@ namespace Chem4Word.ACME.Controls
             DataObject.AddPastingHandler(this, AnnotationEditor_Pasting);
         }
 
+        #endregion Constructors
+
+        #region Event Handlers
+
         //see https://thomaslevesque.com/2015/09/05/wpf-prevent-the-user-from-pasting-an-image-in-a-richtextbox/
         private void AnnotationEditor_Pasting(object sender, DataObjectPastingEventArgs e)
         {
@@ -85,7 +89,7 @@ namespace Chem4Word.ACME.Controls
             else if (e.FormatToApply == DataFormats.Rtf)
             {
                 var plainText = e.DataObject.GetData(DataFormats.Text);
-                DataObject d = new DataObject();
+                var d = new DataObject();
                 d.SetData(DataFormats.UnicodeText, plainText);
                 e.DataObject = d;
             }
@@ -96,10 +100,6 @@ namespace Chem4Word.ACME.Controls
             MakeSubscriptCommand.RaiseCanExecChanged();
         }
 
-        #endregion Constructors
-
-        #region Event Handlers
-
         private void AnnotationEditor_TextChanged(object sender, TextChangedEventArgs e)
         {
             Dirty = true;
@@ -107,7 +107,7 @@ namespace Chem4Word.ACME.Controls
 
         private void AnnotationEditor_LostFocus(object sender, RoutedEventArgs e)
         {
-            Completed?.Invoke(this, new AnnotationEditorEventArgs { Reason = AnnotationEditorEventArgs.AnnotationEditorExitArgsType.LostFocus });
+            Completed?.Invoke(this, new AnnotationEditorEventArgs { Reason = AnnotationEditorExitArgsType.LostFocus });
         }
 
         /// <summary>
@@ -115,16 +115,16 @@ namespace Chem4Word.ACME.Controls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AnnotationEditor_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void AnnotationEditor_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape) //abort the edit
             {
-                Completed.Invoke(this, new AnnotationEditorEventArgs { Reason = AnnotationEditorEventArgs.AnnotationEditorExitArgsType.Aborted });
+                Completed?.Invoke(this, new AnnotationEditorEventArgs { Reason = AnnotationEditorExitArgsType.Aborted });
                 e.Handled = true;
             }
             if (e.Key == Key.Enter && !(KeyboardUtils.HoldingDownShift() || KeyboardUtils.HoldingDownControl()))
             {
-                Completed.Invoke(this, new AnnotationEditorEventArgs { Reason = AnnotationEditorEventArgs.AnnotationEditorExitArgsType.ReturnPressed });
+                Completed?.Invoke(this, new AnnotationEditorEventArgs { Reason = AnnotationEditorExitArgsType.ReturnPressed });
                 e.Handled = true;
             }
         }
@@ -139,40 +139,47 @@ namespace Chem4Word.ACME.Controls
         /// <param name="text">String containing the FlowDocument to be loaded.</param>
         public void LoadDocument(string text)
         {
-            //make sure that we don't put spaces aroung the subscripts
-            //use IgnoreWhitespace to ensure that this happens
             Document = XAMLHelper.GetFlowDocument(text);
             Dirty = false;
         }
 
         public string GetDocument()
         {
-            MemoryStream ms = new MemoryStream();
-            TextRange flowDocSelection = new TextRange(Document.ContentStart, Document.ContentEnd);
-            flowDocSelection.Save(ms, DataFormats.Xaml);
+            var ms = new MemoryStream();
+            var flowDocSelection = new TextRange(Document.ContentStart, Document.ContentEnd);
+            flowDocSelection.Save(ms, DataFormats.Xaml, true);
             var bytes = ms.ToArray();
-            string result = Encoding.UTF8.GetString(bytes);
+            var result = Encoding.UTF8.GetString(bytes);
             result = StripOutSectionXaml(result);
             return result;
         }
 
-        //gets rid of all the superfluous xaml that the RTB crams into the flowdocument
-        private string StripOutSectionXaml(string result)
+        //gets rid of all the superfluous xaml that the RTB crams into the flow document
+        private string StripOutSectionXaml(string xamlIn)
         {
-            XDocument doc = XDocument.Parse(result);
-            XElement paraElement = null;
-            foreach (XElement para in doc.Descendants())
+            var doc = XDocument.Parse(xamlIn);
+            var newDocument = new XDocument();
+            var root = new XElement(CMLNamespaces.xaml + "FlowDocument");
+            newDocument.Add(root);
+
+            var paragraph = new XElement(CMLNamespaces.xaml + "Paragraph");
+            root.Add(paragraph);
+
+            foreach (var para in doc.Descendants())
             {
                 if (para.Name.LocalName == "Paragraph")
                 {
-                    paraElement = para;
-                    break;
+                    foreach (var child in para.Descendants())
+                    {
+                        if (child.Name.LocalName == "Run" || child.Name.LocalName == "LineBreak")
+                        {
+                            paragraph.Add(child);
+                        }
+                    }
+                    paragraph.Add(new XElement(CMLNamespaces.xaml + "LineBreak"));
                 }
             }
-            XDocument newDocument = new XDocument();
-            XElement root = new XElement(CMLNamespaces.xaml + "FlowDocument");
-            root.Add(paraElement);
-            newDocument.Add(root);
+
             return newDocument.ToString();
         }
 
@@ -183,7 +190,7 @@ namespace Chem4Word.ACME.Controls
 
         public void ToggleSubscript(TextSelection selection)
         {
-            TextRange toSubscript = new TextRange(selection.Start, selection.End);
+            var toSubscript = new TextRange(selection.Start, selection.End);
             var subscriptState = toSubscript.GetPropertyValue(Inline.BaselineAlignmentProperty);
             if (subscriptState != null)
             {
@@ -202,7 +209,7 @@ namespace Chem4Word.ACME.Controls
 
         public void ToggleSuperscript(TextSelection selection)
         {
-            TextRange toSuperscript = new TextRange(selection.Start, selection.End);
+            var toSuperscript = new TextRange(selection.Start, selection.End);
             var superscriptState = toSuperscript.GetPropertyValue(Inline.BaselineAlignmentProperty);
             if (superscriptState != null)
             {
@@ -220,20 +227,5 @@ namespace Chem4Word.ACME.Controls
         }
 
         #endregion Methods
-    }
-
-    /// <summary>
-    /// Event argument for Completed event
-    /// </summary>
-    public class AnnotationEditorEventArgs : RoutedEventArgs
-    {
-        public enum AnnotationEditorExitArgsType
-        {
-            LostFocus,
-            ReturnPressed,
-            Aborted
-        }
-
-        public AnnotationEditorExitArgsType Reason { get; set; }
     }
 }

@@ -120,6 +120,8 @@
     <Compile Include="Commands\Reactions\EditConditionsCommand.cs" />
     <Compile Include="Commands\Reactions\EditReagentsCommand.cs" />
     <Compile Include="Controls\AnnotationEditor.cs" />
+    <Compile Include="Controls\AnnotationEditorEventArgs.cs" />
+    <Compile Include="Controls\AnnotationEditorExitArgsType.cs" />
     <Compile Include="Controls\DragHandle.cs" />
     <Compile Include="Controls\ReactionOption.cs" />
     <Compile Include="Controls\ChemistryItem.xaml.cs">

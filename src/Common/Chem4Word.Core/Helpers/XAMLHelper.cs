@@ -15,9 +15,10 @@ namespace Chem4Word.Core.Helpers
 {
     public static class XAMLHelper
     {
-         #region XAML specific
         public static FlowDocument GetFlowDocument(string text)
         {
+            //make sure that we don't put spaces around the subscripts
+
             using (var xmlReader = XmlReader.Create(new StringReader(text),
                                             new XmlReaderSettings
                                             {
@@ -25,8 +26,8 @@ namespace Chem4Word.Core.Helpers
                                             }))
             {
                 xmlReader.Read();
-                string s = xmlReader.ReadOuterXml();
-                using (MemoryStream mStream = new MemoryStream(Encoding.Unicode.GetBytes(s)))
+                var s = xmlReader.ReadOuterXml();
+                using (var mStream = new MemoryStream(Encoding.Unicode.GetBytes(s)))
                 {
                     var tempDoc = (FlowDocument)XamlReader.Load(mStream);
                     return tempDoc;
@@ -40,7 +41,5 @@ namespace Chem4Word.Core.Helpers
             var doctext = new TextRange(doc.ContentStart, doc.ContentEnd).Text;
             return string.IsNullOrWhiteSpace(doctext);
         }
-
-        #endregion
     }
 }
