@@ -5,14 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Media;
-using System.Xml;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
@@ -22,6 +14,14 @@ using Chem4Word.Renderer.OoXmlV4.Entities;
 using Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic;
 using Chem4Word.Renderer.OoXmlV4.Enums;
 using Chem4Word.Renderer.OoXmlV4.TTF;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Media;
+using System.Xml;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
 
@@ -281,9 +281,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 {
                     case "Run":
                         var part = new FunctionalGroupPart
-                                   {
-                                       Text = node.InnerText
-                                   };
+                        {
+                            Text = node.InnerText
+                        };
                         if (!string.IsNullOrEmpty(part.Text))
                         {
                             if (node.Attributes?["BaselineAlignment"] != null)
@@ -407,7 +407,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 var width = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, Inputs.MeanBondLength);
                 var height = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, Inputs.MeanBondLength);
 
-                if (alc.IsSubScript)
+                if (alc.IsSubScript || alc.IsSuperScript)
                 {
                     // Shrink bounding box
                     width *= OoXmlHelper.SubscriptScaleFactor;
@@ -858,7 +858,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 var main = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                  Inputs.TtfCharacterSet, Inputs.MeanBondLength);
                 main.AddString(atomLabel, atomColour);
-                main.AdjustPosition(atom.Position - main.Centre);
+
+                // 1.1 Create a special group for the first character
+                var firstCharacter = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
+                                                           Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+                firstCharacter.AddCharacter(atomLabel[0], atomColour);
+
+                // Distance to move horizontally to midpoint of whole label
+                var x = atom.Position.X - main.Centre.X;
+                // Distance to move vertically to midpoint of first character
+                var y = atom.Position.Y - firstCharacter.Centre.Y;
+
+                // Move to new position
+                main.AdjustPosition(new Vector(x, y));
 
                 // 2. Create other character groups
 
@@ -1078,11 +1090,17 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 var terms = fg.ExpandIntoTerms(reverse);
 
+                // 1.1 Create a special group for the first character
+                var firstCapital = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
+                                                           Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+
                 var main = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                  Inputs.TtfCharacterSet, Inputs.MeanBondLength);
 
                 var auxiliary = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                       Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+
+                bool firstCapitalFound = false;
 
                 // 1. Generate characters
                 foreach (var term in terms)
@@ -1090,6 +1108,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     if (term.IsAnchor)
                     {
                         main.AddParts(term.Parts, atomColour);
+                        if (!firstCapitalFound)
+                        {
+                            firstCapital.AddCharacter(term.FirstCaptial, atomColour);
+                            firstCapitalFound = true;
+                        }
                     }
                     else
                     {
@@ -1098,7 +1121,22 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
 
                 // 2. Position characters
-                main.AdjustPosition(atom.Position - main.Centre);
+                if (firstCapitalFound)
+                {
+                    // Distance to move horizontally to midpoint of whole label
+                    var x = atom.Position.X - main.Centre.X;
+                    // Distance to move vertically to midpoint of first character
+                    var y = atom.Position.Y - firstCapital.Centre.Y;
+
+                    // Move to new position
+                    main.AdjustPosition(new Vector(x, y));
+                }
+                else
+                {
+                    // Fallback to old method
+                    main.AdjustPosition(atom.Position  - main.Centre);
+                }
+
                 Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(main.BoundingBox, OoXmlHelper.AcsLineWidth / 2), "00b050"));
 
                 if (auxiliary.Characters.Any())

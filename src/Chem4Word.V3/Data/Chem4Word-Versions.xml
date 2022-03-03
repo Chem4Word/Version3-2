@@ -3,13 +3,29 @@
 <ChangeLog>
     <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
     <Version>
+        <Number>3.2.2 Beta 2</Number>
+        <IsBeta>true</IsBeta>
+        <Released>03-Mar-2022</Released>
+        <Changes>
+            <Change>Now Detects Office 2021</Change>
+            <Change>Fix user manual path</Change>
+            <Change>Allow paste of multi line text into reaction reagents or conditions</Change>
+            <Change>Fix wandering lines in reaction reagents or conditions</Change>
+	        <Change>Fix centering of atom labels</Change>
+            <Change>Fix unable to edit reaction only chemistry object</Change>
+            <Change>Draw mode now changes reaction type</Change>
+            <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
+            <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
+        </Changes>
+        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.2.Beta.2.msi</Url>
+    </Version>
+    <Version>
         <Number>3.2.1 Beta 1</Number>
         <IsBeta>true</IsBeta>
         <Released>28-Feb-2022</Released>
         <Changes>
             <Change>First public beta of Chem4Word 2022 (V3.2)</Change>
         </Changes>
-        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.1.Beta.1.msi</Url>
     </Version>
     <Version>
         <Number>3.2.1 Alpha 0</Number>

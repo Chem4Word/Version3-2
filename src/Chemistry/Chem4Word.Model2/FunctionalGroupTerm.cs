@@ -14,14 +14,40 @@ namespace Chem4Word.Model2
         public List<FunctionalGroupPart> Parts { get; set; }
         public bool IsAnchor { get; set; }
 
-        public FunctionalGroupTerm()
+        public FunctionalGroupTerm() => Parts = new List<FunctionalGroupPart>();
+
+        public char FirstCaptial
         {
-            Parts = new List<FunctionalGroupPart>();
+            get
+            {
+                var result = char.MinValue;
+
+                foreach (var part in Parts)
+                {
+                    foreach (var character in part.Text)
+                    {
+                        switch (part.Type)
+                        {
+                            case FunctionalGroupPartType.Normal:
+                                if (char.IsUpper(character))
+                                {
+                                    result = character;
+                                }
+
+                                break;
+                        }
+                    }
+
+                    if (result > char.MinValue)
+                    {
+                        break;
+                    }
+                }
+
+                return result;
+            }
         }
 
-        public override string ToString()
-        {
-            return $"{Parts.Count} parts; IsAnchor {IsAnchor}";
-        }
+        public override string ToString() => $"{Parts.Count} parts; IsAnchor {IsAnchor}";
     }
 }
