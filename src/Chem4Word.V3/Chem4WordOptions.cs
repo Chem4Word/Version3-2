@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 using Chem4Word.Core.Helpers;
 using Newtonsoft.Json;
@@ -23,6 +24,7 @@ namespace Chem4Word
         private const bool DefaultCheckingEnabled = true;
 
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
         #region Telemetry
 
@@ -125,7 +127,7 @@ namespace Chem4Word
 
         public Chem4WordOptions Clone()
         {
-            Chem4WordOptions clone = new Chem4WordOptions();
+            var clone = new Chem4WordOptions();
 
             // Copy serialised properties
             clone.SetValuesFromCopy(this);
@@ -135,8 +137,8 @@ namespace Chem4Word
 
         private string GetFileName(string path)
         {
-            string fileName = $"{_product}.json";
-            string optionsFile = Path.Combine(path, fileName);
+            var fileName = $"{_product}.json";
+            var optionsFile = Path.Combine(path, fileName);
             return optionsFile;
         }
 
@@ -147,22 +149,23 @@ namespace Chem4Word
         {
             try
             {
-                string path = FileSystemHelper.GetWritablePath(SettingsPath);
+                var path = FileSystemHelper.GetWritablePath(SettingsPath);
 
                 if (!string.IsNullOrEmpty(path))
                 {
-                    string optionsFile = GetFileName(path);
+                    var optionsFile = GetFileName(path);
 
                     if (File.Exists(optionsFile))
                     {
                         try
                         {
                             Debug.WriteLine($"Reading Chem4Word Options from {optionsFile}");
-                            string contents = File.ReadAllText(optionsFile);
+                            var contents = ReadOptionsFile(optionsFile);
+
                             var options = JsonConvert.DeserializeObject<Chem4WordOptions>(contents);
                             SetValuesFromCopy(options);
 
-                            string temp = JsonConvert.SerializeObject(options, Formatting.Indented);
+                            var temp = JsonConvert.SerializeObject(options, Formatting.Indented);
                             if (!contents.Equals(temp))
                             {
                                 // Auto fix the file if required
@@ -216,31 +219,86 @@ namespace Chem4Word
             AutoUpdateFrequency = copy.AutoUpdateFrequency;
         }
 
-        private void PersistOptions(string optionsFile)
+        /// <summary>
+        /// Save the Chem4Word Options to the path defined in SettingsPath using defaults if this is null or empty string
+        /// </summary>
+        public void Save()
         {
+            var path = FileSystemHelper.GetWritablePath(SettingsPath);
+            if (!string.IsNullOrEmpty(path))
+            {
+                var optionsFile = GetFileName(path);
+                PersistOptions(optionsFile);
+            }
+        }
+
+        private string ReadOptionsFile(string filename)
+        {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+#if DEBUG
+            // Warning this causes logging every time Word starts
+            Globals.Chem4WordV3.Telemetry.Write(module, "Debug", $"Reading from {filename}");
+#endif
+
+            var lines = new List<string>();
+
             try
             {
-                Debug.WriteLine($"Saving Chem4Word Options to {optionsFile}");
-                string contents = JsonConvert.SerializeObject(this, Formatting.Indented);
-                File.WriteAllText(optionsFile, contents);
+                using (var stream = new FileStream(filename,
+                                                   FileMode.Open,
+                                                   FileAccess.Read,
+                                                   FileShare.ReadWrite))
+                {
+                    using (var bufferedStream = new BufferedStream(stream))
+                    {
+                        using (var streamReader = new StreamReader(bufferedStream))
+                        {
+                            string line;
+                            while ((line = streamReader.ReadLine()) != null)
+                            {
+                                lines.Add(line);
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception exception)
             {
                 Errors.Add(exception.Message);
                 Errors.Add(exception.StackTrace);
             }
+
+            return string.Join(Environment.NewLine, lines);
         }
 
-        /// <summary>
-        /// Save the Chem4Word Options to the path defined in SettingsPath using defaults if this is null or empty string
-        /// </summary>
-        public void Save()
+        private void PersistOptions(string filename)
         {
-            string path = FileSystemHelper.GetWritablePath(SettingsPath);
-            if (!string.IsNullOrEmpty(path))
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+#if DEBUG
+            // Warning this causes logging first time Word starts
+            Globals.Chem4WordV3.Telemetry.Write(module, "Debug", $"Writing to {filename}");
+#endif
+
+            try
             {
-                string optionsFile = GetFileName(path);
-                PersistOptions(optionsFile);
+                Debug.WriteLine($"Saving Chem4Word Options to {filename}");
+                var contents = JsonConvert.SerializeObject(this, Formatting.Indented);
+
+                using (var outStream = new FileStream(filename,
+                                                      FileMode.OpenOrCreate,
+                                                      FileAccess.Write,
+                                                      FileShare.ReadWrite))
+                {
+                    var bytes = Encoding.UTF8.GetBytes(contents);
+                    outStream.Write(bytes, 0, bytes.Length);
+                }
+            }
+            catch (Exception exception)
+            {
+                Errors.Add(exception.Message);
+                Errors.Add(exception.StackTrace);
             }
         }
     }

@@ -328,6 +328,8 @@ namespace Chem4Word
 
             try
             {
+                LoadOptions();
+
                 AddInInfo = new C4wAddInInfo();
 
                 UpdateHelper.ReadSavedValues();
@@ -635,8 +637,6 @@ namespace Chem4Word
                             // Do Nothing
                         }
                     }
-
-                    LoadOptions();
                 }
             }
             catch (ThreadAbortException)
