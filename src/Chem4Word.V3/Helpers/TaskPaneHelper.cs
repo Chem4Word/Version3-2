@@ -21,28 +21,28 @@ namespace Chem4Word.Helpers
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        public static void InsertChemistry(bool isCopy, Application app, Display display, bool fromLibrary)
+        public static void InsertChemistry(bool isCopy, Application application, Display display, bool fromLibrary)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            Document doc = app.ActiveDocument;
-            Selection sel = app.Selection;
-            ContentControl cc = null;
+            var activeDocument = DocumentHelper.GetActiveDocument();
+            var selection = application.Selection;
+            ContentControl contentControl = null;
 
             if (Globals.Chem4WordV3.SystemOptions == null)
             {
                 Globals.Chem4WordV3.LoadOptions();
             }
 
-            bool allowed = true;
-            string reason = "";
+            var allowed = true;
+            var reason = "";
 
             if (Globals.Chem4WordV3.ChemistryAllowed)
             {
-                if (sel.ContentControls.Count > 0)
+                if (selection.ContentControls.Count > 0)
                 {
-                    cc = sel.ContentControls[1];
-                    if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
+                    contentControl = selection.ContentControls[1];
+                    if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                     {
                         reason = "a chemistry object is selected";
                         allowed = false;
@@ -59,7 +59,7 @@ namespace Chem4Word.Helpers
             {
                 try
                 {
-                    CMLConverter cmlConverter = new CMLConverter();
+                    var cmlConverter = new CMLConverter();
                     var model = cmlConverter.Import(display.Chemistry.ToString());
 
                     if (fromLibrary)
@@ -77,7 +77,7 @@ namespace Chem4Word.Helpers
                         }
                     }
 
-                    cc = ChemistryHelper.Insert2DChemistry(doc, cmlConverter.Export(model), isCopy);
+                    contentControl = ChemistryHelper.Insert2DChemistry(activeDocument, cmlConverter.Export(model), isCopy);
                 }
                 catch (Exception ex)
                 {
@@ -88,10 +88,10 @@ namespace Chem4Word.Helpers
                 }
                 finally
                 {
-                    if (cc != null)
+                    if (contentControl != null)
                     {
                         // Move selection point into the Content Control which was just edited or added
-                        app.Selection.SetRange(cc.Range.Start, cc.Range.End);
+                        application.Selection.SetRange(contentControl.Range.Start, contentControl.Range.End);
                     }
                 }
             }
@@ -101,28 +101,28 @@ namespace Chem4Word.Helpers
             }
         }
 
-        public static void InsertChemistry(bool isCopy, Application app, string cml, bool fromLibrary)
+        public static void InsertChemistry(bool isCopy, Application application, string cml, bool fromLibrary)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            Document doc = app.ActiveDocument;
-            Selection sel = app.Selection;
-            ContentControl cc = null;
+            var activeDocument = DocumentHelper.GetActiveDocument();
+            var selection = application.Selection;
+            ContentControl contentControl = null;
 
             if (Globals.Chem4WordV3.SystemOptions == null)
             {
                 Globals.Chem4WordV3.LoadOptions();
             }
 
-            bool allowed = true;
-            string reason = "";
+            var allowed = true;
+            var reason = "";
 
             if (Globals.Chem4WordV3.ChemistryAllowed)
             {
-                if (sel.ContentControls.Count > 0)
+                if (selection.ContentControls.Count > 0)
                 {
-                    cc = sel.ContentControls[1];
-                    if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
+                    contentControl = selection.ContentControls[1];
+                    if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                     {
                         reason = "a chemistry object is selected";
                         allowed = false;
@@ -157,7 +157,7 @@ namespace Chem4Word.Helpers
                         }
                     }
 
-                    cc = ChemistryHelper.Insert2DChemistry(doc, cmlConverter.Export(model), isCopy);
+                    contentControl = ChemistryHelper.Insert2DChemistry(activeDocument, cmlConverter.Export(model), isCopy);
                 }
                 catch (Exception ex)
                 {
@@ -168,10 +168,10 @@ namespace Chem4Word.Helpers
                 }
                 finally
                 {
-                    if (cc != null)
+                    if (contentControl != null)
                     {
                         // Move selection point into the Content Control which was just edited or added
-                        app.Selection.SetRange(cc.Range.Start, cc.Range.End);
+                        application.Selection.SetRange(contentControl.Range.Start, contentControl.Range.End);
                     }
                 }
             }

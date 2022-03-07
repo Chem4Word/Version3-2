@@ -12,7 +12,6 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Chem4Word.Core.Helpers;
-using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using IChem4Word.Contracts;
 
@@ -148,8 +147,10 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         {
             if (!PointHelper.PointIsEmpty(TopLeft))
             {
-                Left = (int)TopLeft.X;
-                Top = (int)TopLeft.Y;
+                var screen = Screen.FromControl(this);
+                var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                Left = (int)sensible.X;
+                Top = (int)sensible.Y;
             }
             display1.Background = Brushes.White;
             display1.HighlightActive = false;

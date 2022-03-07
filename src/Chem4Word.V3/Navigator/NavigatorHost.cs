@@ -21,10 +21,10 @@ namespace Chem4Word.Navigator
             _acmeOptions = new AcmeOptions();
         }
 
-        public NavigatorHost(Document doc) : this()
+        public NavigatorHost(Document document) : this()
         {
-            var controller = new NavigatorController(doc);
-            navigatorView1.ActiveDocument = doc;
+            var controller = new NavigatorController(document);
+            navigatorView1.ActiveDocument = document;
 
             _acmeOptions = new AcmeOptions(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath);
             navigatorView1.SetOptions(_acmeOptions);

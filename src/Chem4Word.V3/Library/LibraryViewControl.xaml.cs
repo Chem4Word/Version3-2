@@ -66,7 +66,7 @@ namespace Chem4Word.Library
                         if (clicked != null)
                         {
                             Globals.Chem4WordV3.EventsEnabled = false;
-                            var activeDocument = Globals.Chem4WordV3.Application.ActiveDocument;
+                            var activeDocument = DocumentHelper.GetActiveDocument();
 
                             if (Globals.Chem4WordV3.Application.Documents.Count > 0
                                 && activeDocument?.ActiveWindow?.Selection != null)

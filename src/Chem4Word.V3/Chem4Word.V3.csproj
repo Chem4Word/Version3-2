@@ -363,6 +363,7 @@
     <Compile Include="AssemblyReflectionProxy.cs" />
     <Compile Include="Helpers\ChemistryHelper.cs" />
     <Compile Include="Helpers\ConfigWatcher.cs" />
+    <Compile Include="Helpers\DocumentHelper.cs" />
     <Compile Include="Helpers\ReferenceKeeper.cs" />
     <Compile Include="Helpers\RegistryHelper.cs" />
     <Compile Include="Helpers\TargetWord.cs" />

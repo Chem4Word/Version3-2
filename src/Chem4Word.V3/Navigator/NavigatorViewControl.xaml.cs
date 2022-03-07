@@ -127,7 +127,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
                     return;
                 }
             }
@@ -140,7 +140,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
                     return;
                 }
             }
@@ -162,7 +162,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
                     return;
                 }
             }
@@ -175,7 +175,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
                     return;
                 }
             }
