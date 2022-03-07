@@ -33,18 +33,19 @@ namespace Chem4Word.ACME.Utils
         {
             string chargeString = "";
 
-            if ((charge ?? 0) > 0)
+            int chargeVal = charge ?? 0;
+            if (chargeVal > 0)
             {
                 chargeString = "+";
             }
             //use the en-rule for single negative charges - it makes them more distinct
-            else
+            else if (chargeVal < 0)
             {
                 chargeString = Globals.EnDashSymbol;
             }
 
             int abscharge;
-            if ((abscharge = Math.Abs(charge ?? 0)) > 1)
+            if ((abscharge = Math.Abs(chargeVal)) > 1)
             {
                 chargeString = abscharge + chargeString;
             }

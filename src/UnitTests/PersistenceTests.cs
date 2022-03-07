@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
