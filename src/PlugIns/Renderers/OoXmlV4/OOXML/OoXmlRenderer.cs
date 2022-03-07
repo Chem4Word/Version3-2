@@ -16,7 +16,6 @@ using System.Windows.Media;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 using Chem4Word.Renderer.OoXmlV4.Entities;
 using Chem4Word.Renderer.OoXmlV4.Enums;
 using Chem4Word.Renderer.OoXmlV4.TTF;
@@ -2043,7 +2042,17 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 _boundingBoxOfEverything.Union(group.ExternalCharacterExtents);
             }
 
-            _boundingBoxOfEverything.Inflate(OoXmlHelper.DrawingMargin, OoXmlHelper.DrawingMargin);
+            // Bullet proofing - Error seen in telemetry :-
+            // System.InvalidOperationException: Cannot call this method on the Empty Rect.
+            //   at System.Windows.Rect.Inflate(Double width, Double height)
+            if (_boundingBoxOfEverything == Rect.Empty)
+            {
+                _boundingBoxOfEverything = new Rect(new Point(0, 0), new Size(OoXmlHelper.DrawingMargin * 10, OoXmlHelper.DrawingMargin * 10));
+            }
+            else
+            {
+                _boundingBoxOfEverything.Inflate(OoXmlHelper.DrawingMargin, OoXmlHelper.DrawingMargin);
+            }
         }
 
         private double BondOffset()

@@ -75,19 +75,18 @@ namespace Chem4Word.Navigator
                                    let chemModel = converter.Import(part.XML)
                                    select new ChemistryObject
                                    {
-                                       CustomControlTag = ccs?.Tag,
+                                       CustomControlTag = CustomXmlPartHelper.GuidFromTag(ccs?.Tag),
                                        Cml = part.XML,
                                        Formula = chemModel.ConciseFormula
                                    };
 
-                    foreach (ChemistryObject navigatorItem in navItems)
+                    foreach (var chemistryObject in navItems)
                     {
-                        string guid = CustomXmlPartHelper.GuidFromTag(navigatorItem.CustomControlTag);
-                        if (!string.IsNullOrEmpty(guid)
-                            && !added.ContainsKey(guid))
+                        if (!string.IsNullOrEmpty(chemistryObject.CustomControlTag)
+                            && !added.ContainsKey(chemistryObject.CustomControlTag))
                         {
-                            NavigatorItems.Add(navigatorItem);
-                            added.Add(guid, 1);
+                            NavigatorItems.Add(chemistryObject);
+                            added.Add(chemistryObject.CustomControlTag, 1);
                         }
                     }
 

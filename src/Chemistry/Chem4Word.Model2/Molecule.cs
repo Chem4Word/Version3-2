@@ -981,17 +981,17 @@ namespace Chem4Word.Model2
             {
                 foreach (TextualProperty formula in Formulas)
                 {
-                    formula.CanBeDeleted = !protectedLabels.Any(s => s.StartsWith(formula.Id));
+                    formula.CanBeDeleted = !protectedLabels.Any(s => s.StartsWith($"{formula.Id}:"));
                 }
 
                 foreach (TextualProperty name in Names)
                 {
-                    name.CanBeDeleted = !protectedLabels.Any(s => s.StartsWith(name.Id));
+                    name.CanBeDeleted = !protectedLabels.Any(s => s.StartsWith($"{name.Id}:"));
                 }
 
                 foreach (TextualProperty label in Captions)
                 {
-                    label.CanBeDeleted = !protectedLabels.Any(s => s.StartsWith(label.Id));
+                    label.CanBeDeleted = !protectedLabels.Any(s => s.StartsWith($"{label.Id}:"));
                 }
             }
 
