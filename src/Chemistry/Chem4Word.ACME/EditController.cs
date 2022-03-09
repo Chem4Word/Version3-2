@@ -1809,6 +1809,7 @@ namespace Chem4Word.ACME
                                         Model.ScaleToAverageBondLength(newLength, centre);
                                         SetTextParams(newLength);
                                         RefreshMolecules(Model.Molecules.Values.ToList());
+                                        RefreshReactions(Model.DefaultReactionScheme.Reactions.Values.ToList());
                                         Loading = true;
                                         CurrentBondLength = newLength / ScaleFactorForXaml;
                                         Loading = false;
@@ -1818,6 +1819,7 @@ namespace Chem4Word.ACME
                                         Model.ScaleToAverageBondLength(currentLength, centre);
                                         SetTextParams(currentSelection);
                                         RefreshMolecules(Model.Molecules.Values.ToList());
+                                        RefreshReactions(Model.DefaultReactionScheme.Reactions.Values.ToList());
                                         Loading = true;
                                         CurrentBondLength = currentSelection / ScaleFactorForXaml;
                                         Loading = false;
@@ -1835,6 +1837,15 @@ namespace Chem4Word.ACME
             }
 
             CheckModelIntegrity(module);
+        }
+
+        private void RefreshReactions(List<Reaction> reactions)
+        {
+             foreach (var reaction in reactions)
+             {
+
+                reaction.UpdateVisual();
+             }
         }
 
         public void CopySelection()

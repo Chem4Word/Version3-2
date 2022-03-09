@@ -1079,7 +1079,7 @@ namespace Chem4Word.Model2
 
         public void ScaleToAverageBondLength(double newLength, Point centre)
         {
-            if (TotalBondsCount > 0 && MeanBondLength > 0)
+            if ((TotalBondsCount + DefaultReactionScheme.Reactions.Count) > 0 && MeanBondLength > 0)
             {
                 ScaleToAverageBondLength(newLength);
 
