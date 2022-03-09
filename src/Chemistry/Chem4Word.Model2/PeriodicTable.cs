@@ -168,40 +168,60 @@ namespace Chem4Word.Model2
 
         public bool HasElement(string symbol) => Elements.ContainsKey(symbol);
 
-        public int AvailableElectrons(Element element, int sumOfBondOrder, int charge)
+        /// <summary>
+        /// Calculates the number of spare valencies an atom has. 
+        /// Uses the obscure formula from the original C4W
+        /// valence calculation routine
+        /// </summary>
+        /// <param name="element">Element of the atom</param>
+        /// <param name="sumOfBondOrder">Total order of bonds involved</param>
+        /// <param name="charge">Formal charge on atom</param>
+        /// <returns>Integer: can be -ve, in which case atom is overbonded</returns>
+        public int SpareValencies(Element element, int sumOfBondOrder, int charge)
         {
-            int result = 0;
-            var carbonGroup = Elements["C"].Group;
-            var thisGroup = element.Group;
+            int valence = GetValence(element, sumOfBondOrder);
+            int diff = valence - sumOfBondOrder;
 
-            bool isToTheLeft = thisGroup <= carbonGroup;
-
-            if (element.Valencies != null && element.Valencies.Length > 0)
+            if(charge>0)
             {
-                int idx = 0;
-                while (idx < element.Valencies.Length)
+                int vDiff = 4 - valence;
+                if (charge < vDiff)
                 {
-                    int valence = element.Valencies[idx];
-                    if (isToTheLeft)
-                    {
-                        valence -= charge;
-                    }
-                    else
-                    {
-                        valence += charge;
-                    }
-
-                    result = valence - sumOfBondOrder;
-                    if (result >= 0)
-                    {
-                        break;
-                    }
-
-                    idx++;
+                    diff +=charge;
+                }
+                else
+                {
+                    diff = 4 - sumOfBondOrder - charge + vDiff;
                 }
             }
+            else
+            { 
+                diff += charge;
+            }
 
-            return result;
+            return diff;
+        }
+
+        /// <summary>
+        /// Returns the minimum possible valence that 
+        /// fits the bond order. 
+        /// If this fails, returns the maximum valence of the atom
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="sumOfBondOrder"></param>
+        /// <returns></returns>
+        private int GetValence(Element element, int sumOfBondOrder)
+        {
+            //find the first possible valence that accommodates the bond order sum
+            foreach (int v in element.Valencies)
+            {
+                if(v >= sumOfBondOrder)
+                {
+                    return v;
+                }
+            }
+            //if we've run out of valences that might cope, return the last one
+            return element.Valencies.Last();
         }
 
         private object this[string propertyName]

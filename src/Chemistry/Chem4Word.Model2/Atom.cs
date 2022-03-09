@@ -513,7 +513,7 @@ namespace Chem4Word.Model2
                     {
                         int bondCount = (int)Math.Truncate(BondOrders);
                         int charge = FormalCharge ?? 0;
-                        int availableElectrons = Globals.PeriodicTable.AvailableElectrons(Element as Element, bondCount, charge);
+                        int availableElectrons = Globals.PeriodicTable.SpareValencies(Element as Element, bondCount, charge);
                         iHydrogenCount = availableElectrons <= 0 ? 0 : availableElectrons;
                     }
                 }
@@ -760,7 +760,7 @@ namespace Chem4Word.Model2
             {
                 int bondCount = (int)Math.Truncate(BondOrders);
                 int charge = FormalCharge ?? 0;
-                int availableElectrons = Globals.PeriodicTable.AvailableElectrons(Element as Element, bondCount, charge);
+                int availableElectrons = Globals.PeriodicTable.SpareValencies(Element as Element, bondCount, charge);
                 bool result = availableElectrons < 0;
                 return result;
             }
