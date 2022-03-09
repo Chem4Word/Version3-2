@@ -11,6 +11,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing.LayoutSupport;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
@@ -198,9 +200,9 @@ namespace Chem4Word.ACME.Drawing
                 var bondvector = descriptor.PrincipleVector;
                 var centreVector = descriptor.PrimaryCentroid - descriptor.Start;
 
-                var computedPlacement = (Globals.BondDirection)Math.Sign(Vector.CrossProduct(centreVector.Value, bondvector));
+                var computedPlacement = (BondDirection)Math.Sign(Vector.CrossProduct(centreVector.Value, bondvector));
 
-                if (descriptor.Placement != Globals.BondDirection.None)
+                if (descriptor.Placement != BondDirection.None)
                 {
                     if (computedPlacement == descriptor.Placement) //then we have nothing to worry about
                     {
@@ -222,12 +224,12 @@ namespace Chem4Word.ACME.Drawing
                     if (perpAngle >= 80 && perpAngle <= 100) //probably convex ring
                     {
                         //shorten the second bond to fit neatly within the ring
-                        descriptorSecondaryStart = BasicGeometry.LineSegmentsIntersect(descriptor.Start, workingCentroid.Value,
-                                                                      descriptor.SecondaryStart,
-                                                                      descriptor.SecondaryEnd);
-                        descriptorSecondaryEnd = BasicGeometry.LineSegmentsIntersect(descriptor.End, workingCentroid.Value,
-                                                                      descriptor.SecondaryStart,
-                                                                      descriptor.SecondaryEnd);
+                        descriptorSecondaryStart = GeometryTool.LineSegmentsIntersect(descriptor.Start, workingCentroid.Value,
+                                                                                      descriptor.SecondaryStart,
+                                                                                      descriptor.SecondaryEnd);
+                        descriptorSecondaryEnd = GeometryTool.LineSegmentsIntersect(descriptor.End, workingCentroid.Value,
+                                                                                    descriptor.SecondaryStart,
+                                                                                    descriptor.SecondaryEnd);
                         var tempPoint3 = descriptorSecondaryStart ?? descriptor.SecondaryStart;
                         var tempPoint4 = descriptorSecondaryEnd ?? descriptor.SecondaryEnd;
 
@@ -279,7 +281,7 @@ namespace Chem4Word.ACME.Drawing
             foreach (Point neighbourPos in atomPosList)
             {
                 Point? intersection =
-                    BasicGeometry.LineSegmentsIntersect(secondaryStart, secondaryEnd, primaryAtomPos, neighbourPos);
+                    GeometryTool.LineSegmentsIntersect(secondaryStart, secondaryEnd, primaryAtomPos, neighbourPos);
                 if (intersection != null)
                 {
                     //need to shorten the line again
@@ -289,8 +291,8 @@ namespace Chem4Word.ACME.Drawing
                     Matrix rotator = new Matrix();
                     rotator.Rotate(-splitAngle);
                     splitVector = splitVector * rotator;
-                    Point? temp = BasicGeometry.LineSegmentsIntersect(secondaryStart, secondaryEnd, primaryAtomPos,
-                                                                       primaryAtomPos + splitVector);
+                    Point? temp = GeometryTool.LineSegmentsIntersect(secondaryStart, secondaryEnd, primaryAtomPos,
+                                                                     primaryAtomPos + splitVector);
                     if (temp != null)
                     {
                         secondaryStart = temp.Value;
@@ -319,7 +321,7 @@ namespace Chem4Word.ACME.Drawing
             {
                 //case BondDirection.None is covered by default
 
-                case Globals.BondDirection.Clockwise:
+                case BondDirection.Clockwise:
                     {
                         descriptor.SecondaryStart = tempStart - normal * 2 * distance;
                         descriptor.SecondaryEnd = descriptor.SecondaryStart + v;
@@ -327,7 +329,7 @@ namespace Chem4Word.ACME.Drawing
                         break;
                     }
 
-                case Globals.BondDirection.Anticlockwise:
+                case BondDirection.Anticlockwise:
                     descriptor.SecondaryStart = tempStart + normal * 2 * distance;
                     descriptor.SecondaryEnd = descriptor.SecondaryStart + v;
                     break;
@@ -425,7 +427,7 @@ namespace Chem4Word.ACME.Drawing
             for (int i = 0; i < atomHull.Count; i++)
             {
                 Point? p;
-                if ((p = BasicGeometry.LineSegmentsIntersect(start, end, atomHull[i], atomHull[(i + 1) % atomHull.Count])) != null)
+                if ((p = GeometryTool.LineSegmentsIntersect(start, end, atomHull[i], atomHull[(i + 1) % atomHull.Count])) != null)
                 {
                     return p;
                 }
@@ -582,14 +584,14 @@ namespace Chem4Word.ACME.Drawing
             //work out the biggest scaling factor for either long edge
             foreach (var point in widestPoints)
             {
-                BasicGeometry.IntersectLines(descriptor.Start,
-                                             descriptor.FirstCorner,
-                                             descriptor.End,
-                                             point, out var firstEdgeCut, out var otherBond1Cut);
-                BasicGeometry.IntersectLines(descriptor.Start,
-                                             descriptor.SecondCorner,
-                                             descriptor.End,
-                                             point, out var secondEdgeCut, out var otherBond2Cut);
+                GeometryTool.IntersectLines(descriptor.Start,
+                                            descriptor.FirstCorner,
+                                            descriptor.End,
+                                            point, out var firstEdgeCut, out var otherBond1Cut);
+                GeometryTool.IntersectLines(descriptor.Start,
+                                            descriptor.SecondCorner,
+                                            descriptor.End,
+                                            point, out var secondEdgeCut, out var otherBond2Cut);
                 if (otherAtomPoints.Count == 1)
                 {
                     if (firstEdgeCut > firstScalingFactor)

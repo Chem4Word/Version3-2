@@ -11,6 +11,7 @@ using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Enums;
 using Chem4Word.ACME.Graphics;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Geometry;
 
@@ -38,7 +39,7 @@ namespace Chem4Word.ACME.Adorners.Feedback
 
             var hloc = new Point((Bounds.Right + Bounds.Left) / 2, (Bounds.Top + Bounds.Bottom) / 2);
             var radiusVector = hloc - parentAtom.Position;
-            var newPlacementAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth, radiusVector);
+            var newPlacementAngle = Vector.AngleBetween(GeometryTool.ScreenNorth, radiusVector);
 
             Arrow arrow1 = new ArcArrow
             {

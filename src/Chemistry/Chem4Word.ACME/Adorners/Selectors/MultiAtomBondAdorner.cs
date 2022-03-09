@@ -10,8 +10,10 @@ using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;
+using Geometry = System.Windows.Media.Geometry;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -145,7 +147,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            SolidColorBrush renderBrush = (SolidColorBrush)FindResource(Globals.AtomBondSelectorBrush);
+            SolidColorBrush renderBrush = (SolidColorBrush)FindResource(Common.AtomBondSelectorBrush);
             drawingContext.DrawGeometry(renderBrush, null, OverallGeometry);
         }
 

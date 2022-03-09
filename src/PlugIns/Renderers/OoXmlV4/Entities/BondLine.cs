@@ -222,7 +222,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         {
             bool intersect;
             Point intersection;
-            CoordinateTool.FindIntersection(line1Start, line1End, line2Start, line2End,
+            GeometryTool.FindIntersection(line1Start, line1End, line2Start, line2End,
                                             out _, out intersect, out intersection);
             if (intersect)
             {

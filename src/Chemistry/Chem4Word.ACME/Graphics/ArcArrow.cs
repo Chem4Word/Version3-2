@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Graphics
@@ -82,7 +83,7 @@ namespace Chem4Word.ACME.Graphics
 
         protected override PathFigure Shaft()
         {
-            var startVector = BasicGeometry.ScreenNorth * Radius;
+            var startVector = GeometryTool.ScreenNorth * Radius;
             var endVector = startVector;
 
             Matrix startRotator = new Matrix();

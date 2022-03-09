@@ -9,8 +9,9 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Enums;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Geometry;
-using static Chem4Word.Model2.Geometry.CompassPoints;
 
 namespace Chem4Word.ACME.Drawing.Text
 {
@@ -131,32 +132,33 @@ namespace Chem4Word.ACME.Drawing.Text
             {
                 //all addition in this routine is *vector* addition.
                 //We are not adding absolute X and Y values
-                case North:
+                case CompassPoints.North:
                     adjunctCenter = parentMetrics.Geocenter +
-                                    BasicGeometry.ScreenNorth * charHeight;
+                                    GeometryTool.ScreenNorth * charHeight;
                     break;
 
-                case West:
+                case CompassPoints.West:
                     if (subscriptInfo != null)
                     {
-                        adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenWest *
+                        adjunctCenter = parentMetrics.Geocenter + GeometryTool.ScreenWest *
                             (adjunctWidth + subscriptInfo.Value.Width);
                     }
                     else
                     {
-                        adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenWest * adjunctWidth;
+                        adjunctCenter = parentMetrics.Geocenter + GeometryTool.ScreenWest * adjunctWidth;
                     }
                     break;
 
-                case South:
+                case CompassPoints.South:
                     adjunctCenter = parentMetrics.Geocenter +
-                                    BasicGeometry.ScreenSouth * charHeight;
+                                    GeometryTool.ScreenSouth * charHeight;
                     break;
 
                 default:
-                    adjunctCenter = parentMetrics.Geocenter + BasicGeometry.ScreenEast * adjunctWidth;
+                    adjunctCenter = parentMetrics.Geocenter + GeometryTool.ScreenEast * adjunctWidth;
                     break;
             }
+
             return adjunctCenter;
         }
     }

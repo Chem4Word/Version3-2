@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 using Newtonsoft.Json;
 
@@ -141,15 +142,15 @@ namespace Chem4Word.Model2.Converters.JSON
                         e = indexLookup[bond.EndAtom]
                     };
 
-                    if (bond.Stereo == Globals.BondStereo.Wedge)
+                    if (bond.Stereo == BondStereo.Wedge)
                     {
                         mj.b[iBond].s = Protruding;
                     }
-                    else if (bond.Stereo == Globals.BondStereo.Hatch)
+                    else if (bond.Stereo == BondStereo.Hatch)
                     {
                         mj.b[iBond].s = Recessed;
                     }
-                    else if (bond.Stereo == Globals.BondStereo.Indeterminate)
+                    else if (bond.Stereo == BondStereo.Indeterminate)
                     {
                         mj.b[iBond].s = Ambiguous;
                     }
@@ -244,50 +245,50 @@ namespace Chem4Word.Model2.Converters.JSON
                     string o;
                     if (b.o != null)
                     {
-                        o = Globals.OrderValueToOrder(double.Parse(b.o.ToString()));
+                        o = Bond.OrderValueToOrder(double.Parse(b.o.ToString()));
                     }
                     else
                     {
                         o = Globals.OrderSingle;
                     }
 
-                    Globals.BondStereo s;
+                    BondStereo s;
                     if (!string.IsNullOrEmpty(b.s))
                     {
                         if (o == Globals.OrderDouble)
                         {
                             if (b.s.Equals(Ambiguous))
                             {
-                                s = Globals.BondStereo.Indeterminate;
+                                s = BondStereo.Indeterminate;
                             }
                             else
                             {
-                                s = Globals.BondStereo.None;
+                                s = BondStereo.None;
                             }
                         }
                         else
                         {
                             if (b.s.Equals(Recessed))
                             {
-                                s = Globals.BondStereo.Hatch;
+                                s = BondStereo.Hatch;
                             }
                             else if (b.s.Equals(Protruding))
                             {
-                                s = Globals.BondStereo.Wedge;
+                                s = BondStereo.Wedge;
                             }
                             else if (b.s.Equals(Ambiguous))
                             {
-                                s = Globals.BondStereo.Indeterminate;
+                                s = BondStereo.Indeterminate;
                             }
                             else
                             {
-                                s = Globals.BondStereo.None;
+                                s = BondStereo.None;
                             }
                         }
                     }
                     else
                     {
-                        s = Globals.BondStereo.None;
+                        s = BondStereo.None;
                     }
 
                     // Azure DevOps #715

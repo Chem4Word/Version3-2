@@ -99,9 +99,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // Initialise progress monitoring
             var progress = new Progress
-                           {
-                               TopLeft = _topLeft
-                           };
+            {
+                TopLeft = _topLeft
+            };
 
             var positioner = new OoXmlPositioner(new PositionerInputs
             {
@@ -163,11 +163,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             switch (reaction.ReactionType)
                             {
                                 case ReactionType.ReversibleBiasedReverse:
-                                    CoordinateTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
+                                    GeometryTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
                                     break;
 
                                 case ReactionType.ReversibleBiasedForward:
-                                    CoordinateTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
+                                    GeometryTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
                                     break;
 
                                 case ReactionType.Reversible:
@@ -260,7 +260,6 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             rect.Union(thisBoundingBox);
                         }
                     }
-
                 }
             }
 
@@ -273,6 +272,16 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             var spotSize = _medianBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 3;
+
+            if (_options.ShowCrossingPoints)
+            {
+                foreach (var point in _positionerOutputs.CrossingPoints)
+                {
+                    var extents = new Rect(new Point(point.X - spotSize * 2, point.Y - spotSize * 2),
+                                           new Point(point.X + spotSize * 2, point.Y + spotSize * 2));
+                    DrawShape(extents, A.ShapeTypeValues.Ellipse, true, "ffa500");
+                }
+            }
 
             if (_options.ShowRingCentres)
             {
@@ -359,7 +368,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             bool intersect;
                             Point intersection;
 
-                            CoordinateTool.FindIntersection(wedge.Nose, p1, shared.Nose, p2,
+                            GeometryTool.FindIntersection(wedge.Nose, p1, shared.Nose, p2,
                                                             out _, out intersect, out intersection);
                             if (intersect)
                             {
@@ -558,20 +567,20 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             A.Point MakeSubscriptPoint(TtfPoint ttfPoint)
             {
                 var pp = new A.Point
-                         {
-                             X = $"{OoXmlHelper.ScaleCsTtfSubScriptToEmu(ttfPoint.X - alc.Character.OriginX, _medianBondLength)}",
-                             Y = $"{OoXmlHelper.ScaleCsTtfSubScriptToEmu(alc.Character.Height + ttfPoint.Y - (alc.Character.Height + alc.Character.OriginY), _medianBondLength)}"
-                         };
+                {
+                    X = $"{OoXmlHelper.ScaleCsTtfSubScriptToEmu(ttfPoint.X - alc.Character.OriginX, _medianBondLength)}",
+                    Y = $"{OoXmlHelper.ScaleCsTtfSubScriptToEmu(alc.Character.Height + ttfPoint.Y - (alc.Character.Height + alc.Character.OriginY), _medianBondLength)}"
+                };
                 return pp;
             }
 
             A.Point MakeNormalPoint(TtfPoint ttfPoint)
             {
                 var pp = new A.Point
-                         {
-                             X = $"{OoXmlHelper.ScaleCsTtfToEmu(ttfPoint.X - alc.Character.OriginX, _medianBondLength)}",
-                             Y = $"{OoXmlHelper.ScaleCsTtfToEmu(alc.Character.Height + ttfPoint.Y - (alc.Character.Height + alc.Character.OriginY), _medianBondLength)}"
-                         };
+                {
+                    X = $"{OoXmlHelper.ScaleCsTtfToEmu(ttfPoint.X - alc.Character.OriginX, _medianBondLength)}",
+                    Y = $"{OoXmlHelper.ScaleCsTtfToEmu(alc.Character.Height + ttfPoint.Y - (alc.Character.Height + alc.Character.OriginY), _medianBondLength)}"
+                };
                 return pp;
             }
         }
@@ -859,20 +868,20 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 var moveTo = new A.MoveTo();
                 var startPoint = new A.Point
-                                 {
-                                     X = line.Start.X.ToString("0"),
-                                     Y = line.Start.Y.ToString("0")
-                                 };
+                {
+                    X = line.Start.X.ToString("0"),
+                    Y = line.Start.Y.ToString("0")
+                };
 
                 moveTo.Append(startPoint);
                 path.Append(moveTo);
 
                 var lineTo = new A.LineTo();
                 var endPoint = new A.Point
-                               {
-                                   X = line.End.X.ToString("0"),
-                                   Y = line.End.Y.ToString("0")
-                               };
+                {
+                    X = line.End.X.ToString("0"),
+                    Y = line.End.Y.ToString("0")
+                };
                 lineTo.Append(endPoint);
                 path.Append(lineTo);
 
@@ -1367,28 +1376,28 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             var allpoints = new List<Point>();
 
-            var startingPoint = CoordinateTool.GetMidPoint(innerCircle.Points[innerCircle.Points.Count - 1], innerCircle.Points[0]);
+            var startingPoint = GeometryTool.GetMidPoint(innerCircle.Points[innerCircle.Points.Count - 1], innerCircle.Points[0]);
             var leftPoint = startingPoint;
             var middlePoint = innerCircle.Points[0];
-            var rightPoint = CoordinateTool.GetMidPoint(innerCircle.Points[0], innerCircle.Points[1]);
+            var rightPoint = GeometryTool.GetMidPoint(innerCircle.Points[0], innerCircle.Points[1]);
             allpoints.Add(leftPoint);
             allpoints.Add(middlePoint);
             allpoints.Add(rightPoint);
 
             for (var i = 1; i < innerCircle.Points.Count - 1; i++)
             {
-                leftPoint = CoordinateTool.GetMidPoint(innerCircle.Points[i - 1], innerCircle.Points[i]);
+                leftPoint = GeometryTool.GetMidPoint(innerCircle.Points[i - 1], innerCircle.Points[i]);
                 middlePoint = innerCircle.Points[i];
-                rightPoint = CoordinateTool.GetMidPoint(innerCircle.Points[i], innerCircle.Points[i + 1]);
+                rightPoint = GeometryTool.GetMidPoint(innerCircle.Points[i], innerCircle.Points[i + 1]);
 
                 allpoints.Add(leftPoint);
                 allpoints.Add(middlePoint);
                 allpoints.Add(rightPoint);
             }
 
-            leftPoint = CoordinateTool.GetMidPoint(innerCircle.Points[innerCircle.Points.Count - 2], innerCircle.Points[innerCircle.Points.Count - 1]);
+            leftPoint = GeometryTool.GetMidPoint(innerCircle.Points[innerCircle.Points.Count - 2], innerCircle.Points[innerCircle.Points.Count - 1]);
             middlePoint = innerCircle.Points[innerCircle.Points.Count - 1];
-            rightPoint = CoordinateTool.GetMidPoint(innerCircle.Points[innerCircle.Points.Count - 1], innerCircle.Points[0]);
+            rightPoint = GeometryTool.GetMidPoint(innerCircle.Points[innerCircle.Points.Count - 1], innerCircle.Points[0]);
             allpoints.Add(leftPoint);
             allpoints.Add(middlePoint);
             allpoints.Add(rightPoint);
@@ -1561,21 +1570,21 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // Add Arrow Head
             var headEnd = new A.HeadEnd
-                          {
-                              Type = A.LineEndValues.Triangle,
-                              Width = A.LineEndWidthValues.Small,
-                              Length = A.LineEndLengthValues.Small
-                          };
+            {
+                Type = A.LineEndValues.Triangle,
+                Width = A.LineEndWidthValues.Small,
+                Length = A.LineEndLengthValues.Small
+            };
             outline.Append(headEnd);
 
             if (reactionType == ReactionType.Resonance)
             {
                 var tailEnd = new A.TailEnd
-                              {
-                                  Type = A.LineEndValues.Triangle,
-                                  Width = A.LineEndWidthValues.Small,
-                                  Length = A.LineEndLengthValues.Small
-                              };
+                {
+                    Type = A.LineEndValues.Triangle,
+                    Width = A.LineEndWidthValues.Small,
+                    Length = A.LineEndLengthValues.Small
+                };
                 outline.Append(tailEnd);
             }
 
@@ -1701,11 +1710,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             if (!string.IsNullOrEmpty(bondPath) && _options.ShowBondDirection)
             {
                 var tailEnd = new A.TailEnd
-                              {
-                                  Type = A.LineEndValues.Arrow,
-                                  Width = A.LineEndWidthValues.Small,
-                                  Length = A.LineEndLengthValues.Small
-                              };
+                {
+                    Type = A.LineEndValues.Arrow,
+                    Width = A.LineEndWidthValues.Small,
+                    Length = A.LineEndLengthValues.Small
+                };
                 outline.Append(tailEnd);
             }
 
@@ -1917,12 +1926,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             run.Append(drawing);
 
             var inline = new Wp.Inline
-                         {
-                             DistanceFromTop = (UInt32Value)0U,
-                             DistanceFromLeft = (UInt32Value)0U,
-                             DistanceFromBottom = (UInt32Value)0U,
-                             DistanceFromRight = (UInt32Value)0U
-                         };
+            {
+                DistanceFromTop = (UInt32Value)0U,
+                DistanceFromLeft = (UInt32Value)0U,
+                DistanceFromBottom = (UInt32Value)0U,
+                DistanceFromRight = (UInt32Value)0U
+            };
             drawing.Append(inline);
 
             var width = OoXmlHelper.ScaleCmlToEmu(_boundingBoxOfEverything.Width);
@@ -1930,22 +1939,22 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             var extent = new Wp.Extent { Cx = width, Cy = height };
 
             var effectExtent = new Wp.EffectExtent
-                               {
-                                   TopEdge = 0L,
-                                   LeftEdge = 0L,
-                                   BottomEdge = 0L,
-                                   RightEdge = 0L
-                               };
+            {
+                TopEdge = 0L,
+                LeftEdge = 0L,
+                BottomEdge = 0L,
+                RightEdge = 0L
+            };
 
             inline.Append(extent);
             inline.Append(effectExtent);
 
             var inlineId = UInt32Value.FromUInt32((uint)_ooxmlId);
             var docProperties = new Wp.DocProperties
-                                {
-                                    Id = inlineId,
-                                    Name = "Chem4Word Structure"
-                                };
+            {
+                Id = inlineId,
+                Name = "Chem4Word Structure"
+            };
 
             inline.Append(docProperties);
 
@@ -1955,9 +1964,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             inline.Append(graphic);
 
             var graphicData = new A.GraphicData
-                              {
-                                  Uri = "http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
-                              };
+            {
+                Uri = "http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
+            };
 
             graphic.Append(graphicData);
 

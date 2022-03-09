@@ -13,6 +13,7 @@ using System.Windows;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.CML
@@ -283,10 +284,10 @@ namespace Chem4Word.Model2.Converters.CML
         {
             XElement result = null;
 
-            if (bond.Stereo != Globals.BondStereo.None)
+            if (bond.Stereo != BondStereo.None)
             {
-                if (bond.Stereo == Globals.BondStereo.Cis
-                    || bond.Stereo == Globals.BondStereo.Trans)
+                if (bond.Stereo == BondStereo.Cis
+                    || bond.Stereo == BondStereo.Trans)
                 {
                     Atom firstAtom = bond.StartAtom;
                     Atom lastAtom = bond.EndAtom;
@@ -313,13 +314,13 @@ namespace Chem4Word.Model2.Converters.CML
                     result = new XElement(CMLNamespaces.cml + CMLConstants.TagBondStereo,
                         new XAttribute(CMLConstants.AttributeAtomRefs4,
                             $"{firstAtom.Id} {bond.StartAtom.Id} {bond.EndAtom.Id} {lastAtom.Id}"),
-                        Globals.GetStereoString(bond.Stereo));
+                        Bond.GetStereoString(bond.Stereo));
                 }
                 else
                 {
                     result = new XElement(CMLNamespaces.cml + CMLConstants.TagBondStereo,
                         new XAttribute(CMLConstants.AttributeAtomRefs2, $"{bond.StartAtom.Id} {bond.EndAtom.Id}"),
-                        Globals.GetStereoString(bond.Stereo));
+                        Bond.GetStereoString(bond.Stereo));
                 }
             }
 
@@ -860,14 +861,14 @@ namespace Chem4Word.Model2.Converters.CML
             {
                 string stereo = stereoElems[0].Value;
 
-                bond.Stereo = Globals.StereoFromString(stereo);
+                bond.Stereo = Bond.StereoFromString(stereo);
             }
-            Globals.BondDirection? dir = null;
+            BondDirection? dir = null;
 
             XAttribute dirAttr = cmlElement.Attribute(CMLNamespaces.c4w + CMLConstants.AttributePlacement);
             if (dirAttr != null)
             {
-                Globals.BondDirection temp;
+                BondDirection temp;
                 if (Enum.TryParse(dirAttr.Value, out temp))
                 {
                     dir = temp;

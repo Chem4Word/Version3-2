@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System.Windows;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME
@@ -35,14 +36,14 @@ namespace Chem4Word.ACME
             DependencyProperty.Register("Order", typeof(string), typeof(BondOption),
                                         new PropertyMetadata(Globals.OrderSingle));
 
-        public Globals.BondStereo? Stereo
+        public BondStereo? Stereo
         {
-            get { return (Globals.BondStereo?)GetValue(BondStereoEnumsProperty); }
+            get { return (BondStereo?)GetValue(BondStereoEnumsProperty); }
             set { SetValue(BondStereoEnumsProperty, value); }
         }
 
         public static readonly DependencyProperty BondStereoEnumsProperty =
-            DependencyProperty.Register("Stereo", typeof(Globals.BondStereo?), typeof(BondOption),
+            DependencyProperty.Register("Stereo", typeof(BondStereo?), typeof(BondOption),
                                         new PropertyMetadata(null));
 
         public System.Windows.Media.Drawing BondGraphic
@@ -72,13 +73,13 @@ namespace Chem4Word.ACME
                         {
                             switch (Stereo)
                             {
-                                case Globals.BondStereo.Wedge:
+                                case BondStereo.Wedge:
                                     return "Wedge";
 
-                                case Globals.BondStereo.Hatch:
+                                case BondStereo.Hatch:
                                     return "Hatch";
 
-                                case Globals.BondStereo.Indeterminate:
+                                case BondStereo.Indeterminate:
                                     return "Indeterminate";
 
                                 default:
@@ -90,7 +91,7 @@ namespace Chem4Word.ACME
                         {
                             switch (Stereo)
                             {
-                                case Globals.BondStereo.Indeterminate:
+                                case BondStereo.Indeterminate:
                                     {
                                         return "Indeterminate";
                                     }

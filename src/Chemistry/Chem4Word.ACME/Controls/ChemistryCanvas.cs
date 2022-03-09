@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Chem4Word.ACME.Utils;
 
 namespace Chem4Word.ACME.Controls
 {
@@ -972,7 +973,7 @@ namespace Chem4Word.ACME.Controls
             if (bv.RefCount == 0) // it hasn't been added before
             {
                 bv.ChemicalVisuals = ChemicalVisuals;
-                bv.BondThickness = Globals.BondThickness;
+                bv.BondThickness = Common.BondThickness;
                 bv.Standoff = Controller.Standoff;
                 bv.Render();
                 AddVisual(bv);

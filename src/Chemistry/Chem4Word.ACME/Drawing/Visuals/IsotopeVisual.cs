@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Text;
+using Chem4Word.Core.Enums;
 using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Drawing.Visuals

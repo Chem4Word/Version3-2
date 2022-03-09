@@ -15,6 +15,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using Chem4Word.Model2.Enums;
 
 namespace Chem4Word.Model2
 {
@@ -1017,7 +1018,7 @@ namespace Chem4Word.Model2
                         if (hydrogen.Degree == 1)
                         {
                             // Not Stereo
-                            if (hydrogen.Bonds.First().Stereo == Globals.BondStereo.None)
+                            if (hydrogen.Bonds.First().Stereo == BondStereo.None)
                             {
                                 if (!targets.Molecules.ContainsKey(hydrogen.InternalId))
                                 {

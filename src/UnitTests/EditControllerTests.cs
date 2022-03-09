@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.Model2.Enums;
 using Xunit;
 
 namespace Chem4WordTests
@@ -36,7 +37,7 @@ namespace Chem4WordTests
                                 };
 
             // Act
-            editController.AddAtomChain(null, new Point(0, 0), Globals.ClockDirections.Nothing);
+            editController.AddAtomChain(null, new Point(0, 0), ClockDirections.Nothing);
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
             editController.UndoManager.Redo();
@@ -78,7 +79,7 @@ namespace Chem4WordTests
             molecule.Parent = model;
 
             // Act
-            editController.AddAtomChain(atom, new Point(5, 5), Globals.ClockDirections.Nothing);
+            editController.AddAtomChain(atom, new Point(5, 5), ClockDirections.Nothing);
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
             editController.UndoManager.Redo();
@@ -988,7 +989,7 @@ namespace Chem4WordTests
             var a4 = model.GetAllAtoms().First(a => a.Id == "a4");
 
             // Act
-            editController.JoinMolecules(a1, a4, Globals.OrderDouble, Globals.BondStereo.None);
+            editController.JoinMolecules(a1, a4, Globals.OrderDouble, BondStereo.None);
             var undoStack1 = editController.UndoManager.ReadUndoStack();
             editController.UndoManager.Undo();
             editController.UndoManager.Redo();
@@ -1376,7 +1377,7 @@ namespace Chem4WordTests
 
             // Act
             // AddAtomChain
-            editController.AddAtomChain(null, new Point(872, 709.5), Globals.ClockDirections.Nothing, Globals.PeriodicTable.C);
+            editController.AddAtomChain(null, new Point(872, 709.5), ClockDirections.Nothing, Globals.PeriodicTable.C);
 
             // DrawRing Isolated
             var ring1Points = new List<NewAtomPlacement>

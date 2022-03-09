@@ -301,6 +301,7 @@
     <Compile Include="Utils\ClipboardMonitor.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Utils\CursorUtils.cs" />
+    <Compile Include="Utils\Geometry.cs" />
     <Compile Include="Utils\GraphicsHelpers.cs" />
     <Compile Include="Utils\RegistryHelper.cs" />
     <Compile Include="Utils\TextUtils.cs" />

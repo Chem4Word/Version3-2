@@ -42,7 +42,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         public ReactionSelectionAdorner(EditorCanvas currentEditor, ReactionVisual reactionVisual) : base(currentEditor)
         {
-            _solidColorBrush = (SolidColorBrush)FindResource(Globals.DrawAdornerBrush);
+            _solidColorBrush = (SolidColorBrush)FindResource(Common.DrawAdornerBrush);
             _dashPen = new Pen(_solidColorBrush, 1);
 
             _halfThumbWidth = ThumbWidth / 2;
@@ -208,8 +208,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            Brush handleFillBrush = (Brush)FindResource(Globals.AdornerFillBrush);
-            Pen handleBorderPen = (Pen)FindResource(Globals.AdornerBorderPen);
+            Brush handleFillBrush = (Brush)FindResource(Common.AdornerFillBrush);
+            Pen handleBorderPen = (Pen)FindResource(Common.AdornerBorderPen);
 
             RemoveHandle(HeadHandle);
             RemoveHandle(TailHandle);
@@ -339,8 +339,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
         /// <param name="blockBounds">Rectangle describing the layout of the block</param>
         private void DrawBlockRect(DrawingContext drawingContext, Rect blockBounds)
         {
-            Pen handleBorderPen = new Pen { Brush = (Brush)FindResource(Globals.AdornerBorderBrush), DashStyle = DashStyles.Dash };
-            drawingContext.DrawRectangle((Brush)FindResource(Globals.AdornerFillBrush), handleBorderPen, blockBounds);
+            Pen handleBorderPen = new Pen { Brush = (Brush)FindResource(Common.AdornerBorderBrush), DashStyle = DashStyles.Dash };
+            drawingContext.DrawRectangle((Brush)FindResource(Common.AdornerFillBrush), handleBorderPen, blockBounds);
         }
 
         /// <summary>

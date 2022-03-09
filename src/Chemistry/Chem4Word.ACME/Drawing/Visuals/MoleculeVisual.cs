@@ -32,11 +32,11 @@ namespace Chem4Word.ACME.Drawing.Visuals
         {
             //draw the bracket first
             var bb = _boundingBox;
-            var serifSize = _molecule.Model.XamlBondLength * Globals.BracketFactor;
+            var serifSize = _molecule.Model.XamlBondLength * Common.BracketFactor;
             bb.Inflate(new Size(serifSize, serifSize));
             Vector horizontal = new Vector(serifSize, 0.0);
             Brush bracketBrush = new SolidColorBrush(Colors.Black);
-            Pen bracketPen = new Pen(bracketBrush, Globals.BracketThickness);
+            Pen bracketPen = new Pen(bracketBrush, Common.BracketThickness);
             StreamGeometry sg = new StreamGeometry();
 
             using (DrawingContext dc = RenderOpen())

@@ -17,6 +17,7 @@ using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Enums;
 using Chem4Word.ACME.Models;
 using Chem4Word.Model2;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
 using Application = System.Windows.Application;
@@ -222,10 +223,10 @@ namespace Chem4Word.ACME.Utils
                             ac.Parent = m;
                             Bond b = new Bond(a, ac);
                             b.Order = bond.Order;
-                            if (bond.Stereo != Globals.BondStereo.None)
+                            if (bond.Stereo != BondStereo.None)
                             {
                                 b.Stereo = bond.Stereo;
-                                if (bond.Stereo == Globals.BondStereo.Wedge || bond.Stereo == Globals.BondStereo.Hatch)
+                                if (bond.Stereo == BondStereo.Wedge || bond.Stereo == BondStereo.Hatch)
                                 {
                                     if (atom.Path.Equals(bond.StartAtom.Path))
                                     {
@@ -298,7 +299,7 @@ namespace Chem4Word.ACME.Utils
                             }
                             else
                             {
-                                if (model.IsDouble && bond.Stereo == Globals.BondStereo.Indeterminate)
+                                if (model.IsDouble && bond.Stereo == BondStereo.Indeterminate)
                                 {
                                     model.DoubleBondChoice = DoubleBondType.Indeterminate;
                                 }
@@ -311,15 +312,15 @@ namespace Chem4Word.ACME.Utils
 
                             switch (bond.Stereo)
                             {
-                                case Globals.BondStereo.Wedge:
+                                case BondStereo.Wedge:
                                     model.SingleBondChoice = SingleBondType.Wedge;
                                     break;
 
-                                case Globals.BondStereo.Hatch:
+                                case BondStereo.Hatch:
                                     model.SingleBondChoice = SingleBondType.Hatch;
                                     break;
 
-                                case Globals.BondStereo.Indeterminate:
+                                case BondStereo.Indeterminate:
                                     model.SingleBondChoice = SingleBondType.Indeterminate;
                                     break;
 
@@ -340,7 +341,7 @@ namespace Chem4Word.ACME.Utils
                             controller.UpdateBond(bond, model);
                             controller.ClearSelection();
 
-                            bond.Order = Globals.OrderValueToOrder(model.BondOrderValue);
+                            bond.Order = Bond.OrderValueToOrder(model.BondOrderValue);
                             controller.AddToSelection(bond);
                         }
                     }

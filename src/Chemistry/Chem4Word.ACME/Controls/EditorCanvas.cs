@@ -142,7 +142,7 @@ namespace Chem4Word.ACME.Controls
                     if (atom.SymbolText != "")
                     {
                         EllipseGeometry atomCircle = new EllipseGeometry(newPosition, atomRadius, atomRadius);
-                        BasicGeometry.DrawGeometry(ghostContext, atomCircle);
+                        Utils.Geometry.DrawGeometry(ghostContext, atomCircle);
                     }
                 }
                 foreach (Bond bond in bondSet)
@@ -157,7 +157,7 @@ namespace Chem4Word.ACME.Controls
                     descriptor.Start = startAtomPosition;
                     descriptor.End = endAtomPosition;
                     var bondgeom = descriptor.DefiningGeometry;
-                    BasicGeometry.DrawGeometry(ghostContext, bondgeom);
+                    Utils.Geometry.DrawGeometry(ghostContext, bondgeom);
                 }
                 ghostContext.Close();
             }

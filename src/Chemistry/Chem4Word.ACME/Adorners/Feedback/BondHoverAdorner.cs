@@ -12,6 +12,7 @@ using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using System.Windows;
 using System.Windows.Media;
+using Chem4Word.Core.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {

@@ -75,6 +75,9 @@ namespace Chem4Word.Renderer.OoXmlV4
         [JsonProperty]
         public bool ShowRingCentres { get; set; }
 
+        //ToDo: Make this a debug option - Set this to true to show them
+        public bool ShowCrossingPoints { get; set; } = false;
+
         // Not serialised
         public string SettingsPath { get; set; }
 

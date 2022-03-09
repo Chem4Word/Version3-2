@@ -12,7 +12,6 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;
 using System.Windows;
 using System.Windows.Media;
-using static Chem4Word.Model2.Geometry.BasicGeometry;
 
 namespace Chem4Word.ACME.Drawing.Visuals
 {
@@ -187,7 +186,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                 nudge = adjustedPerp / 10;
             }
             //check for a clip
-            while (RectClips(blockRect, ParentReaction.TailPoint, ParentReaction.HeadPoint))
+            while (GeometryTool.RectClips(blockRect, ParentReaction.TailPoint, ParentReaction.HeadPoint))
             {
                 adjustedPerp += nudge;
                 //recalculate the offset after taking into account the adjustment
@@ -274,7 +273,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             Point rectMidPoint = new Point(blockBounds.Left + blockBounds.Width / 2, blockBounds.Top + blockBounds.Height / 2);
 
             //iterate through the 4 sides of the rectangle until we get a crossing point
-            var intersection = GetClippingPoint(blockBounds, blockCentre, rectMidPoint);
+            var intersection = GeometryTool.GetClippingPoint(blockBounds, blockCentre, rectMidPoint);
             if (intersection is null)
             {
                 //Houston we have a problem

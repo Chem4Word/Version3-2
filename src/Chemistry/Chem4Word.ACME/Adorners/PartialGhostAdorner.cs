@@ -13,8 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners
@@ -66,8 +68,8 @@ namespace Chem4Word.ACME.Adorners
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            _ghostBrush = (SolidColorBrush)FindResource(Globals.GhostBrush);
-            _ghostPen = new Pen(_ghostBrush, Globals.BondThickness);
+            _ghostBrush = (SolidColorBrush)FindResource(Common.GhostBrush);
+            _ghostPen = new Pen(_ghostBrush, Common.BondThickness);
 
             HashSet<Bond> bondSet = new HashSet<Bond>();
             Dictionary<Atom, Point> transformedPositions = new Dictionary<Atom, Point>();
@@ -111,7 +113,7 @@ namespace Chem4Word.ACME.Adorners
                 var startAtomPosition = transformedPositions[bond.StartAtom];
                 var endAtomPosition = transformedPositions[bond.EndAtom];
                 if (bond.OrderValue != 1.0 ||
-                    !(bond.Stereo == Globals.BondStereo.Hatch | bond.Stereo == Globals.BondStereo.Wedge))
+                    !(bond.Stereo == BondStereo.Hatch | bond.Stereo == BondStereo.Wedge))
                 {
                     var descriptor = BondVisual.GetBondDescriptor(CurrentEditor.GetAtomVisual(bond.StartAtom),
                                                                   CurrentEditor.GetAtomVisual(bond.EndAtom),

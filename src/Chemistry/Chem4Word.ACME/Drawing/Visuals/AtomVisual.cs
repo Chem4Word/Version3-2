@@ -10,10 +10,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Text;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Enums;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using static Chem4Word.ACME.Drawing.Text.GlyphUtils;
+using Geometry = System.Windows.Media.Geometry;
 
 namespace Chem4Word.ACME.Drawing.Visuals
 {
@@ -224,7 +228,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
 
         private void ShowHull(List<Point> points, DrawingContext drawingContext)
         {
-            var path = BasicGeometry.BuildPath(points);
+            var path = Utils.Geometry.BuildPath(points);
             // Diag: Show the Hull or it's Points
 #if SHOWHULLS
             drawingContext.DrawGeometry(null, new Pen(new SolidColorBrush(Colors.GreenYellow), 0.01), path.Data);
@@ -290,7 +294,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                         Brush warningFill = new SolidColorBrush(Colors.Salmon);
                         warningFill.Opacity = 0.75;
 
-                        dc.DrawGeometry(warningFill, new Pen(new SolidColorBrush(Colors.OrangeRed), Globals.BondThickness), eg);
+                        dc.DrawGeometry(warningFill, new Pen(new SolidColorBrush(Colors.OrangeRed), Common.BondThickness), eg);
                     }
 
                     if (atomSymbol == "")
@@ -325,7 +329,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
         /// <param name="dc">DrawingContext to render the atom to</param>
         private void RenderAsVertex(DrawingContext dc)
         {
-            EllipseGeometry eg = new EllipseGeometry(ParentAtom.Position, Globals.AtomRadius, Globals.AtomRadius);
+            EllipseGeometry eg = new EllipseGeometry(ParentAtom.Position, Common.AtomRadius, Common.AtomRadius);
 
             dc.DrawGeometry(Brushes.Transparent, new Pen(Brushes.Transparent, 1.0), eg);
             //very simple hull definition
@@ -354,7 +358,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             {
                 if (Hull != null && Hull.Count != 0)
                 {
-                    Geometry geo1 = BasicGeometry.BuildPolyPath(Hull);
+                    Geometry geo1 = Utils.Geometry.BuildPolyPath(Hull);
                     CombinedGeometry cg = new CombinedGeometry(geo1,
                                                                geo1.GetWidenedPathGeometry(new Pen(Brushes.Black, Standoff)));
                     return cg;
@@ -424,7 +428,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             for (int i = 0; i < Hull.Count; i++)
             {
                 Point? p;
-                if ((p = BasicGeometry.LineSegmentsIntersect(start, end, Hull[i], Hull[(i + 1) % Hull.Count])) != null)
+                if ((p = GeometryTool.LineSegmentsIntersect(start, end, Hull[i], Hull[(i + 1) % Hull.Count])) != null)
                 {
                     return p;
                 }

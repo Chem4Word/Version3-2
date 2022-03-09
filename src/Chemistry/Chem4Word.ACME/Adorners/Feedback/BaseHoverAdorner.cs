@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
 
@@ -22,9 +23,9 @@ namespace Chem4Word.ACME.Adorners.Feedback
 
         protected BaseHoverAdorner([NotNull] UIElement adornedElement, [NotNull] ChemicalVisual targetedVisual) : base(adornedElement)
         {
-            BracketBrush = new SolidColorBrush(Globals.HoverAdornerColor);
+            BracketBrush = new SolidColorBrush(Utils.Common.HoverAdornerColor);
 
-            BracketPen = new Pen(BracketBrush, Globals.HoverAdornerThickness);
+            BracketPen = new Pen(BracketBrush, Common.HoverAdornerThickness);
             BracketPen.StartLineCap = PenLineCap.Round;
             BracketPen.EndLineCap = PenLineCap.Round;
 

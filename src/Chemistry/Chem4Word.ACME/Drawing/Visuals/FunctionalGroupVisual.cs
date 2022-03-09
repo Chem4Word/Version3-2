@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using Chem4Word.ACME.Drawing.Text;
+using Chem4Word.Core.Enums;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 
@@ -218,7 +219,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             {
                 //need to combine the actually filled atom area
                 //with a stroked outline of it, to give a sufficient margin
-                Geometry geo1 = BasicGeometry.BuildPolyPath(Hull);
+                Geometry geo1 = Utils.Geometry.BuildPolyPath(Hull);
                 CombinedGeometry cg = new CombinedGeometry(geo1, geo1.GetWidenedPathGeometry(new Pen(Brushes.Black, Standoff)));
                 return cg;
             }

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
@@ -31,11 +32,11 @@ namespace Chem4Word.ACME.Adorners.Sketching
             SolidColorBrush bondBrush;
             if (greyedOut)
             {
-                bondBrush = (SolidColorBrush)FindResource(Globals.BlockedAdornerBrush);
+                bondBrush = (SolidColorBrush)FindResource(Common.BlockedAdornerBrush);
             }
             else
             {
-                bondBrush = (SolidColorBrush)FindResource(Globals.DrawAdornerBrush);
+                bondBrush = (SolidColorBrush)FindResource(Common.DrawAdornerBrush);
             }
 
             BondPen = new Pen(bondBrush, bondThickness);

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
@@ -114,7 +115,7 @@ namespace Chem4Word.Model2
         ///  </summary>
         /// <param name="b">Bond object (should be part of the ring)</param>
         /// <returns>BondDirection showing how to place the bond</returns>
-        public Globals.BondDirection InternalPlacement(Bond b)
+        public BondDirection InternalPlacement(Bond b)
         {
             Point? center = Centroid;
             if (center != null)
@@ -123,13 +124,13 @@ namespace Chem4Word.Model2
                 Vector bv = b.BondVector;
                 if (Vector.AngleBetween(toCenter, bv) > 0)
                 {
-                    return Globals.BondDirection.Clockwise;
+                    return BondDirection.Clockwise;
                 }
 
-                return Globals.BondDirection.Anticlockwise;
+                return BondDirection.Anticlockwise;
             }
 
-            return Globals.BondDirection.None;
+            return BondDirection.None;
         }
 
         /// <summary>
@@ -193,8 +194,7 @@ namespace Chem4Word.Model2
         /// <param name="start">Atom to start at</param>
         /// <param name="direction">Which direction to go in</param>
         /// <returns>IEnumerable&lt;Atom&gt; that iterates through the ring</returns>
-        public IEnumerable<Atom> Traverse(Atom start = null,
-            Globals.BondDirection direction = Globals.BondDirection.Anticlockwise)
+        public IEnumerable<Atom> Traverse(Atom start = null, BondDirection direction = BondDirection.Anticlockwise)
         {
             HashSet<Atom> res = new HashSet<Atom>();
             res.Add(start);

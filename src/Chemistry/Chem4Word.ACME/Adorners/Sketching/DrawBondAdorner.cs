@@ -11,8 +11,11 @@ using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Drawing.LayoutSupport;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Sketching
@@ -24,7 +27,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
         private Pen _dashPen;
 
         private EditorCanvas CurrentEditor { get; }
-        public Globals.BondStereo Stereo { get; set; }
+        public BondStereo Stereo { get; set; }
 
         public string BondOrder { get; set; }
 
@@ -54,7 +57,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
 
         public DrawBondAdorner([NotNull] UIElement adornedElement, double bondThickness) : base(adornedElement)
         {
-            _solidColorBrush = (SolidColorBrush)FindResource(Globals.DrawAdornerBrush);
+            _solidColorBrush = (SolidColorBrush)FindResource(Common.DrawAdornerBrush);
             _dashPen = new Pen(_solidColorBrush, bondThickness);
 
             CurrentEditor = (EditorCanvas)adornedElement;
@@ -90,7 +93,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
                                        ExistingBond.SubsidiaryRing);
             }
 
-            if (Stereo == Globals.BondStereo.Hatch)
+            if (Stereo == BondStereo.Hatch)
             {
                 brush = new LinearGradientBrush
                 {
@@ -108,7 +111,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
 
                     Transform = new RotateTransform
                     {
-                        Angle = Vector.AngleBetween(Model2.Geometry.BasicGeometry.ScreenNorth,
+                        Angle = Vector.AngleBetween(GeometryTool.ScreenNorth,
                                                                         EndPoint - StartPoint)
                     }
                 };
@@ -165,19 +168,19 @@ namespace Chem4Word.ACME.Adorners.Sketching
         }
 
         public BondLayout GetBondLayout(Point startPoint, Point endPoint, double bondLength,
-                                         Globals.BondStereo stereo, string order, Ring existingRing = null,
+                                         BondStereo stereo, string order, Ring existingRing = null,
                                          Ring subsidiaryRing = null)
         {
             BondLayout descriptor = null;
             //check to see if it's a wedge or a hatch yet
-            if (stereo == Globals.BondStereo.Wedge || stereo == Globals.BondStereo.Hatch)
+            if (stereo == BondStereo.Wedge || stereo == BondStereo.Hatch)
             {
                 var wbd = new WedgeBondLayout { Start = startPoint, End = endPoint };
                 BondGeometry.GetWedgeBondGeometry(wbd, bondLength, CurrentEditor.Controller.Standoff);
                 return wbd;
             }
 
-            if (stereo == Globals.BondStereo.Indeterminate && order == Globals.OrderSingle)
+            if (stereo == BondStereo.Indeterminate && order == Globals.OrderSingle)
             {
                 descriptor = new BondLayout { Start = startPoint, End = endPoint };
                 BondGeometry.GetWavyBondGeometry(descriptor, bondLength, CurrentEditor.Controller.Standoff);
@@ -196,7 +199,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
             if (orderValue == 2 || orderValue == 1.5)
             {
                 DoubleBondLayout dbd = new DoubleBondLayout { Start = startPoint, End = endPoint };
-                if (stereo == Globals.BondStereo.Indeterminate)
+                if (stereo == BondStereo.Indeterminate)
                 {
                     BondGeometry.GetCrossedDoubleGeometry(dbd, bondLength, CurrentEditor.Controller.Standoff);
                 }

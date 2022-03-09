@@ -15,6 +15,7 @@ using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
@@ -142,7 +143,7 @@ namespace Chem4Word.ACME.Behaviors
                     {
                         //first test to see if the user is drawing over the adorner
                         overWritingSelf =
-                            CurrentAdorner.Geometry.StrokeContains(new Pen(Brushes.Black, Globals.AtomRadius * 2),
+                            CurrentAdorner.Geometry.StrokeContains(new Pen(Brushes.Black, Common.AtomRadius * 2),
                                                                    endPoint);
                     }
 
@@ -252,7 +253,7 @@ namespace Chem4Word.ACME.Behaviors
                 Matrix rotator = new Matrix();
                 rotator.Rotate(angle);
                 Vector newvector = lastBondvector;
-                newvector = BasicGeometry.SnapVectorToClock(newvector);
+                newvector = GeometryTool.SnapVectorToClock(newvector);
                 newvector.Normalize();
                 newvector *= EditController.Model.XamlBondLength;
                 newvector *= rotator;

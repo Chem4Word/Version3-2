@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.Model2;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
@@ -47,7 +48,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                 {
                     if (_enclosingPoly != null && _enclosingPoly.Count > 0) //it's not a single-line bond
                     {
-                        var result = BasicGeometry.BuildPolyPath(_enclosingPoly);
+                        var result = Utils.Geometry.BuildPolyPath(_enclosingPoly);
 
                         _hullGeometry = new CombinedGeometry(result,
                                                              result.GetWidenedPathGeometry(
@@ -105,9 +106,9 @@ namespace Chem4Word.ACME.Drawing.Visuals
         }
 
         public static BondLayout GetBondDescriptor(AtomVisual startAtomVisual, AtomVisual endAtomVisual,
-                                                        double modelXamlBondLength, Globals.BondStereo parentStereo,
+                                                        double modelXamlBondLength, BondStereo parentStereo,
                                                         Point startAtomPosition, Point endAtomPosition,
-                                                        double? parentOrderValue, Globals.BondDirection parentPlacement,
+                                                        double? parentOrderValue, BondDirection parentPlacement,
                                                         Point? centroid, Point? secondaryCentroid, double standoff)
         {
             List<Point> startAtomHull = new List<Point>();
@@ -121,7 +122,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             {
                 endAtomHull = endAtomVisual.Hull;
             }
-            if ((parentStereo == Globals.BondStereo.Wedge || parentStereo == Globals.BondStereo.Hatch)
+            if ((parentStereo == BondStereo.Wedge || parentStereo == BondStereo.Hatch)
                 && parentOrderValue == 1)
             {
                 WedgeBondLayout wbd = new WedgeBondLayout
@@ -187,7 +188,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             }
 
             //wavy bond
-            if (parentStereo == Globals.BondStereo.Indeterminate && parentOrderValue == 1.0)
+            if (parentStereo == BondStereo.Indeterminate && parentOrderValue == 1.0)
             {
                 BondLayout sbd = new BondLayout
                 {
@@ -203,7 +204,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             switch (parentOrderValue)
             {
                 //indeterminate double
-                case 2 when parentStereo == Globals.BondStereo.Indeterminate:
+                case 2 when parentStereo == BondStereo.Indeterminate:
                     DoubleBondLayout dbd = new DoubleBondLayout()
                     {
                         StartAtomHull = startAtomHull,
@@ -391,9 +392,9 @@ namespace Chem4Word.ACME.Drawing.Visuals
                         // Handle Single bond
                         switch (ParentBond.Stereo)
                         {
-                            case Globals.BondStereo.Indeterminate:
-                            case Globals.BondStereo.None:
-                            case Globals.BondStereo.Wedge:
+                            case BondStereo.Indeterminate:
+                            case BondStereo.None:
+                            case BondStereo.Wedge:
                                 using (DrawingContext dc = RenderOpen())
                                 {
                                     dc.DrawGeometry(Brushes.Black, _mainBondPen, BondDescriptor.DefiningGeometry);
@@ -404,7 +405,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
 
                                 break;
 
-                            case Globals.BondStereo.Hatch:
+                            case BondStereo.Hatch:
                                 using (DrawingContext dc = RenderOpen())
                                 {
                                     dc.DrawGeometry(GetHatchBrush(ParentBond.Angle), _mainBondPen,
@@ -435,7 +436,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
 
                         _enclosingPoly = dbd3.Boundary;
 
-                        if (ParentBond.Stereo != Globals.BondStereo.Indeterminate)
+                        if (ParentBond.Stereo != BondStereo.Indeterminate)
                         {
                             using (DrawingContext dc = RenderOpen())
                             {
@@ -469,7 +470,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
                         var tbd = BondDescriptor as TripleBondLayout;
                         using (DrawingContext dc = RenderOpen())
                         {
-                            if (ParentBond.Placement == Globals.BondDirection.Clockwise)
+                            if (ParentBond.Placement == BondDirection.Clockwise)
                             {
                                 dc.DrawLine(_mainBondPen, tbd.SecondaryStart, tbd.SecondaryEnd);
                                 dc.DrawLine(_mainBondPen, tbd.Start, tbd.End);

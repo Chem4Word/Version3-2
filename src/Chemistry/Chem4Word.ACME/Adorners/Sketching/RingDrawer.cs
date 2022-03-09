@@ -12,6 +12,7 @@ using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.ACME.Models;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
@@ -60,11 +61,11 @@ namespace Chem4Word.ACME.Adorners.Sketching
                             {
                                 Start = oldAtomPlacement.Position,
                                 End = newAtomPlacement.Position,
-                                Placement = Globals.BondDirection.Anticlockwise,
+                                Placement = BondDirection.Anticlockwise,
                                 PrimaryCentroid = centroid
                             };
                             BondGeometry.GetDoubleBondGeometry(dbd, dbd.PrincipleVector.Length, _fixedRingAdorner.CurrentEditor.Controller.Standoff);
-                            BasicGeometry.DrawGeometry(sgc, dbd.DefiningGeometry);
+                            Utils.Geometry.DrawGeometry(sgc, dbd.DefiningGeometry);
                             visited.Add(oldAtomPlacement);
                             visited.Add(newAtomPlacement);
                         }
@@ -76,7 +77,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
                                 End = newAtomPlacement.Position
                             };
                             BondGeometry.GetSingleBondGeometry(sbd, _fixedRingAdorner.CurrentEditor.Controller.Standoff);
-                            BasicGeometry.DrawGeometry(sgc, sbd.DefiningGeometry);
+                            Utils.Geometry.DrawGeometry(sgc, sbd.DefiningGeometry);
                         }
                     }
 
@@ -87,7 +88,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
             }
             else //saturated ring, just draw a polygon
             {
-                drawingContext.DrawGeometry(null, _fixedRingAdorner.BondPen, BasicGeometry.BuildPolyPath(_fixedRingAdorner.Placements, true));
+                drawingContext.DrawGeometry(null, _fixedRingAdorner.BondPen, Utils.Geometry.BuildPolyPath(_fixedRingAdorner.Placements, true));
             }
         }
     }

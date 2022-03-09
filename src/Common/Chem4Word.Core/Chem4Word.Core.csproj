@@ -68,10 +68,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\CompassPoints.cs" />
+    <Compile Include="Helpers\AngleMethods.cs" />
     <Compile Include="Helpers\CohenSutherland.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\DebugHelper.cs" />
     <Compile Include="Helpers\FileSystemHelper.cs" />
+    <Compile Include="Helpers\GeometryTool.cs" />
     <Compile Include="Helpers\PointHelper.cs" />
     <Compile Include="Helpers\ResourceHelper.cs" />
     <Compile Include="Helpers\SafeDate.cs" />
@@ -136,6 +139,7 @@
       <Name>Chem4Word.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -18,6 +18,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Chem4Word.Core.Helpers;
 
 namespace Chem4Word.ACME.Behaviors
 {
@@ -127,7 +128,8 @@ namespace Chem4Word.ACME.Behaviors
                     break;
 
                 default:
-                    preferredPlacements = MarkOutAtoms(e.GetPosition(AssociatedObject), BasicGeometry.ScreenNorth,
+                    preferredPlacements = MarkOutAtoms(e.GetPosition(AssociatedObject),
+                                                       GeometryTool.ScreenNorth,
                                                        xamlBondSize, RingSize);
                     //need to check whether the user is trying to fuse without
                     //having the pencil directly over the object!
@@ -205,7 +207,8 @@ namespace Chem4Word.ACME.Behaviors
                 }
                 else //clicked on empty space
                 {
-                    preferredPlacements = MarkOutAtoms(e.GetPosition(AssociatedObject), BasicGeometry.ScreenNorth,
+                    preferredPlacements = MarkOutAtoms(e.GetPosition(AssociatedObject),
+                                                       GeometryTool.ScreenNorth,
                                                        xamlBondSize, RingSize);
                     if (preferredPlacements.Count % 2 == 1)
                     {
@@ -267,18 +270,18 @@ namespace Chem4Word.ACME.Behaviors
                 direction = hitAtom.BalancingVector();
                 if (ringSize == 3 || ringSize == 4 || ringSize == 6)
                 {
-                    direction = BasicGeometry.SnapVectorToClock(direction);
+                    direction = GeometryTool.SnapVectorToClock(direction);
                 }
             }
             else
             {
-                direction = BasicGeometry.ScreenNorth;
+                direction = GeometryTool.ScreenNorth;
             }
 
             //try to work out exactly where best to place the ring
 
             preferredPlacements = MarkOutAtoms(hitAtom, direction, xamlBondSize, ringSize);
-            if (parentMolecule.Overlaps(preferredPlacements, new List<Atom> { hitAtom }))
+            if (Utils.Geometry.Overlaps(parentMolecule, preferredPlacements, new List<Atom> { hitAtom }))
             {
                 preferredPlacements = null;
             }
@@ -302,17 +305,17 @@ namespace Chem4Word.ACME.Behaviors
             var mouseDirection = position - hitBond.StartAtom.Position;
             if (ringSize == 3 || ringSize == 4 || ringSize == 6)
             {
-                bondDirection = BasicGeometry.SnapVectorToClock(bondDirection);
-                mouseDirection = BasicGeometry.SnapVectorToClock(mouseDirection);
+                bondDirection = GeometryTool.SnapVectorToClock(bondDirection);
+                mouseDirection = GeometryTool.SnapVectorToClock(mouseDirection);
             }
             bool followsBond = Vector.AngleBetween(bondDirection, mouseDirection) > 0;
 
             placements = MarkOutAtoms(hitBond, followsBond, ringSize);
-            firstOverlap = parentMolecule.OverlapArea(placements);
+            firstOverlap = Utils.Geometry.OverlapArea(parentMolecule, placements);
             firstOverlapArea = firstOverlap.GetArea();
 
             altPlacements = MarkOutAtoms(hitBond, !followsBond, ringSize);
-            secondOverlap = parentMolecule.OverlapArea(altPlacements);
+            secondOverlap = Utils.Geometry.OverlapArea(parentMolecule, altPlacements);
             secondOverlapArea = secondOverlap.GetArea();
 
             // Get points on the less crowded side of the bond

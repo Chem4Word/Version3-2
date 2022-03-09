@@ -29,7 +29,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
 
         public DrawReactionAdorner([NotNull] UIElement adornedElement) : base(adornedElement)
         {
-            _solidColorBrush = (SolidColorBrush)FindResource(DrawAdornerBrush);
+            _solidColorBrush = (SolidColorBrush)FindResource(Common.DrawAdornerBrush);
             _dashPen = new Pen(_solidColorBrush, 1);
 
             CurrentEditor = (EditorCanvas)adornedElement;

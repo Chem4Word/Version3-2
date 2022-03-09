@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Utils
@@ -134,7 +135,7 @@ namespace Chem4Word.ACME.Utils
 
         private static double GetBondAngle(double startAngle, Vector originalDisplacement)
         {
-            return Math.Floor(Vector.AngleBetween(BasicGeometry.ScreenNorth, originalDisplacement) - startAngle);
+            return Math.Floor(Vector.AngleBetween(GeometryTool.ScreenNorth, originalDisplacement) - startAngle);
         }
 
         private static double NormalizeBondLength(Vector originalDisplacement, double defaultLength)

@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Chem4Word.Core.Enums;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Geometry;
@@ -106,7 +107,7 @@ namespace Chem4Word.Model2
                 {
                     var centroid = Parent.Centroid;
                     var vector = Position - centroid;
-                    var angle = Vector.AngleBetween(BasicGeometry.ScreenNorth, vector);
+                    var angle = Vector.AngleBetween(GeometryTool.ScreenNorth, vector);
                     return angle < 0 ? CompassPoints.West : CompassPoints.East;
                 }
 
@@ -116,7 +117,7 @@ namespace Chem4Word.Model2
                     foreach (Atom neighbour in Neighbours)
                     {
                         Vector tempBondVector = neighbour.Position - Position;
-                        double angle = Vector.AngleBetween(BasicGeometry.ScreenNorth, tempBondVector);
+                        double angle = Vector.AngleBetween(GeometryTool.ScreenNorth, tempBondVector);
                         if (angle >= 5.0 && angle <= 175.0)
                         {
                             rightBondCount++;
@@ -394,19 +395,19 @@ namespace Chem4Word.Model2
                     switch (ImplicitHPlacement)
                     {
                         case CompassPoints.East:
-                            shift = BasicGeometry.ScreenEast * fontSize;
+                            shift = GeometryTool.ScreenEast * fontSize;
                             break;
 
                         case CompassPoints.North:
-                            shift = BasicGeometry.ScreenNorth * fontSize;
+                            shift = GeometryTool.ScreenNorth * fontSize;
                             break;
 
                         case CompassPoints.South:
-                            shift = BasicGeometry.ScreenSouth * fontSize;
+                            shift = GeometryTool.ScreenSouth * fontSize;
                             break;
 
                         case CompassPoints.West:
-                            shift = BasicGeometry.ScreenWest * fontSize;
+                            shift = GeometryTool.ScreenWest * fontSize;
                             break;
                     }
 
@@ -554,7 +555,7 @@ namespace Chem4Word.Model2
         //drawing related properties
         public Vector BalancingVector(bool forLabelPlacement = false)
         {
-            Vector vsumVector = BasicGeometry.ScreenNorth;
+            Vector vsumVector = GeometryTool.ScreenNorth;
 
             if (Bonds.Any())
             {
@@ -691,10 +692,10 @@ namespace Chem4Word.Model2
         public CompassPoints GetEmptySpaceForHs()
         {
             CompassPoints orientation;
-            double angleFromNorth = Vector.AngleBetween(BasicGeometry.ScreenNorth, BalancingVector(true));
+            double angleFromNorth = Vector.AngleBetween(GeometryTool.ScreenNorth, BalancingVector(true));
             orientation = Bonds.Count() == 1
-                ? BasicGeometry.SnapTo2EW(angleFromNorth)
-                : BasicGeometry.SnapTo4NESW(angleFromNorth);
+                ? GeometryTool.SnapTo2EW(angleFromNorth)
+                : GeometryTool.SnapTo4NESW(angleFromNorth);
             return orientation;
         }
 

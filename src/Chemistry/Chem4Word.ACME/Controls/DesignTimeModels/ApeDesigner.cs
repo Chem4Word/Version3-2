@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using Chem4Word.ACME.Entities;
+using Chem4Word.Core.Enums;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;

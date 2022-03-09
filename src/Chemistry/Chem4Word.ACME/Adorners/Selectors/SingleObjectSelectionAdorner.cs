@@ -16,7 +16,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using Chem4Word.ACME.Utils;
 using static Chem4Word.ACME.Utils.GraphicsHelpers;
+using Geometry = System.Windows.Media.Geometry;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -97,7 +99,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             VisualChildren.Add(BigThumb);
             BigThumb.IsHitTestVisible = true;
 
-            BigThumb.Style = (Style)FindResource(Globals.ThumbStyle);
+            BigThumb.Style = (Style)FindResource(Common.ThumbStyle);
             BigThumb.Cursor = Cursors.Hand;
             BigThumb.DragStarted += BigThumb_DragStarted;
             BigThumb.DragCompleted += BigThumb_DragCompleted;
@@ -113,8 +115,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
         /// <param name="drawingContext"></param>
         protected override void OnRender(DrawingContext drawingContext)
         {
-            var ghostPen = (Pen)FindResource(Globals.AdornerBorderPen);
-            var ghostBrush = (Brush)FindResource(Globals.AdornerFillBrush);
+            var ghostPen = (Pen)FindResource(Common.AdornerBorderPen);
+            var ghostBrush = (Brush)FindResource(Common.AdornerFillBrush);
             if (IsWorking)
             {
                 //take a snapshot of the molecule

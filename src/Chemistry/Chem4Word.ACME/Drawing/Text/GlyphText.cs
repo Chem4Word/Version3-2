@@ -44,7 +44,7 @@ namespace Chem4Word.ACME.Drawing.Text
             get
             {
                 var hull = Hull;
-                return BasicGeometry.BuildPath(hull);
+                return Utils.Geometry.BuildPath(hull);
             }
         }
 

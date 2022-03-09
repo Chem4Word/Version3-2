@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Drawing.Text;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
 
@@ -68,7 +69,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
             Brush fillBrush;
             if (GreyedOut)
             {
-                fillBrush = (Brush)FindResource(Globals.BlockedAdornerBrush);
+                fillBrush = (Brush)FindResource(Common.BlockedAdornerBrush);
             }
             else
             {
@@ -102,7 +103,7 @@ namespace Chem4Word.ACME.Adorners.Sketching
             Brush fillBrush;
             if (GreyedOut)
             {
-                fillBrush = (Brush)FindResource(Globals.BlockedAdornerBrush);
+                fillBrush = (Brush)FindResource(Common.BlockedAdornerBrush);
             }
             else
             {

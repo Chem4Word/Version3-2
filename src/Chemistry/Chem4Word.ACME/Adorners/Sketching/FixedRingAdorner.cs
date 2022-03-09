@@ -30,16 +30,16 @@ namespace Chem4Word.ACME.Adorners.Sketching
         public FixedRingAdorner([NotNull] UIElement adornedElement, double bondThickness, List<Point> placements,
                                 bool unsaturated = false, bool greyedOut = false) : base(adornedElement)
         {
-            _solidColorBrush = (SolidColorBrush)FindResource(Globals.AdornerFillBrush);
+            _solidColorBrush = (SolidColorBrush)FindResource(Common.AdornerFillBrush);
 
             Cursor = CursorUtils.Pencil;
             if (!greyedOut)
             {
-                BondPen = new Pen((SolidColorBrush)FindResource(Globals.DrawAdornerBrush), bondThickness);
+                BondPen = new Pen((SolidColorBrush)FindResource(Common.DrawAdornerBrush), bondThickness);
             }
             else
             {
-                BondPen = new Pen((SolidColorBrush)FindResource(Globals.BlockedAdornerBrush), bondThickness);
+                BondPen = new Pen((SolidColorBrush)FindResource(Common.BlockedAdornerBrush), bondThickness);
             }
 
             var myAdornerLayer = AdornerLayer.GetAdornerLayer(adornedElement);

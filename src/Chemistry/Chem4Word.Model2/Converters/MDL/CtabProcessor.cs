@@ -13,6 +13,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.MDL
@@ -496,25 +497,25 @@ namespace Chem4Word.Model2.Converters.MDL
             return sb.ToString();
         }
 
-        private static int MdlBondStereo(Globals.BondStereo code)
+        private static int MdlBondStereo(BondStereo code)
         {
             int stereo;
 
             switch (code)
             {
-                case Globals.BondStereo.None:
+                case BondStereo.None:
                     stereo = 0;
                     break;
 
-                case Globals.BondStereo.Wedge:
+                case BondStereo.Wedge:
                     stereo = 1;
                     break;
 
-                case Globals.BondStereo.Hatch:
+                case BondStereo.Hatch:
                     stereo = 6;
                     break;
 
-                case Globals.BondStereo.Indeterminate:
+                case BondStereo.Indeterminate:
                     stereo = 4;
                     break;
 
@@ -819,7 +820,7 @@ namespace Chem4Word.Model2.Converters.MDL
         {
             string order = string.Empty;
 
-            return Globals.OrderValueToOrder(molNumber);
+            return Bond.OrderValueToOrder(molNumber);
         }
 
         private static string CmlStereoBond(int molNumber)
@@ -856,40 +857,40 @@ namespace Chem4Word.Model2.Converters.MDL
 
         #region MDL Number Support
 
-        private static Globals.BondStereo BondStereoFromMolfile(int molfileBondStereo)
+        private static BondStereo BondStereoFromMolfile(int molfileBondStereo)
         {
             //Translates from a molfile convention bond stereochemistry number to the enumeration used in the model
             //The opposite of BondStereoFromModel
-            Globals.BondStereo modelStereo = 0;
+            BondStereo modelStereo = 0;
 
             //MOLFILE: 0 is NOT stereo, 1 is UP,    6 is DOWN,  4 is EITHER
             //MODEL  : 0 is None,       1 is Wedge, 2 is Hatch, 3 is Indeterminate
             switch (molfileBondStereo)
             {
                 case 0:
-                    modelStereo = Globals.BondStereo.None;
+                    modelStereo = BondStereo.None;
                     break;
 
                 case 1:
-                    modelStereo = Globals.BondStereo.Wedge;
+                    modelStereo = BondStereo.Wedge;
                     break;
 
                 case 4:
-                    modelStereo = Globals.BondStereo.Indeterminate;
+                    modelStereo = BondStereo.Indeterminate;
                     break;
 
                 case 6:
-                    modelStereo = Globals.BondStereo.Hatch;
+                    modelStereo = BondStereo.Hatch;
                     break;
 
                 default:
-                    modelStereo = Globals.BondStereo.None;
+                    modelStereo = BondStereo.None;
                     break;
             }
             return modelStereo;
         }
 
-        private static int BondStereoFromModel(Globals.BondStereo modelBondStereo)
+        private static int BondStereoFromModel(BondStereo modelBondStereo)
         {
             //Translates from the model enumerated bond stereochemistry to the molfile convention
             //The opposite of BondStereoFromMolfile
@@ -899,19 +900,19 @@ namespace Chem4Word.Model2.Converters.MDL
             //MOLFILE: 0 is NOT stereo, 1 is UP,    6 is DOWN,  4 is EITHER
             switch (modelBondStereo)
             {
-                case Globals.BondStereo.None:
+                case BondStereo.None:
                     molfileStereo = 0;
                     break;
 
-                case Globals.BondStereo.Wedge:
+                case BondStereo.Wedge:
                     molfileStereo = 1;
                     break;
 
-                case Globals.BondStereo.Hatch:
+                case BondStereo.Hatch:
                     molfileStereo = 6;
                     break;
 
-                case Globals.BondStereo.Indeterminate:
+                case BondStereo.Indeterminate:
                     molfileStereo = 4;
                     break;
 

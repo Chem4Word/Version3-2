@@ -12,7 +12,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
@@ -72,7 +74,7 @@ namespace Chem4Word.Model2
         }
 
         public Point MidPoint => new Point((StartAtom.Position.X + EndAtom.Position.X) / 2,
-            (StartAtom.Position.Y + EndAtom.Position.Y) / 2);
+                                           (StartAtom.Position.Y + EndAtom.Position.Y) / 2);
 
         public string Id { get; set; }
 
@@ -137,11 +139,11 @@ namespace Chem4Word.Model2
                 // local function
                 void ResetStereo()
                 {
-                    if (Stereo == Globals.BondStereo.Wedge
-                        || Stereo == Globals.BondStereo.Hatch
-                        || Stereo == Globals.BondStereo.Indeterminate)
+                    if (Stereo == BondStereo.Wedge
+                        || Stereo == BondStereo.Hatch
+                        || Stereo == BondStereo.Indeterminate)
                     {
-                        Stereo = Globals.BondStereo.None;
+                        Stereo = BondStereo.None;
                     }
                 }
             }
@@ -185,9 +187,9 @@ namespace Chem4Word.Model2
 
         #endregion Bond Orders
 
-        private Globals.BondStereo _stereo;
+        private BondStereo _stereo;
 
-        public Globals.BondStereo Stereo
+        public BondStereo Stereo
         {
             get { return _stereo; }
             set
@@ -200,7 +202,7 @@ namespace Chem4Word.Model2
         public object Tag { get; set; }
         public List<string> Messages { get; private set; }
 
-        public Globals.BondDirection Placement
+        public BondDirection Placement
         {
             get
             {
@@ -211,10 +213,10 @@ namespace Chem4Word.Model2
                     {
                         Parent.RebuildRings();
                     }
-                    return ExplicitPlacement ?? ImplicitPlacement ?? Globals.BondDirection.None;
+                    return ExplicitPlacement ?? ImplicitPlacement ?? BondDirection.None;
                 }
 
-                return Globals.BondDirection.None;
+                return BondDirection.None;
             }
             set
             {
@@ -223,7 +225,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        public Globals.BondDirection? ExplicitPlacement { get; set; }
+        public BondDirection? ExplicitPlacement { get; set; }
 
         private Vector? VectorOnSideOfNonHAtomFromStartLigands(Atom startAtom, Atom endAtom)
         {
@@ -618,12 +620,12 @@ namespace Chem4Word.Model2
         {
             //assume there are two endLigands
 
-            if (BasicGeometry.LineSegmentsIntersect(startLigand.Position, endAtom.Position, endLigands[0].Position,
+            if (GeometryTool.LineSegmentsIntersect(startLigand.Position, endAtom.Position, endLigands[0].Position,
                                                     startAtom.Position) != null)
             {
                 return endLigands[0];
             }
-            else if (BasicGeometry.LineSegmentsIntersect(startLigand.Position, endAtom.Position, endLigands[1].Position, startAtom.Position) != null)
+            else if (GeometryTool.LineSegmentsIntersect(startLigand.Position, endAtom.Position, endLigands[1].Position, startAtom.Position) != null)
 
             {
                 return endLigands[1];
@@ -631,37 +633,37 @@ namespace Chem4Word.Model2
             return null;
         }
 
-        private Globals.BondDirection? GetPlacement()
+        private BondDirection? GetPlacement()
         {
-            Globals.BondDirection dir = Globals.BondDirection.None;
+            BondDirection dir = BondDirection.None;
 
             var vec = GetPrettyDoubleBondVector();
 
             if (vec == null)
             {
-                dir = Globals.BondDirection.None;
+                dir = BondDirection.None;
             }
             else
             {
                 // Azure DevOps #713
                 if (double.IsNaN(vec.Value.X) || double.IsNaN(vec.Value.Y))
                 {
-                    dir = Globals.BondDirection.None;
+                    dir = BondDirection.None;
                 }
                 else
                 {
-                    dir = (Globals.BondDirection)Math.Sign(Vector.CrossProduct(vec.Value, BondVector));
+                    dir = (BondDirection)Math.Sign(Vector.CrossProduct(vec.Value, BondVector));
                 }
             }
 
             return dir;
         }
 
-        public Globals.BondDirection? ImplicitPlacement => GetPlacement();
+        public BondDirection? ImplicitPlacement => GetPlacement();
 
         public Vector BondVector => EndAtom.Position - StartAtom.Position;
 
-        public double Angle => Vector.AngleBetween(BasicGeometry.ScreenNorth, BondVector);
+        public double Angle => Vector.AngleBetween(GeometryTool.ScreenNorth, BondVector);
         public double BondLength => BondVector.Length;
 
         #endregion Properties
@@ -740,19 +742,129 @@ namespace Chem4Word.Model2
                 if (StartAtom.Neighbours.Contains(atomA))
                 {
                     //draw two lines from the end atom to atom a and start atom to atom b and see if they intersect
-                    return BasicGeometry.LineSegmentsIntersect(EndAtom.Position, atomA.Position,
-                               StartAtom.Position, atomB.Position) != null;
+                    return GeometryTool.LineSegmentsIntersect(EndAtom.Position, atomA.Position,
+                                                              StartAtom.Position, atomB.Position) != null;
                 }
 
                 //draw the lines the other way around
-                return BasicGeometry.LineSegmentsIntersect(EndAtom.Position, atomB.Position,
-                           StartAtom.Position, atomA.Position) != null;
+                return GeometryTool.LineSegmentsIntersect(EndAtom.Position, atomB.Position,
+                                                          StartAtom.Position, atomA.Position) != null;
             }
 
             return false;
         }
 
         #endregion Geometry Routines
+
+
+        public static string GetStereoString(BondStereo stereo)
+        {
+            switch (stereo)
+            {
+                case BondStereo.None:
+                    return null;
+
+                case BondStereo.Hatch:
+                    return "H";
+
+                case BondStereo.Wedge:
+                    return "W";
+
+                case BondStereo.Cis:
+                    return "C";
+
+                case BondStereo.Trans:
+                    return "T";
+
+                case BondStereo.Indeterminate:
+                    return "S";
+
+                default:
+                    return null;
+            }
+        }
+
+        public static BondStereo StereoFromString(string stereo)
+        {
+            BondStereo result;
+
+            switch (stereo)
+            {
+                case "N":
+                    result = BondStereo.None;
+                    break;
+
+                case "W":
+                    result = BondStereo.Wedge;
+                    break;
+
+                case "H":
+                    result = BondStereo.Hatch;
+                    break;
+
+                case "S":
+                    result = BondStereo.Indeterminate;
+                    break;
+
+                case "C":
+                    result = BondStereo.Cis;
+                    break;
+
+                case "T":
+                    result = BondStereo.Trans;
+                    break;
+
+                default:
+                    result = BondStereo.None;
+                    break;
+            }
+
+            return result;
+        }
+
+        public static string OrderValueToOrder(double val, bool isAromatic = false)
+        {
+            if (val == 0)
+            {
+                return Globals.OrderZero;
+            }
+            if (val == 0.5)
+            {
+                return Globals.OrderPartial01;
+            }
+            if (val == 1)
+            {
+                return Globals.OrderSingle;
+            }
+            if (val == 1.5)
+            {
+                if (isAromatic)
+                {
+                    return Globals.OrderAromatic;
+                }
+                else
+                {
+                    return Globals.OrderPartial12;
+                }
+            }
+            if (val == 2)
+            {
+                return Globals.OrderDouble;
+            }
+            if (val == 2.5)
+            {
+                return Globals.OrderPartial23;
+            }
+            if (val == 3)
+            {
+                return Globals.OrderTriple;
+            }
+            if (val == 4)
+            {
+                return Globals.OrderAromatic;
+            }
+            return Globals.OrderZero;
+        }
 
         #endregion Methods
 

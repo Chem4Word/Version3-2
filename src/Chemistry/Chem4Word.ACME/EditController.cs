@@ -38,10 +38,12 @@ using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Enums;
 using Chem4Word.ACME.Models;
 using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Enums;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
@@ -93,7 +95,7 @@ namespace Chem4Word.ACME
 
         public double EditBondThickness
         {
-            get { return BondThickness * DefaultBondLineFactor; }
+            get { return Common.BondThickness * Common.DefaultBondLineFactor; }
         }
 
         public SelectionTypeCode SelectionType
@@ -1165,7 +1167,7 @@ namespace Chem4Word.ACME
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
                                       WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
-                                      moleculesToTransform[i].Transform((Transform)inverse);
+                                      Transform(moleculesToTransform[i], (Transform)inverse);
                                   }
 
                                   WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
@@ -1208,7 +1210,7 @@ namespace Chem4Word.ACME
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
                                       WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
-                                      moleculesToTransform[i].Transform(operation);
+                                      Transform(moleculesToTransform[i], operation);
                                   }
 
                                   WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
@@ -1256,6 +1258,26 @@ namespace Chem4Word.ACME
             CheckModelIntegrity(module);
         }
 
+        private void Transform(Molecule molecule, Transform lastOperation)
+        {
+            if (!molecule.IsGrouped)
+            {
+                foreach (Atom atom in molecule.Atoms.Values)
+                {
+                    atom.Position = lastOperation.Transform(atom.Position);
+                    atom.UpdateVisual();
+                }
+            }
+            else
+            {
+                foreach (Molecule mol in molecule.Molecules.Values)
+                {
+                    Transform(mol, lastOperation);
+                    mol.UpdateVisual();
+                }
+            }
+        }
+
         public void MultiTransformMolecules(List<Transform> operation, List<Molecule> molecules)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -1277,7 +1299,7 @@ namespace Chem4Word.ACME
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
                                       WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
                                       var inverse = operation[i].Inverse;
-                                      moleculesToTransform[i].Transform((Transform)inverse);
+                                      Transform(moleculesToTransform[i], (Transform)inverse);
                                   }
                                   SuppressEditorRedraw(false);
 
@@ -1296,7 +1318,7 @@ namespace Chem4Word.ACME
                                   {
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
                                       WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
-                                      moleculesToTransform[i].Transform(operation[i]);
+                                      Transform(moleculesToTransform[i], operation[i]);
                                   }
                                   SuppressEditorRedraw(false);
 
@@ -1344,7 +1366,7 @@ namespace Chem4Word.ACME
                                       ClearSelection();
                                       foreach (Molecule mol in moleculesToTransform)
                                       {
-                                          mol.Transform((Transform)inverse);
+                                          Transform(mol, (Transform)inverse);
                                       }
                                       SuppressEditorRedraw(false);
 
@@ -1361,7 +1383,7 @@ namespace Chem4Word.ACME
                                       ClearSelection();
                                       foreach (Molecule mol in moleculesToTransform)
                                       {
-                                          mol.Transform(operation);
+                                          Transform(mol, operation);
                                       }
                                       SuppressEditorRedraw(false);
 
@@ -2365,7 +2387,7 @@ namespace Chem4Word.ACME
                             if (bondBetween != null)
                             {
                                 // Only do this if a bond was created / exists
-                                SetBondAttributes(bondBetween, OrderDouble, Globals.BondStereo.None);
+                                SetBondAttributes(bondBetween, OrderDouble, BondStereo.None);
                                 bondBetween.ExplicitPlacement = null;
                                 bondBetween.UpdateVisual();
                             }
@@ -2591,14 +2613,14 @@ namespace Chem4Word.ACME
                         {
                             if (i > 0)
                             {
-                                vector = vector * matrix3;
+                                vector *= matrix3;
                             }
 
                             var aa = new Atom
                             {
                                 Element = Globals.PeriodicTable.H,
                                 Position = atom.Position +
-                                                    vector * (Model.XamlBondLength * ExplicitHydrogenBondPercentage)
+                                                    vector * (Model.XamlBondLength * Common.ExplicitHydrogenBondPercentage)
                             };
                             newAtoms.Add(aa);
                             if (!parents.ContainsKey(aa.InternalId))
@@ -2866,7 +2888,7 @@ namespace Chem4Word.ACME
 
                 Action undo = () =>
                 {
-                    selMolecule.Transform(flipTransform);
+                    Transform(selMolecule, flipTransform);
 
                     InvertPlacements(selMolecule);
                     selMolecule.UpdateVisual();
@@ -2878,7 +2900,7 @@ namespace Chem4Word.ACME
 
                 Action redo = () =>
                 {
-                    selMolecule.Transform(flipTransform);
+                    Transform(selMolecule, flipTransform);
 
                     InvertPlacements(selMolecule);
                     selMolecule.UpdateVisual();
@@ -3914,7 +3936,7 @@ namespace Chem4Word.ACME
 
                 Action redo = () =>
                 {
-                    bond.Order = OrderValueToOrder(bondOrderAfter);
+                    bond.Order = Bond.OrderValueToOrder(bondOrderAfter);
                     bond.Stereo = stereoAfter;
                     bond.ExplicitPlacement = directionAfter;
                     bond.Parent.UpdateVisual();
@@ -3935,7 +3957,7 @@ namespace Chem4Word.ACME
                         }
                         else
                         {
-                            mol.Transform((Transform)transform);
+                            Transform(mol, (Transform)transform);
                             mol.UpdateVisual();
                         }
                         ClearSelection();
@@ -3944,7 +3966,7 @@ namespace Chem4Word.ACME
 
                 Action undo = () =>
                 {
-                    bond.Order = OrderValueToOrder(bondOrderBefore);
+                    bond.Order = Bond.OrderValueToOrder(bondOrderBefore);
                     bond.Stereo = stereoBefore;
                     bond.ExplicitPlacement = directionBefore;
                     bond.Parent.UpdateVisual();
@@ -3965,7 +3987,7 @@ namespace Chem4Word.ACME
                         }
                         else
                         {
-                            mol.Transform((Transform)inverse);
+                            Transform(mol, (Transform)inverse);
                             mol.UpdateVisual();
                         }
                         ClearSelection();

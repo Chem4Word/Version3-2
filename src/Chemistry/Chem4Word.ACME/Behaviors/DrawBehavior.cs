@@ -14,7 +14,9 @@ using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using static Chem4Word.Model2.Helpers.Globals;
 
@@ -120,15 +122,15 @@ namespace Chem4Word.ACME.Behaviors
                         lastPos = e.GetPosition(CurrentEditor);
 
                         var angleBetween =
-                            Vector.AngleBetween(_lastAtomVisual?.ParentAtom?.BalancingVector() ?? BasicGeometry.ScreenNorth,
-                                BasicGeometry.ScreenNorth);
+                            Vector.AngleBetween(_lastAtomVisual?.ParentAtom?.BalancingVector() ?? GeometryTool.ScreenNorth,
+                                                GeometryTool.ScreenNorth);
                         //snap a bond into position
                         lastPos = _angleSnapper.SnapBond(lastPos.Value, angleBetween);
                     }
 
                     if (lastPos != null)
                     {
-                        _adorner = new DrawBondAdorner(CurrentEditor, BondThickness)
+                        _adorner = new DrawBondAdorner(CurrentEditor, Common.BondThickness)
                         {
                             Stereo = EditController.CurrentStereo,
                             BondOrder = bondOrder,
@@ -335,9 +337,9 @@ namespace Chem4Word.ACME.Behaviors
 
         private static ClockDirections GetGeneralDir(Vector bondVector)
         {
-            double bondAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth, bondVector);
+            double bondAngle = Vector.AngleBetween(GeometryTool.ScreenNorth, bondVector);
 
-            ClockDirections hour = (ClockDirections)BasicGeometry.SnapToClock(bondAngle);
+            ClockDirections hour = (ClockDirections)GeometryTool.SnapToClock(bondAngle);
             return hour;
         }
 
@@ -401,9 +403,9 @@ namespace Chem4Word.ACME.Behaviors
             //local function
             ClockDirections SnapToHour(Vector bondVector)
             {
-                double bondAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth, bondVector);
+                double bondAngle = Vector.AngleBetween(GeometryTool.ScreenNorth, bondVector);
 
-                ClockDirections hour = (ClockDirections)BasicGeometry.SnapToClock(bondAngle);
+                ClockDirections hour = (ClockDirections)GeometryTool.SnapToClock(bondAngle);
                 return hour;
             }
         }

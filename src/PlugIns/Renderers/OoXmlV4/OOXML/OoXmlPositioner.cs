@@ -5,15 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.Core.Helpers;
-using Chem4Word.Core.UI.Forms;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
-using Chem4Word.Renderer.OoXmlV4.Entities;
-using Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic;
-using Chem4Word.Renderer.OoXmlV4.Enums;
-using Chem4Word.Renderer.OoXmlV4.TTF;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,6 +13,16 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml;
+using Chem4Word.Core.Enums;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI.Forms;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
+using Chem4Word.Renderer.OoXmlV4.Entities;
+using Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic;
+using Chem4Word.Renderer.OoXmlV4.Enums;
+using Chem4Word.Renderer.OoXmlV4.TTF;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
 
@@ -68,6 +69,14 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 ShrinkBondLinesPass1(Inputs.Progress);
                 ShrinkBondLinesPass2(Inputs.Progress);
+                if (Inputs.Options.ShowCrossingPoints)
+                {
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    DetectCrossingLines(Inputs, Outputs);
+                    sw.Stop();
+                    Debug.WriteLine($"Detect Crossings took {sw.Elapsed}");
+                }
 
                 #endregion Step 4 - Shrink bond lines
             }
@@ -463,8 +472,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         {
                             // Only convert to two bond lines if not wedge or hatch
                             var ignoreWedgeOrHatch = bl.Bond.Order == Globals.OrderSingle
-                                                     && bl.Bond.Stereo == Globals.BondStereo.Wedge
-                                                     || bl.Bond.Stereo == Globals.BondStereo.Hatch;
+                                                     && bl.Bond.Stereo == BondStereo.Wedge
+                                                     || bl.Bond.Stereo == BondStereo.Hatch;
                             if (!ignoreWedgeOrHatch)
                             {
                                 // Line was clipped at both ends
@@ -487,6 +496,86 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 {
                     Outputs.BondLines.Add(bl);
                 }
+            }
+        }
+
+        private void DetectCrossingLines(PositionerInputs inputs, PositionerOutputs outputs)
+        {
+            foreach (var mol in Inputs.Model.Molecules.Values)
+            {
+                DetectCrossingLines(mol, inputs, outputs);
+            }
+        }
+
+        private bool IsAtEndOfALine(Point point, SimpleLine line1, SimpleLine line2)
+        {
+            return point.Equals(line1.Start) || point.Equals(line1.End) || point.Equals(line2.Start) || point.Equals(line2.End);
+        }
+
+        private void DetectCrossingLines(Molecule mol, PositionerInputs inputs, PositionerOutputs outputs)
+        {
+            var setOfLines = new List<SimpleLine>();
+
+            // Step 1 collect
+            foreach (var bond in mol.Bonds)
+            {
+                setOfLines.Add(new SimpleLine(bond.Path, bond.StartAtom.Position, bond.EndAtom.Position));
+            }
+
+            // Step 2 sort
+            setOfLines.Sort();
+
+            // Step 3 collate
+            var intersections = new Dictionary<string, Point>();
+
+            foreach (var thisLine in setOfLines)
+            {
+                var intersecting = setOfLines
+                                   .Where(a => a.SmallerBoundingBox.IntersectsWith(thisLine.SmallerBoundingBox))
+                                   .ToList();
+                intersecting.Remove(thisLine);
+                if (intersecting.Count > 0)
+                {
+                    Debug.WriteLine($"Bounding box of line {thisLine.Name} intersects with bounding box of {intersecting.Count} other lines");
+                    foreach (var line in intersecting)
+                    {
+                        Debug.WriteLine($"Checking line {thisLine.Name} against {line.Name}");
+                        var intersection = GeometryTool.LineSegmentsIntersect(thisLine.Start, thisLine.End,
+                                                                              line.Start, line.End);
+                        if (intersection != null)
+                        {
+                            if (IsAtEndOfALine(intersection.Value, thisLine, line))
+                            {
+                                Debug.WriteLine($"Ignoring point {intersection} as it's at the end of a line");
+                            }
+                            else
+                            {
+                                var names = new List<string>();
+                                names.Add(line.Name);
+                                names.Add(thisLine.Name);
+                                names.Sort();
+                                var key = string.Join("|", names);
+                                if (!intersections.ContainsKey(key))
+                                {
+                                    intersections.Add(key, intersection.Value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Step 4 do the cutting
+            foreach (var intersection in intersections)
+            {
+                Debug.WriteLine($"{intersection.Key}");
+                outputs.CrossingPoints.Add(intersection.Value);
+            }
+
+            // Finally recurse into any child molecules
+            foreach (var child in mol.Molecules.Values)
+            {
+                DetectCrossingLines(child, inputs, outputs);
             }
         }
 
@@ -722,7 +811,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             // Implement beautification of semi open double bonds and double bonds touching rings
 
             // Obtain list of Double Bonds with Placement of BondDirection.None
-            var doubleBonds = mol.Bonds.Where(b => b.OrderValue.HasValue && b.OrderValue.Value == 2 && b.Placement == Globals.BondDirection.None).ToList();
+            var doubleBonds = mol.Bonds.Where(b => b.OrderValue.HasValue && b.OrderValue.Value == 2 && b.Placement == BondDirection.None).ToList();
             if (doubleBonds.Count > 0)
             {
                 pb.Message = $"Processing Double Bonds in Molecule {moleculeNo}";
@@ -790,17 +879,17 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             // Make a longer version of the line
             var startLonger = new Point(leftOrRight.Start.X, leftOrRight.Start.Y);
             var endLonger = new Point(leftOrRight.End.X, leftOrRight.End.Y);
-            CoordinateTool.AdjustLineAboutMidpoint(ref startLonger, ref endLonger, Inputs.MeanBondLength / 5);
+            GeometryTool.AdjustLineAboutMidpoint(ref startLonger, ref endLonger, Inputs.MeanBondLength / 5);
 
             // See if they intersect at one end
-            CoordinateTool.FindIntersection(startLonger, endLonger, line.Start, line.End,
-                out dummy, out intersect, out intersection);
+            GeometryTool.FindIntersection(startLonger, endLonger, line.Start, line.End,
+                                          out dummy, out intersect, out intersection);
 
             // If they intersect update the main line
             if (intersect)
             {
-                var l1 = CoordinateTool.DistanceBetween(intersection, leftOrRight.Start);
-                var l2 = CoordinateTool.DistanceBetween(intersection, leftOrRight.End);
+                var l1 = GeometryTool.DistanceBetween(intersection, leftOrRight.Start);
+                var l2 = GeometryTool.DistanceBetween(intersection, leftOrRight.End);
                 if (l1 > l2)
                 {
                     leftOrRight.End = new Point(intersection.X, intersection.Y);
@@ -811,8 +900,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
                 if (!isInRing)
                 {
-                    l1 = CoordinateTool.DistanceBetween(intersection, line.Start);
-                    l2 = CoordinateTool.DistanceBetween(intersection, line.End);
+                    l1 = GeometryTool.DistanceBetween(intersection, line.Start);
+                    l2 = GeometryTool.DistanceBetween(intersection, line.End);
                     if (l1 > l2)
                     {
                         line.End = new Point(intersection.X, intersection.Y);
@@ -1134,7 +1223,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 else
                 {
                     // Fallback to old method
-                    main.AdjustPosition(atom.Position  - main.Centre);
+                    main.AdjustPosition(atom.Position - main.Centre);
                 }
 
                 Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(main.BoundingBox, OoXmlHelper.AcsLineWidth / 2), "00b050"));
@@ -1252,19 +1341,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 case Globals.OrderSingle:
                     switch (bond.Stereo)
                     {
-                        case Globals.BondStereo.None:
+                        case BondStereo.None:
                             Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, bond));
                             break;
 
-                        case Globals.BondStereo.Hatch:
+                        case BondStereo.Hatch:
                             Outputs.BondLines.Add(new BondLine(BondLineStyle.Hatch, bond));
                             break;
 
-                        case Globals.BondStereo.Wedge:
+                        case BondStereo.Wedge:
                             Outputs.BondLines.Add(new BondLine(BondLineStyle.Wedge, bond));
                             break;
 
-                        case Globals.BondStereo.Indeterminate:
+                        case BondStereo.Indeterminate:
                             Outputs.BondLines.Add(new BondLine(BondLineStyle.Wavy, bond));
                             break;
 
@@ -1285,29 +1374,29 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                     switch (bond.Placement)
                     {
-                        case Globals.BondDirection.Clockwise:
+                        case BondDirection.Clockwise:
                             onePointFive = new BondLine(BondLineStyle.Solid, bond);
                             Outputs.BondLines.Add(onePointFive);
                             onePointFiveDashed = onePointFive.GetParallel(BondOffset());
                             onePointFiveStart = new Point(onePointFiveDashed.Start.X, onePointFiveDashed.Start.Y);
                             onePointFiveEnd = new Point(onePointFiveDashed.End.X, onePointFiveDashed.End.Y);
-                            CoordinateTool.AdjustLineAboutMidpoint(ref onePointFiveStart, ref onePointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                            GeometryTool.AdjustLineAboutMidpoint(ref onePointFiveStart, ref onePointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                             onePointFiveDashed = new BondLine(BondLineStyle.Half, onePointFiveStart, onePointFiveEnd, bond);
                             Outputs.BondLines.Add(onePointFiveDashed);
                             break;
 
-                        case Globals.BondDirection.Anticlockwise:
+                        case BondDirection.Anticlockwise:
                             onePointFive = new BondLine(BondLineStyle.Solid, bond);
                             Outputs.BondLines.Add(onePointFive);
                             onePointFiveDashed = onePointFive.GetParallel(-BondOffset());
                             onePointFiveStart = new Point(onePointFiveDashed.Start.X, onePointFiveDashed.Start.Y);
                             onePointFiveEnd = new Point(onePointFiveDashed.End.X, onePointFiveDashed.End.Y);
-                            CoordinateTool.AdjustLineAboutMidpoint(ref onePointFiveStart, ref onePointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                            GeometryTool.AdjustLineAboutMidpoint(ref onePointFiveStart, ref onePointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                             onePointFiveDashed = new BondLine(BondLineStyle.Half, onePointFiveStart, onePointFiveEnd, bond);
                             Outputs.BondLines.Add(onePointFiveDashed);
                             break;
 
-                        case Globals.BondDirection.None:
+                        case BondDirection.None:
                             onePointFive = new BondLine(BondLineStyle.Solid, bond);
                             Outputs.BondLines.Add(onePointFive.GetParallel(-(BondOffset() / 2)));
                             onePointFiveDashed = onePointFive.GetParallel(BondOffset() / 2);
@@ -1319,7 +1408,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 case "2":
                 case Globals.OrderDouble:
-                    if (bond.Stereo == Globals.BondStereo.Indeterminate) //crossing bonds
+                    if (bond.Stereo == BondStereo.Indeterminate) //crossing bonds
                     {
                         // Crossed lines
                         var d = new BondLine(BondLineStyle.Solid, bondStart, bondEnd, bond);
@@ -1332,13 +1421,13 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     {
                         switch (bond.Placement)
                         {
-                            case Globals.BondDirection.Anticlockwise:
+                            case BondDirection.Anticlockwise:
                                 var da = new BondLine(BondLineStyle.Solid, bond);
                                 Outputs.BondLines.Add(da);
                                 Outputs.BondLines.Add(PlaceSecondaryLine(da, da.GetParallel(-BondOffset())));
                                 break;
 
-                            case Globals.BondDirection.Clockwise:
+                            case BondDirection.Clockwise:
                                 var dc = new BondLine(BondLineStyle.Solid, bond);
                                 Outputs.BondLines.Add(dc);
                                 Outputs.BondLines.Add(PlaceSecondaryLine(dc, dc.GetParallel(BondOffset())));
@@ -1347,8 +1436,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                 // Local Function
                                 BondLine PlaceSecondaryLine(BondLine primaryLine, BondLine secondaryLine)
                                 {
-                                    var primaryMidpoint = CoordinateTool.GetMidPoint(primaryLine.Start, primaryLine.End);
-                                    var secondaryMidpoint = CoordinateTool.GetMidPoint(secondaryLine.Start, secondaryLine.End);
+                                    var primaryMidpoint = GeometryTool.GetMidPoint(primaryLine.Start, primaryLine.End);
+                                    var secondaryMidpoint = GeometryTool.GetMidPoint(secondaryLine.Start, secondaryLine.End);
 
                                     var startPointa = secondaryLine.Start;
                                     var endPointa = secondaryLine.End;
@@ -1363,7 +1452,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                         // Get angle between bond and vector to primary ring centre
                                         centre = bond.PrimaryRing.Centroid.Value;
                                         var primaryRingVector = primaryMidpoint - centre.Value;
-                                        var angle = CoordinateTool.AngleBetween(bond.BondVector, primaryRingVector);
+                                        var angle = GeometryTool.AngleBetween(bond.BondVector, primaryRingVector);
 
                                         // Does bond have a secondary ring?
                                         if (bond.SubsidiaryRing != null && bond.SubsidiaryRing.Centroid != null)
@@ -1371,11 +1460,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                             // Get angle between bond and vector to secondary ring centre
                                             var centre2 = bond.SubsidiaryRing.Centroid.Value;
                                             var secondaryRingVector = primaryMidpoint - centre2;
-                                            var angle2 = CoordinateTool.AngleBetween(bond.BondVector, secondaryRingVector);
+                                            var angle2 = GeometryTool.AngleBetween(bond.BondVector, secondaryRingVector);
 
                                             // Get angle in which the offset line has moved with respect to the bond line
                                             var offsetVector = primaryMidpoint - secondaryMidpoint;
-                                            var offsetAngle = CoordinateTool.AngleBetween(bond.BondVector, offsetVector);
+                                            var offsetAngle = GeometryTool.AngleBetween(bond.BondVector, offsetVector);
 
                                             // If in the same direction as secondary ring centre, use it
                                             if (Math.Sign(angle2) == Math.Sign(offsetAngle))
@@ -1404,10 +1493,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                         Point outIntersectP1;
                                         Point outIntersectP2;
 
-                                        CoordinateTool.FindIntersection(startPointa, endPointa, bondStart, centre.Value,
-                                                                        out _, out _, out outIntersectP1);
-                                        CoordinateTool.FindIntersection(startPointa, endPointa, bondEnd, centre.Value,
-                                                                        out _, out _, out outIntersectP2);
+                                        GeometryTool.FindIntersection(startPointa, endPointa, bondStart, centre.Value,
+                                                                      out _, out _, out outIntersectP1);
+                                        GeometryTool.FindIntersection(startPointa, endPointa, bondEnd, centre.Value,
+                                                                      out _, out _, out outIntersectP2);
 
                                         if (Inputs.Options.ShowBondClippingLines)
                                         {
@@ -1420,7 +1509,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                     }
                                     else
                                     {
-                                        CoordinateTool.AdjustLineAboutMidpoint(ref startPointa, ref endPointa, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                                        GeometryTool.AdjustLineAboutMidpoint(ref startPointa, ref endPointa, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                                         return TrimSecondaryLine(new BondLine(BondLineStyle.Solid, startPointa, endPointa, bond));
                                     }
                                 }
@@ -1447,7 +1536,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                     {
                                         var v1 = left - common;
                                         var v2 = right - common;
-                                        var angle = CoordinateTool.AngleBetween(v1, v2);
+                                        var angle = GeometryTool.AngleBetween(v1, v2);
                                         var matrix = new Matrix();
                                         matrix.Rotate(angle / 2);
                                         v1 = v1 * 2 * matrix;
@@ -1458,9 +1547,9 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                                         bool intersect;
                                         Point meetingPoint;
-                                        CoordinateTool.FindIntersection(bondLine.Start, bondLine.End,
-                                                                        common, common + v1,
-                                                                        out _, out intersect, out meetingPoint);
+                                        GeometryTool.FindIntersection(bondLine.Start, bondLine.End,
+                                                                      common, common + v1,
+                                                                      out _, out intersect, out meetingPoint);
                                         if (intersect)
                                         {
                                             if (common == bondLine.Bond.StartAtom.Position)
@@ -1480,23 +1569,23 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             default:
                                 switch (bond.Stereo)
                                 {
-                                    case Globals.BondStereo.Cis:
+                                    case BondStereo.Cis:
                                         var dcc = new BondLine(BondLineStyle.Solid, bond);
                                         Outputs.BondLines.Add(dcc);
                                         var blnewc = dcc.GetParallel(BondOffset());
                                         var startPointn = blnewc.Start;
                                         var endPointn = blnewc.End;
-                                        CoordinateTool.AdjustLineAboutMidpoint(ref startPointn, ref endPointn, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                                        GeometryTool.AdjustLineAboutMidpoint(ref startPointn, ref endPointn, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                                         Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, startPointn, endPointn, bond));
                                         break;
 
-                                    case Globals.BondStereo.Trans:
+                                    case BondStereo.Trans:
                                         var dtt = new BondLine(BondLineStyle.Solid, bond);
                                         Outputs.BondLines.Add(dtt);
                                         var blnewt = dtt.GetParallel(BondOffset());
                                         var startPointt = blnewt.Start;
                                         var endPointt = blnewt.End;
-                                        CoordinateTool.AdjustLineAboutMidpoint(ref startPointt, ref endPointt, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                                        GeometryTool.AdjustLineAboutMidpoint(ref startPointt, ref endPointt, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                                         Outputs.BondLines.Add(new BondLine(BondLineStyle.Solid, startPointt, endPointt, bond));
                                         break;
 
@@ -1519,7 +1608,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     Point twoPointFiveEnd;
                     switch (bond.Placement)
                     {
-                        case Globals.BondDirection.Clockwise:
+                        case BondDirection.Clockwise:
                             // Central bond line
                             twoPointFive = new BondLine(BondLineStyle.Solid, bond);
                             Outputs.BondLines.Add(twoPointFive);
@@ -1527,19 +1616,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             twoPointFiveParallel = twoPointFive.GetParallel(-BondOffset());
                             twoPointFiveStart = new Point(twoPointFiveParallel.Start.X, twoPointFiveParallel.Start.Y);
                             twoPointFiveEnd = new Point(twoPointFiveParallel.End.X, twoPointFiveParallel.End.Y);
-                            CoordinateTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                            GeometryTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                             twoPointFiveParallel = new BondLine(BondLineStyle.Solid, twoPointFiveStart, twoPointFiveEnd, bond);
                             Outputs.BondLines.Add(twoPointFiveParallel);
                             // Dashed bond line
                             twoPointFiveDashed = twoPointFive.GetParallel(BondOffset());
                             twoPointFiveStart = new Point(twoPointFiveDashed.Start.X, twoPointFiveDashed.Start.Y);
                             twoPointFiveEnd = new Point(twoPointFiveDashed.End.X, twoPointFiveDashed.End.Y);
-                            CoordinateTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                            GeometryTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                             twoPointFiveDashed = new BondLine(BondLineStyle.Half, twoPointFiveStart, twoPointFiveEnd, bond);
                             Outputs.BondLines.Add(twoPointFiveDashed);
                             break;
 
-                        case Globals.BondDirection.Anticlockwise:
+                        case BondDirection.Anticlockwise:
                             // Central bond line
                             twoPointFive = new BondLine(BondLineStyle.Solid, bond);
                             Outputs.BondLines.Add(twoPointFive);
@@ -1547,19 +1636,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             twoPointFiveDashed = twoPointFive.GetParallel(-BondOffset());
                             twoPointFiveStart = new Point(twoPointFiveDashed.Start.X, twoPointFiveDashed.Start.Y);
                             twoPointFiveEnd = new Point(twoPointFiveDashed.End.X, twoPointFiveDashed.End.Y);
-                            CoordinateTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                            GeometryTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                             twoPointFiveDashed = new BondLine(BondLineStyle.Half, twoPointFiveStart, twoPointFiveEnd, bond);
                             Outputs.BondLines.Add(twoPointFiveDashed);
                             // Solid bond line
                             twoPointFiveParallel = twoPointFive.GetParallel(BondOffset());
                             twoPointFiveStart = new Point(twoPointFiveParallel.Start.X, twoPointFiveParallel.Start.Y);
                             twoPointFiveEnd = new Point(twoPointFiveParallel.End.X, twoPointFiveParallel.End.Y);
-                            CoordinateTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
+                            GeometryTool.AdjustLineAboutMidpoint(ref twoPointFiveStart, ref twoPointFiveEnd, -(BondOffset() / OoXmlHelper.LineShrinkPixels));
                             twoPointFiveParallel = new BondLine(BondLineStyle.Solid, twoPointFiveStart, twoPointFiveEnd, bond);
                             Outputs.BondLines.Add(twoPointFiveParallel);
                             break;
 
-                        case Globals.BondDirection.None:
+                        case BondDirection.None:
                             twoPointFive = new BondLine(BondLineStyle.Solid, bond);
                             Outputs.BondLines.Add(twoPointFive);
                             Outputs.BondLines.Add(twoPointFive.GetParallel(-BondOffset()));

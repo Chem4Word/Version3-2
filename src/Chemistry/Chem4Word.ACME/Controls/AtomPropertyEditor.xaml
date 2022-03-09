@@ -3,12 +3,12 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ACME="clr-namespace:Chem4Word.ACME"
-    xmlns:compass="clr-namespace:Chem4Word.Model2.Geometry;assembly=Chem4Word.Model2"
     xmlns:conv="clr-namespace:Chem4Word.ACME.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dvm="clr-namespace:Chem4Word.ACME.Controls.DesignTimeModels"
     xmlns:local="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:enums="clr-namespace:Chem4Word.Core.Enums;assembly=Chem4Word.Core"
     x:Name="PropertyEditor"
     Title="Atom Properties"
     MinWidth="200"
@@ -339,7 +339,7 @@
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     Checked="PlacementButton_OnChecked"
-                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.North}}"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static enums:CompassPoints.North}}"
                                     Style="{StaticResource PlacementButtonStyle}"
                                     ToolTip="North">
                                     N
@@ -349,7 +349,7 @@
                                     Grid.Row="2"
                                     Grid.Column="1"
                                     Checked="PlacementButton_OnChecked"
-                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.South}}"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static enums:CompassPoints.South}}"
                                     Style="{StaticResource PlacementButtonStyle}"
                                     ToolTip="South">
                                     S
@@ -359,7 +359,7 @@
                                     Grid.Row="1"
                                     Grid.Column="2"
                                     Checked="PlacementButton_OnChecked"
-                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.East}}"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static enums:CompassPoints.East}}"
                                     Style="{StaticResource PlacementButtonStyle}"
                                     ToolTip="East">
                                     E
@@ -369,7 +369,7 @@
                                     Grid.Row="1"
                                     Grid.Column="0"
                                     Checked="PlacementButton_OnChecked"
-                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.West}}"
+                                    IsChecked="{Binding ExplicitHydrogenPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static enums:CompassPoints.West}}"
                                     Style="{StaticResource PlacementButtonStyle}"
                                     ToolTip="West">
                                     W
@@ -448,7 +448,7 @@
                                     Name="FGEastButton"
                                     Grid.Column="2"
                                     Checked="FGPlacementButton_OnChecked"
-                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.East}}"
+                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static enums:CompassPoints.East}}"
                                     Style="{StaticResource PlacementButtonStyle}"
                                     ToolTip="East">
                                     E
@@ -457,7 +457,7 @@
                                     Name="FGWestButton"
                                     Grid.Column="0"
                                     Checked="FGPlacementButton_OnChecked"
-                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static compass:CompassPoints.West}}"
+                                    IsChecked="{Binding ExplicitFunctionalGroupPlacement, Converter={StaticResource PlacementConverter}, ConverterParameter={x:Static enums:CompassPoints.West}}"
                                     Style="{StaticResource PlacementButtonStyle}"
                                     ToolTip="West">
                                     W

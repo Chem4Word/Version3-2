@@ -12,6 +12,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Chem4Word.Core.Helpers;
 using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.Model2
@@ -121,7 +122,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        public double Angle => Vector.AngleBetween(BasicGeometry.ScreenNorth, ReactionVector);
+        public double Angle => Vector.AngleBetween(GeometryTool.ScreenNorth, ReactionVector);
 
         public Vector ReactionVector => HeadPoint-TailPoint;
 

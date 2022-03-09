@@ -49,8 +49,6 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -86,12 +84,14 @@
     <Compile Include="Element.cs" />
     <Compile Include="ElementBase.cs" />
     <Compile Include="ElementConverter.cs" />
+    <Compile Include="Enums\BondDirection.cs" />
+    <Compile Include="Enums\BondStereo.cs" />
+    <Compile Include="Enums\ClockDirections.cs" />
     <Compile Include="FunctionalGroup.cs" />
     <Compile Include="FunctionalGroupPart.cs" />
     <Compile Include="FunctionalGroupPartType.cs" />
     <Compile Include="FunctionalGroups.cs" />
     <Compile Include="FunctionalGroupTerm.cs" />
-    <Compile Include="Geometry\BasicGeometry.cs" />
     <Compile Include="Geometry\Geometry.cs" />
     <Compile Include="Geometry\Packer.cs" />
     <Compile Include="Geometry\Separator.cs" />

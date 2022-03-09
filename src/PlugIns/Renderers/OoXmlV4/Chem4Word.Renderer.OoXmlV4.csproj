@@ -70,7 +70,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoordinateTool.cs" />
     <Compile Include="Entities\Diagnostic\DiagnosticRectangle.cs" />
     <Compile Include="Entities\GroupOfCharacters.cs" />
     <Compile Include="Entities\InnerCircle.cs" />
@@ -81,7 +80,6 @@
     <Compile Include="Entities\SimpleLine.cs" />
     <Compile Include="Enums\BondLineStyle.cs" />
     <Compile Include="Enums\TextBlockJustification.cs" />
-    <Compile Include="GeometryTool.cs" />
     <Compile Include="Entities\AtomLabelCharacter.cs" />
     <Compile Include="Entities\BondLine.cs" />
     <Compile Include="Entities\MoleculeExtents.cs" />

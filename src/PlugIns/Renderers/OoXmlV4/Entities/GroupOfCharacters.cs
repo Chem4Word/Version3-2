@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using Chem4Word.Core.Enums;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;

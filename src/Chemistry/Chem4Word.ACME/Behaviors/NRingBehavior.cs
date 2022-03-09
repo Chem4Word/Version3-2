@@ -16,6 +16,7 @@ using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Models;
 using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 
@@ -400,13 +401,13 @@ namespace Chem4Word.ACME.Behaviors
             }
             else
             {
-                direction = BasicGeometry.ScreenNorth;
+                direction = GeometryTool.ScreenNorth;
             }
 
             //try to work out exactly where best to place the ring
 
             preferredPlacements = MarkOutAtoms(hitAtom, direction, xamlBondSize, ringSize);
-            if (parentMolecule.Overlaps(preferredPlacements, new List<Atom> { hitAtom }))
+            if (Utils.Geometry.Overlaps(parentMolecule, preferredPlacements, new List<Atom> { hitAtom }))
             {
                 preferredPlacements = null;
             }

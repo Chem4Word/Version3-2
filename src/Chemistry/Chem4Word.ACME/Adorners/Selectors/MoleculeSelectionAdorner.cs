@@ -14,6 +14,7 @@ using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
@@ -135,7 +136,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
             RotateHandle.Width = _rotateThumbWidth;
             RotateHandle.Height = _rotateThumbWidth;
             RotateHandle.Cursor = Cursors.Hand;
-            rotateThumb.Style = (Style)FindResource(Globals.RotateThumbStyle);
+            rotateThumb.Style = (Style)FindResource(Common.RotateThumbStyle);
             rotateThumb.DragStarted += RotateStarted;
             rotateThumb.DragDelta += RotateThumb_DragDelta;
             rotateThumb.DragCompleted += HandleResizeCompleted;
@@ -163,7 +164,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
                 var originalDisplacement = mouse - _centroid;
 
-                double snapAngle = Vector.AngleBetween(BasicGeometry.ScreenNorth,
+                double snapAngle = Vector.AngleBetween(GeometryTool.ScreenNorth,
                                                        _rotateSnapper.SnapVector(0, originalDisplacement));
                 _rotateAngle = snapAngle;
                 LastOperation = new RotateTransform(snapAngle, _centroid.X, _centroid.Y);
@@ -174,7 +175,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         private void SetCentroid()
         {
-            _centroid = BasicGeometry.GetCentroid(CurrentEditor.GetCombinedBoundingBox(AdornedObjects));
+            _centroid = GeometryTool.GetCentroid(CurrentEditor.GetCombinedBoundingBox(AdornedObjects));
             _rotateSnapper = new Snapper(_centroid, CurrentEditor.Controller as EditController);
         }
 
@@ -218,7 +219,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
         protected virtual void SetThumbStyle(Thumb cornerThumb)
         {
-            cornerThumb.Style = (Style)FindResource(Globals.GrabHandleStyle);
+            cornerThumb.Style = (Style)FindResource(Common.GrabHandleStyle);
         }
 
         #endregion Methods
@@ -302,7 +303,7 @@ namespace Chem4Word.ACME.Adorners.Selectors
         {
             base.OnRender(drawingContext);
 
-            var ghostBrush = (Brush)FindResource(Globals.AdornerBorderBrush);
+            var ghostBrush = (Brush)FindResource(Common.AdornerBorderBrush);
             var ghostPen = new Pen(ghostBrush, 1.0);
             if (!(BigThumb.IsDragging || TopLeftHandle.IsDragging || TopRightHandle.IsDragging
                   || BottomLeftHandle.IsDragging || BottomRightHandle.IsDragging))

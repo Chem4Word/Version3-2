@@ -15,9 +15,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using Chem4Word.Model2.Interfaces;
 
@@ -1429,7 +1428,7 @@ namespace Chem4Word.Model2
         /// </summary>
         public List<Ring> SortedRings => SortRingsForDBPlacement();
 
-        public Point Centroid => BasicGeometry.GetCentroid(BoundingBox);
+        public Point Centroid => GeometryTool.GetCentroid(BoundingBox);
 
         public bool IsGrouped => Molecules.Count > 0;
 
@@ -1674,73 +1673,6 @@ namespace Chem4Word.Model2
             }
         }
 
-        public bool Overlaps(List<Point> placements, List<Atom> excludeAtoms = null)
-        {
-            PathGeometry area = OverlapArea(placements);
-
-            if (area.GetArea() >= 0.01)
-            {
-                return true;
-            }
-
-            List<Atom> chainAtoms = Atoms.Values.Where(a => !a.Rings.Any()).ToList();
-            if (excludeAtoms != null)
-            {
-                foreach (Atom excludeAtom in excludeAtoms)
-                {
-                    if (chainAtoms.Contains(excludeAtom))
-                    {
-                        chainAtoms.Remove(excludeAtom);
-                    }
-                }
-            }
-
-            System.Windows.Media.Geometry placementsArea = BasicGeometry.BuildPath(placements).Data;
-            foreach (Atom chainAtom in chainAtoms)
-            {
-                if (placementsArea.FillContains(chainAtom.Position, 0.01, ToleranceType.Relative))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public PathGeometry OverlapArea(List<Point> placements)
-        {
-            PathGeometry ringsGeo = null;
-            foreach (Ring r in Rings)
-            {
-                Path ringHull = BasicGeometry.BuildPath(r.Traverse().Select(a => a.Position).ToList());
-                if (ringsGeo == null)
-                {
-                    ringsGeo = ringHull.Data.GetOutlinedPathGeometry();
-                }
-                else
-                {
-                    System.Windows.Media.Geometry hull = ringHull.Data;
-                    PathGeometry hullGeo = hull.GetOutlinedPathGeometry();
-                    ringsGeo = new CombinedGeometry(GeometryCombineMode.Union, ringsGeo, hullGeo)
-                        .GetOutlinedPathGeometry();
-                }
-            }
-
-            Path otherGeo = BasicGeometry.BuildPath(placements);
-
-            PathGeometry val1 = ringsGeo;
-            if (val1 != null)
-            {
-                val1.FillRule = FillRule.EvenOdd;
-            }
-
-            PathGeometry val2 = otherGeo.Data.GetOutlinedPathGeometry();
-            val2.FillRule = FillRule.EvenOdd;
-
-            PathGeometry overlap = new CombinedGeometry(GeometryCombineMode.Intersect, val1, val2).GetOutlinedPathGeometry();
-            return overlap;
-        }
-
         public void ClearProperties()
         {
             Names.Clear();
@@ -1965,26 +1897,6 @@ namespace Chem4Word.Model2
             foreach (Bond bond in Bonds)
             {
                 bond.Parent = this;
-            }
-        }
-
-        public void Transform(Transform lastOperation)
-        {
-            if (!IsGrouped)
-            {
-                foreach (Atom atom in Atoms.Values)
-                {
-                    atom.Position = lastOperation.Transform(atom.Position);
-                    atom.UpdateVisual();
-                }
-            }
-            else
-            {
-                foreach (Molecule mol in Molecules.Values)
-                {
-                    mol.Transform(lastOperation);
-                    mol.UpdateVisual();
-                }
             }
         }
 

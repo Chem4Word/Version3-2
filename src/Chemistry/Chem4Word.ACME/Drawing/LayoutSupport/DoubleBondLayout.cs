@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Windows;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 /* Descriptors are simple classes that define the shape of a bond visual.
@@ -21,7 +22,7 @@ namespace Chem4Word.ACME.Drawing.LayoutSupport
     {
         public Point SecondaryStart; //refers to the subsidiary bond (dotted in line in 1.5 bonds)
         public Point SecondaryEnd;
-        public Globals.BondDirection Placement; //which side of the line the subsidiary goes
+        public BondDirection Placement; //which side of the line the subsidiary goes
         public Point? PrimaryCentroid;
         public Point? SecondaryCentroid;
 
