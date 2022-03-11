@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Media;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Helpers;
@@ -229,53 +228,6 @@ namespace Chem4Word.Model2
 
                 return path;
             }
-        }
-
-        public BaseObject GetFromPath(string path)
-        {
-            //first part of the path has to be a molecule
-            if (path.StartsWith("/"))
-            {
-                path = path.Substring(1); //strip off the first separator
-            }
-
-            string id = path.UpTo("/");
-
-            string relativePath = Utils.GetRelativePath(id, path);
-            Molecule foundMol = null;
-            foreach(Molecule m in Molecules.Values)
-            {
-                if (m.Id == id)
-                {
-                    foundMol = m;
-                    break;
-                }
-            }
-            if (foundMol!=null)
-            {
-                return foundMol.GetFromPath(relativePath);
-            }
-            
-            foreach (Atom a in Atoms.Values)
-            {
-                if (a.Id == relativePath)
-                {
-                    return a;
-                }
-            }
-           
-
-            Bond bond = (from b in Bonds
-                         where b.Id == relativePath
-                         select b).FirstOrDefault();
-            if (bond != null)
-            {
-                return bond;
-            }
-
-            Debugger.Break();
-            // We should never get here
-            throw new ArgumentException("Object not found");
         }
 
         public Model Model => Root as Model;

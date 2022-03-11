@@ -30,16 +30,28 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         public BondLineStyle Style { get; private set; }
 
         public string Colour { get; set; } = OoXmlHelper.Black;
+        public double Width { get; set; } = OoXmlHelper.AcsLineWidth;
+
+        private Point _start;
 
         /// <summary>
         /// For a Wedge or Hatch bond this is the nose of the wedge
         /// </summary>
-        public Point Start { get; set; }
+        public Point Start
+        {
+            get => _start;
+            set => _start = value;
+        }
 
+        private Point _end;
         /// <summary>
         /// For a Wedge or Hatch bond this is the centre of the "tail"
         /// </summary>
-        public Point End { get; set; }
+        public Point End
+        {
+            get => _end;
+            set => _end = value;
+        }
 
         public Point Nose => Start;
         public Point Tail => End;
@@ -55,6 +67,21 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         public Point RightTail { get; set; }
 
         private Rect _boundingBox = Rect.Empty;
+
+        public BondLine Copy()
+        {
+            var copy = new BondLine(Style, Start, End, Bond);
+
+            copy.Colour = Colour;
+            copy.Width = Width;
+
+            return copy;
+        }
+
+        public void Shrink(double value)
+        {
+            GeometryTool.AdjustLineAboutMidpoint(ref _start, ref _end, value);
+        }
 
         public Rect BoundingBox
         {

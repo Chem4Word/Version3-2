@@ -43,11 +43,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         /// <summary>
         /// Carries out the following
-        /// 1. Position Atom Label Characters
-        /// 2. Position Bond Lines
-        /// 3. Position Brackets
-        /// 4. Position Molecule Label Characters
-        /// 5. Shrink Bond Lines
+        /// 1. Position atom Label characters
+        /// 2. Position bond lines
+        /// 3. Position brackets (molecules and groups)
+        /// 4. Position molecule label characters
+        /// 5. Shrink bond lines to not clash with atom labels
+        /// 6. Add mask underneath long bond lines of bonds detected as having crossing points
         /// </summary>
         /// <returns>PositionerOutputs a class to hold all of the required output types</returns>
         public PositionerOutputs Position()
@@ -56,30 +57,25 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             var moleculeNo = 0;
 
+            if (Inputs.Options.ClipCrossingBonds)
+            {
+                DetectCrossingLines();
+            }
+
             foreach (var mol in Inputs.Model.Molecules.Values)
             {
-                // Steps 1 .. 4
                 ProcessMolecule(mol, Inputs.Progress, ref moleculeNo);
             }
 
-            // 5.   Shrink Bond Lines
-            if (Inputs.Options.ClipLines)
+            // Shrink Bond Lines
+            if (Inputs.Options.ClipBondLines)
             {
-                #region Step 4 - Shrink bond lines
-
                 ShrinkBondLinesPass1(Inputs.Progress);
                 ShrinkBondLinesPass2(Inputs.Progress);
-                if (Inputs.Options.ShowCrossingPoints)
-                {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    DetectCrossingLines(Inputs, Outputs);
-                    sw.Stop();
-                    Debug.WriteLine($"Detect Crossings took {sw.Elapsed}");
-                }
-
-                #endregion Step 4 - Shrink bond lines
             }
+
+            // Make it look like we are clipping the overlapping bonds
+            AddMaskBehindCrossedBonds();
 
             // Render reaction and annotation texts
             ProcessReactionTexts();
@@ -87,6 +83,38 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             // We are done now so we can return the final values
             return Outputs;
+        }
+
+        private void AddMaskBehindCrossedBonds()
+        {
+            // Add mask underneath long bond lines of bonds detected as having crossing points
+            foreach (var crossedBonds in Inputs.Model.CrossedBonds.Values)
+            {
+                // Find all lines for this bond
+                var lines = Outputs.BondLines.Where(b => b.BondPath.Equals(crossedBonds.LongBond.Path)).ToList();
+                foreach (var line in lines)
+                {
+                    // Create two copies for use later on
+                    var replacement = line.Copy();
+                    var mask = line.Copy();
+
+                    // Remove the line so we can add two more so that layering is correct
+                    Outputs.BondLines.Remove(line);
+
+                    // Set up mask which goes behind the replacement
+                    mask.SetLineStyle(BondLineStyle.Solid);
+                    // Change this to yellow [ffff00] to see mask
+                    mask.Colour = "ffffff";
+                    mask.Width = OoXmlHelper.AcsLineWidth * 4;
+                    var shrinkBy = (mask.Start - mask.End).Length * OoXmlHelper.MultipleBondOffsetPercentage / 1.5;
+                    mask.Shrink(-shrinkBy);
+
+                    // Add mask
+                    Outputs.BondLines.Add(mask);
+                    // Add replacement so that it's on top of mask
+                    Outputs.BondLines.Add(replacement);
+                }
+            }
         }
 
         private void ProcessReactionTexts()
@@ -118,11 +146,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             var groupOfCharacters = GroupOfCharactersFromTerms(reaction.MidPoint, path, terms, justification);
             if (groupOfCharacters.Characters.Any())
             {
-                // 2. Position characters
-                // 2.1 Centre group on reaction midpoint
+                // Position characters
+                // Centre group on reaction midpoint
                 groupOfCharacters.AdjustPosition(reaction.MidPoint - groupOfCharacters.Centre);
 
-                // 2.2 March away from reaction midpoint
+                // March away from reaction midpoint
                 var vector = OffsetVector(reaction, isReagent);
 
                 bool isOutside;
@@ -140,7 +168,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 } while (!isOutside);
                 groupOfCharacters.AdjustPosition(vector);
 
-                // 3. Transfer to output
+                // Transfer to output
                 foreach (var character in groupOfCharacters.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
@@ -167,15 +195,15 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         private void AddAnnotationCharacters(Annotation annotation, string path, List<FunctionalGroupTerm> terms,
                                              TextBlockJustification justification = TextBlockJustification.Left)
         {
-            // 1. Position characters
+            // Position characters
             var groupOfCharacters = GroupOfCharactersFromTerms(annotation.Position, annotation.Path, terms, justification);
 
             if (groupOfCharacters.Characters.Any())
             {
-                // 2 Centre group on annotation position
+                // Centre group on annotation position
                 groupOfCharacters.AdjustPosition(annotation.Position - groupOfCharacters.BoundingBox.TopLeft);
 
-                // 3. Transfer to output
+                // Transfer to output
                 foreach (var character in groupOfCharacters.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
@@ -196,19 +224,19 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             if (terms != null)
             {
-                // 1. Generate characters
+                // Generate characters
                 foreach (var term in terms)
                 {
                     if (term.Parts.Any())
                     {
-                        // 1.1 Measure
+                        // Measure
                         var measure = new GroupOfCharacters(new Point(0, 0), null, null,
                                                             Inputs.TtfCharacterSet, Inputs.MeanBondLength);
                         measure.AddParts(term.Parts, OoXmlHelper.Black);
 
                         if (lineNumber++ > 0)
                         {
-                            // 1.2 Apply NewLine with measured offset
+                            // Apply NewLine with measured offset
                             switch (justification)
                             {
                                 case TextBlockJustification.Left:
@@ -227,7 +255,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             }
                         }
 
-                        // 1.3 Add Characters for real
+                        // Add Characters for real
                         groupOfCharacters.AddParts(term.Parts, OoXmlHelper.Black);
                     }
                 }
@@ -262,6 +290,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             else
             {
                 // ToDo: Implement if required
+                Debugger.Break();
             }
 
             // Create the perpendicular vector
@@ -416,7 +445,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 var width = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, Inputs.MeanBondLength);
                 var height = OoXmlHelper.ScaleCsTtfToCml(alc.Character.Height, Inputs.MeanBondLength);
 
-                if (alc.IsSubScript || alc.IsSuperScript)
+                if (alc.IsSmaller)
                 {
                     // Shrink bounding box
                     width *= OoXmlHelper.SubscriptScaleFactor;
@@ -499,94 +528,32 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
         }
 
-        private void DetectCrossingLines(PositionerInputs inputs, PositionerOutputs outputs)
+        private void DetectCrossingLines()
         {
-            foreach (var mol in Inputs.Model.Molecules.Values)
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            var model = Inputs.Model;
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            model.DetectCrossingLines();
+            foreach (var crossedBond in model.CrossedBonds)
             {
-                DetectCrossingLines(mol, inputs, outputs);
+                Outputs.CrossingPoints.Add(crossedBond.Value.CrossingPoint);
             }
-        }
-
-        private bool IsAtEndOfALine(Point point, SimpleLine line1, SimpleLine line2)
-        {
-            return point.Equals(line1.Start) || point.Equals(line1.End) || point.Equals(line2.Start) || point.Equals(line2.End);
-        }
-
-        private void DetectCrossingLines(Molecule mol, PositionerInputs inputs, PositionerOutputs outputs)
-        {
-            var setOfLines = new List<SimpleLine>();
-
-            // Step 1 collect
-            foreach (var bond in mol.Bonds)
-            {
-                setOfLines.Add(new SimpleLine(bond.Path, bond.StartAtom.Position, bond.EndAtom.Position));
-            }
-
-            // Step 2 sort
-            setOfLines.Sort();
-
-            // Step 3 collate
-            var intersections = new Dictionary<string, Point>();
-
-            foreach (var thisLine in setOfLines)
-            {
-                var intersecting = setOfLines
-                                   .Where(a => a.SmallerBoundingBox.IntersectsWith(thisLine.SmallerBoundingBox))
-                                   .ToList();
-                intersecting.Remove(thisLine);
-                if (intersecting.Count > 0)
-                {
-                    Debug.WriteLine($"Bounding box of line {thisLine.Name} intersects with bounding box of {intersecting.Count} other lines");
-                    foreach (var line in intersecting)
-                    {
-                        Debug.WriteLine($"Checking line {thisLine.Name} against {line.Name}");
-                        var intersection = GeometryTool.LineSegmentsIntersect(thisLine.Start, thisLine.End,
-                                                                              line.Start, line.End);
-                        if (intersection != null)
-                        {
-                            if (IsAtEndOfALine(intersection.Value, thisLine, line))
-                            {
-                                Debug.WriteLine($"Ignoring point {intersection} as it's at the end of a line");
-                            }
-                            else
-                            {
-                                var names = new List<string>();
-                                names.Add(line.Name);
-                                names.Add(thisLine.Name);
-                                names.Sort();
-                                var key = string.Join("|", names);
-                                if (!intersections.ContainsKey(key))
-                                {
-                                    intersections.Add(key, intersection.Value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Step 4 do the cutting
-            foreach (var intersection in intersections)
-            {
-                Debug.WriteLine($"{intersection.Key}");
-                outputs.CrossingPoints.Add(intersection.Value);
-            }
-
-            // Finally recurse into any child molecules
-            foreach (var child in mol.Molecules.Values)
-            {
-                DetectCrossingLines(child, inputs, outputs);
-            }
+            sw.Stop();
+            Inputs.Telemetry.Write(module, "Timing", $"Detection of {model.CrossedBonds.Count} line crossing points took {SafeDouble.AsString0(sw.ElapsedMilliseconds)} ms");
         }
 
         private void ProcessMolecule(Molecule mol, Progress pb, ref int molNumber)
         {
             molNumber++;
 
-            // 1. Position Atom Label Characters
+            // Position Atom Label Characters
             ProcessAtoms(mol, pb, molNumber);
 
-            // 2. Position Bond Lines
+            // Position Bond Lines
             ProcessBonds(mol, pb, molNumber);
 
             // Populate diagnostic data
@@ -611,16 +578,16 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 ProcessMolecule(child, pb, ref molNumber);
             }
 
-            // 3 Determine Extents
+            // Determine Extents
 
             // Atoms <= InternalCharacters <= GroupBrackets <= MoleculesBrackets <= ExternalCharacters
 
-            // 3.1. Atoms & InternalCharacters
+            // Atoms & InternalCharacters
             var thisMoleculeExtents = new MoleculeExtents(mol.Path, mol.BoundingBox);
             thisMoleculeExtents.SetInternalCharacterExtents(CharacterExtents(mol, thisMoleculeExtents.AtomExtents));
             Outputs.AllMoleculeExtents.Add(thisMoleculeExtents);
 
-            // 3.2. Grouped Molecules
+            // Grouped Molecules
             if (mol.IsGrouped)
             {
                 var boundingBox = Rect.Empty;
@@ -643,7 +610,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
-            // 3.3 Add required Brackets
+            // Add required Brackets
             var showBrackets = mol.ShowMoleculeBrackets.HasValue && mol.ShowMoleculeBrackets.Value
                                || mol.Count.HasValue && mol.Count.Value > 0
                                || mol.FormalCharge.HasValue && mol.FormalCharge.Value != 0
@@ -718,7 +685,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 thisMoleculeExtents.SetExternalCharacterExtents(CharacterExtents(mol, thisMoleculeExtents.MoleculeBracketsExtents));
             }
 
-            // 4. Position Molecule Label Characters
+            // Position Molecule Label Characters
             // Handle optional rendering of molecule labels centered on brackets (if any) and below any molecule property characters
             if (Inputs.Options.ShowMoleculeCaptions && mol.Captions.Any())
             {
@@ -848,9 +815,17 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                     if (lines.Count == 2 && otherLines.Count == 2)
                     {
-                        var line1 = Outputs.BondLines.First(bl => bl.BondPath.Equals(otherLines[0].Path));
-                        var line2 = Outputs.BondLines.First(bl => bl.BondPath.Equals(otherLines[1].Path));
-                        TrimLines(lines, line1, line2, isInRing);
+                        var line1 = Outputs.BondLines.FirstOrDefault(bl => bl.BondPath.Equals(otherLines[0].Path));
+                        var line2 = Outputs.BondLines.FirstOrDefault(bl => bl.BondPath.Equals(otherLines[1].Path));
+                        if (line1 != null && line2 != null)
+                        {
+                            TrimLines(lines, line1, line2, isInRing);
+                        }
+                        else
+                        {
+                            // Hopefully never hit this
+                            Debugger.Break();
+                        }
                     }
                 }
             }
@@ -943,12 +918,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 #endregion Set Up Atom Colour
 
-                // 1. Create main character group
+                // Create main character group
                 var main = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                  Inputs.TtfCharacterSet, Inputs.MeanBondLength);
                 main.AddString(atomLabel, atomColour);
 
-                // 1.1 Create a special group for the first character
+                // Create a special group for the first character
                 var firstCharacter = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                            Inputs.TtfCharacterSet, Inputs.MeanBondLength);
                 firstCharacter.AddCharacter(atomLabel[0], atomColour);
@@ -961,12 +936,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 // Move to new position
                 main.AdjustPosition(new Vector(x, y));
 
-                // 2. Create other character groups
+                // Create other character groups
 
-                // 2.1 Determine position of implicit hydrogens if any
+                // Determine position of implicit hydrogens if any
                 var orientation = atom.ImplicitHPlacement;
 
-                // 2.2 Implicit Hydrogens
+                // Implicit Hydrogens
                 GroupOfCharacters hydrogens = null;
 
                 var implicitHCount = atom.ImplicitHydrogenCount;
@@ -1009,7 +984,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     hydrogens.Nudge(orientation);
                 }
 
-                // 2.3 Charge
+                // Charge
                 GroupOfCharacters charge = null;
 
                 var chargeValue = atom.FormalCharge ?? 0;
@@ -1064,7 +1039,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     }
                 }
 
-                // 2.4 Isotope
+                // Isotope
                 GroupOfCharacters isotope = null;
 
                 var isoValue = atom.IsotopeNumber ?? 0;
@@ -1114,7 +1089,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     }
                 }
 
-                // 3 transfer to output
+                // Transfer to output
                 foreach (var character in main.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
@@ -1152,7 +1127,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(isotope.BoundingBox, OoXmlHelper.AcsLineWidth / 2), "0070c0"));
                 }
 
-                // 4 Generate Convex Hull
+                // Generate Convex Hull
                 Outputs.ConvexHulls.Add(atom.Path, ConvexHull(atom.Path));
             }
         }
@@ -1179,7 +1154,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 var terms = fg.ExpandIntoTerms(reverse);
 
-                // 1.1 Create a special group for the first character
+                // Create a special group for the first character
                 var firstCapital = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
                                                            Inputs.TtfCharacterSet, Inputs.MeanBondLength);
 
@@ -1191,7 +1166,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 bool firstCapitalFound = false;
 
-                // 1. Generate characters
+                // Generate characters
                 foreach (var term in terms)
                 {
                     if (term.IsAnchor)
@@ -1209,7 +1184,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     }
                 }
 
-                // 2. Position characters
+                // Position characters
                 if (firstCapitalFound)
                 {
                     // Distance to move horizontally to midpoint of whole label
@@ -1246,7 +1221,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                     Outputs.Diagnostics.Rectangles.Add(new DiagnosticRectangle(Inflate(auxiliary.BoundingBox, OoXmlHelper.AcsLineWidth / 2), "ffc000"));
                 }
 
-                // 3. Transfer to output
+                // Transfer to output
                 foreach (var character in main.Characters)
                 {
                     Outputs.AtomLabelCharacters.Add(character);
@@ -1261,7 +1236,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 }
             }
 
-            // 4. Generate Convex Hull
+            // Generate Convex Hull
             Outputs.ConvexHulls.Add(atom.Path, ConvexHull(atom.Path));
         }
 
@@ -1271,17 +1246,17 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             foreach (var label in labels)
             {
-                // 1. Measure string
+                // Measure string
                 var boundingBox = MeasureString(label.Value, measure);
 
-                // 2. Place string characters such that they are hanging below the "line"
+                // Place string characters such that they are hanging below the "line"
                 if (boundingBox != Rect.Empty)
                 {
                     var place = new Point(measure.X - boundingBox.Width / 2, measure.Y + (measure.Y - boundingBox.Top));
                     PlaceString(label.Value, place, moleculePath);
                 }
 
-                // 3. Move to next line
+                // Move to next line
                 measure.Offset(0, boundingBox.Height + Inputs.MeanBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 2);
             }
         }
@@ -1295,21 +1270,21 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             foreach (var label in labels)
             {
-                // 1. Measure string
+                // Measure string
                 var boundingBox = MeasureString(label.Value, measure);
 
                 // Adjustments to take into account text box margins
-                boundingBox.Width = boundingBox.Width + OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) * 2.5;
-                boundingBox.Height = boundingBox.Height * 1.5;
+                boundingBox.Width += OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) * 2.5;
+                boundingBox.Height *= 1.5;
 
-                // 2. Place string characters such that they are hanging below the "line"
+                // Place string characters such that they are hanging below the "line"
                 if (boundingBox != Rect.Empty)
                 {
                     var place = new Point(measure.X - boundingBox.Width / 2, measure.Y);
                     Outputs.MoleculeCaptions.Add(new OoXmlString(new Rect(place, boundingBox.Size), label.Value, moleculePath));
                 }
 
-                // 3. Move to next line
+                // Move to next line
                 measure.Offset(0, boundingBox.Height + Inputs.MeanBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 2);
             }
         }
@@ -1498,7 +1473,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                         GeometryTool.FindIntersection(startPointa, endPointa, bondEnd, centre.Value,
                                                                       out _, out _, out outIntersectP2);
 
-                                        if (Inputs.Options.ShowBondClippingLines)
+                                        if (Inputs.Options.ShowDoubleBondTrimmingLines)
                                         {
                                             // Diagnostics
                                             Outputs.Diagnostics.Lines.Add(new DiagnosticLine(bond.StartAtom.Position, centre.Value, BondLineStyle.Dotted, "ff0000"));
@@ -1540,7 +1515,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                                         var matrix = new Matrix();
                                         matrix.Rotate(angle / 2);
                                         v1 = v1 * 2 * matrix;
-                                        if (Inputs.Options.ShowBondClippingLines)
+                                        if (Inputs.Options.ShowDoubleBondTrimmingLines)
                                         {
                                             Outputs.Diagnostics.Lines.Add(new DiagnosticLine(common, common + v1, BondLineStyle.Dotted, "0000ff"));
                                         }

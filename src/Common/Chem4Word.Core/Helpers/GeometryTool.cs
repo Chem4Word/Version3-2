@@ -765,7 +765,6 @@ namespace Chem4Word.Core.Helpers
 
         #region extension methods
 
-
         public static Vector ScreenSouth => new Vector(0, 1);
 
         public static Vector ScreenEast => new Vector(1, 0);

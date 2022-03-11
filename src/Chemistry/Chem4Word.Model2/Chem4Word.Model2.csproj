@@ -81,6 +81,7 @@
     <Compile Include="Converters\MDL\SdFileBase.cs" />
     <Compile Include="Converters\MDL\SdFileConverter.cs" />
     <Compile Include="Converters\MDL\SdfState.cs" />
+    <Compile Include="CrossedBonds.cs" />
     <Compile Include="Element.cs" />
     <Compile Include="ElementBase.cs" />
     <Compile Include="ElementConverter.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Helpers\MoleculeFormulaPart.cs" />
     <Compile Include="Helpers\Globals.cs" />
     <Compile Include="Helpers\ModelFormulaPart.cs" />
+    <Compile Include="Helpers\ClippingTarget.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="HydrogenTargets.cs" />
     <Compile Include="Interfaces\IChemistryContainer.cs" />

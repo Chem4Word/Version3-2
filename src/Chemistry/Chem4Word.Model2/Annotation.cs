@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Media;
 using System.Xml.Linq;
 
 namespace Chem4Word.Model2

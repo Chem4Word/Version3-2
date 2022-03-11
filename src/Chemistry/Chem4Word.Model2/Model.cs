@@ -5,9 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Helpers;
-using Chem4Word.Model2.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +12,10 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
+using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
@@ -178,12 +178,12 @@ namespace Chem4Word.Model2
 
         public bool InhibitEvents { get; set; }
 
+        public Dictionary<string, CrossedBonds> CrossedBonds { get; set; } = new Dictionary<string, CrossedBonds>();
 
         /// <summary>
         /// True if this model has any reactions
         /// </summary>
         public bool HasReactions => ReactionSchemes.Count > 0;
-
 
         /// <summary>
         /// True if this model has functional groups
@@ -339,6 +339,14 @@ namespace Chem4Word.Model2
                 }
 
                 return max;
+            }
+        }
+
+        public int TotalMoleculesCount
+        {
+            get
+            {
+                return GetAllMolecules().Count;
             }
         }
 
@@ -718,7 +726,7 @@ namespace Chem4Word.Model2
             }
             foreach (Annotation annotation in Annotations.Values)
             {
-                annotation.RepositionAll(x,y);
+                annotation.RepositionAll(x, y);
             }
             _boundingBox = Rect.Empty;
         }
@@ -729,53 +737,6 @@ namespace Chem4Word.Model2
             Point midPoint = new Point(boundingBox.Left + boundingBox.Width / 2, boundingBox.Top + boundingBox.Height / 2);
             Vector displacement = midPoint - point;
             RepositionAll(displacement.X, displacement.Y);
-        }
-
-        public BaseObject GetFromPath(string path)
-        {
-            try
-            {
-                //first part of the path has to be a molecule
-                if (path.StartsWith("/"))
-                {
-                    path = path.Substring(1); //strip off the first separator
-                }
-
-                string molID = path.UpTo("/");
-
-                Molecule foundMol = null;
-                foreach (Molecule m in Molecules.Values)
-                {
-                    if (m.Id == molID)
-                    {
-                        foundMol = m;
-                        break;
-                    }
-                }
-
-                if (molID is null)
-                {
-                    throw new ArgumentException("First child is not a molecule");
-                }
-
-                if (foundMol is null)
-                {
-                    throw new ArgumentOutOfRangeException("MolID not found in model");
-                }
-                string relativepath = Helpers.Utils.GetRelativePath(molID, path);
-                if (relativepath != "")
-                {
-                    return foundMol.GetFromPath(relativepath);
-                }
-                else
-                {
-                    return foundMol;
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                throw new ArgumentException($"Object {path} not found {ex.Message}");
-            }
         }
 
         public bool RemoveMolecule(Molecule mol)
@@ -938,14 +899,14 @@ namespace Chem4Word.Model2
         public Model Copy()
         {
             Model modelCopy = new Model();
-            
+
             foreach (var child in Molecules.Values)
             {
                 Molecule molCopy = child.Copy();
                 modelCopy.AddMolecule(molCopy);
                 molCopy.Parent = modelCopy;
             }
-            
+
             foreach (var rs in ReactionSchemes.Values)
             {
                 ReactionScheme schemeCopy = rs.Copy(modelCopy);
@@ -1376,6 +1337,7 @@ namespace Chem4Word.Model2
                 }
             }
         }
+
         private void Reactions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnReactionsChanged(sender, e);
@@ -1401,6 +1363,90 @@ namespace Chem4Word.Model2
                     new List<ReactionScheme> { scheme });
             UpdateReactionSchemeEventHandlers(e);
             OnReactionSchemesChanged(this, e);
+        }
+
+        /// <summary>
+        /// Detects which bond lines are crossing.
+        /// Uses a variation of Bentley–Ottmann algorithm
+        /// </summary>
+        public void DetectCrossingLines()
+        {
+            CrossedBonds = new Dictionary<string, CrossedBonds>();
+
+            foreach (var molecule in Molecules.Values)
+            {
+                DetectCrossingLines(molecule);
+            }
+        }
+
+        private void DetectCrossingLines(Molecule molecule)
+        {
+            var clippingTargets = new List<ClippingTarget>();
+
+            // Step 1 - Fill list with simple facilitating class
+            foreach (var bond in molecule.Bonds)
+            {
+                clippingTargets.Add(new ClippingTarget(bond));
+            }
+
+            // Step 2 - Sort the list of bonds by smallest X co-ordinate value
+            clippingTargets.Sort();
+
+            // Step 3 - Do the sweep
+            foreach (var clippingTarget in clippingTargets)
+            {
+                // Determine if the bounding box of this line intersects with the next one
+                var targets = clippingTargets
+                              .Where(a => a.BoundingBox.IntersectsWith(clippingTarget.BoundingBox))
+                              .ToList();
+                targets.Remove(clippingTarget);
+
+                if (targets.Count > 0)
+                {
+                    // If any targets found
+                    foreach (var target in targets)
+                    {
+                        var intersection = GeometryTool.LineSegmentsIntersect(clippingTarget.Start, clippingTarget.End,
+                                                                              target.Start, target.End);
+                        if (intersection != null)
+                        {
+                            if (!PointIsAtEndOfALine(intersection.Value, clippingTarget, target))
+                            {
+                                // Construct key
+                                var names = new List<string>
+                                            {
+                                                target.Name,
+                                                clippingTarget.Name
+                                            };
+                                names.Sort(); // Alphabetically
+                                var key = string.Join("|", names);
+
+                                if (!CrossedBonds.ContainsKey(key))
+                                {
+                                    // Only add it if it's not been seen before
+                                    CrossedBonds.Add(key, new CrossedBonds(target.Bond, clippingTarget.Bond, intersection.Value));
+                                }
+                            }
+                            else
+                            {
+                                // Ignore any false positive where the intersection is a line ending
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Finally recurse into any child molecules
+            foreach (var child in molecule.Molecules.Values)
+            {
+                DetectCrossingLines(child);
+            }
+        }
+
+        // Detect if a point is at any end of two lines
+        private bool PointIsAtEndOfALine(Point point, ClippingTarget line1, ClippingTarget line2)
+        {
+            return point.Equals(line1.Start) || point.Equals(line1.End) || point.Equals(line2.Start) || point.Equals(line2.End);
         }
 
         #endregion Methods

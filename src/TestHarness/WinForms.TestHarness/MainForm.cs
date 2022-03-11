@@ -26,6 +26,7 @@ using Chem4Word.Renderer.OoXmlV4;
 using Chem4Word.Searcher.ChEBIPlugin;
 using Chem4Word.Searcher.OpsinPlugIn;
 using Chem4Word.Searcher.PubChemPlugIn;
+using Chem4Word.Shared;
 using Chem4Word.Telemetry;
 using Newtonsoft.Json;
 
@@ -800,7 +801,8 @@ namespace WinForms.TestHarness
             }
             else
             {
-                Process.Start(file);
+                // Start word in quiet mode [/q] without any add ins loaded [/a]
+                Process.Start(OfficeHelper.GetWinWordPath(), $"/q /a {file}");
             }
         }
 

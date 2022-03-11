@@ -695,7 +695,7 @@ namespace Chem4Word.Shared
             return servicePack;
         }
 
-        private static string GetWinWordPath()
+        public static string GetWinWordPath()
         {
             string result = null;
 

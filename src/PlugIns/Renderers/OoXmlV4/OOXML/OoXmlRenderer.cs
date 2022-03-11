@@ -273,7 +273,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             var spotSize = _medianBondLength * OoXmlHelper.MultipleBondOffsetPercentage / 3;
 
-            if (_options.ShowCrossingPoints)
+            if (_options.ShowBondCrossingPoints)
             {
                 foreach (var point in _positionerOutputs.CrossingPoints)
                 {
@@ -396,7 +396,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         break;
 
                     default:
-                        DrawBondLine(bondLine.Start, bondLine.End, bondLine.BondPath, bondLine.Style, bondLine.Colour);
+                        DrawBondLine(bondLine.Start, bondLine.End, bondLine.BondPath, bondLine.Style, bondLine.Colour, bondLine.Width);
                         break;
                 }
             }
@@ -428,7 +428,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 DrawShape(extents, A.ShapeTypeValues.Ellipse, true, spot.Colour);
             }
 
-            _telemetry.Write(module, "Timing", $"Rendering {_chemistryModel.Molecules.Count} molecules with {_chemistryModel.TotalAtomsCount} atoms and {_chemistryModel.TotalBondsCount} bonds took {SafeDouble.AsString0(swr.ElapsedMilliseconds)} ms; Average Bond Length: {SafeDouble.AsString(_chemistryModel.MeanBondLength)}");
+            _telemetry.Write(module, "Timing", $"Rendering {_chemistryModel.TotalMoleculesCount} molecules with {_chemistryModel.TotalAtomsCount} atoms and {_chemistryModel.TotalBondsCount} bonds took {SafeDouble.AsString0(swr.ElapsedMilliseconds)} ms; Average Bond Length: {SafeDouble.AsString(_chemistryModel.MeanBondLength)}");
 
             ShutDownProgress(progress);
 
@@ -2030,7 +2030,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             foreach (var alc in _positionerOutputs.AtomLabelCharacters)
             {
-                if (alc.IsSubScript)
+                if (alc.IsSmaller)
                 {
                     var r = new Rect(alc.Position,
                                      new Size(OoXmlHelper.ScaleCsTtfToCml(alc.Character.Width, _medianBondLength) * OoXmlHelper.SubscriptScaleFactor,
