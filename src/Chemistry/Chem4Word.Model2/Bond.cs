@@ -15,7 +15,6 @@ using System.Windows;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2
@@ -755,7 +754,6 @@ namespace Chem4Word.Model2
         }
 
         #endregion Geometry Routines
-
 
         public static string GetStereoString(BondStereo stereo)
         {

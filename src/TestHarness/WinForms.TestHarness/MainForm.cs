@@ -109,7 +109,9 @@ namespace WinForms.TestHarness
 
                     if (model != null)
                     {
+                        var originalBondLength = model.MeanBondLength;
                         model.EnsureBondLength(20, false);
+
                         if (string.IsNullOrEmpty(model.CustomXmlPartGuid))
                         {
                             model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
@@ -120,15 +122,14 @@ namespace WinForms.TestHarness
                             if (_lastCml != EmptyCml)
                             {
                                 var clone = cmlConvertor.Import(_lastCml);
-                                Debug.WriteLine(
-                                    $"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength.ToString("#,##0.00")} onto Stack");
+                                Debug.WriteLine($"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength:#,##0.00} onto Stack");
                                 _undoStack.Push(clone);
                             }
                         }
 
                         _lastCml = cmlConvertor.Export(model);
 
-                        _telemetry.Write(module, "Information", $"File: {filename}");
+                        _telemetry.Write(module, "Information", $"File: '{filename}'; Original bond length {originalBondLength:#,##0.00}");
                         ShowChemistry(filename, model);
                     }
                 }
@@ -698,6 +699,89 @@ namespace WinForms.TestHarness
 
         private void LayoutStructure_Click(object sender, EventArgs e)
         {
+            LayoutUsingCheblClean();
+        }
+
+        private void LayoutUsingCheblClean()
+        {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            var cc = new CMLConverter();
+            var model = cc.Import(_lastCml);
+
+            if (model.TotalMoleculesCount == 1
+                && !model.HasNestedMolecules
+                && !model.HasFunctionalGroups)
+            {
+                var bondLength = model.MeanBondLength;
+                var marvin = cc.Export(model, true, CmlFormat.MarvinJs);
+
+                // Replace double quote with single quote
+                marvin = marvin.Replace("\"", "'");
+
+                try
+                {
+                    using (var httpClient = new HttpClient())
+                    {
+                        httpClient.Timeout = TimeSpan.FromSeconds(15);
+                        httpClient.DefaultRequestHeaders.Add("user-agent", "Chem4Word");
+
+                        try
+                        {
+                            var request = new HttpRequestMessage(HttpMethod.Post, "https://www.ebi.ac.uk/chembl/api/utils/clean");
+                            request.Headers.Add("User-Agent", "Chem4Word");
+
+                            var body = JsonConvert.SerializeObject(new { structure = $"{marvin}", parameters = new { dim = 2, opts = "s"}});
+                            request.Content = new StringContent(body, Encoding.UTF8, "text/plain");
+
+                            var response = httpClient.SendAsync(request).Result;
+
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                // Handle Error
+                                Debug.WriteLine($"{response.StatusCode} - {response.RequestMessage}");
+                            }
+
+                            var answer = response.Content.ReadAsStringAsync();
+                            Debug.WriteLine(answer.Result);
+
+                            model = cc.Import(answer.Result);
+                            model.EnsureBondLength(bondLength, false);
+                            if (string.IsNullOrEmpty(model.CustomXmlPartGuid))
+                            {
+                                model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
+                            }
+
+                            var clone = cc.Import(_lastCml);
+                            _undoStack.Push(clone);
+
+                            _lastCml = cc.Export(model);
+                            ShowChemistry("ChEMBL clean", model);
+                        }
+                        catch (Exception innerException)
+                        {
+                            _telemetry.Write(module, "Exception", innerException.Message);
+                            _telemetry.Write(module, "Exception", innerException.ToString());
+                            Debug.WriteLine(innerException.Message);
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _telemetry.Write(module, "Exception", exception.Message);
+                    _telemetry.Write(module, "Exception", exception.ToString());
+                    Debug.WriteLine(exception.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Clean only handles single molecules without any functional groups (at the moment)", "Test Harness");
+            }
+
+        }
+
+        private void LayoutUsingKoshsisImplementation()
+        {
             var data = new LayoutResult();
 
             var cc = new CMLConverter();
@@ -747,6 +831,7 @@ namespace WinForms.TestHarness
                                 {
                                     //Telemetry.Write(module, "Timing", string.Join(Environment.NewLine, data.Messages));
                                 }
+
                                 if (data.Errors.Any())
                                 {
                                     //Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, data.Errors));

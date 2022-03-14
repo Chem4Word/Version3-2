@@ -438,7 +438,7 @@ namespace Chem4Word
 
                             using (var fileStream = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                             {
-                                using (var textReader = new StreamReader(fileStream))
+                                using (var textReader = new StreamReader(fileStream, true))
                                 {
                                     mol = textReader.ReadToEnd();
                                 }
@@ -577,6 +577,7 @@ namespace Chem4Word
             {
                 RegistryHelper.SendSetupActions();
                 RegistryHelper.SendUpdateActions();
+                RegistryHelper.SendMessages();
                 RegistryHelper.SendExceptions();
             }
 

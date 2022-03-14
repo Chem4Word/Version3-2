@@ -45,7 +45,6 @@ namespace Chem4Word.Model2.Geometry
         {
             return 45 * (int)cp;
         }
-
     }
 
     public class Geometry<T>

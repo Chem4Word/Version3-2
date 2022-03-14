@@ -4,13 +4,12 @@
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
-using Chem4Word.Model2.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Windows;
+using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
@@ -143,7 +142,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        public ReactionScheme Copy(Model modelCopy=null)
+        public ReactionScheme Copy(Model modelCopy = null)
         {
             ReactionScheme copy = new ReactionScheme();
 

@@ -5,8 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,6 +12,7 @@ using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
 using Chem4Word.Core.Enums;
+using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.CML
 {
@@ -188,7 +187,7 @@ namespace Chem4Word.Model2.Converters.CML
 
         internal static List<XElement> GetAnnotations(XElement doc)
         {
-             List<XElement> result = new List<XElement>();
+            List<XElement> result = new List<XElement>();
 
             var ann = from XElement xe in doc.Elements(CMLConstants.TagAnnotation) select xe;
             var ann2 = from XElement xe2 in doc.Elements(CMLNamespaces.c4w + CMLConstants.TagAnnotation) select xe2;
@@ -291,13 +290,18 @@ namespace Chem4Word.Model2.Converters.CML
             }
         }
 
-        internal static List<XElement> GetReactions(XElement doc)
+        public static List<XElement> GetReactions(XElement doc)
         {
             List<XElement> result = new List<XElement>();
             var reacts = from XElement xe in doc.Elements(CMLConstants.TagReaction) select xe;
             var reacts2 = from XElement xe2 in doc.Elements(CMLNamespaces.cml + CMLConstants.TagReaction) select xe2;
             result = reacts.Union(reacts2).ToList();
             return result;
+        }
+
+        public static bool BondOrderIsValid(string order)
+        {
+            return "0|1|2|3|S|D|T|hbond|partial01|partial12|partial23|A|".Contains($"|{order}|");
         }
     }
 }

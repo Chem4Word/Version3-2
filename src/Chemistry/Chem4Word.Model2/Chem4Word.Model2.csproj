@@ -71,6 +71,7 @@
     <Compile Include="Bond.cs" />
     <Compile Include="BaseObject.cs" />
     <Compile Include="Converters\CML\CMLConstants.cs" />
+    <Compile Include="Converters\CML\CmlFormat.cs" />
     <Compile Include="Converters\CML\CMLNamespaces.cs" />
     <Compile Include="Converters\JSON\JSONConverter.cs" />
     <Compile Include="Converters\MDL\MDLCounts.cs" />

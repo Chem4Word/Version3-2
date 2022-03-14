@@ -45,7 +45,7 @@ namespace Chem4Word.Model2.Helpers
             BoundingBox = new Rect(start, end);
         }
 
-        #endregion // Constructor
+        #endregion Constructor
 
         #region Implementation of IComparable
 

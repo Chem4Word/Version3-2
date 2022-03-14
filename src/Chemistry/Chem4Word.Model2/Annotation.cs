@@ -5,13 +5,13 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.Model2.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Xml.Linq;
+using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
@@ -64,7 +64,7 @@ namespace Chem4Word.Model2
         public string Xaml
         {
             get => _xaml;
-            
+
             set
             {
                 _xaml = value;

@@ -166,8 +166,8 @@ namespace Chem4WordTests
             var cml = new CMLConverter().Export(model);
 
             // Assert
-            var expected = ResourceHelper.GetStringResource("ExportOneMoleculeWthCmlRoot.xml");
-            Assert.Equal(cml, expected);
+            var expected = ResourceHelper.GetStringResource("OneMoleculeWthCmlRoot.xml");
+            Assert.Equal(expected, cml);
         }
 
         [Fact]
@@ -180,52 +180,66 @@ namespace Chem4WordTests
             var cml = new CMLConverter().Export(model);
 
             // Assert
-            var expected = ResourceHelper.GetStringResource("ExportTwoMoleculesWithCmlRoot.xml");
-            Assert.Equal(cml, expected);
+            var expected = ResourceHelper.GetStringResource("TwoMoleculesWithCmlRoot.xml");
+            Assert.Equal(expected, cml);
         }
 
         [Fact]
-        public void CmlExportSingleMolecule_Request_MoleculeRoot()
+        public void CmlExportSingleMolecule_RequestChemDrawFormat_IsAccepted()
         {
             // Arrange
             Model model = CreateSingleMolecule();
 
             // Act
-            var cml = new CMLConverter().Export(model, cmlIsRoot: false);
+            var cml = new CMLConverter().Export(model, format: CmlFormat.ChemDraw);
 
             // Assert
-            var expected = ResourceHelper.GetStringResource("ExportOneMoleculeWithMoleculeRoot.xml");
-            Assert.Equal(cml, expected);
+            var expected = ResourceHelper.GetStringResource("ChemDraw.xml");
+            Assert.Equal(expected, cml);
         }
 
         [Fact]
-        public void CmlExportFlatMolecules_Request_MoleculeRoot()
+        public void CmlExportSingleMolecule_RequestMarvinJSFormat_IsAccepted()
+        {
+            // Arrange
+            Model model = CreateSingleMolecule();
+
+            // Act
+            var cml = new CMLConverter().Export(model, format: CmlFormat.MarvinJs);
+
+            // Assert
+            var expected = ResourceHelper.GetStringResource("MarvinJs.xml");
+            Assert.Equal(expected, cml);
+        }
+
+        [Fact]
+        public void CmlExportTwoFlatMolecules_RequestChemDrawFormat_IsRejected()
         {
             // Arrange
             Model model = CreateTwoFlatMolecule();
 
             // Act
-            var cml = new CMLConverter().Export(model, cmlIsRoot:false);
+            var cml = new CMLConverter().Export(model, format: CmlFormat.ChemDraw);
 
             // Assert
-            var expected = ResourceHelper.GetStringResource("ExportTwoMoleculesWithCmlRoot.xml");
-            Assert.Equal(cml, expected);
+            var expected = ResourceHelper.GetStringResource("TwoMoleculesWithCmlRoot.xml");
+            Assert.Equal(expected, cml);
         }
 
         private Model CreateSingleMolecule()
         {
             Model model = new Model();
             var atom1 = new Atom
-                        {
-                            Position = new Point(0, 0),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Position = new Point(0, 0),
+                Element = Globals.PeriodicTable.C
+            };
 
             var atom2 = new Atom
-                        {
-                            Position = new Point(10, 10),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Position = new Point(10, 10),
+                Element = Globals.PeriodicTable.C
+            };
 
             var molecule1 = new Molecule();
             molecule1.AddAtom(atom1);
@@ -234,9 +248,9 @@ namespace Chem4WordTests
             atom2.Parent = molecule1;
 
             var bond1 = new Bond(atom1, atom2)
-                        {
-                            Order = Globals.OrderSingle
-                        };
+            {
+                Order = Globals.OrderSingle
+            };
             molecule1.AddBond(bond1);
             bond1.Parent = molecule1;
 
@@ -252,21 +266,21 @@ namespace Chem4WordTests
         {
             Model model = new Model();
             var atom1 = new Atom
-                        {
-                            Position = new Point(0, 0),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Position = new Point(0, 0),
+                Element = Globals.PeriodicTable.C
+            };
 
             var atom2 = new Atom
-                        {
-                            Position = new Point(10, 10),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Position = new Point(10, 10),
+                Element = Globals.PeriodicTable.C
+            };
 
             var bond1 = new Bond(atom1, atom2)
-                        {
-                            Order = Globals.OrderSingle
-                        };
+            {
+                Order = Globals.OrderSingle
+            };
 
             var molecule1 = new Molecule();
             molecule1.AddAtom(atom1);
@@ -277,21 +291,21 @@ namespace Chem4WordTests
             bond1.Parent = molecule1;
 
             var atom3 = new Atom
-                        {
-                            Position = new Point(20, 20),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Position = new Point(20, 20),
+                Element = Globals.PeriodicTable.C
+            };
 
             var atom4 = new Atom
-                        {
-                            Position = new Point(30, 30),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Position = new Point(30, 30),
+                Element = Globals.PeriodicTable.C
+            };
 
             var bond2 = new Bond(atom3, atom4)
-                        {
-                            Order = Globals.OrderSingle
-                        };
+            {
+                Order = Globals.OrderSingle
+            };
 
             var molecule2 = new Molecule();
             molecule2.AddAtom(atom3);

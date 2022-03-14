@@ -73,7 +73,9 @@ namespace Chem4Word
 
         public bool LibraryState = false;
 
+        private Thread _slowOperationsThread;
         public List<string> StartUpTimings = new List<string>();
+
         public C4wAddInInfo AddInInfo;
         public SystemHelper Helper;
         public Chem4WordOptions SystemOptions;
@@ -295,9 +297,7 @@ namespace Chem4Word
                 var sw = new Stopwatch();
                 sw.Start();
 
-                var thread = new Thread(LoadPluginsOnThread);
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
+                LoadPlugins();
 
                 Helper = new SystemHelper(StartUpTimings);
 
@@ -337,9 +337,9 @@ namespace Chem4Word
                 ShowOrHideUpdateShield();
 
                 // Handle slower startup stuff on thread
-                var thread = new Thread(SlowOperations);
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
+                _slowOperationsThread = new Thread(SlowOperations);
+                _slowOperationsThread.SetApartmentState(ApartmentState.STA);
+                _slowOperationsThread.Start();
 
                 if (VersionsBehind < Constants.MaximumVersionsBehind)
                 {
@@ -569,6 +569,12 @@ namespace Chem4Word
 
             try
             {
+                _slowOperationsThread.Join();
+                if (_slowOperationsThread.IsAlive)
+                {
+                    _slowOperationsThread.Abort();
+                }
+
                 if (Editors != null)
                 {
                     for (var i = 0; i < Editors.Count; i++)
@@ -608,13 +614,14 @@ namespace Chem4Word
             }
         }
 
-        private void LoadPluginsOnThread()
+        private void LoadPlugins()
         {
             var module = $"{MethodBase.GetCurrentMethod().Name}()";
 
             try
             {
                 LoadPlugIns(false);
+
                 if (Ribbon != null)
                 {
                     _plugInsLoaded = true;
@@ -638,10 +645,6 @@ namespace Chem4Word
                         }
                     }
                 }
-            }
-            catch (ThreadAbortException)
-            {
-                // Do Nothing
             }
             catch (Exception exception)
             {

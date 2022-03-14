@@ -30,8 +30,8 @@ namespace Chem4Word.Model2.Converters.CML
 
         public const string TagXmlPartGuid = "customXmlPartGuid";
         public const string AttributeShowMoleculeBrackets = "showBrackets";
-        // Reactions and schemes
 
+        // Reactions and schemes
         public const string TagReactionScheme = "reactionScheme";
 
         public const string TagReaction = "reaction";
@@ -55,9 +55,10 @@ namespace Chem4Word.Model2.Converters.CML
         public const string TagReagentText = "reagents";
         public const string TagConditionsText = "conditions";
 
-        public const string AttributeTitle="title";
-        public const string AttributeRole ="role";
-        public const string AttributeRef="ref";
+        public const string AttributeTitle = "title";
+        public const string AttributeRole = "role";
+        public const string AttributeRef = "ref";
+
         // Atoms
         public const string TagAtomArray = "atomArray";
 

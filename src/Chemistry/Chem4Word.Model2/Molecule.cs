@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -410,13 +409,15 @@ namespace Chem4Word.Model2
         #endregion Chemical properties
 
         #region Reaction Properties
+
         private SubstanceRole? _substanceRole;
+
         public SubstanceRole? SubstanceRole
         {
-            get 
-                {
-                return _substanceRole; 
-                }
+            get
+            {
+                return _substanceRole;
+            }
             set
             {
                 if (_substanceRole != value)
@@ -428,12 +429,13 @@ namespace Chem4Word.Model2
         }
 
         private string _dictRef;
+
         public string DictRef
         {
-            get 
-                {
-                return _dictRef; 
-                }
+            get
+            {
+                return _dictRef;
+            }
             set
             {
                 if (_dictRef != value)
@@ -445,12 +447,13 @@ namespace Chem4Word.Model2
         }
 
         private string _title;
+
         public string Title
         {
-            get 
-                {
-                return _title; 
-                }
+            get
+            {
+                return _title;
+            }
             set
             {
                 if (_title != value)
@@ -460,7 +463,8 @@ namespace Chem4Word.Model2
                 }
             }
         }
-        #endregion
+
+        #endregion Reaction Properties
 
         #endregion Properties
 
@@ -706,10 +710,10 @@ namespace Chem4Word.Model2
         }
 
         public double Top => BoundingBox.Top;
-        public double Bottom =>BoundingBox.Bottom;
+        public double Bottom => BoundingBox.Bottom;
         public double Left => BoundingBox.Left;
         public double Right => BoundingBox.Right;
-        public Point Centre => new Point(Left + (Right-Left)/2, Top +(Bottom - Top)/2);
+        public Point Centre => new Point(Left + (Right - Left) / 2, Top + (Bottom - Top) / 2);
 
         #region Events
 
@@ -1077,16 +1081,16 @@ namespace Chem4Word.Model2
             foreach (Atom atom in Atoms.Values)
             {
                 var newAtom = new Atom
-                        {
-                            Id = atom.Id,
-                            Position = atom.Position,
-                            Element = atom.Element,
-                            FormalCharge = atom.FormalCharge,
-                            IsotopeNumber = atom.IsotopeNumber,
-                            ExplicitC = atom.ExplicitC,
-                            ExplicitHPlacement = atom.ExplicitHPlacement,
-                            ExplicitFunctionalGroupPlacement = atom.ExplicitFunctionalGroupPlacement
-                        };
+                {
+                    Id = atom.Id,
+                    Position = atom.Position,
+                    Element = atom.Element,
+                    FormalCharge = atom.FormalCharge,
+                    IsotopeNumber = atom.IsotopeNumber,
+                    ExplicitC = atom.ExplicitC,
+                    ExplicitHPlacement = atom.ExplicitHPlacement,
+                    ExplicitFunctionalGroupPlacement = atom.ExplicitFunctionalGroupPlacement
+                };
 
                 copy.AddAtom(newAtom);
                 newAtom.Parent = copy;
@@ -1098,12 +1102,12 @@ namespace Chem4Word.Model2
                 Atom s = aa[bond.StartAtom.Id];
                 Atom e = aa[bond.EndAtom.Id];
                 var newBond = new Bond(s, e)
-                        {
-                            Id = bond.Id,
-                            Order = bond.Order,
-                            Stereo = bond.Stereo,
-                            ExplicitPlacement = bond.ExplicitPlacement
-                        };
+                {
+                    Id = bond.Id,
+                    Order = bond.Order,
+                    Stereo = bond.Stereo,
+                    ExplicitPlacement = bond.ExplicitPlacement
+                };
 
                 copy.AddBond(newBond);
                 newBond.Parent = copy;
@@ -1112,12 +1116,12 @@ namespace Chem4Word.Model2
             foreach (TextualProperty property in Names)
             {
                 var textualProperty = new TextualProperty
-                        {
-                            Id = property.Id,
-                            TypeCode = property.TypeCode,
-                            FullType = property.FullType,
-                            Value = property.Value
-                        };
+                {
+                    Id = property.Id,
+                    TypeCode = property.TypeCode,
+                    FullType = property.FullType,
+                    Value = property.Value
+                };
 
                 copy.Names.Add(textualProperty);
             }
@@ -1125,12 +1129,12 @@ namespace Chem4Word.Model2
             foreach (TextualProperty property in Formulas)
             {
                 var textualProperty = new TextualProperty
-                         {
-                             Id = property.Id,
-                             TypeCode = property.TypeCode,
-                             FullType = property.FullType,
-                             Value = property.Value
-                         };
+                {
+                    Id = property.Id,
+                    TypeCode = property.TypeCode,
+                    FullType = property.FullType,
+                    Value = property.Value
+                };
 
                 copy.Formulas.Add(textualProperty);
             }
@@ -1418,9 +1422,9 @@ namespace Chem4Word.Model2
 
                 // Create a new child
                 var newChild = new Molecule
-                               {
-                                   Parent = this
-                               };
+                {
+                    Parent = this
+                };
 
                 // Add it to this molecule
                 AddMolecule(newChild);

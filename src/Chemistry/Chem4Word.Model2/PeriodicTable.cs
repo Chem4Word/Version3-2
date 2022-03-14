@@ -169,7 +169,7 @@ namespace Chem4Word.Model2
         public bool HasElement(string symbol) => Elements.ContainsKey(symbol);
 
         /// <summary>
-        /// Calculates the number of spare valencies an atom has. 
+        /// Calculates the number of spare valencies an atom has.
         /// Uses the obscure formula from the original C4W
         /// valence calculation routine
         /// </summary>
@@ -182,12 +182,12 @@ namespace Chem4Word.Model2
             int valence = GetValence(element, sumOfBondOrder);
             int diff = valence - sumOfBondOrder;
 
-            if(charge>0)
+            if (charge > 0)
             {
                 int vDiff = 4 - valence;
                 if (charge < vDiff)
                 {
-                    diff +=charge;
+                    diff += charge;
                 }
                 else
                 {
@@ -195,7 +195,7 @@ namespace Chem4Word.Model2
                 }
             }
             else
-            { 
+            {
                 diff += charge;
             }
 
@@ -203,8 +203,8 @@ namespace Chem4Word.Model2
         }
 
         /// <summary>
-        /// Returns the minimum possible valence that 
-        /// fits the bond order. 
+        /// Returns the minimum possible valence that
+        /// fits the bond order.
         /// If this fails, returns the maximum valence of the atom
         /// </summary>
         /// <param name="element"></param>
@@ -215,7 +215,7 @@ namespace Chem4Word.Model2
             //find the first possible valence that accommodates the bond order sum
             foreach (int v in element.Valencies)
             {
-                if(v >= sumOfBondOrder)
+                if (v >= sumOfBondOrder)
                 {
                     return v;
                 }

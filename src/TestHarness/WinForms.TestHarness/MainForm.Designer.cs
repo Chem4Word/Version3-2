@@ -45,7 +45,10 @@
             this.Information = new System.Windows.Forms.Label();
             this.EditCml = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.SearchOpsin = new System.Windows.Forms.Button();
             this.EditLabels = new System.Windows.Forms.Button();
+            this.SearchChEBI = new System.Windows.Forms.Button();
+            this.SearchPubChem = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.ChangeOoXmlSettings = new System.Windows.Forms.Button();
             this.ChangeAcmeSettings = new System.Windows.Forms.Button();
@@ -54,9 +57,6 @@
             this.ClearChemistry = new System.Windows.Forms.Button();
             this.LayoutStructure = new System.Windows.Forms.Button();
             this.RenderOoXml = new System.Windows.Forms.Button();
-            this.SearchOpsin = new System.Windows.Forms.Button();
-            this.SearchPubChem = new System.Windows.Forms.Button();
-            this.SearchChEBI = new System.Windows.Forms.Button();
             this.LayoutPanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -204,6 +204,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Edit / Search ...";
             // 
+            // SearchOpsin
+            // 
+            this.SearchOpsin.Location = new System.Drawing.Point(87, 77);
+            this.SearchOpsin.Name = "SearchOpsin";
+            this.SearchOpsin.Size = new System.Drawing.Size(75, 23);
+            this.SearchOpsin.TabIndex = 5;
+            this.SearchOpsin.Text = "OPSIN";
+            this.SearchOpsin.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SearchOpsin.UseVisualStyleBackColor = true;
+            this.SearchOpsin.Click += new System.EventHandler(this.SearchOpsin_Click);
+            // 
             // EditLabels
             // 
             this.EditLabels.Enabled = false;
@@ -215,6 +226,28 @@
             this.EditLabels.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.EditLabels.UseVisualStyleBackColor = true;
             this.EditLabels.Click += new System.EventHandler(this.EditLabels_Click);
+            // 
+            // SearchChEBI
+            // 
+            this.SearchChEBI.Location = new System.Drawing.Point(87, 48);
+            this.SearchChEBI.Name = "SearchChEBI";
+            this.SearchChEBI.Size = new System.Drawing.Size(75, 23);
+            this.SearchChEBI.TabIndex = 3;
+            this.SearchChEBI.Text = "ChEBI";
+            this.SearchChEBI.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SearchChEBI.UseVisualStyleBackColor = true;
+            this.SearchChEBI.Click += new System.EventHandler(this.SearchChEBI_Click);
+            // 
+            // SearchPubChem
+            // 
+            this.SearchPubChem.Location = new System.Drawing.Point(87, 19);
+            this.SearchPubChem.Name = "SearchPubChem";
+            this.SearchPubChem.Size = new System.Drawing.Size(75, 23);
+            this.SearchPubChem.TabIndex = 4;
+            this.SearchPubChem.Text = "PubChem";
+            this.SearchPubChem.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SearchPubChem.UseVisualStyleBackColor = true;
+            this.SearchPubChem.Click += new System.EventHandler(this.SearchPubChem_Click);
             // 
             // groupBox2
             // 
@@ -298,7 +331,7 @@
             this.LayoutStructure.Name = "LayoutStructure";
             this.LayoutStructure.Size = new System.Drawing.Size(75, 23);
             this.LayoutStructure.TabIndex = 20;
-            this.LayoutStructure.Text = "Layout (ws)";
+            this.LayoutStructure.Text = "Clean (ws)";
             this.LayoutStructure.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.LayoutStructure.UseVisualStyleBackColor = true;
             this.LayoutStructure.Click += new System.EventHandler(this.LayoutStructure_Click);
@@ -315,39 +348,6 @@
             this.RenderOoXml.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.RenderOoXml.UseVisualStyleBackColor = true;
             this.RenderOoXml.Click += new System.EventHandler(this.RenderOoXml_Click);
-            // 
-            // SearchOpsin
-            // 
-            this.SearchOpsin.Location = new System.Drawing.Point(87, 77);
-            this.SearchOpsin.Name = "SearchOpsin";
-            this.SearchOpsin.Size = new System.Drawing.Size(75, 23);
-            this.SearchOpsin.TabIndex = 5;
-            this.SearchOpsin.Text = "OPSIN";
-            this.SearchOpsin.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.SearchOpsin.UseVisualStyleBackColor = true;
-            this.SearchOpsin.Click += new System.EventHandler(this.SearchOpsin_Click);
-            // 
-            // SearchPubChem
-            // 
-            this.SearchPubChem.Location = new System.Drawing.Point(87, 19);
-            this.SearchPubChem.Name = "SearchPubChem";
-            this.SearchPubChem.Size = new System.Drawing.Size(75, 23);
-            this.SearchPubChem.TabIndex = 4;
-            this.SearchPubChem.Text = "PubChem";
-            this.SearchPubChem.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.SearchPubChem.UseVisualStyleBackColor = true;
-            this.SearchPubChem.Click += new System.EventHandler(this.SearchPubChem_Click);
-            // 
-            // SearchChEBI
-            // 
-            this.SearchChEBI.Location = new System.Drawing.Point(87, 48);
-            this.SearchChEBI.Name = "SearchChEBI";
-            this.SearchChEBI.Size = new System.Drawing.Size(75, 23);
-            this.SearchChEBI.TabIndex = 3;
-            this.SearchChEBI.Text = "ChEBI";
-            this.SearchChEBI.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.SearchChEBI.UseVisualStyleBackColor = true;
-            this.SearchChEBI.Click += new System.EventHandler(this.SearchChEBI_Click);
             // 
             // FlexForm
             // 

@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Helpers;
 using Newtonsoft.Json;
 
 namespace Chem4Word
@@ -147,6 +148,8 @@ namespace Chem4Word
         /// </summary>
         public void Load()
         {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
             try
             {
                 var path = FileSystemHelper.GetWritablePath(SettingsPath);
@@ -169,6 +172,7 @@ namespace Chem4Word
                             if (!contents.Equals(temp))
                             {
                                 // Auto fix the file if required
+                                RegistryHelper.StoreMessage(module, $"Auto fixing {optionsFile}");
                                 PersistOptions(optionsFile);
                             }
                         }
@@ -179,12 +183,16 @@ namespace Chem4Word
                             Errors.Add(exception.StackTrace);
 
                             RestoreDefaults();
+
+                            RegistryHelper.StoreException(module, exception);
+                            RegistryHelper.StoreMessage(module, $"Setting {optionsFile} to defaults");
                             PersistOptions(optionsFile);
                         }
                     }
                     else
                     {
                         RestoreDefaults();
+                        RegistryHelper.StoreMessage(module, $"Creating {optionsFile} with defaults");
                         PersistOptions(optionsFile);
                     }
                 }
@@ -236,11 +244,6 @@ namespace Chem4Word
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-#if DEBUG
-            // Warning this causes logging every time Word starts
-            Globals.Chem4WordV3.Telemetry.Write(module, "Debug", $"Reading from {filename}");
-#endif
-
             var lines = new List<string>();
 
             try
@@ -276,14 +279,11 @@ namespace Chem4Word
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-#if DEBUG
-            // Warning this causes logging first time Word starts
-            Globals.Chem4WordV3.Telemetry.Write(module, "Debug", $"Writing to {filename}");
-#endif
-
             try
             {
+                RegistryHelper.StoreMessage(module, $"Saving Chem4Word Options to {filename}");
                 Debug.WriteLine($"Saving Chem4Word Options to {filename}");
+
                 var contents = JsonConvert.SerializeObject(this, Formatting.Indented);
 
                 using (var outStream = new FileStream(filename,

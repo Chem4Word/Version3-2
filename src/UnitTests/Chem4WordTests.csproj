@@ -104,12 +104,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ControlTestForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlTestForm.Designer.cs">
-      <DependentUpon>ControlTestForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="GeneralTests.cs" />
     <Compile Include="PersistenceTests.cs" />
     <Compile Include="FunctionalGroupTests.cs" />
@@ -131,11 +125,6 @@
       <Project>{BDFEE6C1-3F34-4200-9100-C543BF4C3783}</Project>
       <Name>Chem4Word.Contracts</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ControlTestForm.resx">
-      <DependentUpon>ControlTestForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CML\cyclopropane.xml" />
@@ -168,6 +157,8 @@
       <SubType>Designer</SubType>
     </None>
     <EmbeddedResource Include="Resources\CML\cyclohexylidenecyclohexane.xml" />
+    <EmbeddedResource Include="Resources\CML\Exporting\ChemDraw.xml" />
+    <EmbeddedResource Include="Resources\CML\Exporting\MarvinJs.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CML\NestedMolecules.xml" />
@@ -215,17 +206,15 @@
     <EmbeddedResource Include="Resources\CML\Two-Grouped-Molecules.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\CML\ExportTwoMoleculesWithCmlRoot.xml" />
+    <EmbeddedResource Include="Resources\CML\Exporting\TwoMoleculesWithCmlRoot.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\CML\ExportOneMoleculeWthCmlRoot.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\CML\ExportOneMoleculeWithMoleculeRoot.xml" />
+    <EmbeddedResource Include="Resources\CML\Exporting\OneMoleculeWthCmlRoot.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CML\Benzene-With-Missing-Ids.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

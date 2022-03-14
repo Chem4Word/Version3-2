@@ -4,7 +4,6 @@
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
-using Chem4Word.Model2.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +12,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Chem4Word.Core.Helpers;
-using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.Model2
 {
@@ -124,9 +122,9 @@ namespace Chem4Word.Model2
 
         public double Angle => Vector.AngleBetween(GeometryTool.ScreenNorth, ReactionVector);
 
-        public Vector ReactionVector => HeadPoint-TailPoint;
+        public Vector ReactionVector => HeadPoint - TailPoint;
 
-        public Point MidPoint => TailPoint + ReactionVector /2;
+        public Point MidPoint => TailPoint + ReactionVector / 2;
 
         public readonly ReadOnlyDictionary<Guid, Molecule> Reactants;
         public readonly ReadOnlyDictionary<Guid, Molecule> Products;
@@ -204,7 +202,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        public Reaction Copy(Model modelCopy=null)
+        public Reaction Copy(Model modelCopy = null)
         {
             Reaction newReaction = new Reaction();
             newReaction.ConditionsText = ConditionsText;
@@ -214,13 +212,13 @@ namespace Chem4Word.Model2
             newReaction.ReagentText = ReagentText;
             newReaction.TailPoint = TailPoint;
 
-            if(modelCopy != null)
+            if (modelCopy != null)
             {
-                if(Reactants.Count>0)
+                if (Reactants.Count > 0)
                 {
-                    foreach(var reactant in Reactants.Values)
+                    foreach (var reactant in Reactants.Values)
                     {
-                        foreach(Molecule molCopy in modelCopy.Molecules.Values)
+                        foreach (Molecule molCopy in modelCopy.Molecules.Values)
                         {
                             if (molCopy.Id == reactant.Id)
                             {
@@ -230,11 +228,11 @@ namespace Chem4Word.Model2
                     }
                 }
 
-                if(Products.Count>0)
+                if (Products.Count > 0)
                 {
-                    foreach(var product in Products.Values)
+                    foreach (var product in Products.Values)
                     {
-                        foreach(Molecule molCopy in modelCopy.Molecules.Values)
+                        foreach (Molecule molCopy in modelCopy.Molecules.Values)
                         {
                             if (molCopy.Id == product.Id)
                             {
@@ -294,14 +292,14 @@ namespace Chem4Word.Model2
 
         public void UpdateVisual()
         {
-           OnPropertyChanged(nameof(ReactionType));
+            OnPropertyChanged(nameof(ReactionType));
         }
 
         public void ClearReactants()
         {
-            Molecule[] reacts=new Molecule[_reactants.Values.Count];
+            Molecule[] reacts = new Molecule[_reactants.Values.Count];
             _reactants.Values.CopyTo(reacts, 0);
-            foreach(var reactant in reacts)
+            foreach (var reactant in reacts)
             {
                 RemoveReactant(reactant);
             }
@@ -309,9 +307,9 @@ namespace Chem4Word.Model2
 
         public void ClearProducts()
         {
-            Molecule[] prods=new Molecule[_products.Values.Count];
+            Molecule[] prods = new Molecule[_products.Values.Count];
             _products.Values.CopyTo(prods, 0);
-            foreach(var product in prods)
+            foreach (var product in prods)
             {
                 RemoveProduct(product);
             }
