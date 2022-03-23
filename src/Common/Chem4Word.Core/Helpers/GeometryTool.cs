@@ -429,7 +429,7 @@ namespace Chem4Word.Core.Helpers
             AdjustLineEndPoint(midPoint, ref endPoint, pixelCount);
         }
 
-        public static void AdjustLineEndPoint(Point startPoint, ref Point endPoint, double pixelCount)
+        private static void AdjustLineEndPoint(Point startPoint, ref Point endPoint, double pixelCount)
         {
             double dx = endPoint.X - startPoint.X;
             double dy = endPoint.Y - startPoint.Y;
@@ -595,7 +595,6 @@ namespace Chem4Word.Core.Helpers
 
         /// <summary>
         /// Determines whether two line segments intersect.
-        /// Used mainly for determining cis/trans geometry of double bonds
         /// </summary>
         /// <param name="segment1Start">Point at which first segment starts</param>
         /// <param name="segment1End">Point at which first segment ends</param>

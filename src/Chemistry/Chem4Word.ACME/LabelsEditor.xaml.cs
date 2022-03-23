@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -16,6 +17,7 @@ using System.Windows.Documents;
 using Chem4Word.ACME.Controls;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME
@@ -132,6 +134,7 @@ namespace Chem4Word.ACME
 
             if (EditedModel != null)
             {
+                OverallConciseFormulaPanel.Children.Clear();
                 OverallConciseFormulaPanel.Children.Add(TextBlockFromFormula(EditedModel.ConciseFormula));
 
                 var root = new TreeViewItem
@@ -343,7 +346,7 @@ namespace Chem4Word.ACME
             namesEditor.NamesModel.ListOfNames = data;
         }
 
-        // Copied from $\src\Chem4Word.V3\Navigator\FormulaBlock.cs
+        // ToDo: Refactor; This is a near duplicate of $\src\Chemistry\Chem4Word.ACME\Controls\FormulaBlock.cs
         // Ought to be made into common routine
         // Refactor into common code [MAW] ...
         private TextBlock TextBlockFromFormula(string formula, string prefix = null)
@@ -353,26 +356,57 @@ namespace Chem4Word.ACME
             if (!string.IsNullOrEmpty(prefix))
             {
                 // Add in the new element
-                Run run = new Run($"{prefix} ");
+                var run = new Run($"{prefix} ");
                 textBlock.Inlines.Add(run);
             }
 
             var parts = FormulaHelper.ParseFormulaIntoParts(formula);
-            foreach (MoleculeFormulaPart formulaPart in parts)
+            foreach (var formulaPart in parts)
             {
                 // Add in the new element
-                Run atom = new Run(formulaPart.Element);
-                textBlock.Inlines.Add(atom);
-
-                if (formulaPart.Count > 1)
+                switch (formulaPart.PartType)
                 {
-                    var subs = new Run(formulaPart.Count.ToString())
-                    {
-                        BaselineAlignment = BaselineAlignment.Subscript
-                    };
+                    case FormulaPartType.Multiplier:
+                    case FormulaPartType.Separator:
+                        var run1 = new Run(formulaPart.Text);
+                        textBlock.Inlines.Add(run1);
+                        break;
 
-                    subs.FontSize = subs.FontSize - 2;
-                    textBlock.Inlines.Add(subs);
+                    case FormulaPartType.Element:
+                        var run2 = new Run(formulaPart.Text);
+                        textBlock.Inlines.Add(run2);
+                        if (formulaPart.Count > 1)
+                        {
+                            var subscript = new Run($"{formulaPart.Count}")
+                                            {
+                                                BaselineAlignment = BaselineAlignment.Subscript
+                                            };
+                            subscript.FontSize -= 2;
+                            textBlock.Inlines.Add(subscript);
+                        }
+
+                        break;
+                    case FormulaPartType.Charge:
+                        var absCharge = Math.Abs(formulaPart.Count);
+                        if (absCharge > 1)
+                        {
+                            var superscript1 = new Run($"{absCharge}{formulaPart.Text}")
+                                              {
+                                                  BaselineAlignment = BaselineAlignment.Top
+                                              };
+                            superscript1.FontSize -= 3;
+                            textBlock.Inlines.Add(superscript1);
+                        }
+                        else
+                        {
+                            var superscript2 = new Run($"{formulaPart.Text}")
+                                               {
+                                                   BaselineAlignment = BaselineAlignment.Top
+                                               };
+                            superscript2.FontSize -= 3;
+                            textBlock.Inlines.Add(superscript2);
+                        }
+                        break;
                 }
             }
 

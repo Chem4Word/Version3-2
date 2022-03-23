@@ -5,9 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Controls
@@ -30,27 +32,59 @@ namespace Chem4Word.ACME.Controls
         {
             if (d is FormulaBlock formulaBlock)
             {
+                // ToDo: Refactor; This is a near duplicate of $\src\Chemistry\Chem4Word.ACME\LabelsEditor.xaml.cs
                 string newFormula = (string)args.NewValue;
 
                 formulaBlock.Text = string.Empty;
                 formulaBlock.Inlines.Clear();
 
                 var parts = FormulaHelper.ParseFormulaIntoParts(newFormula);
-                foreach (MoleculeFormulaPart formulaPart in parts)
+                foreach (var formulaPart in parts)
                 {
-                    //add in the new element
-                    Run atom = new Run(formulaPart.Element);
-                    formulaBlock.Inlines.Add(atom);
-
-                    if (formulaPart.Count > 1)
+                    // Add in the new element
+                    switch (formulaPart.PartType)
                     {
-                        Run subs = new Run(formulaPart.Count.ToString())
-                        {
-                            BaselineAlignment = BaselineAlignment.Subscript
-                        };
+                        case FormulaPartType.Multiplier:
+                        case FormulaPartType.Separator:
+                            var run1 = new Run(formulaPart.Text);
+                            formulaBlock.Inlines.Add(run1);
+                            break;
 
-                        subs.FontSize = subs.FontSize - 2;
-                        formulaBlock.Inlines.Add(subs);
+                        case FormulaPartType.Element:
+                            var run2 = new Run(formulaPart.Text);
+                            formulaBlock.Inlines.Add(run2);
+                            if (formulaPart.Count > 1)
+                            {
+                                var subscript = new Run($"{formulaPart.Count}")
+                                {
+                                    BaselineAlignment = BaselineAlignment.Subscript
+                                };
+                                subscript.FontSize -= 2;
+                                formulaBlock.Inlines.Add(subscript);
+                            }
+
+                            break;
+                        case FormulaPartType.Charge:
+                            var absCharge = Math.Abs(formulaPart.Count);
+                            if (absCharge > 1)
+                            {
+                                var superscript1 = new Run($"{absCharge}{formulaPart.Text}")
+                                {
+                                    BaselineAlignment = BaselineAlignment.Top
+                                };
+                                superscript1.FontSize -= 3;
+                                formulaBlock.Inlines.Add(superscript1);
+                            }
+                            else
+                            {
+                                var superscript2 = new Run($"{formulaPart.Text}")
+                                {
+                                    BaselineAlignment = BaselineAlignment.Top
+                                };
+                                superscript2.FontSize -= 3;
+                                formulaBlock.Inlines.Add(superscript2);
+                            }
+                            break;
                     }
                 }
             }

@@ -306,9 +306,16 @@ namespace Chem4Word
                                         case "F":
                                             if (item.FullType.ToLower().Contains("formula"))
                                             {
-                                                ribbonButton.Label =
-                                                    FormulaHelper.FormulaPartsAsUnicode(
-                                                        FormulaHelper.ParseFormulaIntoParts(ribbonButton.Label));
+                                                if (item.Value.Equals("Not found"))
+                                                {
+                                                    ribbonButton.Label = item.Value;
+                                                }
+                                                else
+                                                {
+                                                    ribbonButton.Label =
+                                                        FormulaHelper.FormulaPartsAsUnicode(
+                                                            FormulaHelper.ParseFormulaIntoParts(item.Value));
+                                                }
                                             }
                                             if (item.Id.Equals("c0"))
                                             {

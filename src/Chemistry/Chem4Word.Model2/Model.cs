@@ -581,7 +581,7 @@ namespace Chem4Word.Model2
             }
         }
 
-        private Dictionary<string, ModelFormulaPart> _calculatedFormulas;
+        private Dictionary<string, int> _calculatedFormulas;
 
         /// <summary>
         /// Concise formula for the model
@@ -592,45 +592,12 @@ namespace Chem4Word.Model2
             {
                 if (_calculatedFormulas == null)
                 {
-                    _calculatedFormulas = new Dictionary<string, ModelFormulaPart>();
+                    _calculatedFormulas = new Dictionary<string, int>();
                     GatherFormulas(Molecules.Values.ToList());
                 }
 
                 return CalculatedFormulaAsString();
             }
-        }
-
-        public string ConciseFormulaAsUniCode
-        {
-            get
-            {
-                if (_calculatedFormulas == null)
-                {
-                    _calculatedFormulas = new Dictionary<string, ModelFormulaPart>();
-                    GatherFormulas(Molecules.Values.ToList());
-                }
-
-                return CalculatedFormulaAsUnicode();
-            }
-        }
-
-        private string CalculatedFormulaAsUnicode()
-        {
-            var strings = new List<string>();
-            foreach (var calculatedFormula in _calculatedFormulas.Values)
-            {
-                if (calculatedFormula.Count > 1)
-                {
-                    strings.Add($"{calculatedFormula.Count} {FormulaHelper.FormulaPartsAsUnicode(calculatedFormula.Parts)}");
-                }
-                else
-                {
-                    strings.Add(FormulaHelper.FormulaPartsAsUnicode(calculatedFormula.Parts));
-                }
-            }
-
-            // Join using Bullet character
-            return string.Join(" • ", strings);
         }
 
         private void GatherFormulas(List<Molecule> molecules)
@@ -639,18 +606,53 @@ namespace Chem4Word.Model2
             {
                 if (molecule.Atoms.Count > 0)
                 {
+                    // Add into running totals
                     if (_calculatedFormulas.ContainsKey(molecule.ConciseFormula))
                     {
-                        _calculatedFormulas[molecule.ConciseFormula].Count++;
+                        _calculatedFormulas[molecule.ConciseFormula]++;
                     }
                     else
                     {
-                        _calculatedFormulas.Add(molecule.ConciseFormula, new ModelFormulaPart(molecule.CalculatedFormula.Parts, 1));
+                        _calculatedFormulas.Add(molecule.ConciseFormula, 1);
                     }
                 }
                 else
                 {
-                    GatherFormulas(molecule.Molecules.Values.ToList());
+                    // Gather the formulas of the children
+                    var children = new List<string>();
+                    foreach (var childMolecule in molecule.Molecules.Values.ToList())
+                    {
+                        children.Add(childMolecule.ConciseFormula);
+                    }
+
+                    // Add Brackets and join using Bullet character <Alt>0183
+                    var combined = "[" + string.Join(" · ", children) + "]";
+
+                    // Add charge here
+                    if (molecule.FormalCharge != null)
+                    {
+                        var charge = molecule.FormalCharge.Value;
+                        var absCharge = Math.Abs(charge);
+
+                        if (charge > 0)
+                        {
+                            combined += $" + {absCharge}";
+                        }
+                        if (charge < 0)
+                        {
+                            combined += $" - {absCharge}";
+                        }
+                    }
+
+                    // Add combined value into running totals
+                    if (_calculatedFormulas.ContainsKey(combined))
+                    {
+                        _calculatedFormulas[combined]++;
+                    }
+                    else
+                    {
+                        _calculatedFormulas.Add(combined,1);
+                    }
                 }
             }
         }
@@ -658,15 +660,15 @@ namespace Chem4Word.Model2
         private string CalculatedFormulaAsString()
         {
             var strings = new List<string>();
-            foreach (var calculatedFormula in _calculatedFormulas.Values)
+            foreach (var calculatedFormula in _calculatedFormulas)
             {
-                if (calculatedFormula.Count > 1)
+                if (calculatedFormula.Value > 1)
                 {
-                    strings.Add($"{calculatedFormula.Count} {FormulaHelper.FormulaPartsAsString(calculatedFormula.Parts)}");
+                    strings.Add($"{calculatedFormula.Value} {calculatedFormula.Key}");
                 }
                 else
                 {
-                    strings.Add(FormulaHelper.FormulaPartsAsString(calculatedFormula.Parts));
+                    strings.Add(calculatedFormula.Key);
                 }
             }
 

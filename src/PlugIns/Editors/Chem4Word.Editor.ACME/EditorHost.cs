@@ -109,9 +109,9 @@ namespace Chem4Word.Editor.ACME
                     }
                     else
                     {
-                        List<MoleculeFormulaPart> parts = FormulaHelper.ParseFormulaIntoParts(editor.ActiveController.Model.ConciseFormula);
-                        var x = FormulaHelper.FormulaPartsAsUnicode(parts);
-                        Text = "ACME - Editing " + x;
+                        List<MoleculeFormulaPart> parts = FormulaHelper.ParseFormulaIntoParts(model.ConciseFormula);
+                        var formulaPartsAsUnicode = FormulaHelper.FormulaPartsAsUnicode(parts);
+                        Text = "ACME - Editing " + formulaPartsAsUnicode;
                     }
                 }
 

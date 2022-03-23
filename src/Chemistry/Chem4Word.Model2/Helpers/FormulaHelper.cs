@@ -5,23 +5,25 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
+using Chem4Word.Model2.Enums;
 
 namespace Chem4Word.Model2.Helpers
 {
     public static class FormulaHelper
     {
-        private static char[] subScriptNumbers = {
-                                      '\u2080', '\u2081', '\u2082', '\u2083', '\u2084',
-                                      '\u2085', '\u2086', '\u2087', '\u2088', '\u2089'
-                                  };
+        private static readonly char[] SubScriptNumbers = {
+                                                              '\u2080', '\u2081', '\u2082', '\u2083', '\u2084',
+                                                              '\u2085', '\u2086', '\u2087', '\u2088', '\u2089'
+                                                          };
 
-        private static char[] superScriptNumbers = {
-                                        '\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074',
-                                        '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'
-                                    };
+        private static readonly char[] SuperScriptNumbers = {
+                                                                '\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074',
+                                                                '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'
+                                                            };
 
         public static string FormulaPartsAsString(List<MoleculeFormulaPart> parts)
         {
@@ -33,7 +35,32 @@ namespace Chem4Word.Model2.Helpers
 
                 foreach (var part in parts)
                 {
-                    strings.Add($"{part.Element} {part.Count}");
+                    switch (part.PartType)
+                    {
+                        case FormulaPartType.Separator:
+                        case FormulaPartType.Multiplier:
+                            strings.Add(part.Text);
+                            break;
+
+                        case FormulaPartType.Element:
+                            strings.Add($"{part.Text} {part.Count}");
+                            break;
+
+                        case FormulaPartType.Charge:
+                            if (part.Count != 0)
+                            {
+                                var absCharge = Math.Abs(part.Count);
+                                if (absCharge == 1)
+                                {
+                                    strings.Add($"{part.Text}");
+                                }
+                                else
+                                {
+                                    strings.Add($"{part.Text} {absCharge}");
+                                }
+                            }
+                            break;
+                    }
                 }
 
                 result = string.Join(" ", strings);
@@ -44,29 +71,59 @@ namespace Chem4Word.Model2.Helpers
 
         public static string FormulaPartsAsUnicode(List<MoleculeFormulaPart> parts)
         {
-            string result = string.Empty;
+            var result = string.Empty;
 
             foreach (var part in parts)
             {
-                switch (part.Count)
+                switch (part.PartType)
                 {
-                    case 0: // Separator or multiplier
-                    case 1: // No Subscript
-                        if (!string.IsNullOrEmpty(part.Element))
+                    case FormulaPartType.Separator:
+                    case FormulaPartType.Multiplier:
+                        if (!string.IsNullOrEmpty(part.Text))
                         {
-                            result += part.Element;
+                            result += part.Text;
                         }
                         break;
 
-                    default: // With Subscript
-                        if (!string.IsNullOrEmpty(part.Element))
+                    case FormulaPartType.Element:
+                        switch (part.Count)
                         {
-                            result += part.Element;
-                        }
+                            case 1: // No Subscript
+                                if (!string.IsNullOrEmpty(part.Text))
+                                {
+                                    result += part.Text;
+                                }
+                                break;
 
-                        if (part.Count > 0)
+                            default: // With Subscript
+                                if (!string.IsNullOrEmpty(part.Text))
+                                {
+                                    result += part.Text;
+                                }
+
+                                if (part.Count > 0)
+                                {
+                                    result += string.Concat($"{part.Count}".Select(c => SubScriptNumbers[c - 48]));
+                                }
+                                break;
+                        }
+                        break;
+
+                    case FormulaPartType.Charge:
+                        var absCharge = Math.Abs(part.Count);
+                        if (absCharge > 1)
                         {
-                            result += string.Concat($"{part.Count}".Select(c => subScriptNumbers[c - 48]));
+                            result += string.Concat($"{absCharge}".Select(c => SuperScriptNumbers[c - 48]));
+                        }
+                        // ToDo: Unicode Superscript for + or -
+                        switch (part.Text)
+                        {
+                            case "+":
+                                result += '\u207a';
+                                break;
+                            case "-":
+                                result += '\u207b';
+                                break;
                         }
                         break;
                 }
@@ -77,62 +134,177 @@ namespace Chem4Word.Model2.Helpers
 
         public static List<MoleculeFormulaPart> ParseFormulaIntoParts(string input)
         {
-            // Input is any of
-            //  "2 C 6 H 6 . C 7 H 7"
-            //  "C 6 H 6"
-            //  "C7H7"
-            //  "C7H6N"
+            var allParts = new List<MoleculeFormulaPart>();
 
-            List<MoleculeFormulaPart> parts = new List<MoleculeFormulaPart>();
+            var elements = Globals.PeriodicTable.ValidElements.Split('|').ToList();
+            // Add charge and special characters so we can detect them
+            elements.AddRange(new [] {"+", "-", "[", "]", "."});
+
+            // Sort elements by length descending this enables accurate detection of two character, then one character elements
+            elements.Sort((b, a) => a.Length.CompareTo(b.Length));
+
             if (!string.IsNullOrEmpty(input))
             {
-                // Remove all spaces
-                string temp = input.Replace(" ", "");
+                var formulae = Splitter(input);
 
-                // Replace any Bullet characters <Alt>0183 with dot
-                temp = temp.Replace("·", ".");
-
-                string[] formulae = temp.Split('.');
-                for (int i = 0; i < formulae.Length; i++)
+                for (var i = 0; i < formulae.Length; i++)
                 {
-                    // http://stackoverflow.com/questions/11232801/regex-split-numbers-and-letter-groups-without-spaces
-                    // Code below is based on answer "use 'look around' in split regex"
-                    string[] xx = Regex.Split(formulae[i], @"(?<=\d)(?=\D)|(?=\d)(?<=\D)");
-                    int j = 0;
-                    while (j < xx.Length)
+                    allParts.AddRange(ParseString(elements, formulae[i]));
+                }
+            }
+
+            return allParts;
+        }
+
+        private static string[] Splitter(string value)
+        {
+            var result = new List<string>();
+
+            // Remove all spaces
+            var temp = value.Replace(" ", "");
+
+            // Replace any Bullet characters <Alt>0183 with dot
+            temp = temp.Replace("·", ".");
+
+            var chunk = "";
+
+            for (var i = 0; i < temp.Length; i++)
+            {
+                if (temp[i] == '[' || temp[i] == '.' || temp[i] == ']')
+                {
+                    // Got a match
+                    if (!string.IsNullOrEmpty(chunk))
                     {
-                        int x;
-                        if (int.TryParse(xx[j], out x))
-                        {
-                            // Multiplier
-                            parts.Add(new MoleculeFormulaPart($"{x} ", 0));
-                            j++;
-                        }
-                        else
-                        {
-                            if (j <= xx.Length - 2)
-                            {
-                                // Atom and Count
-                                parts.Add(new MoleculeFormulaPart(xx[j], int.Parse(xx[j + 1])));
-                            }
-                            else
-                            {
-                                // Atom and Implicit Count of 1
-                                parts.Add(new MoleculeFormulaPart(xx[j], 1));
-                            }
-                            j += 2;
-                        }
+                        result.Add(chunk);
+                    }
+                    result.Add(temp[i].ToString());
+                    chunk = "";
+                }
+                else
+                {
+                    chunk += temp[i];
+                }
+            }
+
+            // Add in what's left over
+            if (!string.IsNullOrEmpty(chunk))
+            {
+                result.Add(chunk);
+            }
+
+            return result.ToArray();
+        }
+
+        private static List<MoleculeFormulaPart> ParseString(List<string> elements, string formula)
+        {
+            var parts = new SortedDictionary<int, MoleculeFormulaPart>();
+
+            #region Detect each type of element, charge or separator
+
+            foreach (var element in elements)
+            {
+                if (formula.Contains(element))
+                {
+                    var idx = formula.IndexOf(element, StringComparison.InvariantCulture);
+
+                    var type = FormulaPartType.Element;
+                    switch (element)
+                    {
+                        case "+":
+                        case "-":
+                            type = FormulaPartType.Charge;
+                            break;
+                        case "[":
+                        case ".":
+                        case "]":
+                            type = FormulaPartType.Separator;
+                            break;
                     }
 
-                    // Add Seperator
-                    if (i < formulae.Length - 1)
+                    var info = new MoleculeFormulaPart(type, idx, element, 0);
+
+                    // Convert dot to a Bullett
+                    if (info.PartType == FormulaPartType.Separator && element.Equals("."))
                     {
-                        // Using Bullet character <Alt>0183
-                        parts.Add(new MoleculeFormulaPart(" · ", 0));
+                        // Bullet character <Alt>0183
+                        info.Text = " · ";
+                    }
+
+                    // Prevent insertion of element with less characters at same index
+                    if (!parts.ContainsKey(idx))
+                    {
+                        parts.Add(idx, info);
                     }
                 }
             }
-            return parts;
+
+            #endregion
+
+            // Convert SortedDictionary to a list to make it easier to process
+            var list = parts.Values.ToList();
+
+            // Handle Multiplier
+            if (list[0].Index > 0)
+            {
+                var multiplier = formula.Substring(0, list[0].Index);
+                parts.Add(0, new MoleculeFormulaPart(FormulaPartType.Multiplier, multiplier, 0));
+            }
+
+            #region Detect counts
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                var start = list[i].Index;
+                // Extract chunk from first character of element to first character of next chunk or end of target
+                string chunk;
+                if (i < list.Count - 1)
+                {
+                    var length = list[i + 1].Index - start;
+                    chunk = formula.Substring(start, length);
+                }
+                else
+                {
+                    chunk = formula.Substring(start);
+                }
+
+                var symbol = list[i].Text;
+
+                if (list[i].PartType == FormulaPartType.Element
+                    || list[i].PartType == FormulaPartType.Charge)
+                {
+                    // Remove it's symbol from the chunk to leave behind the numeric portion
+                    var digits = chunk.Replace(symbol, "");
+
+                    // This got in here because "Not found" was being sent to this function, should no longer be a problem
+                    if (digits.Contains("d"))
+                    {
+                        Debugger.Break();
+                    }
+
+                    int number;
+                    if (string.IsNullOrEmpty(digits))
+                    {
+                        // Assume 1 if it's an empty string
+                        number = 1;
+                    }
+                    else
+                    {
+                        int.TryParse(digits, out number);
+                    }
+                    list[i].Count = number;
+
+                    // If this is a negative charge invert the value
+                    if (list[i].PartType == FormulaPartType.Charge
+                        && symbol.Equals("-"))
+                    {
+                        list[i].Count = 0 - list[i].Count;
+                    }
+                }
+            }
+
+            #endregion
+
+            return parts.Values.ToList();
         }
     }
 }

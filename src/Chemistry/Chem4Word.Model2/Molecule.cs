@@ -10,11 +10,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 using Chem4Word.Model2.Interfaces;
 
@@ -243,7 +245,46 @@ namespace Chem4Word.Model2
             {
                 if (_calculatedFormula == null)
                 {
-                    _calculatedFormula = new CalculatedFormula(GetFormulaParts());
+                    _calculatedFormula = new CalculatedFormula();
+
+                    var molecules = Molecules.Values.ToList();
+                    if (Molecules.Count > 0)
+                    {
+                        _calculatedFormula.Parts.Add(new MoleculeFormulaPart(FormulaPartType.Separator, "[", 0));
+
+                        var i = molecules.Count - 1;
+
+                        foreach (var molecule in Molecules.Values)
+                        {
+                            _calculatedFormula.Parts.AddRange(molecule.CalculatedFormula.Parts);
+                            if (i-- > 0)
+                            {
+                                _calculatedFormula.Parts.Add(new MoleculeFormulaPart(FormulaPartType.Separator, " · ", 0));
+                            }
+                        }
+
+                        _calculatedFormula.Parts.Add(new MoleculeFormulaPart(FormulaPartType.Separator, "]", 0));
+
+                        if (FormalCharge != null)
+                        {
+                            var sign = "";
+                            var absCharge = Math.Abs(FormalCharge.Value);
+                            if (FormalCharge.Value > 0)
+                            {
+                                sign = "+";
+                            }
+                            if (FormalCharge.Value < 0)
+                            {
+                                sign = "-";
+                            }
+
+                            _calculatedFormula.Parts.Add(new MoleculeFormulaPart(FormulaPartType.Charge, sign, absCharge));
+                        }
+                    }
+                    else
+                    {
+                        _calculatedFormula = new CalculatedFormula(GetFormulaParts());
+                    }
                 }
 
                 return _calculatedFormula.ToString();
@@ -265,81 +306,94 @@ namespace Chem4Word.Model2
 
         private List<MoleculeFormulaPart> GetFormulaParts()
         {
+            var cPart = new MoleculeFormulaPart(FormulaPartType.Element, "C", 0);
+            var hPart = new MoleculeFormulaPart(FormulaPartType.Element, "H", 0);
             var otherParts = new Dictionary<string, MoleculeFormulaPart>();
-            var cPart = new MoleculeFormulaPart("C", 0);
-            var hPart = new MoleculeFormulaPart("H", 0);
+            var chargePart = new MoleculeFormulaPart(FormulaPartType.Charge, "", 0);
 
-            foreach (Atom atom in Atoms.Values)
+            var sumOfParts = new List<MoleculeFormulaPart>();
+
+            #region Gather counts
+
+            foreach (var atom in Atoms.Values)
             {
-                if (atom.Element != null)
+                // Add this element
+                if (atom.Element is Element e)
                 {
-                    if (atom.Element is Element e)
+                    // Obtain sum of charge on all atoms as we go round the loop
+                    if (atom.FormalCharge != null)
                     {
-                        string symbol = e.Symbol;
+                        chargePart.Count += atom.FormalCharge.Value;
+                    }
 
-                        switch (symbol)
+                    var symbol = e.Symbol;
+
+                    switch (symbol)
+                    {
+                        case "C":
+                            cPart.Count++;
+                            break;
+
+                        case "H":
+                            hPart.Count++;
+                            break;
+
+                        default:
+                            if (otherParts.ContainsKey(symbol))
+                            {
+                                otherParts[symbol].Count++;
+                            }
+                            else
+                            {
+                                otherParts.Add(symbol, new MoleculeFormulaPart(FormulaPartType.Element, symbol, 1));
+                            }
+
+                            break;
+                    }
+
+                    var hCount = atom.ImplicitHydrogenCount;
+                    if (hCount > 0)
+                    {
+                        hPart.Count += hCount;
+                    }
+                }
+
+                // Expand functional group
+                if (atom.Element is FunctionalGroup fg)
+                {
+                    var parts = fg.FormulaParts;
+                    foreach (var part in parts)
+                    {
+                        switch (part.Key)
                         {
                             case "C":
-                                cPart.Count++;
+                                cPart.Count += part.Value;
                                 break;
 
                             case "H":
-                                hPart.Count++;
+                                hPart.Count += part.Value;
                                 break;
 
                             default:
-                                if (otherParts.ContainsKey(symbol))
+                                if (otherParts.ContainsKey(part.Key))
                                 {
-                                    otherParts[symbol].Count++;
+                                    otherParts[part.Key].Count += part.Value;
                                 }
                                 else
                                 {
-                                    otherParts.Add(symbol, new MoleculeFormulaPart(symbol, 1));
+                                    otherParts.Add(part.Key, new MoleculeFormulaPart(FormulaPartType.Element, part.Key, part.Value));
                                 }
-
                                 break;
-                        }
-
-                        int hCount = atom.ImplicitHydrogenCount;
-                        if (hCount > 0)
-                        {
-                            hPart.Count += hCount;
-                        }
-                    }
-
-                    if (atom.Element is FunctionalGroup fg)
-                    {
-                        Dictionary<string, int> parts = fg.FormulaParts;
-                        foreach (KeyValuePair<string, int> part in parts)
-                        {
-                            switch (part.Key)
-                            {
-                                case "C":
-                                    cPart.Count += part.Value;
-                                    break;
-
-                                case "H":
-                                    hPart.Count += part.Value;
-                                    break;
-
-                                default:
-                                    if (otherParts.ContainsKey(part.Key))
-                                    {
-                                        otherParts[part.Key].Count += part.Value;
-                                    }
-                                    else
-                                    {
-                                        otherParts.Add(part.Key, new MoleculeFormulaPart(part.Key, part.Value));
-                                    }
-
-                                    break;
-                            }
                         }
                     }
                 }
             }
 
-            var sumOfParts = new List<MoleculeFormulaPart>();
+            #endregion Gather counts
+
+            #region Construct Hill Notation
+
+            // Now add the parts in in the correct order (Hill Notation) C then H then the rest in alphabetical order then the charge
             if (cPart.Count > 0)
             {
                 sumOfParts.Add(cPart);
@@ -353,6 +407,33 @@ namespace Chem4Word.Model2
             if (otherParts.Any())
             {
                 sumOfParts.AddRange(otherParts.Values);
+            }
+
+            #endregion
+
+            #region Add molecule charge if present
+
+            // Get charge for the molecule
+            if (FormalCharge != null)
+            {
+                // Add the molecule's charge to what's been calculated from the atoms
+                chargePart.Count += FormalCharge.Value;
+            }
+
+            #endregion
+
+            if (chargePart.Count != 0)
+            {
+                if (chargePart.Count > 0)
+                {
+                    chargePart.Text = "+";
+                }
+                if (chargePart.Count < 0)
+                {
+                    chargePart.Text = "-";
+                }
+
+                sumOfParts.Add(chargePart);
             }
 
             return sumOfParts;

@@ -15,6 +15,7 @@ using Chem4Word.Core;
 using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Helpers;
 using Chem4Word.Telemetry;
 using Size = System.Drawing.Size;
 
@@ -53,6 +54,16 @@ namespace WinForms.TestHarness
                     acmeEditor.TopLeft = new Point(Left, Top);
                     acmeEditor.Telemetry = telemetry;
                     acmeEditor.SetProperties(cml, used1D, acmeOptions);
+
+                    var model = acmeEditor.ActiveController.Model;
+                    if (model == null || model.Molecules.Count == 0)
+                    {
+                        Text = "ACME - New structure";
+                    }
+                    else
+                    {
+                        Text = "ACME - Editing " + FormulaHelper.FormulaPartsAsUnicode(FormulaHelper.ParseFormulaIntoParts(model.ConciseFormula));
+                    }
 
                     acmeEditor.OnFeedbackChange += AcmeEditorOnFeedbackChange;
 

@@ -162,7 +162,7 @@ namespace Chem4Word.Model2
         public PeriodicTable()
         {
             LoadFromCsv();
-            ValidElements = "(" + Elements.Values.Select(e => e.Symbol).Aggregate((start, next) => start + "|" + next) + ")";
+            ValidElements = Elements.Values.Select(e => e.Symbol).Aggregate((start, next) => start + "|" + next);
             ImplicitHydrogenTargets = string.Join(",", Elements.Values.Where(e => e.AddHydrogens).Select(e => e.Symbol));
         }
 

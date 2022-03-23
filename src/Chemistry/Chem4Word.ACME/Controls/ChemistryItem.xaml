@@ -137,7 +137,7 @@
                 <local:FormulaBlock
                     Grid.Row="0"
                     Foreground="{StaticResource Chem4WordBlue}"
-                    Formula="{Binding Path=Formula}" />
+                    Formula="{Binding Path=Formula}" FontFamily="Arial" />
                 <Expander
                     Grid.Row="1"
                     MaxWidth="{Binding ElementName=LibraryTopGrid, Path=ActualWidth}"
@@ -169,7 +169,7 @@
                 <local:FormulaBlock
                     Grid.Column="0"
                     Foreground="{StaticResource Chem4WordBlue}"
-                    Formula="{Binding Path=Formula}" />
+                    Formula="{Binding Path=Formula}" FontFamily="Arial" />
             </Grid>
             <!--  Top Panel for Catalogue Mode  -->
             <Grid
@@ -189,7 +189,7 @@
                     <local:FormulaBlock
                         Grid.Column="0"
                         Foreground="{StaticResource Chem4WordBlue}"
-                        Formula="{Binding Path=Formula}" />
+                        Formula="{Binding Path=Formula}" FontFamily="Arial" />
                     <CheckBox
                         Name="CheckBox"
                         Grid.Column="1"

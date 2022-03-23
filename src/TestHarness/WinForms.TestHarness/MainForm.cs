@@ -440,7 +440,7 @@ namespace WinForms.TestHarness
                     _redoStack.Push(copy);
                 }
 
-                ShowChemistry($"Undo -> {m.ConciseFormula}", m);
+                ShowChemistry($"Undo -> {FormulaHelper.FormulaPartsAsUnicode(FormulaHelper.ParseFormulaIntoParts(m.ConciseFormula))}", m);
             }
             catch (Exception exception)
             {
@@ -470,7 +470,7 @@ namespace WinForms.TestHarness
                     _undoStack.Push(clone);
                 }
 
-                ShowChemistry($"Redo -> {m.ConciseFormula}", m);
+                ShowChemistry($"Redo -> {FormulaHelper.FormulaPartsAsUnicode(FormulaHelper.ParseFormulaIntoParts(m.ConciseFormula))}", m);
             }
             catch (Exception exception)
             {
@@ -973,7 +973,7 @@ namespace WinForms.TestHarness
             RedoStack.SetOptions(_editorOptions);
             UndoStack.SetOptions(_editorOptions);
 
-            ShowChemistry($"{captionPrefix} {m.ConciseFormula}", m);
+            ShowChemistry($"{captionPrefix} {FormulaHelper.FormulaPartsAsUnicode(FormulaHelper.ParseFormulaIntoParts(m.ConciseFormula))}", m);
         }
     }
 }

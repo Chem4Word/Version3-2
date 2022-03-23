@@ -13,6 +13,7 @@ using System.Reflection;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 using Microsoft.Office.Core;
 using Word = Microsoft.Office.Interop.Word;
@@ -416,30 +417,66 @@ namespace Chem4Word.Helpers
                     var parts = FormulaHelper.ParseFormulaIntoParts(text);
                     foreach (var part in parts)
                     {
-                        switch (part.Count)
+                        switch (part.PartType)
                         {
-                            case 0: // Separator or multiplier
-                            case 1: // No Subscript
-                                if (!string.IsNullOrEmpty(part.Element))
+                            case FormulaPartType.Separator:
+                            case FormulaPartType.Multiplier:
+                                if (!string.IsNullOrEmpty(part.Text))
                                 {
-                                    r.InsertAfter(part.Element);
+                                    r.InsertAfter(part.Text);
                                     r.Font.Subscript = 0;
+                                    r.Font.Superscript = 0;
                                     r.Start = cc.Range.End;
                                 }
                                 break;
 
-                            default: // With Subscript
-                                if (!string.IsNullOrEmpty(part.Element))
+                            case FormulaPartType.Element:
+                                switch (part.Count)
                                 {
-                                    r.InsertAfter(part.Element);
+                                    case 1: // No Subscript
+                                        if (!string.IsNullOrEmpty(part.Text))
+                                        {
+                                            r.InsertAfter(part.Text);
+                                            r.Font.Subscript = 0;
+                                            r.Font.Superscript = 0;
+                                            r.Start = cc.Range.End;
+                                        }
+                                        break;
+
+                                    default: // With Subscript
+                                        if (!string.IsNullOrEmpty(part.Text))
+                                        {
+                                            r.InsertAfter(part.Text);
+                                            r.Font.Subscript = 0;
+                                            r.Font.Superscript = 0;
+                                            r.Start = cc.Range.End;
+                                        }
+
+                                        if (part.Count > 0)
+                                        {
+                                            r.InsertAfter($"{part.Count}");
+                                            r.Font.Superscript = 0;
+                                            r.Font.Subscript = 1;
+                                            r.Start = cc.Range.End;
+                                        }
+                                        break;
+                                }
+                                break;
+
+                            case FormulaPartType.Charge:
+                                int absCharge = Math.Abs(part.Count);
+                                if (absCharge > 1)
+                                {
+                                    r.InsertAfter($"{absCharge}");
                                     r.Font.Subscript = 0;
+                                    r.Font.Superscript = 1;
                                     r.Start = cc.Range.End;
                                 }
-
-                                if (part.Count > 0)
+                                if (!string.IsNullOrEmpty(part.Text))
                                 {
-                                    r.InsertAfter($"{part.Count}");
-                                    r.Font.Subscript = 1;
+                                    r.InsertAfter(part.Text);
+                                    r.Font.Subscript = 0;
+                                    r.Font.Superscript = 1;
                                     r.Start = cc.Range.End;
                                 }
                                 break;
