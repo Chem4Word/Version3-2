@@ -121,6 +121,7 @@ namespace Chem4Word.Model2.Helpers
                             case "+":
                                 result += '\u207a';
                                 break;
+
                             case "-":
                                 result += '\u207b';
                                 break;
@@ -138,7 +139,7 @@ namespace Chem4Word.Model2.Helpers
 
             var elements = Globals.PeriodicTable.ValidElements.Split('|').ToList();
             // Add charge and special characters so we can detect them
-            elements.AddRange(new [] {"+", "-", "[", "]", "."});
+            elements.AddRange(new[] { "+", "-", "[", "]", "." });
 
             // Sort elements by length descending this enables accurate detection of two character, then one character elements
             elements.Sort((b, a) => a.Length.CompareTo(b.Length));
@@ -214,6 +215,7 @@ namespace Chem4Word.Model2.Helpers
                         case "-":
                             type = FormulaPartType.Charge;
                             break;
+
                         case "[":
                         case ".":
                         case "]":
@@ -238,7 +240,7 @@ namespace Chem4Word.Model2.Helpers
                 }
             }
 
-            #endregion
+            #endregion Detect each type of element, charge or separator
 
             // Convert SortedDictionary to a list to make it easier to process
             var list = parts.Values.ToList();
@@ -302,7 +304,7 @@ namespace Chem4Word.Model2.Helpers
                 }
             }
 
-            #endregion
+            #endregion Detect counts
 
             return parts.Values.ToList();
         }

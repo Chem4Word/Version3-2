@@ -367,7 +367,7 @@ namespace Chem4Word.Libraries.Database
 
             var command5 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Gallery'", conn);
             var command6 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Tags'", conn);
-            
+
             var command7 = new SQLiteCommand("VACUUM", conn);
 
             using (SQLiteTransaction tr = conn.BeginTransaction())
@@ -788,13 +788,13 @@ namespace Chem4Word.Libraries.Database
                             {
                                 var id = (long)chemistry["Id"];
                                 var dto = new ChemistryDataObject
-                                          {
-                                              Id = id,
-                                              Cml = CmlFromBytes((byte[])chemistry["Chemistry"]),
-                                              Name = chemistry["name"] as string,
-                                              Formula = chemistry["formula"] as string,
-                                              Tags = allTaggedItems.Where(t => t.ChemistryId == id).ToList()
-                                          };
+                                {
+                                    Id = id,
+                                    Cml = CmlFromBytes((byte[])chemistry["Chemistry"]),
+                                    Name = chemistry["name"] as string,
+                                    Formula = chemistry["formula"] as string,
+                                    Tags = allTaggedItems.Where(t => t.ChemistryId == id).ToList()
+                                };
 
                                 results.Add(dto);
                             }
@@ -851,7 +851,6 @@ namespace Chem4Word.Libraries.Database
 
         private SQLiteDataReader GetAllChemistry(SQLiteConnection conn)
         {
-
             SQLiteDataReader result = null;
             var sb = new StringBuilder();
 
@@ -922,7 +921,7 @@ namespace Chem4Word.Libraries.Database
                         var dto = new LibraryTagDataObject();
                         dto.Text = reader["Tag"] as string;
                         dto.Id = (long)reader["TagId"];
-                        dto.Frequency = (long) reader["Frequency"];
+                        dto.Frequency = (long)reader["Frequency"];
                         result.Add(dto);
                     }
                 }
@@ -930,6 +929,7 @@ namespace Chem4Word.Libraries.Database
 
             return result;
         }
+
         private string CmlFromBytes(byte[] byteArray)
         {
             var data = Encoding.UTF8.GetString(byteArray);

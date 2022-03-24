@@ -237,6 +237,5 @@ namespace Chem4Word.Navigator
                 Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.StackTrace);
             }
         }
-
     }
 }

@@ -651,7 +651,7 @@ namespace Chem4Word.Model2
                     }
                     else
                     {
-                        _calculatedFormulas.Add(combined,1);
+                        _calculatedFormulas.Add(combined, 1);
                     }
                 }
             }

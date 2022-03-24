@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Graphics
 {

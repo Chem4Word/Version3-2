@@ -123,7 +123,6 @@ namespace Chem4Word.Helpers
             foreach (Word.ContentControl cc in doc.ContentControls)
             {
                 Word.WdContentControlType? contentControlType = cc.Type;
-                //Debug.WriteLine($"{cc.ID} {cc.Range.Start} {DecodeContentControlType(contentControlType)} {cc.Tag}");
                 try
                 {
                     if (cc.Title != null && cc.Title.Equals(Constants.LegacyContentControlTitle))
@@ -342,7 +341,6 @@ namespace Chem4Word.Helpers
                 string xml = xmlPart.XML;
                 if (xml.Contains("<cml"))
                 {
-                    //Debug.WriteLine($"Custom Xml Part: {xmlPart.Id} is CML");
                     UpgradeTarget ut = new UpgradeTarget();
                     ut.CxmlPartId = xmlPart.Id;
                     ut.Cml = xmlPart.XML;
@@ -350,9 +348,6 @@ namespace Chem4Word.Helpers
                     ut.Model = converter.Import(ut.Cml);
                     ut.Model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
                     targets.Add(ut);
-
-                    //Debug.WriteLine($"  {xmlPart.Id}");
-                    //Debug.WriteLine(xml);
                 }
             }
 
@@ -362,9 +357,6 @@ namespace Chem4Word.Helpers
 
                 if (xml.Contains("<ChemistryZone"))
                 {
-                    //Debug.WriteLine($"Custom Xml Part: {xmlPart.Id} is ChemistryZone");
-                    //Debug.WriteLine($"  {xmlPart.Id}");
-                    //Debug.WriteLine(xml);
                     XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.LoadXml(xml);
 
@@ -378,14 +370,12 @@ namespace Chem4Word.Helpers
                     if (ddNode != null)
                     {
                         ddValue = ddNode.Attributes["value"].Value;
-                        //Debug.WriteLine("  " + ddValue);
                     }
 
                     if (refNode != null)
                     {
                         ccValue = refNode.Attributes["cc"].Value;
                         cmlValue = refNode.Attributes["cml"].Value;
-                        //Debug.WriteLine($"  CC Id: {ccValue} CML Id: {cmlValue}");
 
                         foreach (UpgradeTarget target in targets)
                         {

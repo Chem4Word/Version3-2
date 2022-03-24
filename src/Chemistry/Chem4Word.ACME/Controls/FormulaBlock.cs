@@ -64,6 +64,7 @@ namespace Chem4Word.ACME.Controls
                             }
 
                             break;
+
                         case FormulaPartType.Charge:
                             var absCharge = Math.Abs(formulaPart.Count);
                             if (absCharge > 1)

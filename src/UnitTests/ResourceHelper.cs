@@ -11,18 +11,18 @@ using System.Reflection;
 
 namespace Chem4WordTests
 {
-    public class ResourceHelper
+    public static class ResourceHelper
     {
         private static Stream GetBinaryResource(string resourceName)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetExecutingAssembly();
 
             Stream data = null;
 
-            string fullName = string.Empty;
-            int count = 0;
+            var fullName = string.Empty;
+            var count = 0;
 
-            string[] resources = assembly.GetManifestResourceNames();
+            var resources = assembly.GetManifestResourceNames();
             foreach (var s in resources)
             {
                 if (s.EndsWith($".{resourceName}"))
@@ -30,7 +30,6 @@ namespace Chem4WordTests
                     count++;
                     fullName = s;
                 }
-                //Debug.WriteLine(s);
             }
 
             if (!string.IsNullOrEmpty(fullName))
@@ -48,8 +47,6 @@ namespace Chem4WordTests
 
         public static string GetStringResource(string resourceName)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-
             string data = null;
 
             var resource = GetBinaryResource(resourceName);
@@ -59,11 +56,11 @@ namespace Chem4WordTests
                 data = textStreamReader.ReadToEnd();
 
                 // Repair any "broken" line feeds to Windows style
-                char etx = (char)3;
-                string temp = data.Replace("\r\n", $"{etx}");
+                var etx = (char)3;
+                var temp = data.Replace("\r\n", $"{etx}");
                 temp = temp.Replace("\n", $"{etx}");
                 temp = temp.Replace("\r", $"{etx}");
-                string[] lines = temp.Split(etx);
+                var lines = temp.Split(etx);
                 data = string.Join(Environment.NewLine, lines);
             }
 

@@ -66,6 +66,7 @@ namespace Chem4Word.ACME.Behaviors
                 case HydrogenVisual _:
                     //bail out - we shouldn't be deleting implicit Hs
                     return;
+
                 case GroupVisual gv:
                     {
                         var parent = gv.ParentMolecule;
@@ -100,7 +101,7 @@ namespace Chem4Word.ACME.Behaviors
                 case AnnotationVisual annotationVisual:
                     {
                         var annotation = annotationVisual.ParentAnnotation;
-                        EditController.DeleteAnnotations(new[] {annotation });
+                        EditController.DeleteAnnotations(new[] { annotation });
                         CurrentStatus = "Annotation deleted.";
                         break;
                     }

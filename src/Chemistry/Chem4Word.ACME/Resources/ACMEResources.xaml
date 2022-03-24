@@ -1,9 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
-    xmlns:selectors="clr-namespace:Chem4Word.ACME.Adorners.Selectors"
-    xmlns:acme="clr-namespace:Chem4Word.ACME">
+    xmlns:acme="clr-namespace:Chem4Word.ACME"
+    xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics">
 
     <!--  Simple shapes for use in menus, buttons etc  -->
     <ResourceDictionary.MergedDictionaries>
@@ -16,7 +15,7 @@
     <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
     <SolidColorBrush x:Key="PinkLace" Color="#FFDDF4" />
     <SolidColorBrush x:Key="ACMEToolbarBackground" Color="#F1F1F1" />
-    <SolidColorBrush x:Key="DiagnosticOverlay" Color="PaleGreen" Opacity="0.5"/>
+    <SolidColorBrush x:Key="DiagnosticOverlay" Color="PaleGreen" Opacity="0.5" />
 
     <!-- Fix weird binding errors -->
     <Style TargetType="{x:Type ComboBoxItem}">
@@ -41,10 +40,10 @@
     </Style>
 
     <!-- Reaction handling brushes-->
-    <SolidColorBrush x:Key="ReactantIndicatorBrush" Color="DarkBlue"/>
-    <SolidColorBrush x:Key="ProductIndicatorBrush" Color="DarkRed"/>
-    <SolidColorBrush x:Key="ArrowIndicatorBrush" Color="Black"/>
-    <SolidColorBrush x:Key="IndicatorBackgroundBrush" Color="White" Opacity="0.75"/>
+    <SolidColorBrush x:Key="ReactantIndicatorBrush" Color="DarkBlue" />
+    <SolidColorBrush x:Key="ProductIndicatorBrush" Color="DarkRed" />
+    <SolidColorBrush x:Key="ArrowIndicatorBrush" Color="Black" />
+    <SolidColorBrush x:Key="IndicatorBackgroundBrush" Color="White" Opacity="0.75" />
 
     <!--  styles for bond fills  -->
     <SolidColorBrush x:Key="BlockedAdornerBrush" Color="LightGray" />
@@ -403,7 +402,6 @@
         </Setter>
     </Style>
 
-    
     <!--  control styles  -->
     <Style TargetType="ToolBar">
 

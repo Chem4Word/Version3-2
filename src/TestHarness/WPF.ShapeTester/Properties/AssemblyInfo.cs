@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -30,7 +28,6 @@ using System.Windows;
 
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
 
-
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
                                      //(used if a resource is not found in the page,
@@ -40,7 +37,6 @@ using System.Windows;
                                               // app, or any theme specific resource dictionaries)
 )]
 
-
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
@@ -48,5 +44,5 @@ using System.Windows;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.2.8097")]
-[assembly: AssemblyFileVersion("3.2.2.8097")]
+[assembly: AssemblyVersion("3.2.3.8118")]
+[assembly: AssemblyFileVersion("3.2.3.8118")]

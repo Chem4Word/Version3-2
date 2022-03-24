@@ -18,7 +18,7 @@ namespace Chem4Word.ACME.Commands.Layout.Alignment
 
         public override bool CanExecute(object parameter)
         {
-            return ((EditController.SelectionType & Enums.SelectionTypeCode.Molecule) == Enums.SelectionTypeCode.Molecule 
+            return ((EditController.SelectionType & Enums.SelectionTypeCode.Molecule) == Enums.SelectionTypeCode.Molecule
                 || (EditController.SelectionType & Enums.SelectionTypeCode.Annotation) == Enums.SelectionTypeCode.Annotation) && EditController.SelectedItems.Count > 1;
         }
 

@@ -9,7 +9,6 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Utils
 {

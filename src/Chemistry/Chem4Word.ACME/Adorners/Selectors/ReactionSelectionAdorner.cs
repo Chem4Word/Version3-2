@@ -14,7 +14,6 @@ using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Graphics;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -305,8 +304,8 @@ namespace Chem4Word.ACME.Adorners.Selectors
             Point productCenter = mol.Centre + goRight;
 
             //draw the background
-            Pen backgroundPen = new Pen(background, radius*2.5) {EndLineCap = PenLineCap.Round, StartLineCap = PenLineCap.Round};
-            drawingContext.DrawLine(backgroundPen, reactantCenter,productCenter);
+            Pen backgroundPen = new Pen(background, radius * 2.5) { EndLineCap = PenLineCap.Round, StartLineCap = PenLineCap.Round };
+            drawingContext.DrawLine(backgroundPen, reactantCenter, productCenter);
 
             //draw the indicators
             drawingContext.DrawEllipse(reactantFill, reactantPen, reactantCenter, radius, radius);

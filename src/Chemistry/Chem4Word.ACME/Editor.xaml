@@ -371,7 +371,7 @@
             </ToolBarTray.Resources>
             <ToolBar x:Name="SelectorToolbar" Height="40" ToolTip="Drawing">
                 <ToolBar.Resources>
-                    <utils:BindingProxy x:Key="Proxy" Data="{Binding ElementName=AcmeControl}"/>
+                    <utils:BindingProxy x:Key="Proxy" Data="{Binding ElementName=AcmeControl}" />
                 </ToolBar.Resources>
                 <ComboBox
                     x:Name="AtomCombo"

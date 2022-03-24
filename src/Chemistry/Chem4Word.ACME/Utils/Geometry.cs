@@ -254,6 +254,5 @@ namespace Chem4Word.ACME.Utils
             }
             return result;
         }
-
     }
 }

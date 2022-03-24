@@ -473,8 +473,6 @@ namespace Chem4Word.ACME
             SymbolPopup.IsOpen = false;
         }
 
-        
-
         private void SetSymbol(object sender)
         {
             Button panelButton = sender as Button;

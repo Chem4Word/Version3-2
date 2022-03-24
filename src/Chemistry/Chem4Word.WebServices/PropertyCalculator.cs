@@ -14,7 +14,6 @@ using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
-using Chem4Word.Telemetry;
 using IChem4Word.Contracts;
 
 namespace Chem4Word.WebServices

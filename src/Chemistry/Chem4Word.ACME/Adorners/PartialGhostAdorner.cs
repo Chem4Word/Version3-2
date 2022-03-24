@@ -17,7 +17,6 @@ using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners
 {

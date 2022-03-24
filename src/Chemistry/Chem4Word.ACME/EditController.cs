@@ -283,7 +283,7 @@ namespace Chem4Word.ACME
         {
             var oldStart = reaction.TailPoint;
             var oldEnd = reaction.HeadPoint;
-            UndoManager.BeginUndoBlock();
+
             Action redo = () =>
                 {
                     reaction.TailPoint = startPoint;
@@ -299,9 +299,10 @@ namespace Chem4Word.ACME
                     AddToSelection(reaction);
                 };
 
-            redo();
+            UndoManager.BeginUndoBlock();
             UndoManager.RecordAction(undo, redo);
             UndoManager.EndUndoBlock();
+            redo();
         }
 
         public ReactionType? SelectedReactionType
@@ -355,6 +356,7 @@ namespace Chem4Word.ACME
                 if (reactions.Any())
                 {
                     UndoManager.BeginUndoBlock();
+
                     foreach (Reaction reaction in reactions)
                     {
                         Action redo = () =>
@@ -376,10 +378,11 @@ namespace Chem4Word.ACME
                                 AddToSelection(reaction);
                             }
                         };
-                        redo();
                         UndoManager.RecordAction(undo, redo);
-                        UndoManager.EndUndoBlock();
+                        redo();
                     }
+
+                    UndoManager.EndUndoBlock();
                 }
             }
             catch (Exception exception)
@@ -914,7 +917,6 @@ namespace Chem4Word.ACME
             UndoManager.BeginUndoBlock();
             UndoManager.RecordAction(undo, redo);
             UndoManager.EndUndoBlock();
-
             redo();
         }
 
@@ -1020,7 +1022,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -1127,7 +1128,6 @@ namespace Chem4Word.ACME
                         UndoManager.BeginUndoBlock();
                         UndoManager.RecordAction(undo, redo);
                         UndoManager.EndUndoBlock();
-
                         redo();
                     }
                 }
@@ -1248,7 +1248,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -1333,7 +1332,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -1397,7 +1395,6 @@ namespace Chem4Word.ACME
                     UndoManager.BeginUndoBlock();
                     UndoManager.RecordAction(undo, redo);
                     UndoManager.EndUndoBlock();
-
                     redo();
                 }
             }
@@ -1444,7 +1441,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -1488,7 +1484,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -1628,7 +1623,6 @@ namespace Chem4Word.ACME
                     UndoManager.BeginUndoBlock();
                     UndoManager.RecordAction(undo, redo);
                     UndoManager.EndUndoBlock();
-
                     redo();
 
                     // local function
@@ -1792,7 +1786,7 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                UndoManager.BeginUndoBlock();
+                WriteTelemetry(module, "Debug", "Adding a reaction");
 
                 Action redo = () =>
                 {
@@ -1812,9 +1806,10 @@ namespace Chem4Word.ACME
                     }
                 };
 
-                redo();
+                UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
+                redo();
             }
             catch (Exception exception)
             {
@@ -1859,7 +1854,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undoAction, redoAction);
                 UndoManager.EndUndoBlock();
-
                 redoAction();
             }
             catch (Exception exception)
@@ -2548,7 +2542,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -2725,7 +2718,6 @@ namespace Chem4Word.ACME
                     UndoManager.BeginUndoBlock();
                     UndoManager.RecordAction(undoAction, redoAction);
                     UndoManager.EndUndoBlock();
-
                     redoAction();
                 }
             }
@@ -2822,7 +2814,6 @@ namespace Chem4Word.ACME
                     UndoManager.BeginUndoBlock();
                     UndoManager.RecordAction(undoAction, redoAction);
                     UndoManager.EndUndoBlock();
-
                     redoAction();
                 }
             }
@@ -2938,7 +2929,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo, flipVertically ? "Flip Vertical" : "Flip Horizontal");
                 UndoManager.EndUndoBlock();
-
                 redo();
 
                 //local function
@@ -3321,7 +3311,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -3360,7 +3349,6 @@ namespace Chem4Word.ACME
                     UndoManager.BeginUndoBlock();
                     UndoManager.RecordAction(undo, redo, $"{nameof(DeleteAtoms)}[Singleton]");
                     UndoManager.EndUndoBlock();
-
                     redo();
                 }
                 else
@@ -3543,7 +3531,6 @@ namespace Chem4Word.ACME
                     UndoManager.BeginUndoBlock();
                     UndoManager.RecordAction(undo, redo, $"{nameof(DeleteAtomsAndBonds)}[SingleAtom]");
                     UndoManager.EndUndoBlock();
-
                     redo();
                 }
                 else //we have multiple fragments
@@ -3799,7 +3786,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -3853,7 +3839,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
 
                 //local function
@@ -4065,7 +4050,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -4175,7 +4159,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -4388,7 +4371,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -4475,7 +4457,6 @@ namespace Chem4Word.ACME
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
-
                 redo();
             }
             catch (Exception exception)
@@ -4586,23 +4567,27 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Aligning middles of {objects.Count} objects");
+
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
 
                 var molsToAlign = objects.OfType<Molecule>().ToList();
                 var annotationsToAlign = objects.OfType<Annotation>().ToList();
 
-                double molsmiddle = 0, annotationsmiddle = 0;
+                double molsMiddle = 0;
+                double annotationsMiddle = 0;
+
                 if (molsToAlign.Any())
                 {
-                    molsmiddle = molsToAlign.Average(m => m.Centre.Y);
+                    molsMiddle = molsToAlign.Average(m => m.Centre.Y);
                 }
                 if (annotationsToAlign.Any())
                 {
-                    annotationsmiddle = annotationsToAlign.Average(a => (CurrentEditor.ChemicalVisuals[a].ContentBounds.Top + CurrentEditor.ChemicalVisuals[a].ContentBounds.Bottom) / 2);
+                    annotationsMiddle = annotationsToAlign.Average(a => (CurrentEditor.ChemicalVisuals[a].ContentBounds.Top + CurrentEditor.ChemicalVisuals[a].ContentBounds.Bottom) / 2);
                 }
 
-                double middle = (annotationsmiddle * annotationsToAlign.Count + molsmiddle * molsToAlign.Count) / (molsToAlign.Count + annotationsToAlign.Count);
+                double middle = (annotationsMiddle * annotationsToAlign.Count + molsMiddle * molsToAlign.Count) / (molsToAlign.Count + annotationsToAlign.Count);
 
                 for (int i = 0; i < molsToAlign.Count; i++)
                 {
@@ -4618,6 +4603,7 @@ namespace Chem4Word.ACME
                     shift.Y = middle - (CurrentEditor.ChemicalVisuals[a].ContentBounds.Top + CurrentEditor.ChemicalVisuals[a].ContentBounds.Bottom) / 2;
                     annShifts.Add(shift);
                 }
+
                 UndoManager.BeginUndoBlock();
                 AlignMolecules(molsToAlign, shifts);
                 AlignAnnotations(annotationsToAlign, annShifts);
@@ -4641,20 +4627,27 @@ namespace Chem4Word.ACME
                 {
                     originalPos[r] = (r.TailPoint, r.HeadPoint);
                 }
+
                 Action redo = () =>
                 {
                     foreach (Reaction r in reactions)
                     {
                         Point newTailPoint = new Point(r.TailPoint.X, middle);
-                        Point newHeadpoint = new Point(r.HeadPoint.X, middle);
-                        if (newHeadpoint != newTailPoint)
+                        Point newHeadPoint = new Point(r.HeadPoint.X, middle);
+
+                        if (newHeadPoint != newTailPoint)
                         {
                             r.TailPoint = newTailPoint;
-                            r.HeadPoint = newHeadpoint;
+                            r.HeadPoint = newHeadPoint;
+                        }
+                        else
+                        {
+                            WriteTelemetry(module, "Warning", $"Can't align middles of reaction {r.Id}");
                         }
                     }
                     AddObjectListToSelection(reactions.Cast<BaseObject>().ToList());
                 };
+
                 Action undo = () =>
                 {
                     foreach (Reaction r in reactions)
@@ -4664,10 +4657,11 @@ namespace Chem4Word.ACME
                     }
                     AddObjectListToSelection(reactions.Cast<BaseObject>().ToList());
                 };
-                redo();
+
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
+                redo();
             }
             catch (Exception exception)
             {
@@ -4696,6 +4690,10 @@ namespace Chem4Word.ACME
                             r.TailPoint = newTailPoint;
                             r.HeadPoint = newHeadpoint;
                         }
+                        else
+                        {
+                            WriteTelemetry(module, "Warning", $"Can't align centres of reaction {r.Id}");
+                        }
                     }
                     AddObjectListToSelection(reacts.Cast<BaseObject>().ToList());
                 };
@@ -4708,10 +4706,10 @@ namespace Chem4Word.ACME
                     }
                     AddObjectListToSelection(reacts.Cast<BaseObject>().ToList());
                 };
-                redo();
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
+                redo();
             }
             catch (Exception exception)
             {
@@ -4724,6 +4722,8 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Aligning tops of {objects.Count} objects");
+
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
 
@@ -4732,7 +4732,10 @@ namespace Chem4Word.ACME
 
                 double stupidMin = 1.0E6;
 
-                double top = Math.Min(molsToAlign.Select(m => m.Top).DefaultIfEmpty(stupidMin).Min(), annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Top).DefaultIfEmpty(stupidMin).Min());
+                double top = Math.Min(molsToAlign.Select(m => m.Top)
+                                                 .DefaultIfEmpty(stupidMin).Min(),
+                                      annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Top)
+                                                        .DefaultIfEmpty(stupidMin).Min());
 
                 for (int i = 0; i < molsToAlign.Count; i++)
                 {
@@ -4747,6 +4750,7 @@ namespace Chem4Word.ACME
                     shift.Y = top - CurrentEditor.ChemicalVisuals[annotationsToAlign[i]].ContentBounds.Top;
                     annShifts.Add(shift);
                 }
+
                 UndoManager.BeginUndoBlock();
                 AlignMolecules(molsToAlign, shifts);
                 AlignAnnotations(annotationsToAlign, annShifts);
@@ -4763,8 +4767,6 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                UndoManager.BeginUndoBlock();
-
                 Action redo = () =>
                 {
                     for (int i = 0; i < annotationsToAlign.Count; i++)
@@ -4779,10 +4781,10 @@ namespace Chem4Word.ACME
                         annotationsToAlign[i].Position = shifts[i].Inverse.Transform(annotationsToAlign[i].Position);
                     }
                 };
-                redo();
+                UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
-
                 UndoManager.EndUndoBlock();
+                redo();
                 AddObjectListToSelection(annotationsToAlign.Cast<BaseObject>().ToList());
             }
             catch (Exception exception)
@@ -4796,16 +4798,20 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Aligning bottoms of {objects.Count} objects");
+
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
 
                 var molsToAlign = objects.OfType<Molecule>().ToList();
                 var annotationsToAlign = objects.OfType<Annotation>().ToList();
 
-                double stupidmax = -100;
+                double stupidMax = -100;
 
-                double bottom = Math.Max(molsToAlign.Select(m => m.Bottom).DefaultIfEmpty(stupidmax).Max(),
-                    annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Bottom).DefaultIfEmpty(stupidmax).Max());
+                double bottom = Math.Max(molsToAlign.Select(m => m.Bottom)
+                                                    .DefaultIfEmpty(stupidMax).Max(),
+                                         annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Bottom)
+                                                           .DefaultIfEmpty(stupidMax).Max());
 
                 for (int i = 0; i < molsToAlign.Count; i++)
                 {
@@ -4820,6 +4826,7 @@ namespace Chem4Word.ACME
                     shift.Y = bottom - CurrentEditor.ChemicalVisuals[annotationsToAlign[i]].ContentBounds.Bottom;
                     annShifts.Add(shift);
                 }
+
                 UndoManager.BeginUndoBlock();
                 AlignMolecules(molsToAlign, shifts);
                 AlignAnnotations(annotationsToAlign, annShifts);
@@ -4836,23 +4843,28 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Aligning centres of {objects.Count} objects");
+
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
 
                 var molsToAlign = objects.OfType<Molecule>().ToList();
                 var annotationsToAlign = objects.OfType<Annotation>().ToList();
 
-                double molscentre = 0, annotationscentre = 0;
+                double molsCentre = 0;
+                double annotationsCentre = 0;
+
                 if (molsToAlign.Any())
                 {
-                    molscentre = molsToAlign.Average(m => m.Centre.X);
+                    molsCentre = molsToAlign.Average(m => m.Centre.X);
                 }
                 if (annotationsToAlign.Any())
                 {
-                    annotationscentre = annotationsToAlign.Average(a => (CurrentEditor.ChemicalVisuals[a].ContentBounds.Left + CurrentEditor.ChemicalVisuals[a].ContentBounds.Right) / 2);
+                    annotationsCentre = annotationsToAlign
+                        .Average(a => (CurrentEditor.ChemicalVisuals[a].ContentBounds.Left + CurrentEditor.ChemicalVisuals[a].ContentBounds.Right) / 2);
                 }
 
-                double centre = (annotationscentre * annotationsToAlign.Count + molscentre * molsToAlign.Count) / (molsToAlign.Count + annotationsToAlign.Count);
+                double centre = (annotationsCentre * annotationsToAlign.Count + molsCentre * molsToAlign.Count) / (molsToAlign.Count + annotationsToAlign.Count);
 
                 for (int i = 0; i < molsToAlign.Count; i++)
                 {
@@ -4868,6 +4880,7 @@ namespace Chem4Word.ACME
                     shift.X = centre - (CurrentEditor.ChemicalVisuals[a].ContentBounds.Left + CurrentEditor.ChemicalVisuals[a].ContentBounds.Right) / 2;
                     annShifts.Add(shift);
                 }
+
                 UndoManager.BeginUndoBlock();
                 AlignMolecules(molsToAlign, shifts);
                 AlignAnnotations(annotationsToAlign, annShifts);
@@ -4886,6 +4899,8 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Aligning lefts of {objects.Count} objects");
+
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
 
@@ -4894,8 +4909,10 @@ namespace Chem4Word.ACME
 
                 double stupidMin = 1.0E6;
 
-                double left = Math.Min(molsToAlign.Select(m => m.Left).DefaultIfEmpty(stupidMin).Min(),
-                    annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Left).DefaultIfEmpty(stupidMin).Min());
+                double left = Math.Min(molsToAlign.Select(m => m.Left)
+                                                  .DefaultIfEmpty(stupidMin).Min(),
+                                       annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Left)
+                                                         .DefaultIfEmpty(stupidMin).Min());
 
                 for (int i = 0; i < molsToAlign.Count; i++)
                 {
@@ -4910,6 +4927,7 @@ namespace Chem4Word.ACME
                     shift.X = left - CurrentEditor.ChemicalVisuals[annotationsToAlign[i]].ContentBounds.Left;
                     annShifts.Add(shift);
                 }
+
                 UndoManager.BeginUndoBlock();
                 AlignMolecules(molsToAlign, shifts);
                 AlignAnnotations(annotationsToAlign, annShifts);
@@ -4926,16 +4944,20 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Aligning rights of {objects.Count} objects");
+
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
 
                 var molsToAlign = objects.OfType<Molecule>().ToList();
                 var annotationsToAlign = objects.OfType<Annotation>().ToList();
 
-                double stupidmax = -100;
+                double stupidMax = -100;
 
-                double right = Math.Max(molsToAlign.Select(m => m.Right).DefaultIfEmpty(stupidmax).Max(),
-                    annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Right).DefaultIfEmpty(stupidmax).Max());
+                double right = Math.Max(molsToAlign.Select(m => m.Right)
+                                                   .DefaultIfEmpty(stupidMax).Max(),
+                                        annotationsToAlign.Select(a => CurrentEditor.ChemicalVisuals[a].ContentBounds.Right)
+                                                          .DefaultIfEmpty(stupidMax).Max());
 
                 for (int i = 0; i < molsToAlign.Count; i++)
                 {
@@ -4950,6 +4972,7 @@ namespace Chem4Word.ACME
                     shift.X = right - CurrentEditor.ChemicalVisuals[annotationsToAlign[i]].ContentBounds.Right;
                     annShifts.Add(shift);
                 }
+
                 UndoManager.BeginUndoBlock();
                 AlignMolecules(molsToAlign, shifts);
                 AlignAnnotations(annotationsToAlign, annShifts);
@@ -4968,7 +4991,6 @@ namespace Chem4Word.ACME
             Debug.Assert(molsToAlign.Count == adjustments.Count);
 
             UndoManager.BeginUndoBlock();
-
             MultiTransformMolecules(adjustments, molsToAlign);
             AddObjectListToSelection(molsToAlign.Cast<BaseObject>().ToList());
             UndoManager.EndUndoBlock();
@@ -5099,8 +5121,8 @@ namespace Chem4Word.ACME
                 };
                 UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo, $"Update {(editingReagents ? "Reagents" : "Conditions")}");
-                redo();
                 UndoManager.EndUndoBlock();
+                redo();
             }
         }
 
@@ -5128,6 +5150,7 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
+                WriteTelemetry(module, "Debug", $"Adding floating symbol '{symbolText}'");
                 AddAnnotation(pos, symbolText, false);
             }
             catch (Exception exception)
@@ -5138,33 +5161,45 @@ namespace Chem4Word.ACME
 
         private void AddAnnotation(Point pos, string text, bool isEditable = true)
         {
-            var newSymbol = new Annotation();
-            newSymbol.Position = pos;
-            newSymbol.IsEditable = isEditable;
-            var docElement = new XElement(CMLNamespaces.xaml + "FlowDocument",
-                new XElement(CMLNamespaces.xaml + "Paragraph",
-                new XElement(CMLNamespaces.xaml + "Run",
-                            text)));
-            newSymbol.Xaml = docElement.CreateNavigator().OuterXml;
-            UndoManager.BeginUndoBlock();
-            Action redo = () =>
-            {
-                Model.AddAnnotation(newSymbol);
-            };
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            Action undo = () =>
+            try
             {
-                Model.RemoveAnnotation(newSymbol);
-            };
-            redo();
-            UndoManager.RecordAction(undo, redo, "Adding symbol");
-            UndoManager.EndUndoBlock();
+                WriteTelemetry(module, "Debug", "Adding Annotation");
+
+                var newSymbol = new Annotation();
+                newSymbol.Position = pos;
+                newSymbol.IsEditable = isEditable;
+                var docElement = new XElement(CMLNamespaces.xaml + "FlowDocument",
+                                              new XElement(CMLNamespaces.xaml + "Paragraph",
+                                                           new XElement(CMLNamespaces.xaml + "Run",
+                                                                        text)));
+                newSymbol.Xaml = docElement.CreateNavigator().OuterXml;
+                Action redo = () =>
+                              {
+                                  Model.AddAnnotation(newSymbol);
+                              };
+
+                Action undo = () =>
+                              {
+                                  Model.RemoveAnnotation(newSymbol);
+                              };
+
+                UndoManager.BeginUndoBlock();
+                UndoManager.RecordAction(undo, redo);
+                UndoManager.EndUndoBlock();
+                redo();
+            }
+            catch (Exception exception)
+            {
+                WriteTelemetryException(module, exception);
+            }
         }
 
         public bool FullReactionSelected()
         {
-            if (((SelectionType & SelectionTypeCode.Molecule) == SelectionTypeCode.Molecule)
-                && ((SelectionType & SelectionTypeCode.Reaction) == SelectionTypeCode.Reaction))
+            if ((SelectionType & SelectionTypeCode.Molecule) == SelectionTypeCode.Molecule
+                && (SelectionType & SelectionTypeCode.Reaction) == SelectionTypeCode.Reaction)
             {
                 return SelectedItems.OfType<Reaction>().ToList().Count == 1 && (ReactantsInSelection.Any() & ProductsInSelection.Any());
             }
@@ -5180,7 +5215,8 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                UndoManager.BeginUndoBlock();
+                WriteTelemetry(module, "Debug", "Assign reaction roles");
+
                 var selectedReaction = SelectedItems.OfType<Reaction>().ToList()[0];
 
                 var currentReactants = ReactantsInSelection.ToArray();
@@ -5219,9 +5255,11 @@ namespace Chem4Word.ACME
                     ClearSelection();
                     AddToSelection(selectedReaction);
                 };
-                redo();
+
+                UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
+                redo();
             }
             catch (Exception exception)
             {
@@ -5239,7 +5277,8 @@ namespace Chem4Word.ACME
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                UndoManager.BeginUndoBlock();
+                WriteTelemetry(module, "Debug", "Clearing reaction roles");
+
                 var selectedReaction = SelectedItems.OfType<Reaction>().ToList()[0];
 
                 var currentReactants = selectedReaction.Reactants.Values.ToArray();
@@ -5268,9 +5307,11 @@ namespace Chem4Word.ACME
                     ClearSelection();
                     AddToSelection(selectedReaction);
                 };
-                redo();
+
+                UndoManager.BeginUndoBlock();
                 UndoManager.RecordAction(undo, redo);
                 UndoManager.EndUndoBlock();
+                redo();
             }
             catch (Exception exception)
             {

@@ -40,7 +40,7 @@ namespace Chem4Word.ACME.Commands.Block_Editing
             {
                 Editor.Selection.Text = Text;
             }
-            Editor.Selection.Select(Editor.Selection.End, Editor.Selection.End);    
+            Editor.Selection.Select(Editor.Selection.End, Editor.Selection.End);
         }
 
         public void RaiseCanExecChanged()

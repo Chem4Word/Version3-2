@@ -13,7 +13,6 @@ using System.Windows.Media;
 using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Drawing

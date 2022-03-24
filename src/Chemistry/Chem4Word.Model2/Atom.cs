@@ -607,7 +607,6 @@ namespace Chem4Word.Model2
                 }
             }
 
-            //Debug.WriteLine($"Atom {Id} Resultant Balancing Vector Angle is {Vector.AngleBetween(BasicGeometry.ScreenNorth, vsumVector)}")
             return vsumVector;
         }
 

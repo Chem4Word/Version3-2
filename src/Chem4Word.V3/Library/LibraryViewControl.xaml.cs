@@ -128,7 +128,7 @@ namespace Chem4Word.Library
                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Filter library by '{SearchBox.Text}'");
 
                     //get the view from the listbox's source
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryController) DataContext).ChemistryItems);
+                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryController)DataContext).ChemistryItems);
                     //then try to match part of either its name or an alternative name to the string typed in
                     view.Filter = ci =>
                                   {
@@ -158,7 +158,7 @@ namespace Chem4Word.Library
 
                 if (DataContext != null)
                 {
-                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryController) DataContext).ChemistryItems);
+                    ICollectionView view = CollectionViewSource.GetDefaultView(((LibraryController)DataContext).ChemistryItems);
                     view.Filter = null;
                 }
             }

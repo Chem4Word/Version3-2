@@ -337,10 +337,10 @@ namespace WinForms.TestLibrary.Wpf
                 _lastTags = context.SelectedChemistryObject.Tags;
 
                 var args = new WpfEventArgs
-                           {
-                               Button = "CatalogueView|SelectedItemChanged",
-                               OutputValue = $"Id={selected.Id}"
-                           };
+                {
+                    Button = "CatalogueView|SelectedItemChanged",
+                    OutputValue = $"Id={selected.Id}"
+                };
                 OnSelectionChange?.Invoke(this, args);
             }
         }
@@ -539,7 +539,6 @@ namespace WinForms.TestLibrary.Wpf
                 long count = 0;
                 foreach (var kvp in cloudTags.OrderByDescending(x => x.Value))
                 {
-                    //Debug.WriteLine($"Adding: '{kvp.Key}' Frequency: {kvp.Value}")
                     wordlist.Add(new FrequencyTableRow<WordGroup>(new WordGroup(kvp.Key), kvp.Value));
                     count += kvp.Value;
                 }
@@ -592,7 +591,7 @@ namespace WinForms.TestLibrary.Wpf
             {
                 // Save the updated user file
                 // ToDo: Handle _acmeOptions.SettingsPath is null
-                var userTagsFile = Path.Combine(_acmeOptions.SettingsPath, UserTagsFileName); 
+                var userTagsFile = Path.Combine(_acmeOptions.SettingsPath, UserTagsFileName);
                 var jsonOut = JsonConvert.SerializeObject(_userTags, Formatting.Indented);
                 File.WriteAllText(userTagsFile, jsonOut);
 

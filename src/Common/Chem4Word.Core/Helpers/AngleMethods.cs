@@ -5,14 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows;
-using System.Windows.Media;
-using Chem4Word.Core.Enums;
-
 namespace Chem4Word.Core.Helpers
 {
     public class AngleMethods
     {
-
     }
 }

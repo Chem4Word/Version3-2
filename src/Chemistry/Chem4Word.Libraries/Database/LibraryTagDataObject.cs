@@ -11,7 +11,7 @@ namespace Chem4Word.Libraries.Database
     {
         public long Id { get; set; }
         public string Text { get; set; }
-        
+
         public long Frequency { get; set; }
     }
 }

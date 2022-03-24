@@ -16,8 +16,6 @@ using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Geometry;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {
@@ -326,18 +324,19 @@ namespace Chem4Word.ACME.Adorners.Selectors
 
                     //create temporary Reactions and visuals and throw them away afterwards
                     var tempReaction = new Reaction()
-                                       {
-                                           ConditionsText = r.ConditionsText,
-                                           HeadPoint = newEndPoint,
-                                           ReactionType = r.ReactionType,
-                                           ReagentText = r.ReagentText, TailPoint = newStartPoint
-                                       };
-                    
+                    {
+                        ConditionsText = r.ConditionsText,
+                        HeadPoint = newEndPoint,
+                        ReactionType = r.ReactionType,
+                        ReagentText = r.ReagentText,
+                        TailPoint = newStartPoint
+                    };
+
                     var rv = new ReactionVisual(tempReaction)
-                             {
-                                 TextSize = EditController.BlockTextSize,
-                                 ScriptSize = EditController.BlockTextSize * Controller.ScriptScalingFactor
-                             };
+                    {
+                        TextSize = EditController.BlockTextSize,
+                        ScriptSize = EditController.BlockTextSize * Controller.ScriptScalingFactor
+                    };
                     rv.RenderFullGeometry(r.ReactionType, newStartPoint,
                                           newEndPoint,
                                           drawingContext, r.ReagentText, r.ConditionsText, ghostPen,

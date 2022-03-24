@@ -11,7 +11,6 @@ using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Text;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Core.Enums;
-using Chem4Word.Model2.Geometry;
 using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.ACME.Drawing.Visuals

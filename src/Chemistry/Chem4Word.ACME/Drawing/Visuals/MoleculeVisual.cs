@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Media;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Drawing.Visuals
 {

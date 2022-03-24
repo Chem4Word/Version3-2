@@ -378,31 +378,32 @@ namespace Chem4Word.ACME
                         if (formulaPart.Count > 1)
                         {
                             var subscript = new Run($"{formulaPart.Count}")
-                                            {
-                                                BaselineAlignment = BaselineAlignment.Subscript
-                                            };
+                            {
+                                BaselineAlignment = BaselineAlignment.Subscript
+                            };
                             subscript.FontSize -= 2;
                             textBlock.Inlines.Add(subscript);
                         }
 
                         break;
+
                     case FormulaPartType.Charge:
                         var absCharge = Math.Abs(formulaPart.Count);
                         if (absCharge > 1)
                         {
                             var superscript1 = new Run($"{absCharge}{formulaPart.Text}")
-                                              {
-                                                  BaselineAlignment = BaselineAlignment.Top
-                                              };
+                            {
+                                BaselineAlignment = BaselineAlignment.Top
+                            };
                             superscript1.FontSize -= 3;
                             textBlock.Inlines.Add(superscript1);
                         }
                         else
                         {
                             var superscript2 = new Run($"{formulaPart.Text}")
-                                               {
-                                                   BaselineAlignment = BaselineAlignment.Top
-                                               };
+                            {
+                                BaselineAlignment = BaselineAlignment.Top
+                            };
                             superscript2.FontSize -= 3;
                             textBlock.Inlines.Add(superscript2);
                         }

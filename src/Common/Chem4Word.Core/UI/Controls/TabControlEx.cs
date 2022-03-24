@@ -29,6 +29,7 @@ namespace Chem4Word.Core.UI.Controls
             base.WndProc(ref m);
         }
 
-        internal struct Rect { public int Left, Top, Right, Bottom; }
+        internal struct Rect
+        { public int Left, Top, Right, Bottom; }
     }
 }

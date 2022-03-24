@@ -18,12 +18,10 @@ namespace Chem4Word.Core.Helpers
         {
             Stream data = null;
 
-            string fullName = string.Empty;
-            int count = 0;
+            var fullName = string.Empty;
+            var count = 0;
 
-            Debug.WriteLine($"Searching Assembly {assembly.FullName.Split(',')[0]}.dll for {resourceName}");
-
-            string[] resources = assembly.GetManifestResourceNames();
+            var resources = assembly.GetManifestResourceNames();
             foreach (var resource in resources)
             {
                 if (resource.EndsWith($".{resourceName}"))
@@ -31,12 +29,10 @@ namespace Chem4Word.Core.Helpers
                     count++;
                     fullName = resource;
                 }
-                //Debug.WriteLine($" Found resource {resource}")
             }
 
             if (!string.IsNullOrEmpty(fullName))
             {
-                //Debug.WriteLine($"  Reading {fullName}")
                 data = assembly.GetManifestResourceStream(fullName);
             }
 
@@ -62,11 +58,11 @@ namespace Chem4Word.Core.Helpers
                 data = textStreamReader.ReadToEnd();
 
                 // Repair any broken line feeds to Windows style
-                char etx = (char)3;
-                string temp = data.Replace("\r\n", $"{etx}");
+                var etx = (char)3;
+                var temp = data.Replace("\r\n", $"{etx}");
                 temp = temp.Replace("\n", $"{etx}");
                 temp = temp.Replace("\r", $"{etx}");
-                string[] lines = temp.Split(etx);
+                var lines = temp.Split(etx);
                 data = string.Join(Environment.NewLine, lines);
             }
 
@@ -75,7 +71,7 @@ namespace Chem4Word.Core.Helpers
 
         public static void WriteResource(Assembly assembly, string resourceName, string destPath)
         {
-            Stream stream = GetBinaryResource(assembly, resourceName);
+            var stream = GetBinaryResource(assembly, resourceName);
 
             using (var fileStream = new FileStream(destPath, FileMode.Create, FileAccess.Write))
             {

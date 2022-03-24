@@ -12,7 +12,6 @@ using Chem4Word.ACME.Annotations;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
-using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.ACME.Adorners.Sketching
 {

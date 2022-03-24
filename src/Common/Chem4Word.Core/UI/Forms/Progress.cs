@@ -76,7 +76,6 @@ namespace Chem4Word.Core.UI.Forms
         {
             customProgressBar1.Value += value;
             SetProgressBarText();
-            //Debug.WriteLine(customProgressBar1.Text);
         }
 
         private void SetProgressBarText()

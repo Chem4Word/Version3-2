@@ -48,6 +48,7 @@ namespace Chem4Word.ACME.Drawing.Text
                                                                              FontStyles.Normal,
                                                                              FontWeights.Normal,
                                                                              FontStretches.Normal);
+
         public static Typeface FloatingSymbolTypeface => new Typeface(new FontFamily(FamilyName),
                                                                              FontStyles.Normal,
                                                                              FontWeights.SemiBold,

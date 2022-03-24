@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
 using Chem4Word.ACME;
-using Chem4Word.ACME.Models.Chem4Word.Controls.TagControl;
 using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Libraries;
 using Chem4Word.Telemetry;
-using Newtonsoft.Json;
 using WinForms.TestLibrary.Wpf;
 
 namespace WinForms.TestLibrary

@@ -10,7 +10,7 @@ using System.Windows;
 namespace Chem4Word.ACME.Utils
 {
     /// <summary>
-    /// Utility class to handle data binding when an element is 
+    /// Utility class to handle data binding when an element is
     /// not in the visual tree of the parent with the data context
     /// </summary>
     public class BindingProxy : Freezable
@@ -22,7 +22,7 @@ namespace Chem4Word.ACME.Utils
             return new BindingProxy();
         }
 
-        #endregion
+        #endregion Overrides of Freezable
 
         public object Data
         {

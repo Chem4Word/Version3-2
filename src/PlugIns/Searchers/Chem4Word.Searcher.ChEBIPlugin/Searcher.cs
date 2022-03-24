@@ -106,12 +106,12 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 using (new WaitCursor())
                 {
                     var searcher = new SearchChEBI
-                                   {
-                                       TopLeft = TopLeft,
-                                       Telemetry = Telemetry,
-                                       SettingsPath = SettingsPath,
-                                       UserOptions = _searcherOptions
-                                   };
+                    {
+                        TopLeft = TopLeft,
+                        Telemetry = Telemetry,
+                        SettingsPath = SettingsPath,
+                        UserOptions = _searcherOptions
+                    };
 
                     using (new WaitCursor(Cursors.Default))
                     {

@@ -921,7 +921,6 @@ namespace Chem4Word
         public void EnableContentControlEvents()
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            //Debug.WriteLine("EnableContentControlEvents()");
 
             try
             {
@@ -990,7 +989,6 @@ namespace Chem4Word
         public void DisableContentControlEvents()
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            //Debug.WriteLine("DisableContentControlEvents()");
 
             try
             {
@@ -1232,9 +1230,9 @@ namespace Chem4Word
                     var ccCount = sel.ContentControls.Count;
 
                     var targets = (from Word.ContentControl ccs in doc.ContentControls
-                                  orderby ccs.Range.Start
-                                  where $"{ccs.Title}" == Constants.ContentControlTitle
-                                  select ccs).ToList();
+                                   orderby ccs.Range.Start
+                                   where $"{ccs.Title}" == Constants.ContentControlTitle
+                                   select ccs).ToList();
 
                     foreach (var cc in targets)
                     {
@@ -1830,12 +1828,11 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        var taskdoc = ((Word.Window) taskPane.Window).Document.Name;
+                        var taskdoc = ((Word.Window)taskPane.Window).Document.Name;
                         if (doc.Name.Equals(taskdoc))
                         {
                             if (taskPane.Title.Equals(Constants.LibraryTaskPaneTitle))
                             {
-                                //Debug.WriteLine($"Found Library Task Pane. Visible: {taskPane.Visible}");
                                 if (Ribbon != null)
                                 {
                                     if (clear)
@@ -1895,12 +1892,11 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        var taskdoc = ((Word.Window) taskPane.Window).Document.Name;
+                        var taskdoc = ((Word.Window)taskPane.Window).Document.Name;
                         if (doc.Name.Equals(taskdoc))
                         {
                             if (taskPane.Title.Equals(Constants.NavigatorTaskPaneTitle))
                             {
-                                //Debug.WriteLine($"Found Navigator Task Pane. Visible: {taskPane.Visible}");
                                 if (Ribbon != null)
                                 {
                                     Ribbon.ShowNavigator.Checked = taskPane.Visible;
@@ -2643,9 +2639,6 @@ namespace Chem4Word
             {
                 try
                 {
-                    //Debug.WriteLine($"{module.Replace("()", $"({sel.Document.Name})")}");
-                    //Debug.WriteLine("  Selection: from " + sel.Range.Start + " to " + sel.Range.End);
-
                     if (EventsEnabled && _chemistrySelected)
                     {
                         CustomRibbon.PerformEdit();
@@ -2724,8 +2717,6 @@ namespace Chem4Word
 
             try
             {
-                //Debug.WriteLine($"{module}");
-
                 if (SystemOptions == null)
                 {
                     LoadOptions();
@@ -2743,7 +2734,6 @@ namespace Chem4Word
                         if (match.Success)
                         {
                             var message = $"ContentControl {ccId} added; Looking for structure {ccTag}";
-                            //Debug.WriteLine("  " + message);
                             Telemetry.Write(module, "Information", message);
 
                             var document = NewContentControl.Application.ActiveDocument;
@@ -2808,8 +2798,6 @@ namespace Chem4Word
 
             try
             {
-                //Debug.WriteLine($"{module.Replace("()", $"({contentControl.Application.ActiveDocument.Name})")}");
-
                 if (SystemOptions == null)
                 {
                     LoadOptions();
@@ -2847,8 +2835,6 @@ namespace Chem4Word
                 {
                     LoadOptions();
                 }
-
-                //Debug.WriteLine($"{module.Replace("()", $"({contentControl.Application.ActiveDocument.Name})")}");
             }
             catch (Exception ex)
             {
@@ -2885,13 +2871,6 @@ namespace Chem4Word
                 if (EventsEnabled)
                 {
                     EventsEnabled = false;
-#if DEBUG
-                    //Word.Document doc = contentControl.Application.ActiveDocument
-                    //Word.Selection sel = doc.Application.Selection
-                    //Debug.WriteLine($"  OnContentControlOnEnter() CC: {contentControl.Title}")
-                    //Debug.WriteLine($"  OnContentControlOnEnter() Document: {doc.Name} Selection from {sel.Range.Start} to {sel.Range.End}")
-                    //Debug.WriteLine($"  OnContentControlOnEnter() Document: {doc.Name} Selection has {sel.ContentControls.Count} CCs")
-#endif
                     EvaluateChemistryAllowed();
                     EventsEnabled = true;
                 }

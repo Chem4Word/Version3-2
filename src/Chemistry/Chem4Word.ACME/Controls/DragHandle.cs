@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Chem4Word.ACME.Utils;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Controls
 {

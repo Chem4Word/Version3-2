@@ -5,10 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Win32;
 
 namespace Chem4Word.Telemetry
 {
@@ -100,7 +99,6 @@ namespace Chem4Word.Telemetry
                 properties.FriendlyName = GetStringValue(registryKey, "FriendlyName");
                 properties.Manifest = GetStringValue(registryKey, "Manifest");
                 properties.LoadBehaviour = GetIntValue(registryKey, "LoadBehavior");
-
             }
 
             return properties;

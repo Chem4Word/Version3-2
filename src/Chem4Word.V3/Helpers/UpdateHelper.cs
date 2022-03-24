@@ -197,7 +197,6 @@ namespace Chem4Word.Helpers
                     {
                         Globals.Chem4WordV3.IsEndOfLife = false;
                     }
-
                 }
                 else
                 {
@@ -266,7 +265,7 @@ namespace Chem4Word.Helpers
                     {
                         var thisVersionNumber = version.Element("Number")?.Value;
                         DateTime thisVersionDate = SafeDate.Parse(version.Element("Released")?.Value);
-    
+
                         if (thisVersionDate > currentReleaseDate)
                         {
                             Globals.Chem4WordV3.VersionsBehind++;

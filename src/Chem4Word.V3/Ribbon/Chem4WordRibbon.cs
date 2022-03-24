@@ -881,7 +881,6 @@ namespace Chem4Word
 
                                             if (readyToInsert)
                                             {
-
                                                 // Insert a new CC
                                                 contentControl = activeDocument.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
                                                 Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {contentControl.ID} created");
@@ -1774,7 +1773,6 @@ namespace Chem4Word
                                             }
                                         }
                                     }
-
                                 }
                             }
                         }

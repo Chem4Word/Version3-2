@@ -151,14 +151,17 @@ namespace Chem4Word.ACME.Behaviors
                             CurrentStatus = "Click to set reaction type";
                             CurrentEditor.Cursor = CursorUtils.Pencil;
                             break;
+
                         case GroupVisual _:
                             CurrentStatus = "Ungroup before attempting to draw.";
                             CurrentEditor.Cursor = Cursors.No;
                             break;
+
                         case HydrogenVisual _:
                             CurrentStatus = "Click to rotate hydrogen";
                             CurrentEditor.Cursor = Cursors.Hand;
                             break;
+
                         case AtomVisual av:
                             CurrentEditor.Cursor = CursorUtils.Pencil;
                             if (EditController.SelectedElement != av.ParentAtom.Element)
@@ -170,6 +173,7 @@ namespace Chem4Word.ACME.Behaviors
                                 CurrentStatus = "Click to sprout chain";
                             }
                             break;
+
                         case BondVisual _:
                             CurrentEditor.Cursor = CursorUtils.Pencil;
                             CurrentStatus = "Click to modify bond";
@@ -545,7 +549,7 @@ namespace Chem4Word.ACME.Behaviors
                     EditController.SetReactionType(EditController.SelectedReactionType.Value, rv.ParentReaction);
                 }
             }
-            else 
+            else
             {
                 _currentAtomVisual = chemicalVisual as AtomVisual;
                 IsDrawing = true;

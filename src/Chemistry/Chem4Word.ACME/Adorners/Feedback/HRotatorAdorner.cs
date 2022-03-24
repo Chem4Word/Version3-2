@@ -13,7 +13,6 @@ using Chem4Word.ACME.Enums;
 using Chem4Word.ACME.Graphics;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {

@@ -731,7 +731,7 @@ namespace WinForms.TestHarness
                             var request = new HttpRequestMessage(HttpMethod.Post, "https://www.ebi.ac.uk/chembl/api/utils/clean");
                             request.Headers.Add("User-Agent", "Chem4Word");
 
-                            var body = JsonConvert.SerializeObject(new { structure = $"{marvin}", parameters = new { dim = 2, opts = "s"}});
+                            var body = JsonConvert.SerializeObject(new { structure = $"{marvin}", parameters = new { dim = 2, opts = "s" } });
                             request.Content = new StringContent(body, Encoding.UTF8, "text/plain");
 
                             var response = httpClient.SendAsync(request).Result;
@@ -777,7 +777,6 @@ namespace WinForms.TestHarness
             {
                 MessageBox.Show("Clean only handles single molecules without any functional groups (at the moment)", "Test Harness");
             }
-
         }
 
         private void LayoutUsingKoshsisImplementation()

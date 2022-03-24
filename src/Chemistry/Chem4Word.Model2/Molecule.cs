@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -409,7 +408,7 @@ namespace Chem4Word.Model2
                 sumOfParts.AddRange(otherParts.Values);
             }
 
-            #endregion
+            #endregion Construct Hill Notation
 
             #region Add molecule charge if present
 
@@ -420,7 +419,7 @@ namespace Chem4Word.Model2
                 chargePart.Count += FormalCharge.Value;
             }
 
-            #endregion
+            #endregion Add molecule charge if present
 
             if (chargePart.Count != 0)
             {

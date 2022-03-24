@@ -11,12 +11,12 @@ namespace Chem4Word.ACME.Utils
 {
     public static class GraphicsHelpers
     {
-         public static void IterateDrawingGroup(DrawingGroup textDrawing, DrawingContext drawingContext, Pen ghostPen, Brush ghostBrush, Transform lastOperation)
+        public static void IterateDrawingGroup(DrawingGroup textDrawing, DrawingContext drawingContext, Pen ghostPen, Brush ghostBrush, Transform lastOperation)
         {
-            DrawingCollection dc =  textDrawing.Children;
+            DrawingCollection dc = textDrawing.Children;
             foreach (var drawing in dc)
             {
-                if(drawing is DrawingGroup dg)
+                if (drawing is DrawingGroup dg)
                 {
                     IterateDrawingGroup(dg, drawingContext, ghostPen, ghostBrush, lastOperation);
                 }

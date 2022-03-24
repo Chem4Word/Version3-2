@@ -44,6 +44,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         }
 
         private Point _end;
+
         /// <summary>
         /// For a Wedge or Hatch bond this is the centre of the "tail"
         /// </summary>

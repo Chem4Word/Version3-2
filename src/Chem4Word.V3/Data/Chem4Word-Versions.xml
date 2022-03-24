@@ -3,6 +3,26 @@
 <ChangeLog>
     <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
     <Version>
+        <Number>3.2.3 Beta 3</Number>
+        <IsBeta>true</IsBeta>
+        <Released>24-Mar-2022</Released>
+        <Changes>
+            <Change>Adds charge to concise formula https://github.com/Chem4Word/Version3-2/issues/38</Change>
+            <Change>Implement method of detecting and breaking crossing bond lines in renderer https://github.com/Chem4Word/Version3-2/issues/37</Change>
+            <Change>Fix error when switching between two documents during render process https://github.com/Chem4Word/Version3-2/issues/36</Change>
+            <Change>Partial fix for https://github.com/Chem4Word/Version3-2/issues/34 and https://github.com/Chem4Word/Version3-2/issues/35</Change>
+            <Change>Phantom minus sign no longer displayed in editor https://github.com/Chem4Word/Version3-2/issues/33</Change>
+            <Change>Fixed valence calculations https://github.com/Chem4Word/Version3-2/issues/30</Change>
+            <Change>Add extra characters to renderer (Script Small L and Plus-Minus Sign) https://github.com/Chem4Word/Version3-2/issues/29</Change>
+            <Change>Fix position of forms such that the bottom right should always be visible</Change>
+            <Change>Fix the label editor so that when 11th name is used name 1 is not also marked as used</Change>
+            <Change>Fix the navigator to work correctly if first occurrence of a chemistry object is a 1D label</Change>
+            <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
+            <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
+        </Changes>
+        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.3.Beta.3.msi</Url>
+    </Version>
+    <Version>
         <Number>3.2.2 Beta 2</Number>
         <IsBeta>true</IsBeta>
         <Released>03-Mar-2022</Released>
@@ -11,13 +31,12 @@
             <Change>Fix user manual path</Change>
             <Change>Allow paste of multi line text into reaction reagents or conditions</Change>
             <Change>Fix wandering lines in reaction reagents or conditions</Change>
-	        <Change>Fix centering of atom labels</Change>
+            <Change>Fix centering of atom labels</Change>
             <Change>Fix unable to edit reaction only chemistry object</Change>
             <Change>Draw mode now changes reaction type</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
             <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
         </Changes>
-        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.2.Beta.2.msi</Url>
     </Version>
     <Version>
         <Number>3.2.1 Beta 1</Number>

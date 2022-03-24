@@ -143,7 +143,7 @@ namespace Chem4WordTests
         }
 
         [Theory]
-        [InlineData(0, 0, 0,"C 2 H 5 F 1")]
+        [InlineData(0, 0, 0, "C 2 H 5 F 1")]
         [InlineData(1, 0, 0, "C 2 H 4 F 1 +")]
         [InlineData(0, -1, 0, "C 2 H 4 F 1 -")]
         [InlineData(1, 0, -2, "C 2 H 4 F 1 -")]
@@ -321,61 +321,61 @@ namespace Chem4WordTests
             var model = new Model();
 
             var atom1 = new Atom
-                        {
-                            Id = "a1",
-                            Position = new Point(0, 0),
-                            Element = Globals.PeriodicTable.P
-                        };
+            {
+                Id = "a1",
+                Position = new Point(0, 0),
+                Element = Globals.PeriodicTable.P
+            };
 
             var atom2 = new Atom
-                        {
-                            Id = "a2",
-                            Position = new Point(10, 10),
-                            Element = Globals.PeriodicTable.O
-                        };
+            {
+                Id = "a2",
+                Position = new Point(10, 10),
+                Element = Globals.PeriodicTable.O
+            };
 
             var atom3 = new Atom
-                        {
-                            Id = "a3",
-                            Position = new Point(20, 20),
-                            Element = Globals.PeriodicTable.N
-                        };
+            {
+                Id = "a3",
+                Position = new Point(20, 20),
+                Element = Globals.PeriodicTable.N
+            };
 
             var atom4 = new Atom
-                        {
-                            Id = "a4",
-                            Position = new Point(30, 30),
-                            Element = Globals.PeriodicTable.Y
-                        };
+            {
+                Id = "a4",
+                Position = new Point(30, 30),
+                Element = Globals.PeriodicTable.Y
+            };
 
             var molecule1 = new Molecule
-                            {
-                                Id = "m1"
-                            };
+            {
+                Id = "m1"
+            };
             var molecule2 = new Molecule
-                            {
-                                Id = "m2"
-                            };
+            {
+                Id = "m2"
+            };
             var molecule3 = new Molecule
-                            {
-                                Id = "m3"
-                            };
+            {
+                Id = "m3"
+            };
             var molecule4 = new Molecule
-                            {
-                                Id = "m4"
-                            };
+            {
+                Id = "m4"
+            };
             var molecule5 = new Molecule
-                            {
-                                Id = "m5"
-                            };
+            {
+                Id = "m5"
+            };
             var molecule6 = new Molecule
-                            {
-                                Id = "m6"
-                            };
+            {
+                Id = "m6"
+            };
             var molecule7 = new Molecule
-                            {
-                                Id = "m7"
-                            };
+            {
+                Id = "m7"
+            };
 
             molecule3.AddAtom(atom1);
             atom1.Parent = molecule3;
@@ -415,11 +415,11 @@ namespace Chem4WordTests
             var model = new Model();
 
             var atom1 = new Atom
-                        {
-                            Id = "a1",
-                            Position = new Point(0, 0),
-                            Element = Globals.PeriodicTable.C
-                        };
+            {
+                Id = "a1",
+                Position = new Point(0, 0),
+                Element = Globals.PeriodicTable.C
+            };
 
             var atom2 = new Atom
             {
@@ -550,6 +550,6 @@ namespace Chem4WordTests
             }
         }
 
-        #endregion
+        #endregion Support functions
     }
 }

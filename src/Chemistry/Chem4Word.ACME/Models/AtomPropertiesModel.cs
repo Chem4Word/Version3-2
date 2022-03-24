@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using Chem4Word.ACME.Entities;
 using Chem4Word.Core.Enums;
 using Chem4Word.Model2;
-using Chem4Word.Model2.Geometry;
 
 namespace Chem4Word.ACME.Models
 {
@@ -55,6 +54,7 @@ namespace Chem4Word.ACME.Models
         }
 
         public Element SelectedElement { get; private set; }
+
         public ElementBase Element
         {
             get => _element;

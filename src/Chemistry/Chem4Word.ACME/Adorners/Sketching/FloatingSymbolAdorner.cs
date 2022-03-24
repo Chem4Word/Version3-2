@@ -5,12 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing.Text;
-using Chem4Word.Model2.Helpers;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing.Text;
 using Chem4Word.ACME.Utils;
 
 namespace Chem4Word.ACME.Adorners.Sketching
@@ -48,14 +47,14 @@ namespace Chem4Word.ACME.Adorners.Sketching
 
             FormattedText ghostText = new FormattedText(_defaultText,
                 System.Globalization.CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight, 
-                GlyphUtils.BlockTypeface, 
-                CurrentEditor.Controller.BlockTextSize, 
+                FlowDirection.LeftToRight,
+                GlyphUtils.BlockTypeface,
+                CurrentEditor.Controller.BlockTextSize,
                 _brush, PixelsPerDip());
             var offset = new Vector(ghostText.Width, ghostText.Height);
 
             TopLeft = _pos - offset;
-            Center = _pos - offset/2;
+            Center = _pos - offset / 2;
             drawingContext.DrawText(ghostText, TopLeft);
         }
     }
