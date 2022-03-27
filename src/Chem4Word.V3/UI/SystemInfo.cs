@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,7 @@ using System.Windows.Forms;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
+using Chem4Word.Telemetry;
 
 namespace Chem4Word.UI
 {
@@ -70,7 +72,12 @@ namespace Chem4Word.UI
 
                 sb.AppendLine("");
                 sb.AppendLine($"Installation Id: {Globals.Chem4WordV3.Helper.MachineId}");
-                sb.AppendLine($"Operating System: {Globals.Chem4WordV3.Helper.SystemOs}");
+
+                var wmiHelper = new WmiHelper();
+                string bits = Environment.Is64BitOperatingSystem ? "64bit" : "32bit";
+                string culture = CultureInfo.CurrentCulture.Name;
+                sb.AppendLine($"{wmiHelper.OSCaption} {bits} [{wmiHelper.OSVersion}] {culture}");
+
                 sb.AppendLine($"Word Version: {Globals.Chem4WordV3.Helper.WordVersion}");
                 sb.AppendLine($"Word Product: {Globals.Chem4WordV3.Helper.WordProduct}");
                 sb.AppendLine($"Internet Explorer Version: {Globals.Chem4WordV3.Helper.BrowserVersion}");
