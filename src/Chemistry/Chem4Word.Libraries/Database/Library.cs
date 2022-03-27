@@ -50,30 +50,33 @@ namespace Chem4Word.Libraries.Database
             _telemetry = telemetry;
             _options = options;
 
-            string libraryTarget = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
-
-            _sdFileConverter = new SdFileConverter();
-            _cmlConverter = new CMLConverter();
-
-            if (!File.Exists(libraryTarget))
+            if (options != null)
             {
-                _telemetry.Write(module, "Information", "Copying initial Library database");
-                Stream stream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "EssentialOils.zip");
-                if (stream != null)
+                string libraryTarget = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
+
+                _sdFileConverter = new SdFileConverter();
+                _cmlConverter = new CMLConverter();
+
+                if (!File.Exists(libraryTarget))
                 {
-                    using (ZipFile zip = ZipFile.Read(stream))
+                    _telemetry.Write(module, "Information", "Copying initial Library database");
+                    Stream stream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "EssentialOils.zip");
+                    if (stream != null)
                     {
-                        // Note: The original filename in EssentialOils.zip is Library.db
-                        zip.ExtractAll(_options.ProgramDataPath, ExtractExistingFileAction.OverwriteSilently);
+                        using (ZipFile zip = ZipFile.Read(stream))
+                        {
+                            // Note: The original filename in EssentialOils.zip is Library.db
+                            zip.ExtractAll(_options.ProgramDataPath, ExtractExistingFileAction.OverwriteSilently);
+                        }
                     }
                 }
+
+                // Read patches from resource
+                var resource = ResourceHelper.GetStringResource(Assembly.GetExecutingAssembly(), "Patches.json");
+                _patches = JsonConvert.DeserializeObject<List<Patch>>(resource);
+
+                Patch(_patches.Max(p => p.Version));
             }
-
-            // Read patches from resource
-            var resource = ResourceHelper.GetStringResource(Assembly.GetExecutingAssembly(), "Patches.json");
-            _patches = JsonConvert.DeserializeObject<List<Patch>>(resource);
-
-            Patch(_patches.Max(p => p.Version));
         }
 
         private SQLiteConnection LibraryConnection()

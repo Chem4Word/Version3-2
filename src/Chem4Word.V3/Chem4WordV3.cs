@@ -416,8 +416,15 @@ namespace Chem4Word
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var lib = new Libraries.Database.Library(Telemetry, LibraryOptions);
-                LibraryNames = lib.GetLibraryNames();
+                if (LibraryOptions != null)
+                {
+                    var lib = new Libraries.Database.Library(Telemetry, LibraryOptions);
+                    LibraryNames = lib.GetLibraryNames();
+                }
+                else
+                {
+                    LibraryNames = null;
+                }
             }
             catch (Exception exception)
             {
