@@ -173,6 +173,7 @@ namespace Chem4Word
                             {
                                 // Auto fix the file if required
                                 RegistryHelper.StoreMessage(module, $"Auto fixing {optionsFile}");
+
                                 PersistOptions(optionsFile);
                             }
                         }
@@ -181,18 +182,18 @@ namespace Chem4Word
                             Debug.WriteLine(exception.Message);
                             Errors.Add(exception.Message);
                             Errors.Add(exception.StackTrace);
-
-                            RestoreDefaults();
-
                             RegistryHelper.StoreException(module, exception);
                             RegistryHelper.StoreMessage(module, $"Setting {optionsFile} to defaults");
+
+                            RestoreDefaults();
                             PersistOptions(optionsFile);
                         }
                     }
                     else
                     {
-                        RestoreDefaults();
                         RegistryHelper.StoreMessage(module, $"Creating {optionsFile} with defaults");
+
+                        RestoreDefaults();
                         PersistOptions(optionsFile);
                     }
                 }
@@ -251,7 +252,7 @@ namespace Chem4Word
                 using (var stream = new FileStream(filename,
                                                    FileMode.Open,
                                                    FileAccess.Read,
-                                                   FileShare.ReadWrite))
+                                                   FileShare.Read))
                 {
                     using (var bufferedStream = new BufferedStream(stream))
                     {
@@ -263,7 +264,11 @@ namespace Chem4Word
                                 lines.Add(line);
                             }
                         }
+                        bufferedStream.Flush();
+                        bufferedStream.Close();
                     }
+                    stream.Flush();
+                    stream.Close();
                 }
             }
             catch (Exception exception)
@@ -287,12 +292,14 @@ namespace Chem4Word
                 var contents = JsonConvert.SerializeObject(this, Formatting.Indented);
 
                 using (var outStream = new FileStream(filename,
-                                                      FileMode.OpenOrCreate,
+                                                      FileMode.Create,
                                                       FileAccess.Write,
-                                                      FileShare.ReadWrite))
+                                                      FileShare.Write))
                 {
                     var bytes = Encoding.UTF8.GetBytes(contents);
                     outStream.Write(bytes, 0, bytes.Length);
+                    outStream.Flush();
+                    outStream.Close();
                 }
             }
             catch (Exception exception)
