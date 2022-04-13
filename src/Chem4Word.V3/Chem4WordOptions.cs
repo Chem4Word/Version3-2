@@ -89,6 +89,10 @@ namespace Chem4Word
         /// </summary>
         public Chem4WordOptions()
         {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            // ToDo: Take this out after beta is completed
+            RegistryHelper.StoreMessage(module, "Chem4WordOptions()");
+
             Errors = new List<string>();
             RestoreDefaults();
         }
@@ -99,6 +103,11 @@ namespace Chem4Word
         /// <param name="path">Folder where the Chem4Word options are to reside - pass null to load from default path</param>
         public Chem4WordOptions(string path)
         {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            // ToDo: Take this out after beta is completed
+            RegistryHelper.StoreMessage(module, "Chem4WordOptions(string path)");
+            RegistryHelper.StoreMessage(module, $"path = {path}");
+
             SettingsPath = path;
             Errors = new List<string>();
             Load();
@@ -164,17 +173,26 @@ namespace Chem4Word
                         {
                             Debug.WriteLine($"Reading Chem4Word Options from {optionsFile}");
                             var contents = ReadOptionsFile(optionsFile);
-
-                            var options = JsonConvert.DeserializeObject<Chem4WordOptions>(contents);
-                            SetValuesFromCopy(options);
-
-                            var temp = JsonConvert.SerializeObject(options, Formatting.Indented);
-                            if (!contents.Equals(temp))
+                            if (string.IsNullOrEmpty(contents))
                             {
-                                // Auto fix the file if required
-                                RegistryHelper.StoreMessage(module, $"Auto fixing {optionsFile}");
+                                RegistryHelper.StoreMessage(module, $"Setting {optionsFile} to defaults because it's empty");
 
+                                RestoreDefaults();
                                 PersistOptions(optionsFile);
+                            }
+                            else
+                            {
+                                var options = JsonConvert.DeserializeObject<Chem4WordOptions>(contents);
+                                SetValuesFromCopy(options);
+
+                                var temp = JsonConvert.SerializeObject(options, Formatting.Indented);
+                                if (!contents.Equals(temp))
+                                {
+                                    // Auto fix the file if required
+                                    RegistryHelper.StoreMessage(module, $"Auto fixing {optionsFile}");
+
+                                    PersistOptions(optionsFile);
+                                }
                             }
                         }
                         catch (Exception exception)
@@ -245,7 +263,7 @@ namespace Chem4Word
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            var lines = new List<string>();
+            var result = string.Empty;
 
             try
             {
@@ -254,21 +272,10 @@ namespace Chem4Word
                                                    FileAccess.Read,
                                                    FileShare.Read))
                 {
-                    using (var bufferedStream = new BufferedStream(stream))
+                    using (var sr = new StreamReader(stream, Encoding.UTF8))
                     {
-                        using (var streamReader = new StreamReader(bufferedStream))
-                        {
-                            string line;
-                            while ((line = streamReader.ReadLine()) != null)
-                            {
-                                lines.Add(line);
-                            }
-                        }
-                        bufferedStream.Flush();
-                        bufferedStream.Close();
+                        result = sr.ReadToEnd();
                     }
-                    stream.Flush();
-                    stream.Close();
                 }
             }
             catch (Exception exception)
@@ -277,7 +284,7 @@ namespace Chem4Word
                 Errors.Add(exception.StackTrace);
             }
 
-            return string.Join(Environment.NewLine, lines);
+            return result;
         }
 
         private void PersistOptions(string filename)
