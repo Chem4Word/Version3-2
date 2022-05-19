@@ -14,6 +14,7 @@ namespace Chem4Word.Model2
         ReversibleBiasedForward,
         ReversibleBiasedReverse,
         Blocked,
-        Resonance
+        Resonance,
+        Retrosynthetic
     }
 }

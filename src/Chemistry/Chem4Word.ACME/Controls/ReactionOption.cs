@@ -71,13 +71,20 @@ namespace Chem4Word.ACME
                         {
                             return "Forward-biased equilibrium";
                         }
+
                     case ReactionType.ReversibleBiasedReverse:
                         {
-                            return "Reverse-biasedequilibrium";
+                            return "Reverse-biased equilibrium";
                         }
+
                     case ReactionType.Blocked:
                         {
                             return "Blocked reaction";
+                        }
+
+                    case ReactionType.Retrosynthetic:
+                        {
+                            return "Retrosynthesis step";
                         }
 
                     default:

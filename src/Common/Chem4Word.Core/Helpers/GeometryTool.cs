@@ -594,14 +594,14 @@ namespace Chem4Word.Core.Helpers
         }
 
         /// <summary>
-        /// Determines whether two line segments intersect.
+        /// If two finite line segments intersect, returns a point at which they cross. Null otherwise.
         /// </summary>
         /// <param name="segment1Start">Point at which first segment starts</param>
         /// <param name="segment1End">Point at which first segment ends</param>
         /// <param name="segment2Start">Point at which second segment starts</param>
         /// <param name="segment2End">Point at which second segment ends</param>
         /// <returns>Point at which both lines intersect, null if otherwise</returns>
-        public static Point? LineSegmentsIntersect(Point segment1Start, Point segment1End, Point segment2Start, Point segment2End)
+        public static Point? GetIntersection(Point segment1Start, Point segment1End, Point segment2Start, Point segment2End)
         {
             IntersectLines(segment1Start, segment1End, segment2Start, segment2End, out var t, out var u);
             if (t >= 0 && u >= 0 && t <= 1 && u <= 1) //voila, we have an intersection
@@ -711,24 +711,24 @@ namespace Chem4Word.Core.Helpers
         public static bool RectClips(Rect rect, Point startPoint, Point endPoint)
         {
             Point? intersection;
-            intersection = LineSegmentsIntersect(rect.TopLeft, rect.TopRight, startPoint, endPoint);
+            intersection = GetIntersection(rect.TopLeft, rect.TopRight, startPoint, endPoint);
             if (intersection != null)
             {
                 return true;
             }
-            intersection = LineSegmentsIntersect(rect.TopRight, rect.BottomRight, startPoint, endPoint);
-            if (intersection != null)
-            {
-                return true;
-            }
-
-            intersection = LineSegmentsIntersect(rect.BottomRight, rect.BottomLeft, startPoint, endPoint);
+            intersection = GetIntersection(rect.TopRight, rect.BottomRight, startPoint, endPoint);
             if (intersection != null)
             {
                 return true;
             }
 
-            intersection = LineSegmentsIntersect(rect.BottomLeft, rect.TopLeft, startPoint, endPoint);
+            intersection = GetIntersection(rect.BottomRight, rect.BottomLeft, startPoint, endPoint);
+            if (intersection != null)
+            {
+                return true;
+            }
+
+            intersection = GetIntersection(rect.BottomLeft, rect.TopLeft, startPoint, endPoint);
             if (intersection != null)
             {
                 return true;
@@ -742,21 +742,21 @@ namespace Chem4Word.Core.Helpers
         public static Point? GetClippingPoint(Rect blockBounds, Point blockCentre, Point rectMidPoint)
         {
             Point? intersection;
-            intersection = LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.TopLeft, blockBounds.TopRight);
+            intersection = GetIntersection(rectMidPoint, blockCentre, blockBounds.TopLeft, blockBounds.TopRight);
             if (intersection is null)
             {
-                intersection = LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.TopRight, blockBounds.BottomRight);
+                intersection = GetIntersection(rectMidPoint, blockCentre, blockBounds.TopRight, blockBounds.BottomRight);
             }
 
             if (intersection is null)
             {
                 intersection =
-                    LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.BottomRight, blockBounds.BottomLeft);
+                    GetIntersection(rectMidPoint, blockCentre, blockBounds.BottomRight, blockBounds.BottomLeft);
             }
 
             if (intersection is null)
             {
-                intersection = LineSegmentsIntersect(rectMidPoint, blockCentre, blockBounds.BottomLeft, blockBounds.TopLeft);
+                intersection = GetIntersection(rectMidPoint, blockCentre, blockBounds.BottomLeft, blockBounds.TopLeft);
             }
 
             return intersection;

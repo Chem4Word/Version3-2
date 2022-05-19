@@ -137,6 +137,7 @@
     <Compile Include="Graphics\BlockedArrow.cs" />
     <Compile Include="Graphics\EquilibriumArrow.cs" />
     <Compile Include="Graphics\Harpoon.cs" />
+    <Compile Include="Graphics\RetrosyntheticArrow.cs" />
     <Compile Include="Models\CloudSpace.cs" />
     <Compile Include="Models\CryptoRandomizer.cs" />
     <Compile Include="Controls\FormulaBlock.cs" />

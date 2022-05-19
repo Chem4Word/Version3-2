@@ -555,6 +555,10 @@ namespace Chem4Word.Model2.Converters.CML
                 case ReactionType.Resonance:
                     reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueResonance));
                     break;
+
+                case ReactionType.Retrosynthetic:
+                    reactionElement.Add(new XAttribute(CMLNamespaces.cml + CMLConstants.AttributeReactionType, CMLConstants.AttrValueRetrosynthetic));
+                    break;
             }
 
             //do the reagents and conditions
@@ -1038,6 +1042,10 @@ namespace Chem4Word.Model2.Converters.CML
 
                     case CMLConstants.AttrValueResonance:
                         reaction.ReactionType = ReactionType.Resonance;
+                        break;
+
+                    case CMLConstants.AttrValueRetrosynthetic:
+                        reaction.ReactionType = ReactionType.Retrosynthetic;
                         break;
                 }
             }

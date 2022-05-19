@@ -2847,9 +2847,24 @@ namespace Chem4Word.ACME
                 List<Molecule> reactants = new List<Molecule>();
                 var molsSelected = SelectedItems.OfType<Molecule>().ToList();
                 var reactionSelected = SelectedItems.OfType<Reaction>().ToList()[0];
+
+                Point start;
+                Point end;
+
+                if (reactionSelected.ReactionType != ReactionType.Retrosynthetic)
+                {
+                    start = reactionSelected.TailPoint;
+                    end = reactionSelected.HeadPoint;
+                }
+                else
+                {
+                    end = reactionSelected.TailPoint;
+                    start = reactionSelected.HeadPoint;
+                }
+
                 foreach (var mol in molsSelected)
                 {
-                    if ((mol.Centroid - reactionSelected.TailPoint).Length < (mol.Centroid - reactionSelected.HeadPoint).Length)
+                    if ((mol.Centroid - start).Length < (mol.Centroid - end).Length)
                     {
                         reactants.Add(mol);
                     }
@@ -2865,9 +2880,24 @@ namespace Chem4Word.ACME
                 List<Molecule> products = new List<Molecule>();
                 var molsSelected = SelectedItems.OfType<Molecule>().ToList();
                 var reactionSelected = SelectedItems.OfType<Reaction>().ToList()[0];
+
+                Point start;
+                Point end;
+
+                if (reactionSelected.ReactionType != ReactionType.Retrosynthetic)
+                {
+                    start = reactionSelected.TailPoint;
+                    end = reactionSelected.HeadPoint;
+                }
+                else
+                {
+                    end = reactionSelected.TailPoint;
+                    start = reactionSelected.HeadPoint;
+                }
+
                 foreach (var mol in molsSelected)
                 {
-                    if ((mol.Centroid - reactionSelected.HeadPoint).Length < (mol.Centroid - reactionSelected.TailPoint).Length)
+                    if ((mol.Centroid - end).Length < (mol.Centroid - start).Length)
                     {
                         products.Add(mol);
                     }

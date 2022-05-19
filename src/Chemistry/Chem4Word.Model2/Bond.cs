@@ -619,12 +619,12 @@ namespace Chem4Word.Model2
         {
             //assume there are two endLigands
 
-            if (GeometryTool.LineSegmentsIntersect(startLigand.Position, endAtom.Position, endLigands[0].Position,
+            if (GeometryTool.GetIntersection(startLigand.Position, endAtom.Position, endLigands[0].Position,
                                                     startAtom.Position) != null)
             {
                 return endLigands[0];
             }
-            else if (GeometryTool.LineSegmentsIntersect(startLigand.Position, endAtom.Position, endLigands[1].Position, startAtom.Position) != null)
+            else if (GeometryTool.GetIntersection(startLigand.Position, endAtom.Position, endLigands[1].Position, startAtom.Position) != null)
 
             {
                 return endLigands[1];
@@ -741,12 +741,12 @@ namespace Chem4Word.Model2
                 if (StartAtom.Neighbours.Contains(atomA))
                 {
                     //draw two lines from the end atom to atom a and start atom to atom b and see if they intersect
-                    return GeometryTool.LineSegmentsIntersect(EndAtom.Position, atomA.Position,
+                    return GeometryTool.GetIntersection(EndAtom.Position, atomA.Position,
                                                               StartAtom.Position, atomB.Position) != null;
                 }
 
                 //draw the lines the other way around
-                return GeometryTool.LineSegmentsIntersect(EndAtom.Position, atomB.Position,
+                return GeometryTool.GetIntersection(EndAtom.Position, atomB.Position,
                                                           StartAtom.Position, atomA.Position) != null;
             }
 

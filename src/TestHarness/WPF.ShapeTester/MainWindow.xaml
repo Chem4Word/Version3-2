@@ -196,5 +196,13 @@
             StartAngle="0"
             Stroke="#7FCA34"
             StrokeThickness="3" />
+        <shapes:RetrosyntheticArrow
+            Bias="Forward"
+            HeadLength="25"
+            Separation="5"
+            Stroke="DarkRed"
+            StrokeThickness="3"
+            StartPoint="450,450"
+            EndPoint="550, 450" />
     </Canvas>
 </Window>

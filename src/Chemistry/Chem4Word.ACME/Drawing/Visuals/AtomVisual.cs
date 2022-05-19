@@ -428,7 +428,7 @@ namespace Chem4Word.ACME.Drawing.Visuals
             for (int i = 0; i < Hull.Count; i++)
             {
                 Point? p;
-                if ((p = GeometryTool.LineSegmentsIntersect(start, end, Hull[i], Hull[(i + 1) % Hull.Count])) != null)
+                if ((p = GeometryTool.GetIntersection(start, end, Hull[i], Hull[(i + 1) % Hull.Count])) != null)
                 {
                     return p;
                 }
