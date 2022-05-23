@@ -339,8 +339,9 @@ namespace Chem4Word.ACME
 
         private void SettingsButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Point dialogueTopLeft = new Point(TopLeft.X + Core.Helpers.Constants.TopLeftOffset,
-                                              TopLeft.Y + Core.Helpers.Constants.TopLeftOffset);
+            Point locationFromScreen = AcmeControl.PointToScreen(new Point(0, 0));
+            Point dialogueTopLeft = new Point(locationFromScreen.X + Core.Helpers.Constants.TopLeftOffset,
+                                              locationFromScreen.Y + Core.Helpers.Constants.TopLeftOffset);
 
             UIUtils.ShowAcmeSettings(ChemCanvas, EditorOptions, Telemetry, dialogueTopLeft);
 

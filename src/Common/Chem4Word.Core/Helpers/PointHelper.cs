@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using System;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -25,31 +26,62 @@ namespace Chem4Word.Core.Helpers
         /// <returns></returns>
         public static Point SensibleTopLeft(Point point, Screen screen, int width, int height)
         {
-            var left = point.X;
-            var top = point.Y;
+            var left = Clamp((int)point.X, width, screen.WorkingArea.Left, screen.WorkingArea.Left + screen.WorkingArea.Width);
+            var top = Clamp((int)point.Y, height, screen.WorkingArea.Top, screen.WorkingArea.Top + screen.WorkingArea.Height);
 
-            var screenWidth = screen.WorkingArea.Width;
-            var screenHeight = screen.WorkingArea.Height;
+            //var maximumRight = screen.WorkingArea.Left +  screen.WorkingArea.Width;
+            //var maximumBottom = screen.WorkingArea.Top + screen.WorkingArea.Height;
 
-            while (left + width > screenWidth)
-            {
-                left -= 24;
-                if (left < 0)
-                {
-                    left = 0;
-                }
-            }
+            //while (left + width > maximumRight)
+            //{
+            //    left -= 24;
+            //    if (left < screen.WorkingArea.Left)
+            //    {
+            //        left = screen.WorkingArea.Left;
+            //    }
+            //}
 
-            while (top + height > screenHeight)
-            {
-                top -= 24;
-                if (top < 0)
-                {
-                    top = 0;
-                }
-            }
+            //while (left < screen.WorkingArea.Left)
+            //{
+            //    left += 24;
+            //}
+
+            //while (top + height > maximumBottom)
+            //{
+            //    top -= 24;
+            //    if (top < screen.WorkingArea.Top)
+            //    {
+            //        top = screen.WorkingArea.Top;
+            //    }
+            //}
+
+            //while (top < screen.WorkingArea.Top)
+            //{
+            //    top += 24;
+            //}
 
             return new Point(left, top);
+        }
+
+        private static int Clamp(int leftOrTop, int widthOrHeight, int workingAreaLeftOrTop, int workingAreaWidthOrHeight)
+        {
+            var result = leftOrTop;
+
+            while (result + widthOrHeight > workingAreaWidthOrHeight)
+            {
+                result -= 24;
+                if (result < workingAreaLeftOrTop)
+                {
+                    result = workingAreaLeftOrTop;
+                }
+            }
+
+            while (result < workingAreaLeftOrTop)
+            {
+                result += 24;
+            }
+
+            return result;
         }
 
         public static string AsString(Point p)

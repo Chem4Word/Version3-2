@@ -7,9 +7,11 @@
         <IsBeta>true</IsBeta>
         <Released>01-Apr-2022</Released>
         <Changes>
-            <Change>Task 972</Change>
-            <Change>Task 973</Change>
-            <Change>Task 974</Change>
+            <Change>System Info is not correct for Windows 11</Change>
+            <Change>Additional text encountered after finished reading JSON</Change>
+            <Change>Null Pointer Exception in LoadNamesFromLibrary()</Change>
+            <Change>Add Retrosynthetic arrow https://github.com/Chem4Word/Version3-2/issues/26</Change>
+            <Change>Fix Null Poitner Exception in Formula helper</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
             <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
         </Changes>

@@ -64,7 +64,7 @@ namespace Chem4Word.ACME
         private void PTPopup_OnContentRendered(object sender, EventArgs e)
         {
             // This moves the window to the correct position
-            var point = UIUtils.GetOnScreenPoint(CentrePoint, ActualWidth, ActualHeight);
+            var point = UIUtils.GetOnScreenCentrePoint(CentrePoint, ActualWidth, ActualHeight);
             Left = point.X;
             Top = point.Y;
 

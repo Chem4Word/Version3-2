@@ -45,6 +45,8 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
                 if (!PointHelper.PointIsEmpty(TopLeft))
                 {
+                    Left = (int)TopLeft.X;
+                    Top = (int)TopLeft.Y;
                     var screen = Screen.FromControl(this);
                     var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
                     Left = (int)sensible.X;

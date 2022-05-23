@@ -146,56 +146,21 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                         case ReactionType.Normal:
                         case ReactionType.Blocked:
                         case ReactionType.Resonance:
-                            DrawReactionArrow(reaction.TailPoint, reaction.HeadPoint, reaction.Path, reaction.ReactionType, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
+                            DrawSingleLinedReactionArrow(reaction);
                             break;
 
-                        default:
-                            var simple = new SimpleLine(reaction.TailPoint, reaction.HeadPoint);
-                            var topLine = simple.GetParallel(BondOffset() / 2);
-                            var bottomLine = simple.GetParallel(-BondOffset() / 2);
+                        case ReactionType.Retrosynthetic:
+                            DrawRetrosyntheticArrow(reaction);
+                            break;
 
-                            var p1 = topLine.Start;
-                            var p2 = topLine.End;
-
-                            var p3 = bottomLine.End;
-                            var p4 = bottomLine.Start;
-
-                            switch (reaction.ReactionType)
-                            {
-                                case ReactionType.ReversibleBiasedReverse:
-                                    GeometryTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
-                                    break;
-
-                                case ReactionType.ReversibleBiasedForward:
-                                    GeometryTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
-                                    break;
-
-                                case ReactionType.Reversible:
-                                    break;
-                            }
-
-                            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
-                            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
-
+                        case ReactionType.ReversibleBiasedReverse:
+                        case ReactionType.ReversibleBiasedForward:
+                        case ReactionType.Reversible:
+                            DrawReversibleArrow(reaction);
                             break;
                     }
                 }
 
-                // Local Function
-                Point BarbLocation(Point tailPoint, Point headPoint)
-                {
-                    var barbVector = tailPoint - headPoint;
-                    barbVector.Normalize();
-                    barbVector *= BondOffset();
-
-                    var rotator = new Matrix();
-                    rotator.Rotate(45);
-                    barbVector *= rotator;
-
-                    var result = headPoint + barbVector;
-
-                    return result;
-                }
             }
 
             // Render Diagnostic Markers
@@ -433,6 +398,87 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             ShutDownProgress(progress);
 
             return run;
+        }
+
+        private void DrawReversibleArrow(Reaction reaction)
+        {
+            var simpleLine = new SimpleLine(reaction.TailPoint, reaction.HeadPoint);
+            var reversibleTopLine = simpleLine.GetParallel(BondOffset() / 2);
+            var reversibleBottomLine = simpleLine.GetParallel(-BondOffset() / 2);
+
+            var p1 = reversibleTopLine.Start;
+            var p2 = reversibleTopLine.End;
+
+            var p3 = reversibleBottomLine.End;
+            var p4 = reversibleBottomLine.Start;
+
+            switch (reaction.ReactionType)
+            {
+                case ReactionType.ReversibleBiasedReverse:
+                    GeometryTool.AdjustLineAboutMidpoint(ref p1, ref p2, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
+                    break;
+
+                case ReactionType.ReversibleBiasedForward:
+                    GeometryTool.AdjustLineAboutMidpoint(ref p3, ref p4, -_medianBondLength / OoXmlHelper.LineShrinkPixels);
+                    break;
+            }
+
+            DrawPolygon(new List<Point> { p1, p2, BarbLocation(p1, p2) }, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
+            DrawPolygon(new List<Point> { p3, p4, BarbLocation(p3, p4) }, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
+
+            // Local Function
+            Point BarbLocation(Point tailPoint, Point headPoint)
+            {
+                var barbVector = tailPoint - headPoint;
+                barbVector.Normalize();
+                barbVector *= BondOffset();
+
+                var rotator = new Matrix();
+                rotator.Rotate(45);
+                barbVector *= rotator;
+
+                var result = headPoint + barbVector;
+
+                return result;
+            }
+        }
+
+        private void DrawRetrosyntheticArrow(Reaction reaction)
+        {
+            var vector = reaction.HeadPoint - reaction.TailPoint;
+            var perpendicular = vector.Perpendicular();
+            perpendicular.Normalize();
+            var offset = perpendicular * BondOffset() / 2;
+            var topLeft = reaction.TailPoint - offset;
+            var topRight = reaction.HeadPoint - offset;
+            var bottomLeft = reaction.TailPoint + offset;
+            var bottomRight = reaction.HeadPoint + offset;
+
+            var barb = offset * 4;
+            var rotator = new Matrix();
+            rotator.Rotate(-45);
+            var topHeadEnd = reaction.HeadPoint - barb * rotator;
+            rotator.Rotate(+90);
+            var bottomHeadEnd = reaction.HeadPoint + barb * rotator;
+
+            var topCrossing = GeometryTool.GetIntersection(topLeft, topRight, reaction.HeadPoint, topHeadEnd);
+            var bottomCrossing = GeometryTool.GetIntersection(bottomLeft, bottomRight, reaction.HeadPoint, bottomHeadEnd);
+
+            if (topCrossing != null && bottomCrossing != null)
+            {
+                // Drawing as a polygon to avoid nasty crossing points at topCrossing and bottomCrossing
+                var points = new List<Point>
+                             {
+                                 topLeft,
+                                 topCrossing.Value,
+                                 topHeadEnd,
+                                 reaction.HeadPoint,
+                                 bottomHeadEnd,
+                                 bottomCrossing.Value,
+                                 bottomLeft
+                             };
+                DrawPolygon(points, false, OoXmlHelper.Black, OoXmlHelper.AcsLineWidth);
+            }
         }
 
         public void DrawCharacter(AtomLabelCharacter alc)
@@ -1524,9 +1570,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             _wordprocessingGroup.Append(wordprocessingShape);
         }
 
-        private void DrawReactionArrow(Point lineStart, Point lineEnd, string reactionPath, ReactionType reactionType, string lineColour, double lineWidth)
+        private void DrawSingleLinedReactionArrow(Reaction reaction)
         {
-            var tuple = OffsetPoints(lineStart, lineEnd);
+            Point lineStart = reaction.TailPoint;
+            Point lineEnd = reaction.HeadPoint;
+
+                  var tuple = OffsetPoints(lineStart, lineEnd);
             var cmlStartPoint = tuple.Start;
             var cmlEndPoint = tuple.End;
             var cmlLineExtents = tuple.Extents;
@@ -1537,7 +1586,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             var emuHeight = OoXmlHelper.ScaleCmlToEmu(cmlLineExtents.Height);
 
             var id = _ooxmlId++;
-            var suffix = string.IsNullOrEmpty(reactionPath) ? id.ToString() : reactionPath;
+            var suffix = string.IsNullOrEmpty(reaction.Path) ? id.ToString() : reaction.Path;
             var shapeName = "Reaction Arrow " + suffix;
 
             var wordprocessingShape = CreateShape(id, shapeName);
@@ -1560,11 +1609,11 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
             pathList.Append(path);
 
-            var emuLineWidth = (Int32Value)(lineWidth * OoXmlHelper.EmusPerWordPoint);
+            var emuLineWidth = (Int32Value)(OoXmlHelper.AcsLineWidth * OoXmlHelper.EmusPerWordPoint);
             var outline = new A.Outline { Width = emuLineWidth, CapType = A.LineCapValues.Round };
 
             var solidFill = new A.SolidFill();
-            var rgbColorModelHex = new A.RgbColorModelHex { Val = lineColour };
+            var rgbColorModelHex = new A.RgbColorModelHex { Val = OoXmlHelper.Black };
             solidFill.Append(rgbColorModelHex);
             outline.Append(solidFill);
 
@@ -1577,7 +1626,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             };
             outline.Append(headEnd);
 
-            if (reactionType == ReactionType.Resonance)
+            if (reaction.ReactionType == ReactionType.Resonance)
             {
                 var tailEnd = new A.TailEnd
                 {
@@ -1589,7 +1638,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
 
             // Add the cross if required
-            if (reactionType == ReactionType.Blocked)
+            if (reaction.ReactionType == ReactionType.Blocked)
             {
                 var shaftVector = cmlEndPoint - cmlStartPoint;
                 var midpoint = cmlStartPoint + shaftVector * 0.5;

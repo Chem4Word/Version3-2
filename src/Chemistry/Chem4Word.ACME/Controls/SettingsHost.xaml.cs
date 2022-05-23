@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
+using Chem4Word.ACME.Utils;
 using Chem4Word.Core;
 using Chem4Word.Core.UI.Wpf;
 using IChem4Word.Contracts;
@@ -54,12 +55,13 @@ namespace Chem4Word.ACME.Controls
 
         private void SettingsHost_OnLoaded(object sender, RoutedEventArgs e)
         {
-            Left = _topLeft.X;
-            Top = _topLeft.Y;
-
+            var p1 = new Point(_topLeft.X + Width / 2, _topLeft.Y + Height / 2);
+            var p2 = UIUtils.GetOnScreenCentrePoint(p1, Width, Height);
+            Left = p2.X;
+            Top = p2.Y;
             if (UcSettings != null)
             {
-                UcSettings.TopLeft = new Point(_topLeft.X + Core.Helpers.Constants.TopLeftOffset, _topLeft.Y + Core.Helpers.Constants.TopLeftOffset);
+                UcSettings.TopLeft = new Point(p2.X + Core.Helpers.Constants.TopLeftOffset, p2.Y + Core.Helpers.Constants.TopLeftOffset);
             }
         }
 

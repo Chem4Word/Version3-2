@@ -104,7 +104,7 @@ namespace Chem4Word.ACME.Controls
         private void MoleculePropertyEditor_OnContentRendered(object sender, EventArgs e)
         {
             // This moves the window to the correct position
-            var point = UIUtils.GetOnScreenPoint(_moleculePropertiesModel.Centre, ActualWidth, ActualHeight);
+            var point = UIUtils.GetOnScreenCentrePoint(_moleculePropertiesModel.Centre, ActualWidth, ActualHeight);
             Left = point.X;
             Top = point.Y;
 

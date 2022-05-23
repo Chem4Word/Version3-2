@@ -71,7 +71,7 @@ namespace Chem4Word.ACME.Utils
             return new Point(maxX + 100, maxY + 100);
         }
 
-        public static Point GetOnScreenPoint(Point target, double width, double height)
+        public static Point GetOnScreenCentrePoint(Point target, double width, double height)
         {
             double left = target.X - width / 2;
             double top = target.Y - height / 2;

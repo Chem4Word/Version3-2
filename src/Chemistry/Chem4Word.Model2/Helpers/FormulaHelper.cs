@@ -146,18 +146,25 @@ namespace Chem4Word.Model2.Helpers
 
             if (!string.IsNullOrEmpty(input))
             {
-                var formulae = Splitter(input);
+                var chunks = SplitString(input);
 
-                for (var i = 0; i < formulae.Length; i++)
+                for (var i = 0; i < chunks.Length; i++)
                 {
-                    allParts.AddRange(ParseString(elements, formulae[i]));
+                    var parsed = ParseString(elements, chunks[i]);
+                    allParts.AddRange(parsed);
                 }
             }
 
-            return allParts;
+            // Detect if we found any elements
+            var c1 = allParts.Count(w => w.PartType == FormulaPartType.Element);
+
+            // Return a List if at least one element was found
+            return c1 > 0
+                ? allParts
+                : new List<MoleculeFormulaPart>();
         }
 
-        private static string[] Splitter(string value)
+        private static string[] SplitString(string value)
         {
             var result = new List<string>();
 
@@ -246,7 +253,7 @@ namespace Chem4Word.Model2.Helpers
             var list = parts.Values.ToList();
 
             // Handle Multiplier
-            if (list[0].Index > 0)
+            if (list.Count > 0 && list[0].Index > 0)
             {
                 var multiplier = formula.Substring(0, list[0].Index);
                 parts.Add(0, new MoleculeFormulaPart(FormulaPartType.Multiplier, multiplier, 0));
@@ -277,12 +284,6 @@ namespace Chem4Word.Model2.Helpers
                     // Remove it's symbol from the chunk to leave behind the numeric portion
                     var digits = chunk.Replace(symbol, "");
 
-                    // This got in here because "Not found" was being sent to this function, should no longer be a problem
-                    if (digits.Contains("d"))
-                    {
-                        Debugger.Break();
-                    }
-
                     int number;
                     if (string.IsNullOrEmpty(digits))
                     {
@@ -291,9 +292,15 @@ namespace Chem4Word.Model2.Helpers
                     }
                     else
                     {
-                        int.TryParse(digits, out number);
+                        if (int.TryParse(digits, out number))
+                        {
+                            list[i].Count = number;
+                        }
+                        else
+                        {
+                            list[i].Count = 999999;
+                        }
                     }
-                    list[i].Count = number;
 
                     // If this is a negative charge invert the value
                     if (list[i].PartType == FormulaPartType.Charge
@@ -306,7 +313,14 @@ namespace Chem4Word.Model2.Helpers
 
             #endregion Detect counts
 
-            return parts.Values.ToList();
+            // Detect counts which mark invalid parsing
+            var c1 = parts.Values.Count(c => c.Count == 999999);
+            var c2 = parts.Values.Count(c => c.Count == -999999);
+
+            // Return a List if everything is valid
+            return c1 + c2 == 0
+                ? parts.Values.ToList()
+                : new List<MoleculeFormulaPart>();
         }
     }
 }

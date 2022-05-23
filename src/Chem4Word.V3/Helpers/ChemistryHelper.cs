@@ -377,7 +377,8 @@ namespace Chem4Word.Helpers
                 else
                 {
                     source = tp.FullType;
-                    isFormula = tp.FullType.ToLower().Contains("formula");
+                    var parts = FormulaHelper.ParseFormulaIntoParts(tp.Value);
+                    isFormula = parts.Count > 0;
                 }
             }
             else

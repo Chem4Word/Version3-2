@@ -167,13 +167,15 @@ namespace Chem4Word
                 {
                     var optionsFile = GetFileName(path);
 
+                    var fileContents = string.Empty;
+
                     if (File.Exists(optionsFile))
                     {
                         try
                         {
                             Debug.WriteLine($"Reading Chem4Word Options from {optionsFile}");
-                            var contents = ReadOptionsFile(optionsFile);
-                            if (string.IsNullOrEmpty(contents))
+                            fileContents = ReadOptionsFile(optionsFile);
+                            if (string.IsNullOrEmpty(fileContents))
                             {
                                 RegistryHelper.StoreMessage(module, $"Setting {optionsFile} to defaults because it's empty");
 
@@ -182,11 +184,11 @@ namespace Chem4Word
                             }
                             else
                             {
-                                var options = JsonConvert.DeserializeObject<Chem4WordOptions>(contents);
+                                var options = JsonConvert.DeserializeObject<Chem4WordOptions>(fileContents);
                                 SetValuesFromCopy(options);
 
                                 var temp = JsonConvert.SerializeObject(options, Formatting.Indented);
-                                if (!contents.Equals(temp))
+                                if (!fileContents.Equals(temp))
                                 {
                                     // Auto fix the file if required
                                     RegistryHelper.StoreMessage(module, $"Auto fixing {optionsFile}");
@@ -200,6 +202,12 @@ namespace Chem4Word
                             Debug.WriteLine(exception.Message);
                             Errors.Add(exception.Message);
                             Errors.Add(exception.StackTrace);
+
+                            if (fileContents != null)
+                            {
+                                RegistryHelper.StoreMessage(module, fileContents);
+                                RegistryHelper.StoreMessage(module, $"Length of file is {fileContents.Length}");
+                            }
                             RegistryHelper.StoreException(module, exception);
                             RegistryHelper.StoreMessage(module, $"Setting {optionsFile} to defaults");
 
@@ -272,7 +280,7 @@ namespace Chem4Word
                                                    FileAccess.Read,
                                                    FileShare.Read))
                 {
-                    using (var sr = new StreamReader(stream, Encoding.UTF8))
+                    using (var sr = new StreamReader(stream, Encoding.ASCII))
                     {
                         result = sr.ReadToEnd();
                     }
@@ -303,7 +311,7 @@ namespace Chem4Word
                                                       FileAccess.Write,
                                                       FileShare.Write))
                 {
-                    var bytes = Encoding.UTF8.GetBytes(contents);
+                    var bytes = Encoding.ASCII.GetBytes(contents);
                     outStream.Write(bytes, 0, bytes.Length);
                     outStream.Flush();
                     outStream.Close();

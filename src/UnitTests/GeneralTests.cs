@@ -234,7 +234,16 @@ namespace Chem4WordTests
         }
 
         [Theory]
-        [InlineData("C 6 H 6", 2)]
+        // Invalid strings
+        [InlineData("2", 0)]
+        [InlineData("Q", 0)]
+        [InlineData("Not found", 0)]
+        [InlineData("Any Old Rubbish.", 0)]
+        [InlineData("[ . ]", 0)]
+        [InlineData("Any - Old + Rubbish!", 0)]
+        [InlineData("55Any+ 999Old- -Rubbish", 0)]
+        // Valid strings
+        [InlineData("C  6  H  6", 2)]
         [InlineData("C7H6N", 3)]
         [InlineData("C7 H7 F1", 3)]
         [InlineData("C 5 H 5 Y 1 + 2", 4)]
@@ -252,15 +261,15 @@ namespace Chem4WordTests
         [InlineData("C 5 H 5 P 1 - · C 5 H 5 N 1 - 2 · C 5 H 5 O 1 + · C 5 H 5 Y 1 + 2", 19)]
         public void ParseFormula(string formula, int count)
         {
-            //Debug.WriteLine(formula);
             var listOfParts = FormulaHelper.ParseFormulaIntoParts(formula);
+
             //var i = 1;
+            //Debug.WriteLine(formula);
             //foreach (var part in listOfParts)
             //{
             //    Debug.WriteLine($"    #{i++} {part.PartType} {part.Text} {part.Count}");
             //}
 
-            // ToDo: Increase complexity of this test
             Assert.Equal(count, listOfParts.Count);
         }
 
@@ -310,8 +319,6 @@ namespace Chem4WordTests
             Assert.Equal(bondOrders, bonds);
             Assert.Equal(expectedImplicitHCount, implicitHydrogen);
             Assert.Equal(expectedOverbonding, over);
-
-            Debug.Write(".");
         }
 
         #region Support functions
