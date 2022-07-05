@@ -96,11 +96,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnRenderAsButtonClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_RenderAs(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled)
             {
@@ -285,7 +292,7 @@ namespace Chem4Word
                                         ribbonButton.Image = Properties.Resources.SmallTick;
                                     }
                                     ribbonButton.Label = item.Value;
-                                    ribbonButton.Click += OnRenderAsButtonClick;
+                                    ribbonButton.Click += OnClick_RenderAs;
 
                                     switch (item.TypeCode)
                                     {
@@ -337,11 +344,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnDrawOrEditClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_DrawOrEdit(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -355,11 +369,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnOptionsClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_Options(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             using (var cursor = new WaitCursor())
             {
@@ -381,6 +402,7 @@ namespace Chem4Word
                         if (dr == DialogResult.OK)
                         {
                             Globals.Chem4WordV3.SystemOptions = f.SystemOptions.Clone();
+                            // Re create telemetry object as it may now be disabled
                             Globals.Chem4WordV3.Telemetry = new TelemetryWriter(Globals.Chem4WordV3.SystemOptions.TelemetryEnabled, Globals.Chem4WordV3.Helper);
                             if (f.SystemOptions.Errors.Any())
                             {
@@ -970,11 +992,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnViewCmlClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_ViewCml(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -1021,11 +1050,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnImportClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_Import(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -1039,11 +1075,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnExportClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_Export(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -1123,11 +1166,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnEditLabelsClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_EditLabels(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             using (var cursor = new WaitCursor())
             {
@@ -1237,11 +1287,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnViewAsItemsLoading(object sender, RibbonControlEventArgs e)
+        private void OnLoading_ViewAsItems(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             try
             {
@@ -1259,11 +1316,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnSearchItemsLoading(object sender, RibbonControlEventArgs e)
+        private void OnLoading_SearchItems(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             try
             {
@@ -1281,7 +1345,7 @@ namespace Chem4Word
                             ribbonButton.Tag = searcher.Name;
                             ribbonButton.SuperTip = searcher.Description;
                             ribbonButton.Image = searcher.Image;
-                            ribbonButton.Click += OnSearcherClick;
+                            ribbonButton.Click += OnClick_Searcher;
 
                             WebSearchMenu.Items.Add(ribbonButton);
                         }
@@ -1297,11 +1361,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnSearcherClick(object sender, RibbonControlEventArgs ribbonControlEventArgs)
+        private void OnClick_Searcher(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -1365,11 +1436,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnSaveToLibraryClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_SaveToLibrary(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -1447,11 +1525,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnNavigatorClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_Navigator(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             try
             {
@@ -1483,7 +1568,7 @@ namespace Chem4Word
                                         Constants.NavigatorTaskPaneTitle, application.ActiveWindow);
 
                                 custTaskPane.Width = Globals.Chem4WordV3.WordWidth / 4;
-                                custTaskPane.VisibleChanged += OnNavigatorPaneVisibleChanged;
+                                custTaskPane.VisibleChanged += OnVisibleChanged_NavigatorPane;
                             }
                             custTaskPane.Visible = true;
                             Globals.Chem4WordV3.EvaluateChemistryAllowed();
@@ -1515,14 +1600,13 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnNavigatorPaneVisibleChanged(object sender, EventArgs eventArgs)
+        private void OnVisibleChanged_NavigatorPane(object sender, EventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             try
             {
                 var taskPane = sender as CustomTaskPane;
-                var app = Globals.Chem4WordV3.Application;
 
                 if (Globals.Chem4WordV3.EventsEnabled && taskPane != null)
                 {
@@ -1547,11 +1631,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnShowLibraryClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_ShowLibrary(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.LibraryNames == null)
             {
@@ -1591,7 +1682,7 @@ namespace Chem4Word
                                     custTaskPane.DockPosition = MsoCTPDockPosition.msoCTPDockPositionLeft;
 
                                     custTaskPane.Width = Globals.Chem4WordV3.WordWidth / 4;
-                                    custTaskPane.VisibleChanged += OnLibraryPaneVisibleChanged;
+                                    custTaskPane.VisibleChanged += OnVisibleChanged_LibraryPane;
                                     (custTaskPane.Control as LibraryHost)?.Refresh();
                                 }
                                 custTaskPane.Visible = true;
@@ -1623,7 +1714,7 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        public void OnLibraryPaneVisibleChanged(object sender, EventArgs eventArgs)
+        public void OnVisibleChanged_LibraryPane(object sender, EventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -1663,11 +1754,18 @@ namespace Chem4Word
             }
         }
 
-        private void OnSeparateClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_Separate(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
@@ -1797,11 +1895,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnUpdateClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_Update(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled)
             {
@@ -1832,11 +1937,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnShowAboutClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_ShowAbout(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             using (var cursor = new WaitCursor())
             {
@@ -1886,11 +1998,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnShowHomeClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_ShowHome(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled)
             {
@@ -1914,11 +2033,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnCheckForUpdatesClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_CheckForUpdates(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled)
             {
@@ -1950,11 +2076,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnReadManualClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_ReadManual(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled)
             {
@@ -1994,11 +2127,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnYouTubeClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_YouTube(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             if (Globals.Chem4WordV3.EventsEnabled)
             {
@@ -2022,11 +2162,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void OnButtonsDisabledClick(object sender, RibbonControlEventArgs e)
+        private void OnClick_ButtonsDisabled(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             try
             {
@@ -2044,11 +2191,18 @@ namespace Chem4Word
             AfterButtonChecks(sender as RibbonButton);
         }
 
-        private void ShowSystemInfo_Click(object sender, RibbonControlEventArgs e)
+        private void OnClick_ShowSystemInfo(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             BeforeButtonChecks();
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            if (Globals.Chem4WordV3.Telemetry != null)
+            {
+                Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            }
+            else
+            {
+                RegistryHelper.StoreMessage(module, "Triggered");
+            }
 
             try
             {

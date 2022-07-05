@@ -86,6 +86,7 @@ namespace Chem4Word.Telemetry
                 WritePrivate(operation, level, message);
 
                 if (!_systemInfoSent
+                    && _helper != null
                     && _helper?.IpAddress != null
                     && !_helper.IpAddress.Contains("0.0.0.0"))
                 {
@@ -316,7 +317,14 @@ namespace Chem4Word.Telemetry
         private void WritePrivate(string operation, string level, string message)
         {
             Debug.WriteLine($"{operation} - {level} - {message}");
-            ServiceBusMessage sbm = new ServiceBusMessage(_helper.UtcOffset, _helper.ProcessId);
+            long utcOffset = 0;
+            var processId = 0;
+            if (_helper != null)
+            {
+                utcOffset = _helper.UtcOffset;
+                processId = _helper.ProcessId;
+            }
+            var sbm = new ServiceBusMessage(utcOffset, processId);
             sbm.MachineId = _helper.MachineId;
             sbm.Operation = operation;
             sbm.Level = level;

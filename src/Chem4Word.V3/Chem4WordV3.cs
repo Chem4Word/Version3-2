@@ -1874,7 +1874,7 @@ namespace Chem4Word
                             // Opposite side to Navigator's default placement
                             custTaskPane.DockPosition = MsoCTPDockPosition.msoCTPDockPositionLeft;
                             custTaskPane.Width = WordWidth / 4;
-                            custTaskPane.VisibleChanged += Ribbon.OnLibraryPaneVisibleChanged;
+                            custTaskPane.VisibleChanged += Ribbon.OnVisibleChanged_LibraryPane;
                             custTaskPane.Visible = true;
                             (custTaskPane.Control as LibraryHost)?.Refresh();
                         }

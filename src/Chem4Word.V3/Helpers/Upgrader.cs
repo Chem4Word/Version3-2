@@ -53,7 +53,14 @@ namespace Chem4Word.Helpers
                 sb.AppendLine("");
                 sb.AppendLine("This operation can't be undone.");
                 result = UserInteractions.AskUserYesNo(sb.ToString());
-                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Detected {count} legacy chemistry ContentControl(s)");
+                if (Globals.Chem4WordV3.Telemetry != null)
+                {
+                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Detected {count} legacy chemistry ContentControl(s)");
+                }
+                else
+                {
+                    RegistryHelper.StoreMessage(module, $"Detected {count} legacy chemistry ContentControl(s)");
+                }
             }
 
             return result;
@@ -257,7 +264,14 @@ namespace Chem4Word.Helpers
             doc.Application.Selection.SetRange(sel, sel);
             if (upgradedCCs + upgradedXml > 0)
             {
-                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Upgraded {upgradedCCs} Chemistry Objects for {upgradedXml} Structures");
+                if (Globals.Chem4WordV3.Telemetry != null)
+                {
+                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Upgraded {upgradedCCs} Chemistry Objects for {upgradedXml} Structures");
+                }
+                else
+                {
+                    RegistryHelper.StoreMessage(module, $"Upgraded {upgradedCCs} Chemistry Objects for {upgradedXml} Structures");
+                }
                 UserInteractions.AlertUser($"Upgrade Completed{Environment.NewLine}{Environment.NewLine}Upgraded {upgradedCCs} Chemistry Objects for {upgradedXml} Structures");
             }
         }

@@ -95,7 +95,7 @@ namespace Chem4Word
             this.ImportFromFile.Name = "ImportFromFile";
             this.ImportFromFile.ScreenTip = "Import a structure from a chemistry file";
             this.ImportFromFile.ShowImage = true;
-            this.ImportFromFile.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnImportClick);
+            this.ImportFromFile.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_Import);
             // 
             // WebSearchMenu
             // 
@@ -107,7 +107,7 @@ namespace Chem4Word
             this.WebSearchMenu.Name = "WebSearchMenu";
             this.WebSearchMenu.ScreenTip = "Search public repositories for chemical structures";
             this.WebSearchMenu.ShowImage = true;
-            this.WebSearchMenu.ItemsLoading += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnSearchItemsLoading);
+            this.WebSearchMenu.ItemsLoading += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnLoading_SearchItems);
             // 
             // ExportToFile
             // 
@@ -118,7 +118,7 @@ namespace Chem4Word
             this.ExportToFile.Name = "ExportToFile";
             this.ExportToFile.ScreenTip = "Export the selected structure to a chemistry file";
             this.ExportToFile.ShowImage = true;
-            this.ExportToFile.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnExportClick);
+            this.ExportToFile.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_Export);
             // 
             // GroupLibrary
             // 
@@ -136,7 +136,7 @@ namespace Chem4Word
             this.ShowLibrary.Name = "ShowLibrary";
             this.ShowLibrary.ScreenTip = "Import a structure from the Library";
             this.ShowLibrary.ShowImage = true;
-            this.ShowLibrary.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnShowLibraryClick);
+            this.ShowLibrary.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ShowLibrary);
             // 
             // SaveToLibrary
             // 
@@ -147,7 +147,7 @@ namespace Chem4Word
             this.SaveToLibrary.Name = "SaveToLibrary";
             this.SaveToLibrary.ScreenTip = "Add the selected structure to the Library";
             this.SaveToLibrary.ShowImage = true;
-            this.SaveToLibrary.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnSaveToLibraryClick);
+            this.SaveToLibrary.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_SaveToLibrary);
             // 
             // GroupStructure
             // 
@@ -170,7 +170,7 @@ namespace Chem4Word
             this.EditStructure.Name = "EditStructure";
             this.EditStructure.ScreenTip = "Edit the selected structure or Draw a new structure";
             this.EditStructure.ShowImage = true;
-            this.EditStructure.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnDrawOrEditClick);
+            this.EditStructure.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_DrawOrEdit);
             // 
             // ArrangeMolecules
             // 
@@ -181,7 +181,7 @@ namespace Chem4Word
             this.ArrangeMolecules.Name = "ArrangeMolecules";
             this.ArrangeMolecules.ScreenTip = "Arrange the structure so that the molecules do not overlap";
             this.ArrangeMolecules.ShowImage = true;
-            this.ArrangeMolecules.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnSeparateClick);
+            this.ArrangeMolecules.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_Separate);
             // 
             // ShowAsMenu
             // 
@@ -193,7 +193,7 @@ namespace Chem4Word
             this.ShowAsMenu.Name = "ShowAsMenu";
             this.ShowAsMenu.ScreenTip = "Show the selected structure as Text (1D) or Drawing (2D)";
             this.ShowAsMenu.ShowImage = true;
-            this.ShowAsMenu.ItemsLoading += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnViewAsItemsLoading);
+            this.ShowAsMenu.ItemsLoading += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnLoading_ViewAsItems);
             // 
             // EditLabels
             // 
@@ -204,7 +204,7 @@ namespace Chem4Word
             this.EditLabels.Name = "EditLabels";
             this.EditLabels.ScreenTip = "View or Edit the selected structure\'s Text (1D) labels";
             this.EditLabels.ShowImage = true;
-            this.EditLabels.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnEditLabelsClick);
+            this.EditLabels.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_EditLabels);
             // 
             // ViewCml
             // 
@@ -215,7 +215,7 @@ namespace Chem4Word
             this.ViewCml.Name = "ViewCml";
             this.ViewCml.ScreenTip = "View the CML data stored in this document for the selected structure";
             this.ViewCml.ShowImage = true;
-            this.ViewCml.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnViewCmlClick);
+            this.ViewCml.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ViewCml);
             // 
             // ShowNavigator
             // 
@@ -226,7 +226,7 @@ namespace Chem4Word
             this.ShowNavigator.Name = "ShowNavigator";
             this.ShowNavigator.ScreenTip = "Navigate the chemical structures in this document";
             this.ShowNavigator.ShowImage = true;
-            this.ShowNavigator.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnNavigatorClick);
+            this.ShowNavigator.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_Navigator);
             // 
             // GroupOptions
             // 
@@ -245,7 +245,7 @@ namespace Chem4Word
             this.ChangeOptions.Name = "ChangeOptions";
             this.ChangeOptions.ScreenTip = "Set Chem4Word system options";
             this.ChangeOptions.ShowImage = true;
-            this.ChangeOptions.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnOptionsClick);
+            this.ChangeOptions.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_Options);
             // 
             // HelpMenu
             // 
@@ -270,7 +270,7 @@ namespace Chem4Word
             this.ShowAbout.Label = "About";
             this.ShowAbout.Name = "ShowAbout";
             this.ShowAbout.ShowImage = true;
-            this.ShowAbout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnShowAboutClick);
+            this.ShowAbout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ShowAbout);
             // 
             // ShowHome
             // 
@@ -278,7 +278,7 @@ namespace Chem4Word
             this.ShowHome.Label = "Chem4Word Home";
             this.ShowHome.Name = "ShowHome";
             this.ShowHome.ShowImage = true;
-            this.ShowHome.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnShowHomeClick);
+            this.ShowHome.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ShowHome);
             // 
             // ShowSystemInfo
             // 
@@ -286,7 +286,7 @@ namespace Chem4Word
             this.ShowSystemInfo.Label = "System Info";
             this.ShowSystemInfo.Name = "ShowSystemInfo";
             this.ShowSystemInfo.ShowImage = true;
-            this.ShowSystemInfo.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.ShowSystemInfo_Click);
+            this.ShowSystemInfo.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ShowSystemInfo);
             // 
             // CheckNow
             // 
@@ -294,7 +294,7 @@ namespace Chem4Word
             this.CheckNow.Label = "Check for Updates";
             this.CheckNow.Name = "CheckNow";
             this.CheckNow.ShowImage = true;
-            this.CheckNow.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnCheckForUpdatesClick);
+            this.CheckNow.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_CheckForUpdates);
             // 
             // ReadManual
             // 
@@ -303,7 +303,7 @@ namespace Chem4Word
             this.ReadManual.Label = "User Manual";
             this.ReadManual.Name = "ReadManual";
             this.ReadManual.ShowImage = true;
-            this.ReadManual.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnReadManualClick);
+            this.ReadManual.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ReadManual);
             // 
             // YouTube
             // 
@@ -311,7 +311,7 @@ namespace Chem4Word
             this.YouTube.Label = "YouTube Videos";
             this.YouTube.Name = "YouTube";
             this.YouTube.ShowImage = true;
-            this.YouTube.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnYouTubeClick);
+            this.YouTube.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_YouTube);
             // 
             // ButtonsDisabled
             // 
@@ -319,7 +319,7 @@ namespace Chem4Word
             this.ButtonsDisabled.Label = "Buttons Disabled ...";
             this.ButtonsDisabled.Name = "ButtonsDisabled";
             this.ButtonsDisabled.ShowImage = true;
-            this.ButtonsDisabled.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnButtonsDisabledClick);
+            this.ButtonsDisabled.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_ButtonsDisabled);
             // 
             // Update
             // 
@@ -331,7 +331,7 @@ namespace Chem4Word
             this.Update.ScreenTip = "About Chem4Word";
             this.Update.ShowImage = true;
             this.Update.Visible = false;
-            this.Update.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnUpdateClick);
+            this.Update.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OnClick_Update);
             // 
             // CustomRibbon
             // 
