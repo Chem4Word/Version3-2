@@ -74,7 +74,7 @@ namespace Chem4Word.Library
                                 switch (source.Button)
                                 {
                                     case "Library|InsertCopy":
-                                        TaskPaneHelper.InsertChemistry(true, activeDocument.Application, clicked.Cml, true);
+                                        TaskPaneHelper.InsertChemistry(true, Globals.Chem4WordV3.Application, clicked.Cml, true);
                                         break;
                                 }
                             }

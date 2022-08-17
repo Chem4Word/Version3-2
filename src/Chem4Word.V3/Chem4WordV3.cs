@@ -2743,7 +2743,7 @@ namespace Chem4Word
                             var message = $"ContentControl {ccId} added; Looking for structure {ccTag}";
                             Telemetry.Write(module, "Information", message);
 
-                            var document = NewContentControl.Application.ActiveDocument;
+                            var document = Globals.Chem4WordV3.Application.ActiveDocument;
                             var application = Application;
                             var cxml = CustomXmlPartHelper.GetCustomXmlPart(ccTag, application.ActiveDocument);
                             if (cxml != null)
@@ -2752,7 +2752,7 @@ namespace Chem4Word
                             }
                             else
                             {
-                                if (document.Application.Documents.Count > 1)
+                                if (Globals.Chem4WordV3.Application.Documents.Count > 1)
                                 {
                                     var app1 = Application;
                                     cxml = CustomXmlPartHelper.FindCustomXmlPart(ccTag, app1.ActiveDocument);

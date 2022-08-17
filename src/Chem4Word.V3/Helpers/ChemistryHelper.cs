@@ -39,7 +39,7 @@ namespace Chem4Word.Helpers
             // Calling routine should check that Globals.Chem4WordV3.ChemistryAllowed = true
 
             Word.ContentControl cc = null;
-            var app = doc.Application;
+            var app = Globals.Chem4WordV3.Application;
 
             var wordSettings = new WordSettings(app);
 

@@ -151,7 +151,7 @@ namespace Chem4Word.Helpers
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            int sel = doc.Application.Selection.Range.Start;
+            int sel = Globals.Chem4WordV3.Application.Selection.Range.Start;
             Globals.Chem4WordV3.DisableContentControlEvents();
 
             try
@@ -212,7 +212,7 @@ namespace Chem4Word.Helpers
                                     start = cc.Range.Start;
                                     cc.Delete();
 
-                                    doc.Application.Selection.SetRange(start - 1, start - 1);
+                                    Globals.Chem4WordV3.Application.Selection.SetRange(start - 1, start - 1);
                                     var model = new Model();
                                     var molecule = new Molecule();
                                     molecule.Names.Add(new TextualProperty { Id = "m1.n1", Value = cci.Text, FullType = CMLConstants.ValueChem4WordSynonym });
@@ -233,7 +233,7 @@ namespace Chem4Word.Helpers
                                     start = cc.Range.Start;
                                     cc.Delete();
 
-                                    doc.Application.Selection.SetRange(start - 1, start - 1);
+                                    Globals.Chem4WordV3.Application.Selection.SetRange(start - 1, start - 1);
                                     isFormula = false;
                                     text = ChemistryHelper.GetInlineText(target.Model, cci.Type, ref isFormula, out _);
                                     Word.ContentControl ccr = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
@@ -261,7 +261,7 @@ namespace Chem4Word.Helpers
             }
 
             Globals.Chem4WordV3.EnableContentControlEvents();
-            doc.Application.Selection.SetRange(sel, sel);
+            Globals.Chem4WordV3.Application.Selection.SetRange(sel, sel);
             if (upgradedCCs + upgradedXml > 0)
             {
                 if (Globals.Chem4WordV3.Telemetry != null)
@@ -329,7 +329,7 @@ namespace Chem4Word.Helpers
 
             List<UpgradeTarget> targets = new List<UpgradeTarget>();
 
-            Word.Selection sel = doc.Application.Selection;
+            Word.Selection sel = Globals.Chem4WordV3.Application.Selection;
 
             // Step 1 find location of all content controls
             // Step 2 extract Cml

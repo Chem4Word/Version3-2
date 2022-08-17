@@ -184,6 +184,9 @@ namespace Chem4Word
                             }
                             else
                             {
+                                // ToDo: Take this out after beta is completed
+                                RegistryHelper.StoreMessage(module, fileContents);
+
                                 var options = JsonConvert.DeserializeObject<Chem4WordOptions>(fileContents);
                                 SetValuesFromCopy(options);
 
@@ -292,7 +295,7 @@ namespace Chem4Word
                 Errors.Add(exception.StackTrace);
             }
 
-            return result;
+            return result.Trim();
         }
 
         private void PersistOptions(string filename)
@@ -301,10 +304,13 @@ namespace Chem4Word
 
             try
             {
+                // ToDo: Take this out after beta is completed
                 RegistryHelper.StoreMessage(module, $"Saving Chem4Word Options to {filename}");
                 Debug.WriteLine($"Saving Chem4Word Options to {filename}");
 
                 var contents = JsonConvert.SerializeObject(this, Formatting.Indented);
+                // ToDo: Take this out after beta is completed
+                RegistryHelper.StoreMessage(module, contents);
 
                 using (var outStream = new FileStream(filename,
                                                       FileMode.Create,
