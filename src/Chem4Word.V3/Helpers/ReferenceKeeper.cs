@@ -5,7 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 
 namespace Chem4Word.Helpers
 {
@@ -14,7 +14,7 @@ namespace Chem4Word.Helpers
     /// </summary>
     public class ReferenceKeeper
     {
-        private QueueClient queueClient { get; }
+        private ServiceBusClient ServiceBusClient { get; }
 
         public ReferenceKeeper()
         {

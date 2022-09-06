@@ -324,7 +324,7 @@ namespace Chem4Word.Telemetry
                 utcOffset = _helper.UtcOffset;
                 processId = _helper.ProcessId;
             }
-            var sbm = new ServiceBusMessage(utcOffset, processId);
+            var sbm = new OutputMessage(utcOffset, processId);
             sbm.MachineId = _helper.MachineId;
             sbm.Operation = operation;
             sbm.Level = level;

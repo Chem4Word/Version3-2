@@ -9,11 +9,11 @@ using System;
 
 namespace Chem4Word.Telemetry
 {
-    public class ServiceBusMessage
+    public class OutputMessage
     {
         private static long _order;
 
-        public ServiceBusMessage(long utcOffset, int procId)
+        public OutputMessage(long utcOffset, int procId)
         {
             PartitionKey = "Chem4Word";
             // First part of RowKey is to enable "default" sort of time descending

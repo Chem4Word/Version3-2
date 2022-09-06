@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <!-- For automatic upgrade to work only first three parts of version number are used -->
-  <Product Id="*" Name="Chemistry Add-In for Microsoft Word 2022 Beta 5" Manufacturer="Chem4Word" Version="3.2.5.8279" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033">
+  <Product Id="*" Name="Chemistry Add-In for Microsoft Word 2022 Beta 5" Manufacturer="Chem4Word" Version="3.2.5.8285" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of Chem4Word is already installed." />
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
@@ -256,45 +256,28 @@
       <Component Id="System.Data.SQLite.Linq">
         <File Id="System.Data.SQLite.Linq.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Data.SQLite.Linq.dll" />
       </Component>
-      <!-- Other Nuget packages -->
+      <!-- Azure Service Bus Nuget packages -->
       <Component Id="Azure.Core">
         <File Id="Azure.Core.dll" Source="$(var.Chem4Word.V3.TargetDir)Azure.Core.dll" />
       </Component>
-      <Component Id="Azure.Security.KeyVault.Secrets">
-        <File Id="Azure.Security.KeyVault.Secrets.dll" Source="$(var.Chem4Word.V3.TargetDir)Azure.Security.KeyVault.Secrets.dll" />
+      <Component Id="Azure.Core.Amqp">
+        <File Id="Azure.Core.Amqp.dll" Source="$(var.Chem4Word.V3.TargetDir)Azure.Core.Amqp.dll" />
       </Component>
+      <Component Id="Microsoft.Azure.Amqp">
+        <File Id="Microsoft.Azure.Amqp.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Azure.Amqp.dll" />
+      </Component>
+      <Component Id="Azure.Messaging.ServiceBus">
+        <File Id="Azure.Messaging.ServiceBus.dll" Source="$(var.Chem4Word.V3.TargetDir)Azure.Messaging.ServiceBus.dll" />
+      </Component>
+      <!-- Other Nuget packages -->
       <Component Id="DotNetProjects.Input.Toolkit">
         <File Id="DotNetProjects.Input.Toolkit.dll" Source="$(var.Chem4Word.V3.TargetDir)DotNetProjects.Input.Toolkit.dll" />
       </Component>
       <Component Id="Ionic.Zip">
         <File Id="Ionic.Zip.dll" Source="$(var.Chem4Word.V3.TargetDir)Ionic.Zip.dll" />
       </Component>
-      <Component Id="Microsoft.Azure.Services.AppAuthentication">
-        <File Id="Microsoft.Azure.Services.AppAuthentication.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Azure.Services.AppAuthentication.dll" />
-      </Component>
       <Component Id="Microsoft.Bcl.AsyncInterfaces">
         <File Id="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" />
-      </Component>
-      <Component Id="Microsoft.IdentityModel.Clients.ActiveDirectory">
-        <File Id="Microsoft.IdentityModel.Clients.ActiveDirectory.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
-      </Component>
-      <Component Id="Microsoft.IdentityModel.JsonWebTokens">
-        <File Id="Microsoft.IdentityModel.JsonWebTokens.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.IdentityModel.JsonWebTokens.dll" />
-      </Component>
-      <Component Id="Microsoft.IdentityModel.Logging">
-        <File Id="Microsoft.IdentityModel.Logging.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.IdentityModel.Logging.dll" />
-      </Component>
-      <Component Id="Microsoft.IdentityModel.Tokens">
-        <File Id="Microsoft.IdentityModel.Tokens.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.IdentityModel.Tokens.dll" />
-      </Component>
-      <Component Id="Microsoft.Rest.ClientRuntime.Azure">
-        <File Id="Microsoft.Rest.ClientRuntime.Azure.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Rest.ClientRuntime.Azure.dll" />
-      </Component>
-      <Component Id="Microsoft.Rest.ClientRuntime">
-        <File Id="Microsoft.Rest.ClientRuntime.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Rest.ClientRuntime.dll" />
-      </Component>
-      <Component Id="Microsoft.ServiceBus">
-        <File Id="Microsoft.ServiceBus.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.ServiceBus.dll" />
       </Component>
       <Component Id="Microsoft.Win32.Primitives">
         <File Id="Microsoft.Win32.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Win32.Primitives.dll" />
@@ -388,9 +371,6 @@
       </Component>
       <Component Id="System.Globalization.Extensions">
         <File Id="System.Globalization.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Globalization.Extensions.dll" />
-      </Component>
-      <Component Id="System.IdentityModel.Tokens.Jwt">
-        <File Id="System.IdentityModel.Tokens.Jwt.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IdentityModel.Tokens.Jwt.dll" />
       </Component>
       <Component Id="System.IO.Compression">
         <File Id="System.IO.Compression.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.Compression.dll" />
