@@ -68,6 +68,10 @@ namespace Chem4Word.ACME.Controls
         public MoleculePropertyEditor(MoleculePropertiesModel model, AcmeOptions options)
         {
             InitializeComponent();
+#if DEBUG
+            MoleculePath.Visibility = Visibility.Visible;
+#endif
+
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
                 MpeModel = model;

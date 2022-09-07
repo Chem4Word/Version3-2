@@ -718,21 +718,59 @@ namespace Chem4Word.Shared
         {
             string result = null;
 
-            result = GetFromRegistryMethod1();
-
-            if (result == null)
+            try
             {
-                result = GetFromRegistryMethod2();
+                result = GetFromRegistryMethod1();
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception.Message);
+                Debugger.Break();
             }
 
             if (result == null)
             {
-                result = GetFromRegistryMethod3();
+                try
+                {
+                    result = GetFromRegistryMethod2();
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception.Message);
+                    Debugger.Break();
+                }
             }
 
             if (result == null)
             {
-                result = GetFromKnownPathSearch();
+                try
+                {
+                    result = GetFromRegistryMethod3();
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception.Message);
+                    Debugger.Break();
+                }
+            }
+
+            if (result == null)
+            {
+                try
+                {
+                    result = GetFromKnownPathSearch();
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception.Message);
+                    Debugger.Break();
+                }
+            }
+
+            if (result == null)
+            {
+                Debug.WriteLine("SNAFU in GetWinWordPath() !");
+                Debugger.Break();
             }
 
             return result;

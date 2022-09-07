@@ -34,6 +34,10 @@ namespace Chem4Word.ACME.Controls
 
         public BondPropertyEditor(BondPropertiesModel model) : this()
         {
+#if DEBUG
+            BondPath.Visibility = Visibility.Visible;
+#endif
+
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
                 _bondPropertiesModel = model;

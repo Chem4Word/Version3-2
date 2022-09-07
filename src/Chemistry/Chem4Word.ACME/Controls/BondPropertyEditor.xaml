@@ -220,7 +220,7 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Border Margin="5">
+    <Border Margin="3">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -242,6 +242,7 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
+                Visibility="Collapsed"
                 Foreground="Black">
                 Bond Path
             </TextBlock>
@@ -249,7 +250,7 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Style="{StaticResource LabelTextBlock}"
-                Text="Length" />
+                Text="Length"/>
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="1"
