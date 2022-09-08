@@ -118,6 +118,18 @@ namespace Chem4Word.Telemetry
                                 }
                             }
                         }
+
+                        var failedToFetch =  _helper.GitStatus
+                                                     .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                                                     .FirstOrDefault(l => l.Contains("is not a git command"));
+                        if (!string.IsNullOrEmpty(failedToFetch))
+                        {
+                            // One of these two commands is required to be run, most likely the first one ...
+                            // git config --global --unset credential.helper
+                            // git config --global credential.helper store
+                            MessageBox.Show(@"Git fetch failed\nYou need to run 'git config --global --unset credential.helper' from a command prompt.", "WARNING");
+                        }
+
                     }
                 }
             }
@@ -158,7 +170,7 @@ namespace Chem4Word.Telemetry
             }
             WritePrivate("StartUp", "Information", Environment.GetCommandLineArgs()[0]);
 
-            WritePrivate("StartUp", "Information", $"Browser Version: {_helper.BrowserVersion}");
+            //WritePrivate("StartUp", "Information", $"Browser Version: {_helper.BrowserVersion}");
 
             if (_helper.StartUpTimings != null)
             {

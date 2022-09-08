@@ -23,7 +23,7 @@ namespace Chem4Word.Shared
         private static string InstallRootTemplate32 = @"SOFTWARE\Wow6432Node\Microsoft\Office\{0}.0\Word\InstallRoot";
         private static string Click2RunConfiguration = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
 
-        private static int[] OfficeVersions = { 17, 16, 15, 14 };
+        private static int[] OfficeVersions = { 16, 15, 14 };
 
         private static string[] FileSearchTemplates =
         {
@@ -718,6 +718,12 @@ namespace Chem4Word.Shared
         {
             string result = null;
 
+#if DEBUG
+            Debug.WriteLine($"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'");
+            Debug.WriteLine($"GetFromRegistryMethod2 => '{GetFromRegistryMethod2()}'");
+            Debug.WriteLine($"GetFromRegistryMethod3 => '{GetFromRegistryMethod3()}'");
+            Debug.WriteLine($"GetFromKnownPathSearch => '{GetFromKnownPathSearch()}'");
+#endif
             try
             {
                 result = GetFromRegistryMethod1();
@@ -890,7 +896,7 @@ namespace Chem4Word.Shared
             }
             else
             {
-                Debug.WriteLine("");
+                Debug.WriteLine($@"Registry key '{rootKey}\{path}' not found!");
             }
 
             return result;

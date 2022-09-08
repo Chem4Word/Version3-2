@@ -347,11 +347,17 @@ namespace Chem4Word.Telemetry
         private void GetGitStatus(object o)
         {
             var result = new List<string>();
+
             result.Add("Git Origin");
             result.AddRange(RunCommand("git.exe", "config --get remote.origin.url", AddInLocation));
 
             // Ensure status is accurate
-            RunCommand("git.exe", "fetch", AddInLocation);
+            var fetchOutput = RunCommand("git.exe", "fetch", AddInLocation);
+            if (fetchOutput.Any())
+            {
+                result.Add("Git fetch");
+                result.AddRange(fetchOutput);
+            }
 
             // git status -s -b --porcelain == Gets Branch, Status and a List of any changed files
             var changedFiles = RunCommand("git.exe", "status -s -b --porcelain", AddInLocation);
