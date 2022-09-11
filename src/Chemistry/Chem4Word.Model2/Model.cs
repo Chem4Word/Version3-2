@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
+using Chem4Word.Model2.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,10 +16,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Helpers;
-using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
@@ -376,7 +376,7 @@ namespace Chem4Word.Model2
             get
             {
                 double result = 0.0;
-                List<double> lengths = new List<double>();
+                List<double> lengths = new List<double>(GetAllBonds().Count);
 
                 foreach (var mol in Molecules.Values)
                 {

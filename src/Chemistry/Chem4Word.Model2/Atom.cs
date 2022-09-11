@@ -5,16 +5,16 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Enums;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using Chem4Word.Core.Enums;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2
 {
@@ -661,7 +661,7 @@ namespace Chem4Word.Model2
 
         public Bond BondBetween(Atom atom)
         {
-            foreach (var parentBond in Parent.Bonds)
+            foreach (var parentBond in Parent._bonds)
             {
                 if (parentBond.StartAtomInternalId.Equals(InternalId) && parentBond.EndAtomInternalId.Equals(atom.InternalId))
                 {

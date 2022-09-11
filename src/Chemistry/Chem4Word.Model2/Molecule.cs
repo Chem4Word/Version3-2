@@ -5,6 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
+using Chem4Word.Model2.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,11 +18,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Helpers;
-using Chem4Word.Model2.Interfaces;
 
 namespace Chem4Word.Model2
 {
@@ -29,9 +29,9 @@ namespace Chem4Word.Model2
 
         public readonly List<Ring> Rings;
         public readonly ReadOnlyDictionary<Guid, Atom> Atoms; //keyed by InternalId
-        private readonly Dictionary<Guid, Atom> _atoms;
+        internal readonly Dictionary<Guid, Atom> _atoms;
         public readonly ReadOnlyCollection<Bond> Bonds; //this is the edge list
-        private readonly List<Bond> _bonds;
+        internal readonly List<Bond> _bonds;
         private readonly Dictionary<Guid, Molecule> _molecules;
         public readonly ReadOnlyDictionary<Guid, Molecule> Molecules;
         public ObservableCollection<TextualProperty> Formulas { get; internal set; }
@@ -98,12 +98,12 @@ namespace Chem4Word.Model2
             {
                 var count = 0;
 
-                foreach (Molecule molecule in Molecules.Values)
+                foreach (Molecule molecule in _molecules.Values)
                 {
                     count += molecule.BondCount;
                 }
 
-                count += Bonds.Count;
+                count += _bonds.Count;
 
                 return count;
             }
@@ -113,14 +113,14 @@ namespace Chem4Word.Model2
         {
             get
             {
-                var lengths = new List<double>();
+                var lengths = new List<double>(_bonds.Count);
 
-                foreach (Molecule mol in Molecules.Values)
+                foreach (Molecule mol in _molecules.Values)
                 {
                     lengths.AddRange(mol.BondLengths);
                 }
 
-                foreach (Bond bond in Bonds)
+                foreach (Bond bond in _bonds)
                 {
                     lengths.Add(bond.BondVector.Length);
                 }
@@ -931,7 +931,7 @@ namespace Chem4Word.Model2
 
         public IEnumerable<Atom> GetAtomNeighbours(Atom atom)
         {
-            foreach (Bond bond in Bonds)
+            foreach (Bond bond in _bonds)
             {
                 if (bond.StartAtomInternalId.Equals(atom.InternalId))
                 {
@@ -1109,7 +1109,7 @@ namespace Chem4Word.Model2
 
         public IEnumerable<Bond> GetBonds(Guid atomId)
         {
-            foreach (Bond bond in Bonds)
+            foreach (Bond bond in _bonds)
             {
                 if (bond.StartAtomInternalId == atomId || bond.EndAtomInternalId == atomId)
                 {
@@ -1631,6 +1631,7 @@ namespace Chem4Word.Model2
                         if (!path.ContainsKey(m) || path[m].Count == 0) //null path
                         {
                             var temp = new HashSet<Atom> { m };
+
                             temp.UnionWith(path[frontNode.CurrentAtom]);
                             path[m] = temp; //add on the path built up so far
                             var newItem = new AtomData { Source = frontNode.CurrentAtom, CurrentAtom = m };

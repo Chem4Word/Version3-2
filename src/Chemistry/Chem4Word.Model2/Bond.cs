@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Annotations;
+using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,10 +16,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Annotations;
-using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2
 {
@@ -23,15 +23,45 @@ namespace Chem4Word.Model2
     {
         #region Properties
 
-        public Guid EndAtomInternalId { get; set; }
+        private Atom _startAtom;
+        private Atom _endAtom;
 
-        public Guid StartAtomInternalId { get; set; }
+        private Guid _startAtomInternalId;
+        private Guid _endAtomInternalId;
+
+        public Guid EndAtomInternalId
+        {
+            get { return _endAtomInternalId; }
+            set
+            {
+                _endAtom = null;
+                _endAtomInternalId = value;
+            }
+        }
+
+        public Guid StartAtomInternalId
+        {
+            get
+            {
+                return _startAtomInternalId;
+            }
+            set
+            {
+                _startAtom = null;
+                _startAtomInternalId = value;
+            }
+        }
 
         public Atom EndAtom
         {
             get
             {
-                return Parent.Atoms[EndAtomInternalId];
+                if (_endAtom == null)
+                {
+                    _endAtom = Parent.Atoms[EndAtomInternalId];
+                }
+
+                return _endAtom;
             }
         }
 
@@ -39,7 +69,12 @@ namespace Chem4Word.Model2
         {
             get
             {
-                return Parent.Atoms[StartAtomInternalId];
+                if (_startAtom == null)
+                {
+                    _startAtom = Parent.Atoms[StartAtomInternalId];
+                }
+
+                return _startAtom;
             }
         }
 
@@ -72,8 +107,14 @@ namespace Chem4Word.Model2
             }
         }
 
-        public Point MidPoint => new Point((StartAtom.Position.X + EndAtom.Position.X) / 2,
-                                           (StartAtom.Position.Y + EndAtom.Position.Y) / 2);
+        public Point MidPoint
+        {
+            get
+            {
+                return new Point((StartAtom.Position.X + EndAtom.Position.X) / 2,
+                                 (StartAtom.Position.Y + EndAtom.Position.Y) / 2);
+            }
+        }
 
         public string Id { get; set; }
 
@@ -148,7 +189,10 @@ namespace Chem4Word.Model2
             }
         }
 
-        public double? OrderValue => OrderToOrderValue(Order);
+        public double? OrderValue
+        {
+            get { return OrderToOrderValue(Order); }
+        }
 
         public static double? OrderToOrderValue(string order)
         {
@@ -658,12 +702,25 @@ namespace Chem4Word.Model2
             return dir;
         }
 
-        public BondDirection? ImplicitPlacement => GetPlacement();
+        public BondDirection? ImplicitPlacement
+        {
+            get { return GetPlacement(); }
+        }
 
-        public Vector BondVector => EndAtom.Position - StartAtom.Position;
+        public Vector BondVector
+        {
+            get { return EndAtom.Position - StartAtom.Position; }
+        }
 
-        public double Angle => Vector.AngleBetween(GeometryTool.ScreenNorth, BondVector);
-        public double BondLength => BondVector.Length;
+        public double Angle
+        {
+            get { return Vector.AngleBetween(GeometryTool.ScreenNorth, BondVector); }
+        }
+
+        public double BondLength
+        {
+            get { return BondVector.Length; }
+        }
 
         #endregion Properties
 
