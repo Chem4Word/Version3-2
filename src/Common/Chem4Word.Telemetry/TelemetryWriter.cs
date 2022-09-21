@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Shared;
 using IChem4Word.Contracts;
 
 namespace Chem4Word.Telemetry
@@ -27,11 +28,12 @@ namespace Chem4Word.Telemetry
         private static WmiHelper _wmiHelper;
 
         private readonly bool _permissionGranted;
+        private readonly bool _isBeta;
 
-        public TelemetryWriter(bool permissionGranted, SystemHelper helper)
+        public TelemetryWriter(bool permissionGranted, bool isBeta, SystemHelper helper)
         {
             _permissionGranted = permissionGranted;
-
+            _isBeta = isBeta;
             _helper = helper;
 
             if (_helper == null)
@@ -276,10 +278,16 @@ namespace Chem4Word.Telemetry
 
             lines.Add($"Debug - Environment.CommandLine: {Environment.CommandLine}");
             lines.Add($"Debug - AddIn Location: {_helper.AddInLocation}");
-            lines.Add($"Debug - Environment.Is64BitOperatingSystem: {Environment.Is64BitOperatingSystem}");
-            lines.Add($"Debug - Environment.Is64BitProcess: {Environment.Is64BitProcess}");
 
             WritePrivate("StartUp", "Information", string.Join(Environment.NewLine, lines));
+
+            if (_isBeta)
+            {
+                WritePrivate("StartUp", "Information", $"Environment.Is64BitOperatingSystem: {Environment.Is64BitOperatingSystem}");
+                WritePrivate("StartUp", "Information", $"Environment.Is64BitProcess: {Environment.Is64BitProcess}");
+
+                WritePrivate("StartUp", "Information", string.Join(Environment.NewLine, OfficeHelper.GetWinWordSearchPaths()));
+            }
 
             if (!string.IsNullOrEmpty(_helper.GitStatus))
             {

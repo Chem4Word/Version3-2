@@ -29,7 +29,7 @@ namespace WinForms.TestLibrary
             InitializeComponent();
 
             _helper = new SystemHelper();
-            _telemetry = new TelemetryWriter(true, _helper);
+            _telemetry = new TelemetryWriter(true, true, _helper);
 
             var location = Assembly.GetExecutingAssembly().Location;
             var path = Path.GetDirectoryName(location);

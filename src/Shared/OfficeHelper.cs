@@ -8,6 +8,7 @@
 // Shared file (Add As Link)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,18 @@ namespace Chem4Word.Shared
             @"Microsoft Office\root\Office{0}",
             @"Microsoft Office {0}\Client{1}\Root\Office{0}"
         };
+
+        public static List<string> GetWinWordSearchPaths()
+        {
+            var paths = new List<string>();
+
+            paths.Add($"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'");
+            paths.Add($"GetFromRegistryMethod2 => '{GetFromRegistryMethod2()}'");
+            paths.Add($"GetFromRegistryMethod3 => '{GetFromRegistryMethod3()}'");
+            paths.Add($"GetFromKnownPathSearch => '{GetFromKnownPathSearch()}'");
+
+            return paths;
+        }
 
         public static FileVersionInfo GetWinWordVersion(string path = null)
         {
@@ -718,12 +731,6 @@ namespace Chem4Word.Shared
         {
             string result = null;
 
-#if DEBUG
-            Debug.WriteLine($"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'");
-            Debug.WriteLine($"GetFromRegistryMethod2 => '{GetFromRegistryMethod2()}'");
-            Debug.WriteLine($"GetFromRegistryMethod3 => '{GetFromRegistryMethod3()}'");
-            Debug.WriteLine($"GetFromKnownPathSearch => '{GetFromKnownPathSearch()}'");
-#endif
             try
             {
                 result = GetFromRegistryMethod1();
@@ -913,7 +920,7 @@ namespace Chem4Word.Shared
                 foreach (var template in FileSearchTemplates)
                 {
                     string programFiles;
-                    if (Environment.Is64BitOperatingSystem)
+                    if (Environment.Is64BitOperatingSystem && Environment.Is64BitProcess)
                     {
                         programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
                         result = FindExe(programFiles, template, version);

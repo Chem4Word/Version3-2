@@ -51,6 +51,8 @@ namespace Chem4Word
         public string VersionAvailable = string.Empty;
         public bool VersionAvailableIsBeta = false;
         public bool IsEnabled;
+        public bool IsBeta = true;
+
         public bool IsEndOfLife;
         public bool WordIsActivated;
 
@@ -309,7 +311,7 @@ namespace Chem4Word
 
                 _configWatcher = new ConfigWatcher(AddInInfo.ProductAppDataPath);
 
-                Telemetry = new TelemetryWriter(true, Helper);
+                Telemetry = new TelemetryWriter(true, true, Helper);
 
                 sw.Stop();
                 message = $"{module} took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms";
@@ -449,7 +451,7 @@ namespace Chem4Word
             try
             {
                 // Initialise Telemetry with send permission
-                Telemetry = new TelemetryWriter(true, Helper);
+                Telemetry = new TelemetryWriter(true, true, Helper);
 
                 if (AddInInfo != null)
                 {
@@ -461,13 +463,12 @@ namespace Chem4Word
                         SystemOptions.Errors = new List<string>();
                     }
 
-                    var isBeta = true;
                     try
                     {
                         if (ThisVersion != null)
                         {
                             var betaValue = ThisVersion.Root?.Element("IsBeta")?.Value;
-                            isBeta = betaValue != null && bool.Parse(betaValue);
+                            IsBeta = betaValue != null && bool.Parse(betaValue);
                         }
                     }
                     catch
@@ -486,7 +487,7 @@ namespace Chem4Word
 
                     // ... as we are seeing some errors here ?
                     // Re-Initialise Telemetry with granted permissions
-                    Telemetry = new TelemetryWriter(isBeta || SystemOptions.TelemetryEnabled, Helper);
+                    Telemetry = new TelemetryWriter(IsBeta || SystemOptions.TelemetryEnabled, IsBeta, Helper);
 
                     try
                     {

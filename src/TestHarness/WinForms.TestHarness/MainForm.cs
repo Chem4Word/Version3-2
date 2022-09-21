@@ -55,7 +55,7 @@ namespace WinForms.TestHarness
             InitializeComponent();
 
             _helper = new SystemHelper();
-            _telemetry = new TelemetryWriter(true, _helper);
+            _telemetry = new TelemetryWriter(true, true, _helper);
 
             var location = Assembly.GetExecutingAssembly().Location;
             var path = Path.GetDirectoryName(location);
@@ -94,16 +94,28 @@ namespace WinForms.TestHarness
                     CMLConverter cmlConvertor = new CMLConverter();
                     SdFileConverter sdFileConverter = new SdFileConverter();
 
+                    Stopwatch stopwatch;
+                    TimeSpan elapsed1 = default;
+                    TimeSpan elapsed2;
+
                     switch (fileType)
                     {
                         case ".mol":
                         case ".sdf":
+                            stopwatch = new Stopwatch();
+                            stopwatch.Start();
                             model = sdFileConverter.Import(mol);
+                            stopwatch.Stop();
+                            elapsed1 = stopwatch.Elapsed;
                             break;
 
                         case ".cml":
                         case ".xml":
+                            stopwatch = new Stopwatch();
+                            stopwatch.Start();
                             model = cmlConvertor.Import(mol);
+                            stopwatch.Stop();
+                            elapsed1 = stopwatch.Elapsed;
                             break;
                     }
 
@@ -127,9 +139,14 @@ namespace WinForms.TestHarness
                             }
                         }
 
+                        stopwatch = new Stopwatch();
+                        stopwatch.Start();
                         _lastCml = cmlConvertor.Export(model);
+                        stopwatch.Stop();
+                        elapsed2 = stopwatch.Elapsed;
 
                         _telemetry.Write(module, "Information", $"File: '{filename}'; Original bond length {originalBondLength:#,##0.00}");
+                        _telemetry.Write(module, "Timing", $"Import took {elapsed1}; Export took {elapsed2}");
                         ShowChemistry(filename, model);
                     }
                 }

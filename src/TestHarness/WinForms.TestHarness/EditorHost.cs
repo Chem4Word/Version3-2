@@ -39,7 +39,7 @@ namespace WinForms.TestHarness
             MessageFromWpf.Text = "";
 
             SystemHelper helper = new SystemHelper();
-            var telemetry = new TelemetryWriter(true, helper);
+            var telemetry = new TelemetryWriter(true, true, helper);
 
             switch (_editorType)
             {

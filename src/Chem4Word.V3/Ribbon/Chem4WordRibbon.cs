@@ -403,7 +403,10 @@ namespace Chem4Word
                         {
                             Globals.Chem4WordV3.SystemOptions = f.SystemOptions.Clone();
                             // Re create telemetry object as it may now be disabled
-                            Globals.Chem4WordV3.Telemetry = new TelemetryWriter(Globals.Chem4WordV3.SystemOptions.TelemetryEnabled, Globals.Chem4WordV3.Helper);
+                            Globals.Chem4WordV3.Telemetry = new TelemetryWriter(
+                                Globals.Chem4WordV3.SystemOptions.TelemetryEnabled,
+                                Globals.Chem4WordV3.IsBeta,
+                                Globals.Chem4WordV3.Helper);
                             if (f.SystemOptions.Errors.Any())
                             {
                                 Globals.Chem4WordV3.Telemetry.Write(module, "Exception", string.Join(Environment.NewLine, f.SystemOptions.Errors));
