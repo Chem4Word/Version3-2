@@ -185,8 +185,8 @@ namespace Chem4Word.Helpers
                     {
                         try
                         {
-                            var isBeta = key.GetValue(Constants.RegistryValueNameEndOfLife).ToString();
-                            Globals.Chem4WordV3.IsEndOfLife = bool.Parse(isBeta);
+                            var isEndOfLife = key.GetValue(Constants.RegistryValueNameEndOfLife).ToString();
+                            Globals.Chem4WordV3.IsEndOfLife = bool.Parse(isEndOfLife);
                         }
                         catch
                         {

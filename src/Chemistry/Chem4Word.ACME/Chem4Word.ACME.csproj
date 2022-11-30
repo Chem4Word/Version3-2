@@ -138,11 +138,8 @@
     <Compile Include="Graphics\EquilibriumArrow.cs" />
     <Compile Include="Graphics\Harpoon.cs" />
     <Compile Include="Graphics\RetrosyntheticArrow.cs" />
-    <Compile Include="Models\CloudSpace.cs" />
     <Compile Include="Models\CryptoRandomizer.cs" />
     <Compile Include="Controls\FormulaBlock.cs" />
-    <Compile Include="Entities\FrequencyTable.cs" />
-    <Compile Include="Entities\FrequencyTableRow.cs" />
     <Compile Include="Interfaces\IPositioner.cs" />
     <Compile Include="Interfaces\IRandomizer.cs" />
     <Compile Include="Controls\MoleculePropertyEditor.xaml.cs">
@@ -158,17 +155,12 @@
     <Compile Include="Controls\SketcherHost.xaml.cs">
       <DependentUpon>SketcherHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\SpiralPositioner.cs" />
     <Compile Include="Controls\TaggingControl.xaml.cs">
       <DependentUpon>TaggingControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TagItem.xaml.cs">
       <DependentUpon>TagItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\WordCloud.xaml.cs">
-      <DependentUpon>WordCloud.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Models\WordCloudData.cs" />
     <Compile Include="Entities\WordCloudEntry.cs" />
     <Compile Include="Entities\WordCloudTheme.cs" />
     <Compile Include="Entities\WordCloudThemes.cs" />
@@ -360,10 +352,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TagItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\WordCloud.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

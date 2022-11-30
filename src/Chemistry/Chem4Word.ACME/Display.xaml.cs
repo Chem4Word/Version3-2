@@ -198,14 +198,11 @@ namespace Chem4Word.ACME
             //assuming we've got this far, we should have something we can draw
             if (chemistryModel != null)
             {
-                if (chemistryModel.TotalAtomsCount > 0)
-                {
-                    chemistryModel.RescaleForXaml(true, Constants.StandardBondLength);
+                chemistryModel.RescaleForXaml(true, Constants.StandardBondLength);
 
-                    CurrentController = new Controller(chemistryModel);
-                    CurrentController.SetTextParams(chemistryModel.XamlBondLength);
-                    DrawChemistry(CurrentController);
-                }
+                CurrentController = new Controller(chemistryModel);
+                CurrentController.SetTextParams(chemistryModel.XamlBondLength);
+                DrawChemistry(CurrentController);
             }
         }
 

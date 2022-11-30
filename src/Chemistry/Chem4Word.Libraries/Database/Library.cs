@@ -5,6 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI.Forms;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Converters.MDL;
+using IChem4Word.Contracts;
+using Ionic.Zip;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,14 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Core.UI.Forms;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Converters.CML;
-using Chem4Word.Model2.Converters.MDL;
-using IChem4Word.Contracts;
-using Ionic.Zip;
-using Newtonsoft.Json;
 
 namespace Chem4Word.Libraries.Database
 {
@@ -93,7 +93,6 @@ namespace Chem4Word.Libraries.Database
             using (SQLiteConnection conn = LibraryConnection())
             {
                 bool patchTableExists = false;
-                bool isLegacy = false;
 
                 var currentVersion = Version.Parse("0.0.0");
 
@@ -111,11 +110,6 @@ namespace Chem4Word.Libraries.Database
                                 if (name.Equals("Patches"))
                                 {
                                     patchTableExists = true;
-                                }
-
-                                if (name.Equals("Gallery"))
-                                {
-                                    isLegacy = true;
                                 }
                             }
                         }
@@ -147,7 +141,7 @@ namespace Chem4Word.Libraries.Database
                     }
                 }
 
-                if (isLegacy && currentVersion < targetVersion)
+                if (currentVersion < targetVersion)
                 {
                     // Backup before patching
                     var database = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
@@ -225,17 +219,17 @@ namespace Chem4Word.Libraries.Database
                     {
                         foreach (string script in patch.Scripts)
                         {
-                            Debug.WriteLine($"Applying patch '{script}'");
+                            _telemetry.Write(module, "Information", $"Applying {patch.Version} patch '{script}' to database");
                             var command = new SQLiteCommand(script, conn);
                             command.ExecuteNonQuery();
                         }
+                        AddPatchRecord(conn, patch.Version);
                     }
-                    AddPatchRecord(conn, patch.Version);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception {ex.Message} in {module}");
+                _telemetry.Write(module, "Exception", $"Exception {ex.Message}");
                 result = false;
             }
 
@@ -266,7 +260,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _telemetry.Write(module, "Exception", $"Exception {ex.Message}");
             }
         }
 
@@ -906,12 +900,6 @@ namespace Chem4Word.Libraries.Database
             sb.AppendLine("SELECT t.Tag, t.Id AS TagId, (SELECT COUNT(1) FROM TaggedChemistry tc WHERE tc.TagId = t.Id) as Frequency");
             sb.AppendLine("FROM Tags t");
             sb.AppendLine("ORDER BY Frequency DESC");
-
-            //sb.AppendLine("SELECT MAX(t.Tag) AS Tag, tc.TagId, COUNT(1) AS Frequency")
-            //sb.AppendLine("FROM TaggedChemistry tc")
-            //sb.AppendLine("JOIN Tags t ON t.Id = tc.TagId")
-            //sb.AppendLine("GROUP BY tc.TagId")
-            //sb.AppendLine("ORDER BY COUNT(1) DESC")
 
             var command = new SQLiteCommand(sb.ToString(), conn);
 
