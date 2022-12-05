@@ -89,10 +89,6 @@ namespace Chem4Word
         /// </summary>
         public Chem4WordOptions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            // ToDo: Take this out after beta is completed
-            RegistryHelper.StoreMessage(module, "Chem4WordOptions()");
-
             Errors = new List<string>();
             RestoreDefaults();
         }
@@ -103,11 +99,6 @@ namespace Chem4Word
         /// <param name="path">Folder where the Chem4Word options are to reside - pass null to load from default path</param>
         public Chem4WordOptions(string path)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            // ToDo: Take this out after beta is completed
-            RegistryHelper.StoreMessage(module, "Chem4WordOptions(string path)");
-            RegistryHelper.StoreMessage(module, $"path = {path}");
-
             SettingsPath = path;
             Errors = new List<string>();
             Load();
@@ -184,9 +175,6 @@ namespace Chem4Word
                             }
                             else
                             {
-                                // ToDo: Take this out after beta is completed
-                                RegistryHelper.StoreMessage(module, fileContents);
-
                                 var options = JsonConvert.DeserializeObject<Chem4WordOptions>(fileContents);
                                 SetValuesFromCopy(options);
 
@@ -300,18 +288,9 @@ namespace Chem4Word
 
         private void PersistOptions(string filename)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-
             try
             {
-                // ToDo: Take this out after beta is completed
-                RegistryHelper.StoreMessage(module, $"Saving Chem4Word Options to {filename}");
-                Debug.WriteLine($"Saving Chem4Word Options to {filename}");
-
                 var contents = JsonConvert.SerializeObject(this, Formatting.Indented);
-                // ToDo: Take this out after beta is completed
-                RegistryHelper.StoreMessage(module, contents);
-
                 using (var outStream = new FileStream(filename,
                                                       FileMode.Create,
                                                       FileAccess.Write,

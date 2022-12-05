@@ -704,7 +704,7 @@ namespace Chem4Word
                                                     return;
                                                 }
 
-                                                if (beforeModel.HasReactions & !editor.CanEditReactions)
+                                                if (beforeModel.HasReactions && !editor.CanEditReactions)
                                                 {
                                                     UserInteractions.InformUser("This chemistry item has Reactions!\nPlease use ACME to edit this structure.");
                                                     return;
@@ -902,7 +902,7 @@ namespace Chem4Word
                                             {
                                                 // Insert a new CC
                                                 contentControl = activeDocument.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
-                                                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {contentControl.ID} created");
+                                                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {contentControl.ID} created. HasReactions:{afterModel.HasReactions}");
 
                                                 contentControl.Title = Constants.ContentControlTitle;
                                                 if (isNewDrawing)
