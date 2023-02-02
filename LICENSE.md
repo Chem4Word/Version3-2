@@ -1,4 +1,4 @@
-Copyright (c) 2022, The .NET Foundation. The software is licensed under the (the "License");
+Copyright (c) 2023, The .NET Foundation. The software is licensed under the (the "License");
 you may not use the software except in compliance with the License.
 
                                  Apache License
@@ -178,7 +178,7 @@ you may not use the software except in compliance with the License.
 
    END OF TERMS AND CONDITIONS
 
-   Copyright (c) 2022 Chem4Word
+   Copyright (c) 2023 Chem4Word
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -20,8 +20,6 @@ namespace Chem4Word.Core.Helpers
         public const string OoXmlBookmarkPrefix = "C4W_";
         public const string LibraryFileName = "Library.db";
 
-        public const string Chem4WordWebServiceUri = "https://chemicalservices.azurewebsites.net/api/Resolve";
-
         public const string DefaultEditorPlugIn = "ACME Structure Editor";
         public const string DefaultRendererPlugIn = "Open Office Xml Renderer V4";
 
@@ -37,6 +35,7 @@ namespace Chem4Word.Core.Helpers
         public const string Chem4WordUpdateRegistryKey = @"SOFTWARE\Chem4Word V3\Update";
         public const string Chem4WordMessagesRegistryKey = @"SOFTWARE\Chem4Word V3\Messages";
         public const string Chem4WordExceptionsRegistryKey = @"SOFTWARE\Chem4Word V3\Exceptions";
+        public const string Chem4WordAzureSettingsRegistryKey = @"SOFTWARE\Chem4Word V3\AzureSettings";
 
         // Update Checks
         public const int MaximumVersionsBehind = 7;
@@ -51,5 +50,7 @@ namespace Chem4Word.Core.Helpers
         public const double StandardBondLength = 20;
         public const double MaximumBondLength = 95;
         public const double BondLengthTolerance = 1;
+
+        public static readonly string[] OurDomains = { "https://www.chem4word.co.uk", "http://www.chem4word.com", "https://chem4word.azurewebsites.net" };
     }
 }

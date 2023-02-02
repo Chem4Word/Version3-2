@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -11,7 +11,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
+using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Shared;
 using IChem4Word.Contracts;
@@ -20,7 +22,6 @@ namespace Chem4Word.Telemetry
 {
     public class TelemetryWriter : IChem4WordTelemetry
     {
-        private static int _counter;
         private static AzureServiceBusWriter _azureServiceBusWriter;
         private static bool _systemInfoSent;
 
@@ -45,13 +46,11 @@ namespace Chem4Word.Telemetry
             {
                 _wmiHelper = new WmiHelper();
             }
-            _azureServiceBusWriter = new AzureServiceBusWriter();
+            _azureServiceBusWriter = new AzureServiceBusWriter(new AzureSettings(true));
         }
 
         public void Write(string operation, string level, string message)
         {
-            _counter++;
-
             string unwanted = "Chem4Word.V3.";
             if (operation.StartsWith(unwanted))
             {
@@ -337,22 +336,43 @@ namespace Chem4Word.Telemetry
         private void WritePrivate(string operation, string level, string message)
         {
             Debug.WriteLine($"{operation} - {level} - {message}");
-            long utcOffset = 0;
-            var processId = 0;
-            if (_helper != null)
+
+            var processId = 666;
+            var machineId = "00000000-0000-0000-0000-000000000000";
+            var versionNumber = $"{Constants.Chem4WordVersion}.7.666";
+
+            try
             {
-                utcOffset = _helper.UtcOffset;
-                processId = _helper.ProcessId;
+                if (_helper != null)
+                {
+                    processId = _helper.ProcessId;
+                    machineId = _helper.MachineId;
+                    if (string.IsNullOrEmpty(_helper.AssemblyVersionNumber))
+                    {
+                        var assembly = Assembly.GetExecutingAssembly();
+                        var productVersion = assembly.GetName().Version;
+                        versionNumber = productVersion.ToString();
+                    }
+                    else
+                    {
+                        versionNumber = _helper.AssemblyVersionNumber;
+                    }
+                }
             }
-            var sbm = new OutputMessage(utcOffset, processId);
-            sbm.MachineId = _helper.MachineId;
-            sbm.Operation = operation;
-            sbm.Level = level;
-            sbm.Message = message;
-            sbm.AssemblyVersionNumber = _helper.AssemblyVersionNumber;
+            catch
+            {
+                //
+            }
+            var sbm = new OutputMessage(processId)
+            {
+                MachineId = machineId,
+                Operation = operation,
+                Level = level,
+                Message = message,
+                AssemblyVersionNumber = versionNumber
+            };
 
             _azureServiceBusWriter.QueueMessage(sbm);
-            //_azureServiceBusWriter.WriteMessage(sbm)
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -13,16 +13,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 
 namespace Chem4Word.Telemetry
 {
-    // Azure.Messaging.ServiceBus
-    //  .ServiceBusMessage
-    //  .ServiceBusMessageBatch
-    //  .ServiceBusClient
-    //  .ServiceBusSender
-
     public class AzureServiceBusWriter
     {
         // The Service Bus client types are safe to cache and use as a singleton for the lifetime
@@ -34,27 +29,37 @@ namespace Chem4Word.Telemetry
         // The sender used to publish messages to the queue
         private readonly ServiceBusSender _sender;
 
-        // Make sure this is a Send Only Access key
-        private const string ServiceBus = "Endpoint=sb://c4w-telemetry.servicebus.windows.net/;SharedAccessKeyName=TelemetrySender;SharedAccessKey=J8tkibrh5CHc2vZJgn1gbynZRmMLUf0mz/WZtmcjH6Q=";
-        private const string QueueName = "telemetry";
+        private AzureSettings _settings;
 
         private static readonly object QueueLock = Guid.NewGuid();
 
         private readonly Queue<OutputMessage> _buffer1 = new Queue<OutputMessage>();
         private bool _running = false;
 
-        public AzureServiceBusWriter()
+        public AzureServiceBusWriter(AzureSettings settings)
         {
+            _settings = settings;
+
             ServicePointManager.DefaultConnectionLimit = 100;
             ServicePointManager.UseNagleAlgorithm = false;
             ServicePointManager.Expect100Continue = false;
 
-            // Set the transport type to AmqpWebSockets so that the ServiceBusClient uses the port 443.
-            // If you use the default AmqpTcp, you will need to make sure that the ports 5671 and 5672 are open.
-            var clientOptions = new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets };
+            if (!string.IsNullOrEmpty(_settings.ServiceBusQueue))
+            {
+                try
+                {
+                    // Set the transport type to AmqpWebSockets so that the ServiceBusClient uses the port 443.
+                    // If you use the default AmqpTcp, you will need to make sure that the ports 5671 and 5672 are open.
+                    var clientOptions = new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets };
 
-            _client = new ServiceBusClient(ServiceBus, clientOptions);
-            _sender = _client.CreateSender(QueueName);
+                    _client = new ServiceBusClient($"{_settings.ServiceBusEndPoint};{_settings.ServiceBusToken}", clientOptions);
+                    _sender = _client.CreateSender(_settings.ServiceBusQueue);
+                }
+                catch
+                {
+                    // Do nothing
+                }
+            }
         }
 
         public void QueueMessage(OutputMessage message)
@@ -117,25 +122,28 @@ namespace Chem4Word.Telemetry
         {
             try
             {
-                using (var messageBatch = await _sender.CreateMessageBatchAsync())
+                if (_sender != null)
                 {
-                    var msg = new ServiceBusMessage(message.Message);
-                    msg.ApplicationProperties.Add("PartitionKey", message.PartitionKey);
-                    msg.ApplicationProperties.Add("RowKey", message.RowKey);
-                    msg.ApplicationProperties.Add("Chem4WordVersion", message.AssemblyVersionNumber);
-                    msg.ApplicationProperties.Add("MachineId", message.MachineId);
-                    msg.ApplicationProperties.Add("Operation", message.Operation);
-                    msg.ApplicationProperties.Add("Level", message.Level);
+                    using (var messageBatch = await _sender.CreateMessageBatchAsync())
+                    {
+                        var msg = new ServiceBusMessage(message.Message);
+                        msg.ApplicationProperties.Add("PartitionKey", message.PartitionKey);
+                        msg.ApplicationProperties.Add("RowKey", message.RowKey);
+                        msg.ApplicationProperties.Add("Chem4WordVersion", message.AssemblyVersionNumber);
+                        msg.ApplicationProperties.Add("MachineId", message.MachineId);
+                        msg.ApplicationProperties.Add("Operation", message.Operation);
+                        msg.ApplicationProperties.Add("Level", message.Level);
 #if DEBUG
-                    msg.ApplicationProperties.Add("IsDebug", "True");
+                        msg.ApplicationProperties.Add("IsDebug", "True");
 #endif
 
-                    if (!messageBatch.TryAddMessage(msg))
-                    {
-                        Debugger.Break();
-                    }
+                        if (!messageBatch.TryAddMessage(msg))
+                        {
+                            Debugger.Break();
+                        }
 
-                    await _sender.SendMessagesAsync(messageBatch);
+                        await _sender.SendMessagesAsync(messageBatch);
+                    }
                 }
             }
             catch (Exception exception)

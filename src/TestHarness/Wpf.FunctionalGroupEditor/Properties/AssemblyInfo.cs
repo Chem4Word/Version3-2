@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿// ---------------------------------------------------------------------------
+//  Copyright (c) 2023, The .NET Foundation.
+//  This software is released under the Apache License, Version 2.0.
+//  The license and further copyright text can be found in the file LICENSE.md
+//  at the root directory of the distribution.
+// ---------------------------------------------------------------------------
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -10,7 +17,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Chem4Word")]
 [assembly: AssemblyProduct("Wpf.FunctionalGroupEditor")]
-[assembly: AssemblyCopyright("© Chem4Word 2022. All rights reserved.")]
+[assembly: AssemblyCopyright("© Chem4Word 2023. All rights reserved.")]
 [assembly: AssemblyTrademark("Chem4Word")]
 [assembly: AssemblyCulture("")]
 
@@ -44,5 +51,5 @@ using System.Windows;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.6.8374")]
-[assembly: AssemblyFileVersion("3.2.6.8374")]
+[assembly: AssemblyVersion("3.2.7.8433")]
+[assembly: AssemblyFileVersion("3.2.7.8433")]

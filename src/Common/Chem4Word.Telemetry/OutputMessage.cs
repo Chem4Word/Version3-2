@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -13,22 +13,22 @@ namespace Chem4Word.Telemetry
     {
         private static long _order;
 
-        public OutputMessage(long utcOffset, int procId)
+        public OutputMessage(int processId)
         {
             PartitionKey = "Chem4Word";
+
             // First part of RowKey is to enable "default" sort of time descending
             // Second part of RowKey is to give a sequence per process
             // Third part of RowKey is to guarantee uniqueness
-            _order++;
-            //long systemTicks = DateTime.UtcNow.Ticks - utcOffset;
-            //long messageTicks = DateTime.MaxValue.Ticks - systemTicks;
-            long messageTicks = DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks;
-            string[] parts = new string[3];
+            var parts = new string[3];
+
+            var messageTicks = DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks;
             parts[0] = $"{messageTicks:D19}";
-            parts[1] = procId + "-" + _order.ToString("000000");
+            _order++;
+            parts[1] = processId + "-" + _order.ToString("000000");
             parts[2] = Guid.NewGuid().ToString("N");
-            string rowKey = string.Join(".", parts);
-            RowKey = rowKey;
+
+            RowKey = string.Join(".", parts);
         }
 
         public string PartitionKey { get; set; }

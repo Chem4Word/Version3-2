@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -110,6 +110,127 @@ namespace WiX.CustomAction
         }
 
         [CustomAction]
+        public static ActionResult CleanSystemRegistry(Session session)
+        {
+            session.Log($"Begin {nameof(CleanSystemRegistry)}()");
+
+            session.Log($"  Running as {Environment.UserName}");
+
+            try
+            {
+                // This pass will clean HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Office\Word\Addins on 64 bit machine
+                // or HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\Word\Addins on a 32 bit machine
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    session.Log(@"  Cleaning HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Office\Word\Addins");
+                }
+                else
+                {
+                    session.Log(@"  Cleaning HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\Word\Addins");
+                }
+                var listOfKeys = new List<string>();
+
+                // Gather locations that (old) add-in has been registered
+                var rootKey = Registry.LocalMachine.OpenSubKey($@"SOFTWARE\{OfficeKey}\Word\Addins", true);
+                foreach (var subKey in rootKey.GetSubKeyNames())
+                {
+                    var temp = Registry.LocalMachine.OpenSubKey($@"SOFTWARE\{OfficeKey}\Word\Addins\{subKey}", true);
+                    if (temp != null)
+                    {
+                        var value = temp.GetValue("Manifest", "").ToString();
+                        if (value.Contains("/Chem4Word"))
+                        {
+                            session.Log($"  Adding target '{subKey}' with Manifest of '{value}'");
+                            listOfKeys.Add(subKey);
+                        }
+                    }
+                }
+
+                foreach (var key in listOfKeys)
+                {
+                    DeleteSystemKey32(session, $@"SOFTWARE\{OfficeKey}\Word\Addins\", $"{key}");
+                }
+
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    session.Log(@"  Cleaning HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\Word\Addins");
+                    listOfKeys.Clear();
+
+                    // Now clear HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\Word\Addins on 64 bit machine
+                    RegistryKey rk = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                    if (rk != null)
+                    {
+                        string keyName = $@"Software\{OfficeKey}\Word\Addins";
+                        RegistryKey rk2 = rk.OpenSubKey(keyName, true);
+                        if (rk2 != null)
+                        {
+                            foreach (var subKeyName in rk2.GetSubKeyNames())
+                            {
+                                var rk3 = rk2.OpenSubKey(subKeyName);
+                                if (rk3 != null)
+                                {
+                                    var value = rk3.GetValue("Manifest", "").ToString();
+                                    if (value.Contains("/Chem4Word"))
+                                    {
+                                        session.Log($"  Adding target '{subKeyName}' with Manifest of '{value}'");
+                                        listOfKeys.Add(subKeyName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                foreach (var key in listOfKeys)
+                {
+                    DeleteSystemKey64(session, key);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                session.Log($"** Exception: {ex.Message} **");
+            }
+
+            session.Log($"End {nameof(CleanSystemRegistry)}()");
+
+            return ActionResult.Success;
+        }
+
+        private static void DeleteSystemKey64(Session session, string key)
+        {
+            RegistryKey rk = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            string keyName = $@"Software\{OfficeKey}\Word\Addins\{key}";
+            rk.DeleteSubKeyTree(keyName);
+        }
+
+        private static void DeleteSystemKey32(Session session, string nameOfKey, string kkk)
+        {
+            session.Log($"  {nameof(DeleteSystemKey32)}({nameOfKey}, {kkk})");
+
+            RegistryKey key = Registry.LocalMachine.OpenSubKey($"{nameOfKey}{kkk}", true);
+            if (key != null)
+            {
+                try
+                {
+                    var values = key.GetValueNames();
+                    foreach (string value in values)
+                    {
+                        session.Log($"    Deleting Value '{value}'");
+                        key.DeleteValue(value);
+                    }
+
+                    key = Registry.LocalMachine.OpenSubKey($"{nameOfKey}", true);
+                    key?.DeleteSubKey(kkk);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        [CustomAction]
         public static ActionResult CleanUserRegistry(Session session)
         {
             session.Log($"Begin {nameof(CleanUserRegistry)}()");
@@ -118,14 +239,24 @@ namespace WiX.CustomAction
 
             try
             {
-                // Possible locations that (old) add-in may have been registered
-                var listOfKeys = new List<string>()
-                                 {
-                                     "Chemistry Add-in for Word",
-                                     "Chem4Word",
-                                     "Chem4Word V3",
-                                     "Chem4Word.V3"
-                                 };
+                var listOfKeys = new List<string>();
+
+                // Gather locations that (old) add-in has been registered
+                var rootKey = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\{OfficeKey}\Word\Addins", true);
+                foreach (var subKey in rootKey.GetSubKeyNames())
+                {
+                    var temp = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\{OfficeKey}\Word\Addins\{subKey}", true);
+                    if (temp != null)
+                    {
+                        var value = temp.GetValue("Manifest", "").ToString();
+                        if (value.Contains("/Chem4Word"))
+                        {
+                            session.Log($"  Adding target '{subKey}' with Manifest of '{value}'");
+                            listOfKeys.Add(subKey);
+                        }
+                    }
+                }
+
                 foreach (var key in listOfKeys)
                 {
                     DeleteUserKey(session, $@"SOFTWARE\{OfficeKey}\Word\Addins\", $"{key}");
@@ -186,7 +317,7 @@ namespace WiX.CustomAction
                     var values = key.GetValueNames();
                     foreach (string value in values)
                     {
-                        session.Log($"Deleting Value '{value}'");
+                        session.Log($"    Deleting Value '{value}'");
                         key.DeleteValue(value);
                     }
 

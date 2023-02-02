@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -115,7 +115,8 @@ namespace Chem4Word.Model2.Helpers
                         {
                             result += string.Concat($"{absCharge}".Select(c => SuperScriptNumbers[c - 48]));
                         }
-                        // ToDo: Unicode Superscript for + or -
+
+                        // Unicode Superscript for + or -
                         switch (part.Text)
                         {
                             case "+":

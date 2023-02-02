@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Copyright (c) 2022, The .NET Foundation.
+//  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -24,7 +24,7 @@ namespace Chem4WordSetup
     {
         private const string VersionsFile = "files3-2/Chem4Word-Versions.xml";
         private const string PrimaryDomain = "https://www.chem4word.co.uk";
-        private static readonly string[] Domains = { "https://www.chem4word.co.uk", "http://www.chem4word.com", "https://chem4word.azurewebsites.net" };
+        private static readonly string[] OurDomains = { "https://www.chem4word.co.uk", "http://www.chem4word.com", "https://chem4word.azurewebsites.net" };
         private const string VersionsFileMarker = "<Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>";
 
         private const string RegistryKeyName = @"SOFTWARE\Chem4Word V3";
@@ -32,7 +32,7 @@ namespace Chem4WordSetup
         private const string DetectV2AddIn = @"Chemistry Add-in for Word\Chem4Word.AddIn.vsto";
         private const string DetectV3AddIn = @"Chem4Word V3\Chem4Word.V3.vsto";
 
-        private const string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.6.Release.2.msi";
+        private const string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.7.Release.3.msi";
         private const string VstoInstaller = "https://www.chem4word.co.uk/files3-2/vstor_redist.exe";
 
         private WebClient _webClient;
@@ -276,7 +276,7 @@ namespace Chem4WordSetup
             var securityProtocol = ServicePointManager.SecurityProtocol;
             ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            foreach (var domain in Domains)
+            foreach (var domain in OurDomains)
             {
                 using (HttpClient client = new HttpClient())
                 {
