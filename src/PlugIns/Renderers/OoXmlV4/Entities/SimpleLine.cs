@@ -26,7 +26,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
         {
             var xDifference = Start.X - End.X;
             var yDifference = Start.Y - End.Y;
-            var length = Math.Sqrt(Math.Pow(xDifference, 2) + Math.Pow(yDifference, 2));
+            var length = Math.Sqrt(xDifference * xDifference + yDifference * yDifference);
 
             var newStartPoint = new Point((float)(Start.X - offset * yDifference / length),
                                           (float)(Start.Y + offset * xDifference / length));
