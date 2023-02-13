@@ -37,6 +37,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.UserEmailAddress = new System.Windows.Forms.TextBox();
             this.UserComments = new System.Windows.Forms.TextBox();
+            this.KBLinkLabel = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -83,10 +84,10 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(14, 256);
+            this.label1.Location = new System.Drawing.Point(10, 283);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(483, 32);
+            this.label1.Size = new System.Drawing.Size(482, 32);
             this.label1.TabIndex = 4;
             this.label1.Text = "What Chem4Word operations you doing at the time? (In English please.)\r\ni.e. \"Sear" +
     "ch Pubchem for xxx\", \"Edit Structure to change bond length\", ... ";
@@ -99,18 +100,18 @@
             this.label2.Location = new System.Drawing.Point(13, 6);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(188, 19);
+            this.label2.Size = new System.Drawing.Size(195, 19);
             this.label2.TabIndex = 0;
-            this.label2.Text = "An error has occured !";
+            this.label2.Text = "An error has occurred !";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(12, 200);
+            this.label3.Location = new System.Drawing.Point(10, 227);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(465, 16);
+            this.label3.Size = new System.Drawing.Size(464, 16);
             this.label3.TabIndex = 2;
             this.label3.Text = "Please include your email address below if you wish us to contact you!";
             // 
@@ -119,7 +120,7 @@
             this.UserEmailAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.UserEmailAddress.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UserEmailAddress.Location = new System.Drawing.Point(13, 220);
+            this.UserEmailAddress.Location = new System.Drawing.Point(13, 247);
             this.UserEmailAddress.Margin = new System.Windows.Forms.Padding(4);
             this.UserEmailAddress.Name = "UserEmailAddress";
             this.UserEmailAddress.Size = new System.Drawing.Size(498, 23);
@@ -132,19 +133,31 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.UserComments.Font = new System.Drawing.Font("Tahoma", 9.75F);
-            this.UserComments.Location = new System.Drawing.Point(13, 291);
+            this.UserComments.Location = new System.Drawing.Point(13, 318);
             this.UserComments.Multiline = true;
             this.UserComments.Name = "UserComments";
             this.UserComments.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.UserComments.Size = new System.Drawing.Size(498, 256);
+            this.UserComments.Size = new System.Drawing.Size(498, 229);
             this.UserComments.TabIndex = 7;
             this.UserComments.WordWrap = false;
+            // 
+            // KBLinkLabel
+            // 
+            this.KBLinkLabel.AutoSize = true;
+            this.KBLinkLabel.Location = new System.Drawing.Point(13, 202);
+            this.KBLinkLabel.Name = "KBLinkLabel";
+            this.KBLinkLabel.Size = new System.Drawing.Size(459, 16);
+            this.KBLinkLabel.TabIndex = 8;
+            this.KBLinkLabel.TabStop = true;
+            this.KBLinkLabel.Text = "Please visit our Knowledge Base to see if we are already aware of this issue.";
+            this.KBLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.KBLinkLabel_LinkClicked);
             // 
             // ReportError
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(629, 559);
+            this.Controls.Add(this.KBLinkLabel);
             this.Controls.Add(this.UserComments);
             this.Controls.Add(this.UserEmailAddress);
             this.Controls.Add(this.label3);
@@ -176,5 +189,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox UserEmailAddress;
         private System.Windows.Forms.TextBox UserComments;
+        private System.Windows.Forms.LinkLabel KBLinkLabel;
     }
 }
