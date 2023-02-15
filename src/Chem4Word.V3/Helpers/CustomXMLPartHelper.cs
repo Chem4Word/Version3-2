@@ -28,21 +28,19 @@ namespace Chem4Word.Helpers
         public static int ChemistryXmlParts(Word.Document doc)
             => AllChemistryParts(doc).Count;
 
-        public static CustomXMLPart FindCustomXmlPart(string id, Word.Document document)
+        public static CustomXMLPart FindCustomXmlPartInOtherDocuments(string id)
         {
             CustomXMLPart result = null;
 
-            Word.Document activeDocument = document;
-            string activeDocumentName = activeDocument.Name;
+            var activeDocumentName = Globals.Chem4WordV3.CurrentDocumentName;
 
-            foreach (Word.Document otherDocument in activeDocument.Application.Documents)
+            foreach (Word.Document otherDocument in Globals.Chem4WordV3.Application.Documents)
             {
                 if (!otherDocument.Name.Equals(activeDocumentName))
                 {
-                    foreach (
-                        CustomXMLPart customXmlPart in AllChemistryParts(otherDocument))
+                    foreach (CustomXMLPart customXmlPart in AllChemistryParts(otherDocument))
                     {
-                        string molId = GetCmlId(customXmlPart);
+                        var molId = GetCmlId(customXmlPart);
                         if (molId.Equals(id))
                         {
                             result = customXmlPart;
@@ -71,7 +69,7 @@ namespace Chem4Word.Helpers
             return guid;
         }
 
-        public static CustomXMLPart GetCustomXmlPart(string id, Word.Document activeDocument)
+        public static CustomXMLPart GetCustomXmlPart(string id, Word.Document doc)
         {
             CustomXMLPart result = null;
 
@@ -79,8 +77,6 @@ namespace Chem4Word.Helpers
 
             if (!string.IsNullOrEmpty(guid))
             {
-                Word.Document doc = activeDocument;
-
                 foreach (CustomXMLPart xmlPart in AllChemistryParts(doc))
                 {
                     string cmlId = GetCmlId(xmlPart);
@@ -117,49 +113,52 @@ namespace Chem4Word.Helpers
             return result;
         }
 
-        public static void RemoveOrphanedXmlParts(Word.Document doc)
+        public static void RemoveOrphanedXmlParts()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            Dictionary<string, int> referencedXmlParts = new Dictionary<string, int>();
-
-            foreach (Word.ContentControl cc in doc.ContentControls)
+            if (DocumentHelper.GetActiveDocument() != null)
             {
-                if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
-                {
-                    string guid = GuidFromTag(cc?.Tag);
+                Dictionary<string, int> referencedXmlParts = new Dictionary<string, int>();
 
-                    if (!string.IsNullOrEmpty(guid))
+                foreach (Word.ContentControl cc in DocumentHelper.GetActiveDocument().ContentControls)
+                {
+                    if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
                     {
-                        if (!referencedXmlParts.ContainsKey(guid))
+                        string guid = GuidFromTag(cc?.Tag);
+
+                        if (!string.IsNullOrEmpty(guid))
                         {
-                            referencedXmlParts.Add(guid, 1);
+                            if (!referencedXmlParts.ContainsKey(guid))
+                            {
+                                referencedXmlParts.Add(guid, 1);
+                            }
                         }
                     }
                 }
-            }
 
-            string backupFolder = Path.Combine(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath, "Backups");
-            string header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + Environment.NewLine;
+                string backupFolder = Path.Combine(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath, "Backups");
+                string header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + Environment.NewLine;
 
-            foreach (CustomXMLPart customXmlPart in AllChemistryParts(doc))
-            {
-                string molId = GetCmlId(customXmlPart);
-                if (!referencedXmlParts.ContainsKey(molId))
+                foreach (CustomXMLPart customXmlPart in AllChemistryParts(DocumentHelper.GetActiveDocument()))
                 {
-                    try
+                    string molId = GetCmlId(customXmlPart);
+                    if (!referencedXmlParts.ContainsKey(molId))
                     {
-                        string guid = Guid.NewGuid().ToString("N");
-                        string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+                        try
+                        {
+                            string guid = Guid.NewGuid().ToString("N");
+                            string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
 
-                        string fileName = Path.Combine(backupFolder, $"Chem4Word-Orphaned-Structure-{timestamp}-{guid}.cml");
-                        File.WriteAllText(fileName, header + customXmlPart.XML);
+                            string fileName = Path.Combine(backupFolder, $"Chem4Word-Orphaned-Structure-{timestamp}-{guid}.cml");
+                            File.WriteAllText(fileName, header + customXmlPart.XML);
 
-                        customXmlPart.Delete();
-                    }
-                    catch (Exception exception)
-                    {
-                        RegistryHelper.StoreException(module, exception);
+                            customXmlPart.Delete();
+                        }
+                        catch (Exception exception)
+                        {
+                            RegistryHelper.StoreException(module, exception);
+                        }
                     }
                 }
             }

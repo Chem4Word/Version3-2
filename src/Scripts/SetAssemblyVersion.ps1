@@ -43,7 +43,7 @@ function Update-SourceVersion
 		$assemblyVersion = 'AssemblyVersion("' + $version + '")';
 		$fileVersion = 'AssemblyFileVersion("' + $version + '")';
 		$company = 'AssemblyCompany("Chem4Word")'
-        $year = Get-Date -Format "yyyy";
+		$year = Get-Date -Format "yyyy";
 		$copyright = 'AssemblyCopyright("© Chem4Word ' + $year + '. All rights reserved.")'
 		$trademark = 'AssemblyTrademark("Chem4Word")'
 

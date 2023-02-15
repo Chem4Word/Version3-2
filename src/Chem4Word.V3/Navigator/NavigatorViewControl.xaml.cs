@@ -113,8 +113,8 @@ namespace Chem4Word.Navigator
 
         private void SelectNext(string tag)
         {
-            var currentSelPoint = ActiveDocument.ActiveWindow.Selection;
-            var linkedControls = (from Word.ContentControl cc in ActiveDocument.ContentControls
+            var currentSelPoint = DocumentHelper.GetActiveDocument().ActiveWindow.Selection;
+            var linkedControls = (from Word.ContentControl cc in DocumentHelper.GetActiveDocument().ContentControls
                                   orderby cc.Range.Start
                                   where CustomXmlPartHelper.GuidFromTag(cc.Tag) == tag
                                   select cc).ToList();
@@ -127,7 +127,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(DocumentHelper.GetActiveDocument().ActiveWindow.Selection);
                     return;
                 }
             }
@@ -140,7 +140,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(DocumentHelper.GetActiveDocument().ActiveWindow.Selection);
                     return;
                 }
             }
@@ -162,7 +162,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(DocumentHelper.GetActiveDocument().ActiveWindow.Selection);
                     return;
                 }
             }
@@ -175,7 +175,7 @@ namespace Chem4Word.Navigator
                 {
                     cc.Range.Select();
                     ActiveDocument.ActiveWindow.ScrollIntoView(cc.Range);
-                    Globals.Chem4WordV3.SelectChemistry(ActiveDocument, ActiveDocument.ActiveWindow.Selection);
+                    Globals.Chem4WordV3.SelectChemistry(DocumentHelper.GetActiveDocument().ActiveWindow.Selection);
                     return;
                 }
             }

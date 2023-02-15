@@ -5,13 +5,9 @@
     <Version>
         <Number>3.2.8 Release 4</Number>
         <IsBeta>false</IsBeta>
-        <Released>28-Feb-2023</Released>
+        <Released>15-Feb-2023</Released>
         <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
+            <Change>Fix Null Pointer Exceptions</Change>
             <Change>Internal: Replace use of Math.Power()</Change>
             <Change>Internal: Add link to Knowledge base</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>

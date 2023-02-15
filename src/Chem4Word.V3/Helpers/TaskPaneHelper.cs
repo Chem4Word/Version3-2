@@ -77,7 +77,7 @@ namespace Chem4Word.Helpers
                         }
                     }
 
-                    contentControl = ChemistryHelper.Insert2DChemistry(activeDocument, cmlConverter.Export(model), isCopy);
+                    contentControl = ChemistryHelper.Insert2DChemistry(cmlConverter.Export(model), isCopy);
                 }
                 catch (Exception ex)
                 {
@@ -157,7 +157,7 @@ namespace Chem4Word.Helpers
                         }
                     }
 
-                    contentControl = ChemistryHelper.Insert2DChemistry(activeDocument, cmlConverter.Export(model), isCopy);
+                    contentControl = ChemistryHelper.Insert2DChemistry(cmlConverter.Export(model), isCopy);
                 }
                 catch (Exception ex)
                 {

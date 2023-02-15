@@ -27,7 +27,7 @@ namespace Chem4Word.Helpers
 
         private static object _missing = Type.Missing;
 
-        public static Word.ContentControl Insert2DChemistry(Word.Document doc, string cml, bool isCopy)
+        public static Word.ContentControl Insert2DChemistry(string cml, bool isCopy)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -81,14 +81,14 @@ namespace Chem4Word.Helpers
                     var tempfileName = renderer.Render();
                     if (File.Exists(tempfileName))
                     {
-                        cc = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                        cc = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
                         Insert2D(cc.ID, tempfileName, guid);
 
                         Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl inserted at position {cc.Range.Start}");
 
                         if (isCopy)
                         {
-                            doc.CustomXMLParts.Add(cml);
+                            DocumentHelper.GetActiveDocument().CustomXMLParts.Add(cml);
                         }
 
                         try
@@ -121,7 +121,7 @@ namespace Chem4Word.Helpers
             return cc;
         }
 
-        public static Word.ContentControl Insert1DChemistry(Word.Document doc, string text, bool isFormula, string tag)
+        public static Word.ContentControl Insert1DChemistry(string text, bool isFormula, string tag)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -134,9 +134,9 @@ namespace Chem4Word.Helpers
 
             var wordSettings = new WordSettings(app);
 
-            var cc = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+            var cc = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
 
-            SetRichText(doc, cc.ID, text, isFormula);
+            SetRichText(cc.ID, text, isFormula);
 
             Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl inserted at position {cc.Range.Start}");
 
@@ -149,7 +149,7 @@ namespace Chem4Word.Helpers
             return cc;
         }
 
-        public static void RefreshAllStructures(Word.Document doc)
+        public static void RefreshAllStructures()
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -164,7 +164,7 @@ namespace Chem4Word.Helpers
 
             if (renderer != null)
             {
-                foreach (CustomXMLPart xmlPart in doc.CustomXMLParts)
+                foreach (CustomXMLPart xmlPart in DocumentHelper.GetActiveDocument().CustomXMLParts)
                 {
                     var cml = xmlPart.XML;
 
@@ -179,19 +179,19 @@ namespace Chem4Word.Helpers
                     var tempfileName = renderer.Render();
                     if (File.Exists(tempfileName))
                     {
-                        UpdateThisStructure(doc, model, cxmlId, tempfileName);
+                        UpdateThisStructure(model, cxmlId, tempfileName);
                     }
                 }
             }
         }
 
-        public static void UpdateThisStructure(Word.Document doc, Model model, string cxmlId, string tempFilename)
+        public static void UpdateThisStructure(Model model, string cxmlId, string tempFilename)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
             // Use LINQ to get a list of all our ContentControls
             // Using $"{}" to coerce null to empty string
-            var targets = (from Word.ContentControl ccs in doc.ContentControls
+            var targets = (from Word.ContentControl ccs in DocumentHelper.GetActiveDocument().ContentControls
                            orderby ccs.Range.Start
                            where $"{ccs.Title}" == Constants.ContentControlTitle
                                  && $"{ccs.Tag}".Contains(cxmlId)
@@ -212,7 +212,7 @@ namespace Chem4Word.Helpers
                     // Only 2D Structures if filename supplied
                     if (!string.IsNullOrEmpty(tempFilename))
                     {
-                        Update2D(doc, target.Key, tempFilename, cxmlId);
+                        Update2D(target.Key, tempFilename, cxmlId);
                     }
                 }
                 else
@@ -220,13 +220,13 @@ namespace Chem4Word.Helpers
                     // 1D Structures
                     if (prefix.Equals("c0"))
                     {
-                        Update1D(doc, target.Key, model.ConciseFormula, true, $"c0:{cxmlId}");
+                        Update1D(target.Key, model.ConciseFormula, true, $"c0:{cxmlId}");
                     }
                     else
                     {
                         var isFormula = false;
                         var text = GetInlineText(model, prefix, ref isFormula, out _);
-                        Update1D(doc, target.Key, text, isFormula, $"{prefix}:{cxmlId}");
+                        Update1D(target.Key, text, isFormula, $"{prefix}:{cxmlId}");
                     }
                 }
             }
@@ -242,7 +242,7 @@ namespace Chem4Word.Helpers
             var activeDocument = DocumentHelper.GetActiveDocument();
             var wordSettings = new WordSettings(application);
 
-            var contentControl = GetContentControl(activeDocument, ccId);
+            var contentControl = GetContentControl(ccId);
 
             var bookmarkName = Constants.OoXmlBookmarkPrefix + guid;
 
@@ -259,13 +259,13 @@ namespace Chem4Word.Helpers
             contentControl.LockContents = true;
         }
 
-        private static void Update2D(Word.Document doc, string ccId, string tempfileName, string guid)
+        private static void Update2D(string ccId, string tempfileName, string guid)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
             Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Updating 2D structure in ContentControl {ccId} Tag {guid}");
 
-            var cc = GetContentControl(doc, ccId);
+            var cc = GetContentControl(ccId);
             if (cc != null)
             {
                 var app = Globals.Chem4WordV3.Application;
@@ -277,7 +277,7 @@ namespace Chem4Word.Helpers
                     // Handle old Word 2007 style
                     var range = cc.Range;
                     cc.Delete();
-                    cc = doc.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, range);
+                    cc = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, range);
                     cc.Tag = guid;
                     cc.Title = Constants.ContentControlTitle;
                     cc.Range.Delete();
@@ -289,9 +289,9 @@ namespace Chem4Word.Helpers
 
                 var bookmarkName = Constants.OoXmlBookmarkPrefix + guid;
                 cc.Range.InsertFile(tempfileName, bookmarkName);
-                if (doc.Bookmarks.Exists(bookmarkName))
+                if (DocumentHelper.GetActiveDocument().Bookmarks.Exists(bookmarkName))
                 {
-                    doc.Bookmarks[bookmarkName].Delete();
+                    DocumentHelper.GetActiveDocument().Bookmarks[bookmarkName].Delete();
                 }
 
                 wordSettings.RestoreSettings(app);
@@ -307,19 +307,19 @@ namespace Chem4Word.Helpers
             }
         }
 
-        public static void Insert1D(Word.Document doc, string ccId, string text, bool isFormula, string tag)
+        public static void Insert1D(string ccId, string text, bool isFormula, string tag)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
             Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Inserting 1D label in ContentControl {ccId} Tag {tag}");
 
-            var cc = GetContentControl(doc, ccId);
+            var cc = GetContentControl(ccId);
             if (cc != null)
             {
                 var app = Globals.Chem4WordV3.Application;
                 var wordSettings = new WordSettings(app);
 
-                SetRichText(doc, cc.ID, text, isFormula);
+                SetRichText(cc.ID, text, isFormula);
 
                 Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl updated at position {cc.Range.Start}");
 
@@ -331,13 +331,13 @@ namespace Chem4Word.Helpers
             }
         }
 
-        private static void Update1D(Word.Document doc, string ccId, string text, bool isFormula, string tag)
+        private static void Update1D(string ccId, string text, bool isFormula, string tag)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
             Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Updating 1D label in ContentControl {ccId} Tag {tag}");
 
-            var cc = GetContentControl(doc, ccId);
+            var cc = GetContentControl(ccId);
             if (cc != null)
             {
                 var app = Globals.Chem4WordV3.Application;
@@ -346,7 +346,7 @@ namespace Chem4Word.Helpers
                 cc.LockContents = false;
                 cc.Range.Delete();
 
-                SetRichText(doc, cc.ID, text, isFormula);
+                SetRichText(cc.ID, text, isFormula);
 
                 Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl updated at position {cc.Range.Start}");
 
@@ -389,11 +389,11 @@ namespace Chem4Word.Helpers
             return text;
         }
 
-        public static Word.ContentControl GetContentControl(Word.Document doc, string Id)
+        public static Word.ContentControl GetContentControl(string Id)
         {
             Word.ContentControl result = null;
 
-            foreach (Word.ContentControl contentControl in doc.ContentControls)
+            foreach (Word.ContentControl contentControl in DocumentHelper.GetActiveDocument().ContentControls)
             {
                 if (contentControl.ID.Equals(Id))
                 {
@@ -405,11 +405,11 @@ namespace Chem4Word.Helpers
             return result;
         }
 
-        private static void SetRichText(Word.Document doc, string ccId, string text, bool isFormula)
+        private static void SetRichText(string ccId, string text, bool isFormula)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            var cc = GetContentControl(doc, ccId);
+            var cc = GetContentControl(ccId);
             if (cc != null)
             {
                 if (isFormula)
@@ -491,12 +491,12 @@ namespace Chem4Word.Helpers
             }
         }
 
-        public static List<string> GetUsed1D(Word.Document doc, string guidString)
+        public static List<string> GetUsed1D(string guidString)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
             // Using $"{}" to coerce null to empty string
-            var targets = (from Word.ContentControl ccs in doc.ContentControls
+            var targets = (from Word.ContentControl ccs in DocumentHelper.GetActiveDocument().ContentControls
                            orderby ccs.Range.Start
                            where $"{ccs.Title}" == Constants.ContentControlTitle
                                  && $"{ccs.Tag}".Contains(guidString)
@@ -506,12 +506,12 @@ namespace Chem4Word.Helpers
             return targets;
         }
 
-        public static List<string> GetUsed2D(Word.Document doc, string guidString)
+        public static List<string> GetUsed2D(string guidString)
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod().Name}()";
 
             // Using $"{}" to coerce null to empty string
-            var targets = (from Word.ContentControl ccs in doc.ContentControls
+            var targets = (from Word.ContentControl ccs in DocumentHelper.GetActiveDocument().ContentControls
                            orderby ccs.Range.Start
                            where $"{ccs.Title}" == Constants.ContentControlTitle
                                  && $"{ccs.Tag}".Equals(guidString)

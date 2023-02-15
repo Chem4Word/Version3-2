@@ -339,7 +339,7 @@ namespace Chem4Word.Telemetry
 
             var processId = 666;
             var machineId = "00000000-0000-0000-0000-000000000000";
-            var versionNumber = $"{Constants.Chem4WordVersion}.7.666";
+            var versionNumber = $"{Constants.Chem4WordVersion}.666.666";
 
             try
             {
@@ -363,6 +363,7 @@ namespace Chem4Word.Telemetry
             {
                 //
             }
+
             var sbm = new OutputMessage(processId)
             {
                 MachineId = machineId,

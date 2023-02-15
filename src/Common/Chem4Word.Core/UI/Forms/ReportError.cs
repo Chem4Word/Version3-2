@@ -8,6 +8,7 @@
 using Chem4Word.Core.Helpers;
 using IChem4Word.Contracts;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -106,9 +107,9 @@ namespace Chem4Word.Core.UI.Forms
 
         private void KBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             _telemetry.Write(module, "Action", "Triggered");
-            System.Diagnostics.Process.Start("https://www.chem4word.co.uk/knowledge-base/");
+            Process.Start("https://www.chem4word.co.uk/knowledge-base/");
         }
     }
 }
