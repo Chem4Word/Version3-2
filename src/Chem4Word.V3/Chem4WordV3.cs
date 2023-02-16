@@ -1245,64 +1245,68 @@ namespace Chem4Word
                 {
                     var ccCount = sel.ContentControls.Count;
 
-                    var targets = (from Word.ContentControl ccs in DocumentHelper.GetActiveDocument().ContentControls
-                                   orderby ccs.Range.Start
-                                   where $"{ccs.Title}" == Constants.ContentControlTitle
-                                   select ccs).ToList();
-
-                    foreach (var cc in targets)
+                    var activeDocument = DocumentHelper.GetActiveDocument();
+                    if (activeDocument != null)
                     {
-                        // Already Selected
-                        if (sel.Range.Start == cc.Range.Start - 1 && sel.Range.End == cc.Range.End + 1)
+                        var targets = (from Word.ContentControl ccs in activeDocument.ContentControls
+                                       orderby ccs.Range.Start
+                                       where $"{ccs.Title}" == Constants.ContentControlTitle
+                                       select ccs).ToList();
+
+                        foreach (var cc in targets)
                         {
-                            if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
+                            // Already Selected
+                            if (sel.Range.Start == cc.Range.Start - 1 && sel.Range.End == cc.Range.End + 1)
                             {
-                                NavigatorSupport.SelectNavigatorItem(CustomXmlPartHelper.GuidFromTag(cc.Tag));
-                                chemistrySelected = true;
+                                if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
+                                {
+                                    NavigatorSupport.SelectNavigatorItem(CustomXmlPartHelper.GuidFromTag(cc.Tag));
+                                    chemistrySelected = true;
+                                }
+                                break;
                             }
-                            break;
+
+                            // Inside CC
+                            if (sel.Range.Start >= cc.Range.Start && sel.Range.End <= cc.Range.End)
+                            {
+                                if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
+                                {
+                                    DocumentHelper.GetActiveDocument().Application.Selection.SetRange(cc.Range.Start - 1, cc.Range.End + 1);
+                                    NavigatorSupport.SelectNavigatorItem(CustomXmlPartHelper.GuidFromTag(cc.Tag));
+                                    chemistrySelected = true;
+                                }
+                                break;
+                            }
                         }
 
-                        // Inside CC
-                        if (sel.Range.Start >= cc.Range.Start && sel.Range.End <= cc.Range.End)
+                        if (VersionsBehind >= Constants.MaximumVersionsBehind)
                         {
-                            if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
-                            {
-                                DocumentHelper.GetActiveDocument().Application.Selection.SetRange(cc.Range.Start - 1, cc.Range.End + 1);
-                                NavigatorSupport.SelectNavigatorItem(CustomXmlPartHelper.GuidFromTag(cc.Tag));
-                                chemistrySelected = true;
-                            }
-                            break;
-                        }
-                    }
-
-                    if (VersionsBehind >= Constants.MaximumVersionsBehind)
-                    {
-                        SetButtonStates(ButtonState.Disabled);
-                        ChemistryProhibitedReason = Constants.Chem4WordTooOld;
-                    }
-                    else
-                    {
-                        if (chemistrySelected)
-                        {
-                            Ribbon.ActivateChemistryTab();
-                            SetButtonStates(ButtonState.CanEdit);
+                            SetButtonStates(ButtonState.Disabled);
+                            ChemistryProhibitedReason = Constants.Chem4WordTooOld;
                         }
                         else
                         {
-                            if (ccCount == 0)
+                            if (chemistrySelected)
                             {
-                                SetButtonStates(ButtonState.CanInsert);
+                                Ribbon.ActivateChemistryTab();
+                                SetButtonStates(ButtonState.CanEdit);
                             }
                             else
                             {
-                                SetButtonStates(ButtonState.NoDocument);
-                                ChemistryProhibitedReason = "more than a single content control selected";
+                                if (ccCount == 0)
+                                {
+                                    SetButtonStates(ButtonState.CanInsert);
+                                }
+                                else
+                                {
+                                    SetButtonStates(ButtonState.NoDocument);
+                                    ChemistryProhibitedReason = "more than a single content control selected";
+                                }
                             }
                         }
-                    }
 
-                    _chemistrySelected = chemistrySelected;
+                        _chemistrySelected = chemistrySelected;
+                    }
                 }
             }
             catch (Exception e)
@@ -1503,9 +1507,10 @@ namespace Chem4Word
                     // Limit to selections which have less than 5 sentences
                     if (selection != null && selection.Sentences != null && selection.Sentences.Count <= 5)
                     {
-                        if (DocumentHelper.GetActiveDocument() != null)
+                        var activeDocument = DocumentHelper.GetActiveDocument();
+                        if (activeDocument != null)
                         {
-                            var last = DocumentHelper.GetActiveDocument().Range().End;
+                            var last = activeDocument.Range().End;
                             var sentenceCount = selection.Sentences.Count;
                             // Handling the selected text sentence by sentence should make us immune to return character sizing.
                             for (var i = 1; i <= sentenceCount; i++)
@@ -1520,7 +1525,7 @@ namespace Chem4Word
                                     end = Math.Min(end, last);
                                     if (start < end)
                                     {
-                                        var range = DocumentHelper.GetActiveDocument().Range(start, end);
+                                        var range = activeDocument.Range(start, end);
                                         //Exclude any ranges which contain content controls
                                         if (range.ContentControls.Count == 0)
                                         {
@@ -1847,8 +1852,8 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        var taskdoc = ((Word.Window)taskPane.Window).Document.Name;
-                        if (DocumentHelper.GetActiveDocument().Name.Equals(taskdoc))
+                        var documentName = ((Word.Window)taskPane.Window).Document.Name;
+                        if (DocumentHelper.GetActiveDocument().Name.Equals(documentName))
                         {
                             if (taskPane.Title.Equals(Constants.LibraryTaskPaneTitle))
                             {
@@ -1911,8 +1916,8 @@ namespace Chem4Word
                 {
                     if (taskPane.Window != null)
                     {
-                        var taskdoc = ((Word.Window)taskPane.Window).Document.Name;
-                        if (DocumentHelper.GetActiveDocument().Name.Equals(taskdoc))
+                        var documentName = ((Word.Window)taskPane.Window).Document.Name;
+                        if (DocumentHelper.GetActiveDocument().Name.Equals(documentName))
                         {
                             if (taskPane.Title.Equals(Constants.NavigatorTaskPaneTitle))
                             {
