@@ -5,16 +5,17 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.MDL
 {
@@ -312,6 +313,16 @@ namespace Chem4Word.Model2.Converters.MDL
                     Bond thisBond = new Bond();
                     thisBond.StartAtomInternalId = atom1.InternalId;
                     thisBond.EndAtomInternalId = atom2.InternalId;
+
+                    //check for duplicate bond
+                    var duplicates = (from b in _molecule.Bonds
+                                      where b.StartAtomInternalId == thisBond.StartAtomInternalId && b.EndAtomInternalId == thisBond.EndAtomInternalId
+                                            || b.EndAtomInternalId == thisBond.StartAtomInternalId && b.StartAtomInternalId == thisBond.EndAtomInternalId
+                                      select b).Any();
+                    if (duplicates)
+                    {
+                        throw new ArgumentException($"Duplicate bond {thisBond.Id}: atoms [{atomNumber1}, {atomNumber2}] are already connected by a bond.");
+                    }
 
                     // Bond Order
                     string order = GetSubString(line, 6, 3);

@@ -5,6 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,9 +16,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Enums;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.Model2.Converters.CML
 {
@@ -828,6 +828,15 @@ namespace Chem4Word.Model2.Converters.CML
                 if (newBond.Messages.Count > 0)
                 {
                     molecule.Errors.AddRange(newBond.Messages);
+                }
+                //check for duplicate bond
+                var duplicates = (from b in molecule.Bonds
+                                  where b.StartAtomInternalId == newBond.StartAtomInternalId && b.EndAtomInternalId == newBond.EndAtomInternalId
+                                      || b.EndAtomInternalId == newBond.StartAtomInternalId && b.StartAtomInternalId == newBond.EndAtomInternalId
+                                  select b).Any();
+                if (duplicates)
+                {
+                    throw new ArgumentException($"Duplicate bond {newBond.Id}: atoms [{bondElement.Attribute("atomRefs2").Value}] are already connected by a bond.");
                 }
 
                 molecule.AddBond(newBond);
