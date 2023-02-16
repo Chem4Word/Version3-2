@@ -502,6 +502,7 @@ namespace Chem4Word
                         if (string.IsNullOrEmpty(SystemOptions.SelectedEditorPlugIn))
                         {
                             SystemOptions.SelectedEditorPlugIn = Constants.DefaultEditorPlugIn;
+                            settingsChanged = true;
                         }
                         else
                         {
@@ -520,6 +521,7 @@ namespace Chem4Word
                         if (string.IsNullOrEmpty(SystemOptions.SelectedRendererPlugIn))
                         {
                             SystemOptions.SelectedRendererPlugIn = Constants.DefaultRendererPlugIn;
+                            settingsChanged = true;
                         }
                         else
                         {
@@ -2231,22 +2233,24 @@ namespace Chem4Word
                 {
                     if (Application.Documents != null && Application.Documents.Count > 0)
                     {
+                        Word.Document activeDocument = null;
                         try
                         {
-                            var dummy = DocumentHelper.GetActiveDocument();
+                            activeDocument = DocumentHelper.GetActiveDocument();
                         }
                         catch
                         {
                             // This only happens when document is in protected mode
                             allowed = false;
+                            activeDocument = null;
                             ChemistryProhibitedReason = "document is readonly.";
                         }
 
-                        if (allowed && DocumentHelper.GetActiveDocument() != null)
+                        if (allowed && activeDocument != null)
                         {
                             try
                             {
-                                if (DocumentHelper.GetActiveDocument().CompatibilityMode < (int)Word.WdCompatibilityMode.wdWord2010)
+                                if (activeDocument.CompatibilityMode < (int)Word.WdCompatibilityMode.wdWord2010)
                                 {
                                     allowed = false;
                                     ChemistryProhibitedReason = "document is in compatibility mode.";
@@ -2261,7 +2265,7 @@ namespace Chem4Word
                             try
                             {
                                 //if (doc.CoAuthoring.Conflicts.Count > 0) // <-- This clears current selection ???
-                                if (DocumentHelper.GetActiveDocument().CoAuthoring.Locks.Count > 0)
+                                if (activeDocument.CoAuthoring.Locks.Count > 0)
                                 {
                                     allowed = false;
                                     ChemistryProhibitedReason = "document is in co-authoring mode.";
@@ -2274,7 +2278,7 @@ namespace Chem4Word
 
                             try
                             {
-                                if (allowed && DocumentHelper.GetActiveDocument().IsSubdocument)
+                                if (allowed && activeDocument.IsSubdocument)
                                 {
                                     ChemistryProhibitedReason = "current document is a sub document.";
                                     allowed = false;
@@ -2362,7 +2366,7 @@ namespace Chem4Word
                                 {
                                     Word.WdContentControlType? contentControlType = null;
                                     var title = "";
-                                    foreach (Word.ContentControl ccd in DocumentHelper.GetActiveDocument().ContentControls)
+                                    foreach (Word.ContentControl ccd in activeDocument.ContentControls)
                                     {
                                         if (ccd.Range.Start <= sel.Range.Start && ccd.Range.End >= sel.Range.End)
                                         {

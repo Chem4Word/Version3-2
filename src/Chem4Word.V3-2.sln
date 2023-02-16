@@ -90,10 +90,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{53F5
 		Scripts\Clone-Setup-V3.ps1 = Scripts\Clone-Setup-V3.ps1
 		Scripts\Clone-Setup-V31.ps1 = Scripts\Clone-Setup-V31.ps1
 		Scripts\Detect-Invalid-Config.ps1 = Scripts\Detect-Invalid-Config.ps1
-		Scripts\GetBackToSquareOne.ps1 = Scripts\GetBackToSquareOne.ps1
 		Scripts\Install-Dev-Certificate.ps1 = Scripts\Install-Dev-Certificate.ps1
-		Scripts\SetAssemblyVersion.ps1 = Scripts\SetAssemblyVersion.ps1
+		Scripts\Get-Back-To-Square-One.ps1 = Scripts\Get-Back-To-Square-One.ps1
+		Scripts\Reset-User-Settings.ps1 = Scripts\Reset-User-Settings.ps1
 		Scripts\SignAssembly.ps1 = Scripts\SignAssembly.ps1
+		Scripts\Set-Assembly-Version.ps1 = Scripts\Set-Assembly-Version.ps1
 		Scripts\SignFiles.cmd = Scripts\SignFiles.cmd
 	EndProjectSection
 EndProject
