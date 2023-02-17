@@ -21,7 +21,7 @@
         <IsBeta>false</IsBeta>
         <Released>15-Feb-2023</Released>
         <Changes>
-            <Change>Fix Null Pointer Exceptions</Change>
+            <Change>BugFix: Handle Null Pointer Exceptions</Change>
             <Change>Internal: Replace use of Math.Power()</Change>
             <Change>Internal: Add link to Knowledge base</Change>
         </Changes>

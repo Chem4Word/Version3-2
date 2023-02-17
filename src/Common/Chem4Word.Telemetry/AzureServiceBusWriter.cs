@@ -57,6 +57,7 @@ namespace Chem4Word.Telemetry
                 }
                 catch
                 {
+                    Debugger.Break();
                     // Do nothing
                 }
             }
@@ -148,6 +149,7 @@ namespace Chem4Word.Telemetry
             }
             catch (Exception exception)
             {
+                Debugger.Break();
                 Debug.WriteLine($"Exception in WriteMessage: {exception.Message}");
 
                 try
