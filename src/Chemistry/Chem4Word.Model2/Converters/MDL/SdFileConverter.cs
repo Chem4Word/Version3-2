@@ -5,13 +5,13 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Chem4Word.Core.Helpers;
-using Newtonsoft.Json;
 
 namespace Chem4Word.Model2.Converters.MDL
 {
@@ -87,7 +87,9 @@ namespace Chem4Word.Model2.Converters.MDL
                                 molecule.Parent = model;
                                 if (model.Molecules.Count >= 16)
                                 {
-                                    model.GeneralErrors.Add("This file has greater than 16 structures!");
+                                    // Have to add this as a GeneralError as we are not at molecule level here.
+                                    model.GeneralErrors.Add("Warning: This file has greater than 16 structures!");
+                                    model.GeneralErrors.Add("Only the first 16 have been imported.");
                                     sr.ReadToEnd();
                                 }
 

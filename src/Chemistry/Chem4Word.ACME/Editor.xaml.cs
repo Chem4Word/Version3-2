@@ -5,14 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 using Chem4Word.ACME.Behaviors;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Core.UI.Wpf;
@@ -21,6 +13,14 @@ using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME
 {
@@ -110,24 +110,6 @@ namespace Chem4Word.ACME
                 else
                 {
                     return ActiveController.IsDirty;
-                }
-            }
-        }
-
-        public string Cml
-        {
-            get
-            {
-                if (ActiveController == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    CMLConverter cc = new CMLConverter();
-                    Model model = ActiveController.Model.Copy();
-                    model.RescaleForCml();
-                    return cc.Export(model);
                 }
             }
         }

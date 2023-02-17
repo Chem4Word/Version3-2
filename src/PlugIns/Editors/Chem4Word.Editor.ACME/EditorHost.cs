@@ -5,12 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Windows.Forms;
 using Chem4Word.ACME;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
@@ -19,6 +13,12 @@ using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
+using System.Windows;
+using System.Windows.Forms;
 using Size = System.Drawing.Size;
 
 namespace Chem4Word.Editor.ACME

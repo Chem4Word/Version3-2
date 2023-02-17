@@ -66,7 +66,7 @@ namespace Chem4Word.Model2.Converters.MDL
                     }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 message = ex.Message;
@@ -314,14 +314,15 @@ namespace Chem4Word.Model2.Converters.MDL
                     thisBond.StartAtomInternalId = atom1.InternalId;
                     thisBond.EndAtomInternalId = atom2.InternalId;
 
-                    //check for duplicate bond
+                    // Check for duplicate bond
                     var duplicates = (from b in _molecule.Bonds
                                       where b.StartAtomInternalId == thisBond.StartAtomInternalId && b.EndAtomInternalId == thisBond.EndAtomInternalId
                                             || b.EndAtomInternalId == thisBond.StartAtomInternalId && b.StartAtomInternalId == thisBond.EndAtomInternalId
                                       select b).Any();
                     if (duplicates)
                     {
-                        throw new ArgumentException($"Duplicate bond {thisBond.Id}: atoms [{atomNumber1}, {atomNumber2}] are already connected by a bond.");
+                        _molecule.Errors.Add($"Duplicate bond at line {SdFileConverter.LineNumber}: atoms [{atomNumber1} & {atomNumber2}] are already connected by a bond.");
+                        _molecule.Warnings.Add($"{line}");
                     }
 
                     // Bond Order
@@ -777,7 +778,7 @@ namespace Chem4Word.Model2.Converters.MDL
             // Translates from the molfile enumerated atomic charge cum doublet radical to the model formal charge
             int formalCharge = 0;
 
-            #region Translate from mdl to cml
+            #region Translate from mdl to our model
 
             switch (chargemunge)
             {
@@ -810,7 +811,7 @@ namespace Chem4Word.Model2.Converters.MDL
                     break;
             }
 
-            #endregion Translate from mdl to cml
+            #endregion Translate from mdl to our model
 
             return formalCharge;
         }

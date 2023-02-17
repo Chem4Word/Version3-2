@@ -5,15 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 using Chem4Word.ACME;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
@@ -33,6 +24,15 @@ using Chem4Word.UI.WPF;
 using IChem4Word.Contracts;
 using Microsoft.Office.Core;
 using Microsoft.Office.Tools.Ribbon;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 using CustomTaskPane = Microsoft.Office.Tools.CustomTaskPane;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
@@ -117,7 +117,6 @@ namespace Chem4Word
                 if (Globals.Chem4WordV3.ChemistryAllowed)
                 {
                     var application = Globals.Chem4WordV3.Application;
-                    var activeDocument = DocumentHelper.GetActiveDocument();
                     Word.ContentControl contentControl = null;
 
                     try
@@ -257,7 +256,6 @@ namespace Chem4Word
                 ShowAsMenu.Items.Clear();
 
                 var application = Globals.Chem4WordV3.Application;
-                var activeDocument = DocumentHelper.GetActiveDocument();
                 var selection = application.Selection;
                 Word.ContentControl contentControl = null;
                 CustomXMLPart customXmlPart = null;
@@ -492,11 +490,15 @@ namespace Chem4Word
                             if (model != null)
                             {
                                 dialogResult = DialogResult.OK;
-                                if (model.AllErrors.Count > 0 || model.AllWarnings.Count > 0)
+                                if (model.GeneralErrors.Count > 0 || model.AllErrors.Count > 0 || model.AllWarnings.Count > 0)
                                 {
                                     if (model.AllErrors.Count > 0)
                                     {
                                         Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllErrors));
+                                    }
+                                    if (model.GeneralErrors.Count > 0)
+                                    {
+                                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.GeneralErrors));
                                     }
                                     if (model.AllWarnings.Count > 0)
                                     {
@@ -782,175 +784,195 @@ namespace Chem4Word
                                         var beforeModel = cmlConverter.Import(beforeCml, used1D);
                                         var afterModel = cmlConverter.Import(editor.Cml, used1D);
 
-                                        var oldMolecules = beforeModel.GetAllMolecules();
-                                        var newMolecules = afterModel.GetAllMolecules();
-
-                                        if (!editor.CanEditNestedMolecules)
+                                        if (afterModel.AllErrors.Count == 0 && afterModel.AllWarnings.Count == 0)
                                         {
-                                            foreach (var molecule in newMolecules)
-                                            {
-                                                var mol = oldMolecules.FirstOrDefault(m => m.Path.Equals(molecule.Path));
-                                                if (mol != null)
-                                                {
-                                                    // Copy over existing Formulae and Names if Paths match
-                                                    foreach (var formula in mol.Formulas)
-                                                    {
-                                                        molecule.Formulas.Add(formula);
-                                                    }
+                                            var oldMolecules = beforeModel.GetAllMolecules();
+                                            var newMolecules = afterModel.GetAllMolecules();
 
-                                                    foreach (var name in mol.Names)
+                                            if (!editor.CanEditNestedMolecules)
+                                            {
+                                                foreach (var molecule in newMolecules)
+                                                {
+                                                    var mol = oldMolecules.FirstOrDefault(m => m.Path.Equals(molecule.Path));
+                                                    if (mol != null)
                                                     {
-                                                        molecule.Names.Add(name);
+                                                        // Copy over existing Formulae and Names if Paths match
+                                                        foreach (var formula in mol.Formulas)
+                                                        {
+                                                            molecule.Formulas.Add(formula);
+                                                        }
+
+                                                        foreach (var name in mol.Names)
+                                                        {
+                                                            molecule.Names.Add(name);
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
 
-                                        var pc = new WebServices.PropertyCalculator(Globals.Chem4WordV3.Telemetry,
-                                                                                    Globals.Chem4WordV3.WordTopLeft,
-                                                                                    Globals.Chem4WordV3.AddInInfo.AssemblyVersionNumber);
-                                        var changedProperties = pc.CalculateProperties(newMolecules);
+                                            var pc = new WebServices.PropertyCalculator(Globals.Chem4WordV3.Telemetry,
+                                                                                        Globals.Chem4WordV3.WordTopLeft,
+                                                                                        Globals.Chem4WordV3.AddInInfo.AssemblyVersionNumber);
+                                            var changedProperties = pc.CalculateProperties(newMolecules);
 
-                                        if (isNewDrawing)
-                                        {
-                                            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Finished creating new structure {fullTag}");
-                                        }
-                                        else
-                                        {
-                                            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Finished editing existing structure {fullTag}");
-                                        }
-
-                                        // Copy back CustomXmlPartGuid which will get lost if edited via ChemDoodle Web
-                                        if (string.IsNullOrEmpty(afterModel.CustomXmlPartGuid))
-                                        {
-                                            afterModel.CustomXmlPartGuid = guidString;
-                                        }
-
-                                        #region Show Label Editor
-
-                                        if (changedProperties > 0)
-                                        {
-                                            using (var host =
-                                                   new EditLabelsHost(
-                                                       new AcmeOptions(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath)))
+                                            if (isNewDrawing)
                                             {
-                                                host.TopLeft = Globals.Chem4WordV3.WordTopLeft;
-                                                host.Cml = cmlConverter.Export(afterModel);
-                                                host.Used1D = used1D;
-
-                                                host.Message = "Warning: At least one formula or name has changed; Please correct or delete any which are unnecessary or irrelevant !";
-
-                                                // Show Label Editor
-                                                var dr = host.ShowDialog();
-                                                if (dr == DialogResult.OK)
-                                                {
-                                                    afterModel = cmlConverter.Import(host.Cml, used1D);
-                                                }
-
-                                                host.Close();
+                                                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Finished creating new structure {fullTag}");
                                             }
-                                        }
-
-                                        #endregion Show Label Editor
-
-                                        var afterCml = cmlConverter.Export(afterModel);
-
-                                        Globals.Chem4WordV3.SystemOptions.WordTopLeft = Globals.Chem4WordV3.WordTopLeft;
-                                        var renderer =
-                                            Globals.Chem4WordV3.GetRendererPlugIn(
-                                                Globals.Chem4WordV3.SystemOptions.SelectedRendererPlugIn);
-
-                                        if (renderer == null)
-                                        {
-                                            UserInteractions.WarnUser("Unable to find a Renderer Plug-In");
-                                        }
-                                        else
-                                        {
-                                            // Always render the file.
-                                            renderer.Properties = new Dictionary<string, string>();
-                                            renderer.Properties.Add("Guid", guidString);
-                                            renderer.Cml = afterCml;
-
-                                            var tempfileName = renderer.Render();
-
-                                            var readyToInsert = true;
-
-                                            if (!isNewDrawing)
+                                            else
                                             {
-                                                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Erasing old ContentControl {contentControl.ID}");
+                                                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Finished editing existing structure {fullTag}");
+                                            }
 
-                                                contentControl = ChemistryHelper.GetContentControl(contentControl.ID);
-                                                if (contentControl != null)
+                                            // Copy back CustomXmlPartGuid which will get lost if edited via ChemDoodle Web
+                                            if (string.IsNullOrEmpty(afterModel.CustomXmlPartGuid))
+                                            {
+                                                afterModel.CustomXmlPartGuid = guidString;
+                                            }
+
+                                            #region Show Label Editor
+
+                                            if (changedProperties > 0)
+                                            {
+                                                using (var host =
+                                                       new EditLabelsHost(
+                                                           new AcmeOptions(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath)))
                                                 {
-                                                    // Erase old CC
-                                                    contentControl.LockContents = false;
-                                                    if (contentControl.Type == Word.WdContentControlType.wdContentControlPicture)
+                                                    host.TopLeft = Globals.Chem4WordV3.WordTopLeft;
+                                                    host.Cml = cmlConverter.Export(afterModel);
+                                                    host.Used1D = used1D;
+
+                                                    host.Message = "Warning: At least one formula or name has changed; Please correct or delete any which are unnecessary or irrelevant !";
+
+                                                    // Show Label Editor
+                                                    var dr = host.ShowDialog();
+                                                    if (dr == DialogResult.OK)
                                                     {
-                                                        contentControl.Range.InlineShapes[1].Delete();
+                                                        afterModel = cmlConverter.Import(host.Cml, used1D);
+                                                    }
+
+                                                    host.Close();
+                                                }
+                                            }
+
+                                            #endregion Show Label Editor
+
+                                            var afterCml = cmlConverter.Export(afterModel);
+
+                                            Globals.Chem4WordV3.SystemOptions.WordTopLeft = Globals.Chem4WordV3.WordTopLeft;
+                                            var renderer =
+                                                Globals.Chem4WordV3.GetRendererPlugIn(
+                                                    Globals.Chem4WordV3.SystemOptions.SelectedRendererPlugIn);
+
+                                            if (renderer == null)
+                                            {
+                                                UserInteractions.WarnUser("Unable to find a Renderer Plug-In");
+                                            }
+                                            else
+                                            {
+                                                // Always render the file.
+                                                renderer.Properties = new Dictionary<string, string>();
+                                                renderer.Properties.Add("Guid", guidString);
+                                                renderer.Cml = afterCml;
+
+                                                var tempfileName = renderer.Render();
+
+                                                var readyToInsert = true;
+
+                                                if (!isNewDrawing)
+                                                {
+                                                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Erasing old ContentControl {contentControl.ID}");
+
+                                                    contentControl = ChemistryHelper.GetContentControl(contentControl.ID);
+                                                    if (contentControl != null)
+                                                    {
+                                                        // Erase old CC
+                                                        contentControl.LockContents = false;
+                                                        if (contentControl.Type == Word.WdContentControlType.wdContentControlPicture)
+                                                        {
+                                                            contentControl.Range.InlineShapes[1].Delete();
+                                                        }
+                                                        else
+                                                        {
+                                                            contentControl.Range.Delete();
+                                                        }
+
+                                                        contentControl.Delete();
                                                     }
                                                     else
                                                     {
-                                                        contentControl.Range.Delete();
+                                                        readyToInsert = false;
+                                                    }
+                                                }
+
+                                                if (readyToInsert)
+                                                {
+                                                    // Insert a new CC
+                                                    contentControl = activeDocument.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {contentControl.ID} created. HasReactions:{afterModel.HasReactions}");
+
+                                                    contentControl.Title = Constants.ContentControlTitle;
+                                                    if (isNewDrawing)
+                                                    {
+                                                        contentControl.Tag = guidString;
+                                                    }
+                                                    else
+                                                    {
+                                                        contentControl.Tag = fullTag;
                                                     }
 
-                                                    contentControl.Delete();
-                                                }
-                                                else
-                                                {
-                                                    readyToInsert = false;
-                                                }
-                                            }
-
-                                            if (readyToInsert)
-                                            {
-                                                // Insert a new CC
-                                                contentControl = activeDocument.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
-                                                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {contentControl.ID} created. HasReactions:{afterModel.HasReactions}");
-
-                                                contentControl.Title = Constants.ContentControlTitle;
-                                                if (isNewDrawing)
-                                                {
-                                                    contentControl.Tag = guidString;
-                                                }
-                                                else
-                                                {
-                                                    contentControl.Tag = fullTag;
-                                                }
-
-                                                if (File.Exists(tempfileName))
-                                                {
-                                                    ChemistryHelper.UpdateThisStructure(afterModel, guidString, tempfileName);
-
-                                                    #region Replace CustomXMLPart with our new cml
-
-                                                    if (customXmlPart != null)
+                                                    if (File.Exists(tempfileName))
                                                     {
-                                                        customXmlPart.Delete();
-                                                    }
+                                                        ChemistryHelper.UpdateThisStructure(afterModel, guidString, tempfileName);
 
-                                                    activeDocument.CustomXMLParts.Add(afterCml);
+                                                        #region Replace CustomXMLPart with our new cml
 
-                                                    #endregion Replace CustomXMLPart with our new cml
+                                                        if (customXmlPart != null)
+                                                        {
+                                                            customXmlPart.Delete();
+                                                        }
 
-                                                    // Delete the temporary file now we are finished with it
-                                                    try
-                                                    {
+                                                        activeDocument.CustomXMLParts.Add(afterCml);
+
+                                                        #endregion Replace CustomXMLPart with our new cml
+
+                                                        // Delete the temporary file now we are finished with it
+                                                        try
+                                                        {
 #if !DEBUG
                                                         // Only delete file in release mode
                                                         File.Delete(tempfileName);
 #endif
+                                                        }
+                                                        catch
+                                                        {
+                                                            // Not much we can do here
+                                                        }
                                                     }
-                                                    catch
+                                                    else
                                                     {
-                                                        // Not much we can do here
+                                                        contentControl.Delete();
+                                                        contentControl = null;
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    contentControl.Delete();
-                                                    contentControl = null;
                                                 }
                                             }
+                                        }
+                                        else
+                                        {
+                                            // Editing aborted due to errors
+                                            if (afterModel.AllErrors.Count > 0)
+                                            {
+                                                Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, afterModel.AllErrors));
+                                            }
+                                            if (afterModel.AllWarnings.Count > 0)
+                                            {
+                                                Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, afterModel.AllWarnings));
+                                            }
+
+                                            var importErrors = new ImportErrors();
+                                            importErrors.TopLeft = Globals.Chem4WordV3.WordTopLeft;
+                                            importErrors.Model = afterModel;
+                                            importErrors.ShowDialog();
                                         }
                                     }
                                     else

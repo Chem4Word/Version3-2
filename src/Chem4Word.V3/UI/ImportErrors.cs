@@ -5,12 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Windows.Forms;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
+using System;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace Chem4Word.UI
 {
@@ -46,7 +46,9 @@ namespace Chem4Word.UI
                 }
 
                 display1.Chemistry = Model;
-                Errors.Text = String.Join(Environment.NewLine, Model.AllErrors);
+                var errors = Model.GeneralErrors;
+                errors.AddRange(Model.AllErrors);
+                Errors.Text = String.Join(Environment.NewLine, errors);
                 Warnings.Text = String.Join(Environment.NewLine, Model.AllWarnings);
                 if (Model.AllErrors.Count > 0)
                 {
