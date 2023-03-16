@@ -1089,7 +1089,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <Separator />
-                <ToggleButton
+                <Button
                     x:Name="ReagentsButton"
                     TextBlock.FontSize="6"
                     Command="{Binding ElementName=AcmeControl, Path=ActiveController.EditReagentsCommand}"
@@ -1128,8 +1128,8 @@
                             <Rectangle  Grid.Column="1" Grid.Row="2" Width="6" Height="6" Fill="LightGray" Margin="2" />
                         </Grid>
                     </Viewbox>
-                </ToggleButton>
-                <ToggleButton
+                </Button>
+                <Button
                     x:Name="ConditionsButton"
                     TextBlock.FontSize="6"
                     ToolTip="Edit conditions"
@@ -1167,7 +1167,7 @@
                             <Rectangle Grid.Column="1" Grid.Row="0" Width="6" Height="6" Fill="LightGray" Margin="2" />
                         </Grid>
                     </Viewbox>
-                </ToggleButton>
+                </Button>
                 <RadioButton x:Name="PlusToolButton" Click="ModeButton_OnChecked"
                     GroupName="Actions"
                     Style="{StaticResource ToolbarButtonStyle}"
