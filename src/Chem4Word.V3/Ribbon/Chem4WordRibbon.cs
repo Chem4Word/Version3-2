@@ -117,6 +117,7 @@ namespace Chem4Word
                 if (Globals.Chem4WordV3.ChemistryAllowed)
                 {
                     var application = Globals.Chem4WordV3.Application;
+                    var document = application.ActiveDocument;
                     Word.ContentControl contentControl = null;
 
                     try
@@ -148,7 +149,7 @@ namespace Chem4Word
                                             Globals.Chem4WordV3.SystemOptions.SelectedRendererPlugIn);
                                     if (renderer != null)
                                     {
-                                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(guid, DocumentHelper.GetActiveDocument());
+                                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(guid, document);
                                         if (customXmlPart != null)
                                         {
                                             // Stop Screen Updating and Disable Document Event Handlers
@@ -161,7 +162,7 @@ namespace Chem4Word
                                             contentControl.Delete();
 
                                             // Insert new CC
-                                            contentControl = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                            contentControl = document.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
                                             if (contentControl != null)
                                             {
                                                 Globals.Chem4WordV3.SystemOptions.WordTopLeft = Globals.Chem4WordV3.WordTopLeft;
@@ -180,7 +181,7 @@ namespace Chem4Word
                                                     var tempfileName = renderer.Render();
                                                     if (File.Exists(tempfileName))
                                                     {
-                                                        ChemistryHelper.Insert2D(contentControl.ID, tempfileName, guid);
+                                                        ChemistryHelper.Insert2D(document, contentControl.ID, tempfileName, guid);
                                                     }
                                                     else
                                                     {
@@ -189,7 +190,7 @@ namespace Chem4Word
                                                 }
                                                 else
                                                 {
-                                                    var used1D = ChemistryHelper.GetUsed1D(CustomXmlPartHelper.GuidFromTag(contentControl.Tag));
+                                                    var used1D = ChemistryHelper.GetUsed1D(document, CustomXmlPartHelper.GuidFromTag(contentControl.Tag));
                                                     var conv = new CMLConverter();
                                                     var model = conv.Import(customXmlPart.XML, used1D);
 
@@ -207,7 +208,7 @@ namespace Chem4Word
                                                         text = ChemistryHelper.GetInlineText(model, chosenState, ref isFormula, out source);
                                                         Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Render structure as {source}");
                                                     }
-                                                    ChemistryHelper.Insert1D(contentControl.ID, text, isFormula, chosenState + ":" + guid);
+                                                    ChemistryHelper.Insert1D(document, contentControl.ID, text, isFormula, chosenState + ":" + guid);
                                                 }
                                             }
                                         }
@@ -256,6 +257,7 @@ namespace Chem4Word
                 ShowAsMenu.Items.Clear();
 
                 var application = Globals.Chem4WordV3.Application;
+                var document = application.ActiveDocument;
                 var selection = application.Selection;
                 Word.ContentControl contentControl = null;
                 CustomXMLPart customXmlPart = null;
@@ -271,10 +273,10 @@ namespace Chem4Word
                             prefix = contentControl.Tag.Split(':')[0];
                         }
 
-                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, DocumentHelper.GetActiveDocument());
+                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
                         if (customXmlPart != null)
                         {
-                            var used1D = ChemistryHelper.GetUsed1D(CustomXmlPartHelper.GuidFromTag(contentControl.Tag));
+                            var used1D = ChemistryHelper.GetUsed1D(document, CustomXmlPartHelper.GuidFromTag(contentControl.Tag));
                             var cml = customXmlPart.XML;
                             var converter = new CMLConverter();
                             var model = converter.Import(cml, used1D);
@@ -435,7 +437,7 @@ namespace Chem4Word
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             var application = Globals.Chem4WordV3.Application;
-            var activeDocument = DocumentHelper.GetActiveDocument();
+            var activeDocument = application.ActiveDocument;
 
             try
             {
@@ -533,7 +535,7 @@ namespace Chem4Word
                                     cml = cmlConverter.Export(model);
                                     if (model.TotalAtomsCount > 0)
                                     {
-                                        var cc = ChemistryHelper.Insert2DChemistry(cml, true);
+                                        var cc = ChemistryHelper.Insert2DChemistry(activeDocument, cml, true);
                                         if (cc != null)
                                         {
                                             // Move selection point into the Content Control which was just inserted
@@ -544,9 +546,9 @@ namespace Chem4Word
                                     {
                                         if (model.Molecules.Any() && model.Molecules.Values.First().Names.Any())
                                         {
-                                            var cc = ChemistryHelper.Insert1DChemistry(model.Molecules.Values.First().Names[0].Value, false,
+                                            var cc = ChemistryHelper.Insert1DChemistry(activeDocument, model.Molecules.Values.First().Names[0].Value, false,
                                                                                        $"{model.Molecules.Values.First().Names[0].Id}:{model.CustomXmlPartGuid}");
-                                            activeDocument.CustomXMLParts.Add(cml);
+                                            activeDocument.CustomXMLParts.Add(XmlHelper.AddHeader(cml));
                                             if (cc != null)
                                             {
                                                 // Move selection point into the Content Control which was just inserted
@@ -651,17 +653,17 @@ namespace Chem4Word
             {
                 if (Globals.Chem4WordV3.IsEnabled)
                 {
-                    var application = Globals.Chem4WordV3.Application;
-
                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", "Started");
-                    var activeDocument = DocumentHelper.GetActiveDocument();
+                    var application = Globals.Chem4WordV3.Application;
+                    var document = application.ActiveDocument;
+
                     Word.ContentControl contentControl = null;
 
                     var wordSettings = new WordSettings(application);
 
                     try
                     {
-                        if (activeDocument != null)
+                        if (document != null)
                         {
                             if (Globals.Chem4WordV3.SystemOptions == null)
                             {
@@ -693,7 +695,7 @@ namespace Chem4Word
                                         contentControl = sel.ContentControls[1];
                                         if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                                         {
-                                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, DocumentHelper.GetActiveDocument());
+                                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
                                             if (customXmlPart != null)
                                             {
                                                 beforeCml = customXmlPart.XML;
@@ -767,7 +769,7 @@ namespace Chem4Word
                                         Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Starting edit existing structure {fullTag}");
                                     }
 
-                                    var used1D = ChemistryHelper.GetUsed1D(guidString);
+                                    var used1D = ChemistryHelper.GetUsed1D(document, guidString);
 
                                     editor.Cml = beforeCml;
                                     editor.Used1DProperties = used1D;
@@ -883,7 +885,7 @@ namespace Chem4Word
                                                 {
                                                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Erasing old ContentControl {contentControl.ID}");
 
-                                                    contentControl = ChemistryHelper.GetContentControl(contentControl.ID);
+                                                    contentControl = ChemistryHelper.GetContentControl(document, contentControl.ID);
                                                     if (contentControl != null)
                                                     {
                                                         // Erase old CC
@@ -908,7 +910,7 @@ namespace Chem4Word
                                                 if (readyToInsert)
                                                 {
                                                     // Insert a new CC
-                                                    contentControl = activeDocument.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                                    contentControl = document.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
                                                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"New ContentControl {contentControl.ID} created. HasReactions:{afterModel.HasReactions}");
 
                                                     contentControl.Title = Constants.ContentControlTitle;
@@ -923,7 +925,7 @@ namespace Chem4Word
 
                                                     if (File.Exists(tempfileName))
                                                     {
-                                                        ChemistryHelper.UpdateThisStructure(afterModel, guidString, tempfileName);
+                                                        ChemistryHelper.UpdateThisStructure(document, afterModel, guidString, tempfileName);
 
                                                         #region Replace CustomXMLPart with our new cml
 
@@ -932,7 +934,7 @@ namespace Chem4Word
                                                             customXmlPart.Delete();
                                                         }
 
-                                                        activeDocument.CustomXMLParts.Add(afterCml);
+                                                        document.CustomXMLParts.Add(XmlHelper.AddHeader(afterCml));
 
                                                         #endregion Replace CustomXMLPart with our new cml
 
@@ -1061,7 +1063,8 @@ namespace Chem4Word
                         contentControl = selection.ContentControls[1];
                         if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                         {
-                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, DocumentHelper.GetActiveDocument());
+                            var document = Globals.Chem4WordV3.Application.ActiveDocument;
+                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
                             if (customXmlPart != null)
                             {
                                 var viewer = new XmlViewer();
@@ -1156,7 +1159,8 @@ namespace Chem4Word
                     contentControl = selection.ContentControls[1];
                     if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                     {
-                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, DocumentHelper.GetActiveDocument());
+                        var document = Globals.Chem4WordV3.Application.ActiveDocument;
+                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
                         if (customXmlPart != null)
                         {
                             var cmlConverter = new CMLConverter();
@@ -1174,9 +1178,7 @@ namespace Chem4Word
                                 switch (fileType)
                                 {
                                     case ".cml":
-                                        var temp = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-                                                   + Environment.NewLine
-                                                   + cmlConverter.Export(model);
+                                        var temp = XmlHelper.AddHeader(cmlConverter.Export(model));
                                         File.WriteAllText(sfd.FileName, temp);
                                         break;
 
@@ -1225,11 +1227,12 @@ namespace Chem4Word
                 {
                     Globals.Chem4WordV3.EventsEnabled = false;
 
-                    var app = Globals.Chem4WordV3.Application;
+                    var application = Globals.Chem4WordV3.Application;
+                    var document = application.ActiveDocument;
 
                     try
                     {
-                        var selection = app.Selection;
+                        var selection = application.Selection;
                         Word.ContentControl contentControl = null;
                         CustomXMLPart customXmlPart = null;
 
@@ -1240,8 +1243,8 @@ namespace Chem4Word
                             {
                                 var guid = CustomXmlPartHelper.GuidFromTag(contentControl.Tag);
 
-                                var used1D = ChemistryHelper.GetUsed1D(guid);
-                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, DocumentHelper.GetActiveDocument());
+                                var used1D = ChemistryHelper.GetUsed1D(document, guid);
+                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
                                 if (customXmlPart != null)
                                 {
                                     var cml = customXmlPart.XML;
@@ -1260,7 +1263,7 @@ namespace Chem4Word
                                         {
                                             var afterCml = host.Cml;
                                             customXmlPart.Delete();
-                                            DocumentHelper.GetActiveDocument().CustomXMLParts.Add(afterCml);
+                                            document.CustomXMLParts.Add(XmlHelper.AddHeader(afterCml));
 
                                             var renderer =
                                                 Globals.Chem4WordV3.GetRendererPlugIn(
@@ -1282,7 +1285,7 @@ namespace Chem4Word
                                                 {
                                                     var converter = new CMLConverter();
                                                     var model = converter.Import(afterCml, used1D);
-                                                    ChemistryHelper.UpdateThisStructure(model, guid, tempfileName);
+                                                    ChemistryHelper.UpdateThisStructure(document, model, guid, tempfileName);
 
                                                     // Delete the temporary file now we are finished with it
                                                     try
@@ -1296,7 +1299,7 @@ namespace Chem4Word
                                                 }
                                             }
 
-                                            app.Selection.SetRange(contentControl.Range.Start, contentControl.Range.End);
+                                            application.Selection.SetRange(contentControl.Range.Start, contentControl.Range.End);
                                         }
 
                                         host.Close();
@@ -1315,8 +1318,8 @@ namespace Chem4Word
                     }
                     finally
                     {
-                        app.ActiveWindow.SetFocus();
-                        app.Activate();
+                        application.ActiveWindow.SetFocus();
+                        application.Activate();
                     }
 
                     Globals.Chem4WordV3.EventsEnabled = true;
@@ -1429,6 +1432,7 @@ namespace Chem4Word
                             var dr = searcher.Search();
                             if (dr == DialogResult.OK && !string.IsNullOrEmpty(searcher.Cml))
                             {
+                                var document = Globals.Chem4WordV3.Application.ActiveDocument;
                                 var cmlConverter = new CMLConverter();
                                 var model = cmlConverter.Import(searcher.Cml);
                                 model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
@@ -1446,7 +1450,7 @@ namespace Chem4Word
                                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", outcome);
                                 }
 
-                                var cc = ChemistryHelper.Insert2DChemistry(cmlConverter.Export(model), true);
+                                var cc = ChemistryHelper.Insert2DChemistry(document, cmlConverter.Export(model), true);
                                 if (cc != null)
                                 {
                                     // Move selection point into the Content Control which was just inserted
@@ -1503,7 +1507,8 @@ namespace Chem4Word
                         cc = sel.ContentControls[1];
                         if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
                         {
-                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(cc.Tag, DocumentHelper.GetActiveDocument());
+                            var document = Globals.Chem4WordV3.Application.ActiveDocument;
+                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(cc.Tag, document);
                             if (customXmlPart != null)
                             {
                                 var cml = customXmlPart.XML;
@@ -1601,7 +1606,7 @@ namespace Chem4Word
                             if (custTaskPane == null)
                             {
                                 custTaskPane =
-                                    Globals.Chem4WordV3.CustomTaskPanes.Add(new NavigatorHost(DocumentHelper.GetActiveDocument()),
+                                    Globals.Chem4WordV3.CustomTaskPanes.Add(new NavigatorHost(application.ActiveDocument),
                                         Constants.NavigatorTaskPaneTitle, application.ActiveWindow);
 
                                 custTaskPane.Width = Globals.Chem4WordV3.WordWidth / 4;
@@ -1650,9 +1655,10 @@ namespace Chem4Word
                     Word.Window window = taskPane.Window;
                     if (window != null)
                     {
-                        var taskdoc = window.Document.Name;
-                        var activeDocument = DocumentHelper.GetActiveDocument();
-                        if (taskdoc.Equals(activeDocument.Name) && ShowNavigator.Checked != taskPane.Visible)
+                        var documentName = window.Document.Name;
+                        var activeDocument = Globals.Chem4WordV3.Application.ActiveDocument;
+
+                        if (documentName.Equals(activeDocument.Name) && ShowNavigator.Checked != taskPane.Visible)
                         {
                             ShowNavigator.Checked = taskPane.Visible;
                         }
@@ -1761,11 +1767,13 @@ namespace Chem4Word
 
                 if (Globals.Chem4WordV3.EventsEnabled && taskPane != null)
                 {
+                    Globals.Chem4WordV3.LibraryState = taskPane.Visible;
+
                     Word.Window window = taskPane.Window;
                     if (window != null)
                     {
                         var documentName = window.Document.Name;
-                        var activeDocument = DocumentHelper.GetActiveDocument();
+                        var activeDocument = Globals.Chem4WordV3.Application.ActiveDocument;
 
                         if (documentName.Equals(activeDocument.Name))
                         {
@@ -1809,6 +1817,8 @@ namespace Chem4Word
                 Globals.Chem4WordV3.EventsEnabled = false;
 
                 var application = Globals.Chem4WordV3.Application;
+                var document = application.ActiveDocument;
+
                 Word.ContentControl contentControl = null;
 
                 // Stop Screen Updating and Disable Document Event Handlers
@@ -1837,7 +1847,7 @@ namespace Chem4Word
                                 var fullTag = contentControl.Tag;
                                 var guidString = CustomXmlPartHelper.GuidFromTag(contentControl.Tag);
 
-                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, DocumentHelper.GetActiveDocument());
+                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
                                 if (customXmlPart != null)
                                 {
                                     var beforeCml = customXmlPart.XML;
@@ -1880,15 +1890,15 @@ namespace Chem4Word
                                             contentControl.Delete();
 
                                             // Insert a new CC
-                                            contentControl = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                            contentControl = document.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
 
                                             contentControl.Title = Constants.ContentControlTitle;
                                             contentControl.Tag = fullTag;
 
-                                            ChemistryHelper.UpdateThisStructure(model, guidString, tempfile);
+                                            ChemistryHelper.UpdateThisStructure(document, model, guidString, tempfile);
 
                                             customXmlPart.Delete();
-                                            DocumentHelper.GetActiveDocument().CustomXMLParts.Add(afterCml);
+                                            document.CustomXMLParts.Add(XmlHelper.AddHeader(afterCml));
 
                                             // Delete the temporary file now we are finished with it
                                             try

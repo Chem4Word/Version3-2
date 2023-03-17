@@ -343,7 +343,6 @@
     <Compile Include="AssemblyReflectionProxy.cs" />
     <Compile Include="Helpers\ChemistryHelper.cs" />
     <Compile Include="Helpers\ConfigWatcher.cs" />
-    <Compile Include="Helpers\DocumentHelper.cs" />
     <Compile Include="Helpers\ReferenceKeeper.cs" />
     <Compile Include="Helpers\RegistryHelper.cs" />
     <Compile Include="Helpers\TargetWord.cs" />
@@ -492,6 +491,7 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Library\LibraryHost.resx">
       <DependentUpon>LibraryHost.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Navigator\NavigatorHost.resx">
       <DependentUpon>NavigatorHost.cs</DependentUpon>

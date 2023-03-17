@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Microsoft.Office.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using Chem4Word.Core.Helpers;
-using Microsoft.Office.Core;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace Chem4Word.Helpers
@@ -20,19 +20,19 @@ namespace Chem4Word.Helpers
     public static class CustomXmlPartHelper
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
         private static CustomXMLParts AllChemistryParts(Word.Document document)
             => document.CustomXMLParts.SelectByNamespace("http://www.xml-cml.org/schema");
 
-        public static int ChemistryXmlParts(Word.Document doc)
-            => AllChemistryParts(doc).Count;
+        public static int ChemistryXmlParts(Word.Document document)
+            => AllChemistryParts(document).Count;
 
-        public static CustomXMLPart FindCustomXmlPartInOtherDocuments(string id)
+        public static CustomXMLPart FindCustomXmlPartInOtherDocuments(string id, Word.Document document)
         {
             CustomXMLPart result = null;
 
-            var activeDocumentName = Globals.Chem4WordV3.CurrentDocumentName;
+            var activeDocumentName = document.Name;
 
             foreach (Word.Document otherDocument in Globals.Chem4WordV3.Application.Documents)
             {
@@ -59,7 +59,7 @@ namespace Chem4Word.Helpers
 
         public static string GuidFromTag(string tag)
         {
-            string guid = string.Empty;
+            var guid = string.Empty;
 
             if (!string.IsNullOrEmpty(tag))
             {
@@ -69,17 +69,17 @@ namespace Chem4Word.Helpers
             return guid;
         }
 
-        public static CustomXMLPart GetCustomXmlPart(string id, Word.Document doc)
+        public static CustomXMLPart GetCustomXmlPart(string id, Word.Document document)
         {
             CustomXMLPart result = null;
 
-            string guid = GuidFromTag(id);
+            var guid = GuidFromTag(id);
 
             if (!string.IsNullOrEmpty(guid))
             {
-                foreach (CustomXMLPart xmlPart in AllChemistryParts(doc))
+                foreach (CustomXMLPart xmlPart in AllChemistryParts(document))
                 {
-                    string cmlId = GetCmlId(xmlPart);
+                    var cmlId = GetCmlId(xmlPart);
                     if (!string.IsNullOrEmpty(cmlId))
                     {
                         if (cmlId.Equals(guid))
@@ -96,15 +96,15 @@ namespace Chem4Word.Helpers
 
         public static string GetCmlId(CustomXMLPart xmlPart)
         {
-            string result = string.Empty;
+            var result = string.Empty;
 
-            XmlDocument xdoc = new XmlDocument();
+            var xdoc = new XmlDocument();
             xdoc.LoadXml(xmlPart.XML);
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xdoc.NameTable);
+            var nsmgr = new XmlNamespaceManager(xdoc.NameTable);
             nsmgr.AddNamespace("cml", "http://www.xml-cml.org/schema");
             nsmgr.AddNamespace("c4w", "http://www.chem4word.com/cml");
 
-            XmlNode node = xdoc.SelectSingleNode("//c4w:customXmlPartGuid", nsmgr);
+            var node = xdoc.SelectSingleNode("//c4w:customXmlPartGuid", nsmgr);
             if (node != null)
             {
                 result = node.InnerText;
@@ -113,19 +113,19 @@ namespace Chem4Word.Helpers
             return result;
         }
 
-        public static void RemoveOrphanedXmlParts()
+        public static void RemoveOrphanedXmlParts(Word.Document document)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            if (DocumentHelper.GetActiveDocument() != null)
+            if (document != null)
             {
-                Dictionary<string, int> referencedXmlParts = new Dictionary<string, int>();
+                var referencedXmlParts = new Dictionary<string, int>();
 
-                foreach (Word.ContentControl cc in DocumentHelper.GetActiveDocument().ContentControls)
+                foreach (Word.ContentControl cc in document.ContentControls)
                 {
                     if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
                     {
-                        string guid = GuidFromTag(cc?.Tag);
+                        var guid = GuidFromTag(cc?.Tag);
 
                         if (!string.IsNullOrEmpty(guid))
                         {
@@ -137,21 +137,20 @@ namespace Chem4Word.Helpers
                     }
                 }
 
-                string backupFolder = Path.Combine(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath, "Backups");
-                string header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + Environment.NewLine;
+                var backupFolder = Path.Combine(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath, "Backups");
 
-                foreach (CustomXMLPart customXmlPart in AllChemistryParts(DocumentHelper.GetActiveDocument()))
+                foreach (CustomXMLPart customXmlPart in AllChemistryParts(document))
                 {
-                    string molId = GetCmlId(customXmlPart);
+                    var molId = GetCmlId(customXmlPart);
                     if (!referencedXmlParts.ContainsKey(molId))
                     {
                         try
                         {
-                            string guid = Guid.NewGuid().ToString("N");
-                            string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+                            var guid = Guid.NewGuid().ToString("N");
+                            var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
 
-                            string fileName = Path.Combine(backupFolder, $"Chem4Word-Orphaned-Structure-{timestamp}-{guid}.cml");
-                            File.WriteAllText(fileName, header + customXmlPart.XML);
+                            var fileName = Path.Combine(backupFolder, $"Chem4Word-Orphaned-Structure-{timestamp}-{guid}.cml");
+                            File.WriteAllText(fileName, XmlHelper.AddHeader(customXmlPart.XML));
 
                             customXmlPart.Delete();
                         }

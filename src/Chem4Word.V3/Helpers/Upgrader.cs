@@ -5,6 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Converters.CML;
+using Microsoft.Office.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,11 +23,6 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Chem4Word.Core;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Converters.CML;
-using Microsoft.Office.Core;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace Chem4Word.Helpers
@@ -34,13 +34,13 @@ namespace Chem4Word.Helpers
 
         private static object _missing = Type.Missing;
 
-        public static DialogResult UpgradeIsRequired(Word.Document doc)
+        public static DialogResult UpgradeIsRequired(Word.Document document)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             DialogResult result = DialogResult.Cancel;
 
-            int count = LegacyChemistryCount(doc);
+            int count = LegacyChemistryCount(document);
 
             if (count > 0)
             {
@@ -121,13 +121,13 @@ namespace Chem4Word.Helpers
             return result;
         }
 
-        public static int LegacyChemistryCount(Word.Document doc)
+        public static int LegacyChemistryCount(Word.Document document)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             int count = 0;
 
-            foreach (Word.ContentControl cc in doc.ContentControls)
+            foreach (Word.ContentControl cc in document.ContentControls)
             {
                 Word.WdContentControlType? contentControlType = cc.Type;
                 try
@@ -147,7 +147,7 @@ namespace Chem4Word.Helpers
             return count;
         }
 
-        public static void DoUpgrade(Word.Document doc)
+        public static void DoUpgrade(Word.Document document)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -156,11 +156,11 @@ namespace Chem4Word.Helpers
 
             try
             {
-                string extension = doc.FullName.Split('.').Last();
+                string extension = document.FullName.Split('.').Last();
                 string guid = Guid.NewGuid().ToString("N");
                 string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
                 string destination = Path.Combine(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath, "Backups", $"Chem4Word-{timestamp}-{guid}.{extension}");
-                File.Copy(doc.FullName, destination);
+                File.Copy(document.FullName, destination);
             }
             catch (Exception ex)
             {
@@ -169,7 +169,7 @@ namespace Chem4Word.Helpers
             }
 
             Dictionary<string, CustomXMLPart> customXmlParts = new Dictionary<string, CustomXMLPart>();
-            List<UpgradeTarget> targets = CollectData(doc);
+            List<UpgradeTarget> targets = CollectData(document);
             int upgradedCCs = 0;
             int upgradedXml = 0;
 
@@ -185,7 +185,7 @@ namespace Chem4Word.Helpers
 
                 foreach (var cci in target.ContentControls)
                 {
-                    foreach (Word.ContentControl cc in doc.ContentControls)
+                    foreach (Word.ContentControl cc in document.ContentControls)
                     {
                         if (cc.ID.Equals(cci.Id))
                         {
@@ -220,10 +220,10 @@ namespace Chem4Word.Helpers
                                     molecule.Parent = model;
                                     model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
 
-                                    doc.CustomXMLParts.Add(cmlConverter.Export(model));
+                                    document.CustomXMLParts.Add(XmlHelper.AddHeader(cmlConverter.Export(model)));
 
-                                    Word.ContentControl ccn = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
-                                    ChemistryHelper.Insert1D(ccn.ID, cci.Text, false, $"m1.n1:{model.CustomXmlPartGuid}");
+                                    var ccn = document.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                    ChemistryHelper.Insert1D(document, ccn.ID, cci.Text, false, $"m1.n1:{model.CustomXmlPartGuid}");
                                     ccn.LockContents = true;
                                     break;
 
@@ -236,8 +236,8 @@ namespace Chem4Word.Helpers
                                     Globals.Chem4WordV3.Application.Selection.SetRange(start - 1, start - 1);
                                     isFormula = false;
                                     text = ChemistryHelper.GetInlineText(target.Model, cci.Type, ref isFormula, out _);
-                                    Word.ContentControl ccr = DocumentHelper.GetActiveDocument().ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
-                                    ChemistryHelper.Insert1D(ccr.ID, text, isFormula, $"{cci.Type}:{target.Model.CustomXmlPartGuid}");
+                                    var ccr = document.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
+                                    ChemistryHelper.Insert1D(document, ccr.ID, text, isFormula, $"{cci.Type}:{target.Model.CustomXmlPartGuid}");
                                     ccr.LockContents = true;
                                     break;
                             }
@@ -245,15 +245,15 @@ namespace Chem4Word.Helpers
                     }
                 }
 
-                CustomXMLPart cxml = doc.CustomXMLParts.SelectByID(target.CxmlPartId);
+                CustomXMLPart cxml = document.CustomXMLParts.SelectByID(target.CxmlPartId);
                 if (customXmlParts.ContainsKey(cxml.Id))
                 {
                     customXmlParts.Add(cxml.Id, cxml);
                 }
-                doc.CustomXMLParts.Add(cmlConverter.Export(target.Model));
+                document.CustomXMLParts.Add(XmlHelper.AddHeader(cmlConverter.Export(target.Model)));
             }
 
-            EraseChemistryZones(doc);
+            EraseChemistryZones(document);
 
             foreach (var kvp in customXmlParts.ToList())
             {
@@ -323,7 +323,7 @@ namespace Chem4Word.Helpers
             return result;
         }
 
-        private static List<UpgradeTarget> CollectData(Word.Document doc)
+        private static List<UpgradeTarget> CollectData(Word.Document document)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -337,9 +337,9 @@ namespace Chem4Word.Helpers
 
             List<ContentControlInfo> listOfContentControls = new List<ContentControlInfo>();
 
-            for (int i = 1; i <= doc.ContentControls.Count; i++)
+            for (int i = 1; i <= document.ContentControls.Count; i++)
             {
-                Word.ContentControl cc = doc.ContentControls[i];
+                Word.ContentControl cc = document.ContentControls[i];
                 if (cc.Title != null && cc.Title.Equals(Constants.LegacyContentControlTitle))
                 {
                     ContentControlInfo cci = new ContentControlInfo();
@@ -350,7 +350,7 @@ namespace Chem4Word.Helpers
                 }
             }
 
-            foreach (CustomXMLPart xmlPart in doc.CustomXMLParts)
+            foreach (CustomXMLPart xmlPart in document.CustomXMLParts)
             {
                 string xml = xmlPart.XML;
                 if (xml.Contains("<cml"))
@@ -365,7 +365,7 @@ namespace Chem4Word.Helpers
                 }
             }
 
-            foreach (CustomXMLPart xmlPart in doc.CustomXMLParts)
+            foreach (CustomXMLPart xmlPart in document.CustomXMLParts)
             {
                 string xml = xmlPart.XML;
 

@@ -1986,8 +1986,7 @@ namespace Chem4Word.ACME
                     Clipboard.Clear();
                     IDataObject ido = new DataObject();
                     ido.SetData(FormatCML, export);
-                    string header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-                    ido.SetData(DataFormats.Text, header + export);
+                    ido.SetData(DataFormats.Text, XmlHelper.AddHeader(export));
                     Clipboard.SetDataObject(ido, true);
                 }
             }

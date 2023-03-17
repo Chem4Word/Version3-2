@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
 using Chem4Word.ACME;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2.Converters.CML;
 using Microsoft.Office.Interop.Word;
+using System;
+using System.Reflection;
 
 namespace Chem4Word.Helpers
 {
@@ -25,6 +25,7 @@ namespace Chem4Word.Helpers
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
+            var document = application.ActiveDocument;
             var selection = application.Selection;
             ContentControl contentControl = null;
 
@@ -76,7 +77,7 @@ namespace Chem4Word.Helpers
                         }
                     }
 
-                    contentControl = ChemistryHelper.Insert2DChemistry(cmlConverter.Export(model), isCopy);
+                    contentControl = ChemistryHelper.Insert2DChemistry(document, cmlConverter.Export(model), isCopy);
                 }
                 catch (Exception ex)
                 {
@@ -104,6 +105,7 @@ namespace Chem4Word.Helpers
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
+            var document = application.ActiveDocument;
             var selection = application.Selection;
             ContentControl contentControl = null;
 
@@ -155,7 +157,7 @@ namespace Chem4Word.Helpers
                         }
                     }
 
-                    contentControl = ChemistryHelper.Insert2DChemistry(cmlConverter.Export(model), isCopy);
+                    contentControl = ChemistryHelper.Insert2DChemistry(document, cmlConverter.Export(model), isCopy);
                 }
                 catch (Exception ex)
                 {

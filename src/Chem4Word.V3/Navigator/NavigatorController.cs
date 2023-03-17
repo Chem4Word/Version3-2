@@ -5,18 +5,18 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using Chem4Word.ACME.Models;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Helpers;
 using Chem4Word.Model2.Converters.CML;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Word;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using ContentControl = Microsoft.Office.Interop.Word.ContentControl;
 
 namespace Chem4Word.Navigator
@@ -32,18 +32,18 @@ namespace Chem4Word.Navigator
         private CustomXMLParts Parts { get; }
 
         //local reference to the active document
-        private readonly Document _doc;
+        private readonly Document _document;
 
         public NavigatorController()
         {
             NavigatorItems = new ObservableCollection<ChemistryObject>();
         }
 
-        public NavigatorController(Document doc) : this()
+        public NavigatorController(Document document) : this()
         {
             //get a reference to the document
-            _doc = doc;
-            Parts = _doc.CustomXMLParts.SelectByNamespace(CMLNamespaces.cml.NamespaceName);
+            _document = document;
+            Parts = _document.CustomXMLParts.SelectByNamespace(CMLNamespaces.cml.NamespaceName);
             Parts.PartAfterLoad += OnPartAfterLoad;
             Parts.PartBeforeDelete += OnPartBeforeDelete;
 
@@ -64,11 +64,11 @@ namespace Chem4Word.Navigator
                 {
                     NavigatorItems.Clear();
                 }
-                if (_doc != null)
+                if (_document != null)
                 {
                     var added = new Dictionary<string, int>();
 
-                    var navItems = from ContentControl ccs in _doc.ContentControls
+                    var navItems = from ContentControl ccs in _document.ContentControls
                                    join CustomXMLPart part in Parts
                                      on CustomXmlPartHelper.GuidFromTag(ccs?.Tag) equals CustomXmlPartHelper.GetCmlId(part)
                                    orderby ccs.Range.Start
@@ -141,14 +141,14 @@ namespace Chem4Word.Navigator
                 try
                 {
                     // ReSharper disable once InconsistentNaming
-                    var matchingCC = (from ContentControl cc in _doc.ContentControls
+                    var matchingCC = (from ContentControl cc in _document.ContentControls
                                       orderby cc.Range.Start
                                       where CustomXmlPartHelper.GuidFromTag(cc.Tag) == CustomXmlPartHelper.GetCmlId(NewPart)
                                       select cc).First();
 
                     //get the ordinal position of the content control
                     int start = 0;
-                    foreach (ContentControl cc in _doc.ContentControls)
+                    foreach (ContentControl cc in _document.ContentControls)
                     {
                         if (cc.ID == matchingCC.ID)
                         {

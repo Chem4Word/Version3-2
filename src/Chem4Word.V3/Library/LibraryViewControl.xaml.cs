@@ -5,6 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME;
+using Chem4Word.ACME.Models;
+using Chem4Word.Core.UI.Forms;
+using Chem4Word.Core.UI.Wpf;
+using Chem4Word.Helpers;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -14,11 +19,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME;
-using Chem4Word.ACME.Models;
-using Chem4Word.Core.UI.Forms;
-using Chem4Word.Core.UI.Wpf;
-using Chem4Word.Helpers;
 
 namespace Chem4Word.Library
 {
@@ -66,7 +66,7 @@ namespace Chem4Word.Library
                         if (clicked != null)
                         {
                             Globals.Chem4WordV3.EventsEnabled = false;
-                            var activeDocument = DocumentHelper.GetActiveDocument();
+                            var activeDocument = Globals.Chem4WordV3.Application.ActiveDocument;
 
                             if (Globals.Chem4WordV3.Application.Documents.Count > 0
                                 && activeDocument?.ActiveWindow?.Selection != null)

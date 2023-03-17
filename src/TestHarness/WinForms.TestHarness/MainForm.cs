@@ -17,6 +17,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Chem4Word.ACME;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Editor.ACME;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
@@ -603,10 +604,7 @@ namespace WinForms.TestHarness
                         {
                             case ".cml":
                             case ".xml":
-                                string temp = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-                                              + Environment.NewLine
-                                              + cmlConverter.Export(m);
-                                File.WriteAllText(sfd.FileName, temp);
+                                File.WriteAllText(sfd.FileName, XmlHelper.AddHeader(cmlConverter.Export(m)));
                                 break;
 
                             case ".mol":
