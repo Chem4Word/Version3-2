@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{66114688-4B34-4B67-B14D-49F961683CBB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>WPF.ShapeTester</RootNamespace>
-    <AssemblyName>WPF.ShapeTester</AssemblyName>
+    <RootNamespace>Wpf.UI.Sandbox</RootNamespace>
+    <AssemblyName>Wpf.UI.Sandbox</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -69,7 +69,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="Marquee.xaml.cs">
+      <DependentUpon>Marquee.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ticker.xaml.cs">
+      <DependentUpon>Ticker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TickerItem.cs" />
+    <Page Include="Launcher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Marquee.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShapesUI.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -77,10 +92,17 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Launcher.xaml.cs">
+      <DependentUpon>Launcher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ShapesUI.xaml.cs">
+      <DependentUpon>ShapesUI.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Ticker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -110,6 +132,10 @@
     <ProjectReference Include="..\..\Chemistry\Chem4Word.ACME\Chem4Word.ACME.csproj">
       <Project>{1e3fc1f1-06cc-44bd-8004-3ef0ce7eeaa7}</Project>
       <Name>Chem4Word.ACME</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Chem4Word.Core\Chem4Word.Core.csproj">
+      <Project>{2E7B1308-8149-4B03-9CB9-48E0B7151560}</Project>
+      <Name>Chem4Word.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

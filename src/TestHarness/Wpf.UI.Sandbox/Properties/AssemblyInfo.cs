@@ -12,11 +12,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WPF.ShapeTester")]
+[assembly: AssemblyTitle("Wpf.UI.Sandbox")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Chem4Word")]
-[assembly: AssemblyProduct("WPF.ShapeTester")]
+[assembly: AssemblyProduct("Wpf.UI.Sandbox")]
 [assembly: AssemblyCopyright("© Chem4Word 2023. All rights reserved.")]
 [assembly: AssemblyTrademark("Chem4Word")]
 [assembly: AssemblyCulture("")]
@@ -51,5 +51,5 @@ using System.Windows;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.9.8476")]
-[assembly: AssemblyFileVersion("3.2.9.8476")]
+[assembly: AssemblyVersion("3.2.10.8490")]
+[assembly: AssemblyFileVersion("3.2.10.8490")]

@@ -1,0 +1,13 @@
+﻿<Window x:Class="Wpf.UI.Sandbox.Ticker"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Wpf.UI.Sandbox"
+        mc:Ignorable="d"
+        Loaded="Ticker_OnLoaded"
+        Title="Ticker" Height="60" Width="800">
+    <Grid>
+        <local:Marquee x:Name="Marquee" MouseDown="UIElement_OnMouseDown"></local:Marquee>
+    </Grid>
+</Window>

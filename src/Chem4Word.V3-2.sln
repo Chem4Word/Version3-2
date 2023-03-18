@@ -90,11 +90,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{53F5
 		Scripts\Clone-Setup-V3.ps1 = Scripts\Clone-Setup-V3.ps1
 		Scripts\Clone-Setup-V31.ps1 = Scripts\Clone-Setup-V31.ps1
 		Scripts\Detect-Invalid-Config.ps1 = Scripts\Detect-Invalid-Config.ps1
-		Scripts\Install-Dev-Certificate.ps1 = Scripts\Install-Dev-Certificate.ps1
 		Scripts\Get-Back-To-Square-One.ps1 = Scripts\Get-Back-To-Square-One.ps1
+		Scripts\Install-Dev-Certificate.ps1 = Scripts\Install-Dev-Certificate.ps1
 		Scripts\Reset-User-Settings.ps1 = Scripts\Reset-User-Settings.ps1
-		Scripts\SignAssembly.ps1 = Scripts\SignAssembly.ps1
 		Scripts\Set-Assembly-Version.ps1 = Scripts\Set-Assembly-Version.ps1
+		Scripts\SignAssembly.ps1 = Scripts\SignAssembly.ps1
 		Scripts\SignFiles.cmd = Scripts\SignFiles.cmd
 	EndProjectSection
 EndProject
@@ -133,7 +133,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chem4Word.Libraries", "Chem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chem4Word.WebServices", "Chemistry\Chem4Word.WebServices\Chem4Word.WebServices.csproj", "{54F9D4A6-E151-4C65-9D68-16C620B7A6BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF.ShapeTester", "TestHarness\WPF.ShapeTester\WPF.ShapeTester.csproj", "{66114688-4B34-4B67-B14D-49F961683CBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf.UI.Sandbox", "TestHarness\Wpf.UI.Sandbox\Wpf.UI.Sandbox.csproj", "{66114688-4B34-4B67-B14D-49F961683CBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -693,15 +693,17 @@ Global
 		{66114688-4B34-4B67-B14D-49F961683CBB}.Release|x86.ActiveCfg = Release|Any CPU
 		{66114688-4B34-4B67-B14D-49F961683CBB}.Release|x86.Build.0 = Release|Any CPU
 		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|Any CPU.ActiveCfg = Setup|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x64.ActiveCfg = Debug|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x64.Build.0 = Debug|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x86.ActiveCfg = Debug|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x86.Build.0 = Debug|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|Any CPU.Build.0 = Setup|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x64.ActiveCfg = Setup|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x64.Build.0 = Setup|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x86.ActiveCfg = Setup|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Setup|x86.Build.0 = Setup|Any CPU
 		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|Any CPU.ActiveCfg = Vso-Ci|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x64.ActiveCfg = Debug|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x64.Build.0 = Debug|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x86.ActiveCfg = Debug|Any CPU
-		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x86.Build.0 = Debug|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|Any CPU.Build.0 = Vso-Ci|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x64.ActiveCfg = Vso-Ci|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x64.Build.0 = Vso-Ci|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x86.ActiveCfg = Vso-Ci|Any CPU
+		{66114688-4B34-4B67-B14D-49F961683CBB}.Vso-Ci|x86.Build.0 = Vso-Ci|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

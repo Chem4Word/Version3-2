@@ -1,5 +1,5 @@
 ﻿<Window
-    x:Class="WPF.ShapeTester.MainWindow"
+    x:Class="Wpf.UI.Sandbox.ShapesUI"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:shapes="clr-namespace:Chem4Word.ACME.Graphics;assembly=Chem4Word.ACME"
