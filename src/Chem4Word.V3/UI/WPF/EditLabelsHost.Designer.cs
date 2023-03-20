@@ -60,8 +60,8 @@ namespace Chem4Word.UI.WPF
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.Buttons);
-            this.splitContainer1.Size = new System.Drawing.Size(1184, 761);
-            this.splitContainer1.SplitterDistance = 690;
+            this.splitContainer1.Size = new System.Drawing.Size(984, 561);
+            this.splitContainer1.SplitterDistance = 508;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 2;
             // 
@@ -71,7 +71,7 @@ namespace Chem4Word.UI.WPF
             this.elementHost1.Location = new System.Drawing.Point(0, 0);
             this.elementHost1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(1184, 690);
+            this.elementHost1.Size = new System.Drawing.Size(984, 508);
             this.elementHost1.TabIndex = 0;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.labelsEditor1;
@@ -85,7 +85,7 @@ namespace Chem4Word.UI.WPF
             this.Buttons.Location = new System.Drawing.Point(0, 0);
             this.Buttons.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.Buttons.Name = "Buttons";
-            this.Buttons.Size = new System.Drawing.Size(1184, 65);
+            this.Buttons.Size = new System.Drawing.Size(984, 47);
             this.Buttons.TabIndex = 3;
             // 
             // Warning
@@ -95,16 +95,16 @@ namespace Chem4Word.UI.WPF
             this.Warning.AutoEllipsis = true;
             this.Warning.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Warning.ForeColor = System.Drawing.Color.Red;
-            this.Warning.Location = new System.Drawing.Point(12, 29);
+            this.Warning.Location = new System.Drawing.Point(12, 11);
             this.Warning.Name = "Warning";
-            this.Warning.Size = new System.Drawing.Size(983, 21);
+            this.Warning.Size = new System.Drawing.Size(783, 21);
             this.Warning.TabIndex = 2;
             this.Warning.Text = "...";
             // 
             // Save
             // 
             this.Save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Save.Location = new System.Drawing.Point(1016, 25);
+            this.Save.Location = new System.Drawing.Point(816, 7);
             this.Save.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.Save.Name = "Save";
             this.Save.Size = new System.Drawing.Size(75, 25);
@@ -116,7 +116,7 @@ namespace Chem4Word.UI.WPF
             // Cancel
             // 
             this.Cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Cancel.Location = new System.Drawing.Point(1097, 25);
+            this.Cancel.Location = new System.Drawing.Point(897, 7);
             this.Cancel.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.Cancel.Name = "Cancel";
             this.Cancel.Size = new System.Drawing.Size(75, 25);
@@ -129,7 +129,7 @@ namespace Chem4Word.UI.WPF
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.ClientSize = new System.Drawing.Size(984, 561);
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

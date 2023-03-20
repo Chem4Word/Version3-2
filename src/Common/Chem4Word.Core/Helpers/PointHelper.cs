@@ -19,46 +19,15 @@ namespace Chem4Word.Core.Helpers
         /// <summary>
         /// Returns a point which can be used as the top left hand corner of a form without hiding any part of it off bottom right of current screen
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="screen"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="point">Starting point</param>
+        /// <param name="screen">Screen object</param>
+        /// <param name="width">Desired width</param>
+        /// <param name="height">Desired Height</param>
         /// <returns></returns>
         public static Point SensibleTopLeft(Point point, Screen screen, int width, int height)
         {
             var left = Clamp((int)point.X, width, screen.WorkingArea.Left, screen.WorkingArea.Left + screen.WorkingArea.Width);
             var top = Clamp((int)point.Y, height, screen.WorkingArea.Top, screen.WorkingArea.Top + screen.WorkingArea.Height);
-
-            //var maximumRight = screen.WorkingArea.Left +  screen.WorkingArea.Width;
-            //var maximumBottom = screen.WorkingArea.Top + screen.WorkingArea.Height;
-
-            //while (left + width > maximumRight)
-            //{
-            //    left -= 24;
-            //    if (left < screen.WorkingArea.Left)
-            //    {
-            //        left = screen.WorkingArea.Left;
-            //    }
-            //}
-
-            //while (left < screen.WorkingArea.Left)
-            //{
-            //    left += 24;
-            //}
-
-            //while (top + height > maximumBottom)
-            //{
-            //    top -= 24;
-            //    if (top < screen.WorkingArea.Top)
-            //    {
-            //        top = screen.WorkingArea.Top;
-            //    }
-            //}
-
-            //while (top < screen.WorkingArea.Top)
-            //{
-            //    top += 24;
-            //}
 
             return new Point(left, top);
         }
@@ -67,8 +36,10 @@ namespace Chem4Word.Core.Helpers
         {
             var result = leftOrTop;
 
-            while (result + widthOrHeight > workingAreaWidthOrHeight)
+            var loops = 0;
+            while (loops < 16 && result + widthOrHeight > workingAreaWidthOrHeight)
             {
+                loops++;
                 result -= 24;
                 if (result < workingAreaLeftOrTop)
                 {
@@ -76,8 +47,10 @@ namespace Chem4Word.Core.Helpers
                 }
             }
 
-            while (result < workingAreaLeftOrTop)
+            loops = 0;
+            while (loops < 16 && result < workingAreaLeftOrTop)
             {
+                loops++;
                 result += 24;
             }
 
