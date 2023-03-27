@@ -121,7 +121,6 @@ namespace Chem4Word.Model2.Converters.CML
 
         // Our DictRef values
         public const string ValueChem4WordInchiName = "chem4word:CalculatedInchi";
-
         //public const string ValueChem4WordAuxInfoName = "chem4word:CalculatedAuxInfo";
         public const string ValueChem4WordInchiKeyName = "chem4word:CalculatedInchikey";
 

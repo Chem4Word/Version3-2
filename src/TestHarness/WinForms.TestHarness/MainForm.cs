@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Chem4Word.ACME;
@@ -29,7 +30,10 @@ using Chem4Word.Searcher.OpsinPlugIn;
 using Chem4Word.Searcher.PubChemPlugIn;
 using Chem4Word.Shared;
 using Chem4Word.Telemetry;
+using Chem4Word.WebServices;
 using Newtonsoft.Json;
+using static ScintillaNET.Style;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace WinForms.TestHarness
 {
@@ -418,6 +422,7 @@ namespace WinForms.TestHarness
             EditWithAcme.Enabled = true;
             EditLabels.Enabled = true;
             EditCml.Enabled = true;
+            CalculateProperties.Enabled = true;
 
             ShowCml.Enabled = true;
             ClearChemistry.Enabled = true;
@@ -919,6 +924,55 @@ namespace WinForms.TestHarness
 
                 MessageBox.Show(string.Join(Environment.NewLine, errors), "Model has errors or warnings!");
             }
+        }
+
+        private void CalculateProperties_Click(object sender, EventArgs e)
+        {
+            var cc = new CMLConverter();
+            if (_lastCml != EmptyCml)
+            {
+                var clone = cc.Import(_lastCml);
+                Debug.WriteLine(
+                    $"Pushing F: {clone.ConciseFormula} BL: {clone.MeanBondLength.ToString("#,##0.00")} onto Stack");
+                _undoStack.Push(clone);
+            }
+
+            Model model = cc.Import(_lastCml);
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetName().Version;
+            var pc = new PropertyCalculator(_telemetry, new Point(Left, Top), version.ToString());
+
+            int changedProperties = 0;
+
+            const bool UseNewCode = true;
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            if (UseNewCode)
+            {
+                // Code being tested
+                changedProperties = pc.CalculateProperties(model);
+            }
+            else
+            {
+                // Existing code used by Chem4Word
+                var mols = model.GetAllMolecules();
+                changedProperties = pc.CalculateProperties(mols);
+            }
+
+            stopwatch.Stop();
+            Debug.WriteLine($"Calulating {changedProperties} changed properties took {stopwatch.Elapsed}");
+            _lastCml = cc.Export(model);
+
+            // Cause re-read of settings (in case they have changed)
+            _editorOptions = new AcmeOptions(null);
+            SetDisplayOptions();
+            RedoStack.SetOptions(_editorOptions);
+            UndoStack.SetOptions(_editorOptions);
+
+            ShowChemistry($"{changedProperties} changed properties; {FormulaHelper.FormulaPartsAsUnicode(FormulaHelper.ParseFormulaIntoParts(model.ConciseFormula))}", model);
         }
     }
 }

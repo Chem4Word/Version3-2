@@ -453,9 +453,8 @@ namespace Chem4Word.Libraries.Database
                     {
                         if (calculateProperties)
                         {
-                            var newMolecules = model.GetAllMolecules();
                             var pc = new WebServices.PropertyCalculator(_telemetry, _options.ParentTopLeft, _options.Chem4WordVersion);
-                            pc.CalculateProperties(newMolecules);
+                            pc.CalculateProperties(model);
                         }
 
                         model.CustomXmlPartGuid = "";

@@ -783,39 +783,14 @@ namespace Chem4Word
 
                                         var cmlConverter = new CMLConverter();
 
-                                        var beforeModel = cmlConverter.Import(beforeCml, used1D);
                                         var afterModel = cmlConverter.Import(editor.Cml, used1D);
 
                                         if (afterModel.AllErrors.Count == 0 && afterModel.AllWarnings.Count == 0)
                                         {
-                                            var oldMolecules = beforeModel.GetAllMolecules();
-                                            var newMolecules = afterModel.GetAllMolecules();
-
-                                            if (!editor.CanEditNestedMolecules)
-                                            {
-                                                foreach (var molecule in newMolecules)
-                                                {
-                                                    var mol = oldMolecules.FirstOrDefault(m => m.Path.Equals(molecule.Path));
-                                                    if (mol != null)
-                                                    {
-                                                        // Copy over existing Formulae and Names if Paths match
-                                                        foreach (var formula in mol.Formulas)
-                                                        {
-                                                            molecule.Formulas.Add(formula);
-                                                        }
-
-                                                        foreach (var name in mol.Names)
-                                                        {
-                                                            molecule.Names.Add(name);
-                                                        }
-                                                    }
-                                                }
-                                            }
-
                                             var pc = new WebServices.PropertyCalculator(Globals.Chem4WordV3.Telemetry,
                                                                                         Globals.Chem4WordV3.WordTopLeft,
                                                                                         Globals.Chem4WordV3.AddInInfo.AssemblyVersionNumber);
-                                            var changedProperties = pc.CalculateProperties(newMolecules);
+                                            var changedProperties = pc.CalculateProperties(afterModel);
 
                                             if (isNewDrawing)
                                             {

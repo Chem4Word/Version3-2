@@ -30,6 +30,10 @@ namespace Chem4Word.Model2
         [JsonProperty]
         public bool Internal { get; set; }
 
+        #region Overrides of ElementBase
+
+        #endregion
+
         /// <summary>
         /// Overall Atomic Weight of the Functional Group
         /// </summary>

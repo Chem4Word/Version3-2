@@ -45,6 +45,7 @@
             this.Information = new System.Windows.Forms.Label();
             this.EditCml = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.CalculateProperties = new System.Windows.Forms.Button();
             this.SearchOpsin = new System.Windows.Forms.Button();
             this.EditLabels = new System.Windows.Forms.Button();
             this.SearchChEBI = new System.Windows.Forms.Button();
@@ -93,7 +94,7 @@
             // 
             this.Undo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Undo.Enabled = false;
-            this.Undo.Location = new System.Drawing.Point(174, 501);
+            this.Undo.Location = new System.Drawing.Point(93, 530);
             this.Undo.Name = "Undo";
             this.Undo.Size = new System.Drawing.Size(75, 23);
             this.Undo.TabIndex = 11;
@@ -106,7 +107,7 @@
             // 
             this.Redo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Redo.Enabled = false;
-            this.Redo.Location = new System.Drawing.Point(174, 530);
+            this.Redo.Location = new System.Drawing.Point(93, 559);
             this.Redo.Name = "Redo";
             this.Redo.Size = new System.Drawing.Size(75, 23);
             this.Redo.TabIndex = 12;
@@ -179,7 +180,7 @@
             // EditCml
             // 
             this.EditCml.Enabled = false;
-            this.EditCml.Location = new System.Drawing.Point(6, 77);
+            this.EditCml.Location = new System.Drawing.Point(6, 48);
             this.EditCml.Name = "EditCml";
             this.EditCml.Size = new System.Drawing.Size(75, 23);
             this.EditCml.TabIndex = 15;
@@ -191,22 +192,36 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.CalculateProperties);
+            this.groupBox1.Controls.Add(this.LayoutStructure);
             this.groupBox1.Controls.Add(this.SearchOpsin);
             this.groupBox1.Controls.Add(this.EditLabels);
             this.groupBox1.Controls.Add(this.SearchChEBI);
             this.groupBox1.Controls.Add(this.SearchPubChem);
             this.groupBox1.Controls.Add(this.EditWithAcme);
             this.groupBox1.Controls.Add(this.EditCml);
-            this.groupBox1.Location = new System.Drawing.Point(952, 477);
+            this.groupBox1.Location = new System.Drawing.Point(874, 480);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(173, 105);
+            this.groupBox1.Size = new System.Drawing.Size(251, 102);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Edit / Search ...";
+            this.groupBox1.Text = "Edit / Search / WebServices";
+            // 
+            // CalculateProperties
+            // 
+            this.CalculateProperties.Enabled = false;
+            this.CalculateProperties.Location = new System.Drawing.Point(87, 77);
+            this.CalculateProperties.Name = "CalculateProperties";
+            this.CalculateProperties.Size = new System.Drawing.Size(75, 23);
+            this.CalculateProperties.TabIndex = 17;
+            this.CalculateProperties.Text = "Properties";
+            this.CalculateProperties.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.CalculateProperties.UseVisualStyleBackColor = true;
+            this.CalculateProperties.Click += new System.EventHandler(this.CalculateProperties_Click);
             // 
             // SearchOpsin
             // 
-            this.SearchOpsin.Location = new System.Drawing.Point(87, 77);
+            this.SearchOpsin.Location = new System.Drawing.Point(168, 77);
             this.SearchOpsin.Name = "SearchOpsin";
             this.SearchOpsin.Size = new System.Drawing.Size(75, 23);
             this.SearchOpsin.TabIndex = 5;
@@ -218,7 +233,7 @@
             // EditLabels
             // 
             this.EditLabels.Enabled = false;
-            this.EditLabels.Location = new System.Drawing.Point(6, 48);
+            this.EditLabels.Location = new System.Drawing.Point(6, 77);
             this.EditLabels.Name = "EditLabels";
             this.EditLabels.Size = new System.Drawing.Size(75, 23);
             this.EditLabels.TabIndex = 16;
@@ -229,7 +244,7 @@
             // 
             // SearchChEBI
             // 
-            this.SearchChEBI.Location = new System.Drawing.Point(87, 48);
+            this.SearchChEBI.Location = new System.Drawing.Point(168, 48);
             this.SearchChEBI.Name = "SearchChEBI";
             this.SearchChEBI.Size = new System.Drawing.Size(75, 23);
             this.SearchChEBI.TabIndex = 3;
@@ -240,7 +255,7 @@
             // 
             // SearchPubChem
             // 
-            this.SearchPubChem.Location = new System.Drawing.Point(87, 19);
+            this.SearchPubChem.Location = new System.Drawing.Point(168, 19);
             this.SearchPubChem.Name = "SearchPubChem";
             this.SearchPubChem.Size = new System.Drawing.Size(75, 23);
             this.SearchPubChem.TabIndex = 4;
@@ -325,14 +340,13 @@
             // 
             // LayoutStructure
             // 
-            this.LayoutStructure.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LayoutStructure.Enabled = false;
-            this.LayoutStructure.Location = new System.Drawing.Point(93, 501);
+            this.LayoutStructure.Location = new System.Drawing.Point(87, 48);
             this.LayoutStructure.Name = "LayoutStructure";
             this.LayoutStructure.Size = new System.Drawing.Size(75, 23);
             this.LayoutStructure.TabIndex = 20;
-            this.LayoutStructure.Text = "Clean (ws)";
-            this.LayoutStructure.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LayoutStructure.Text = "Layout";
+            this.LayoutStructure.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.LayoutStructure.UseVisualStyleBackColor = true;
             this.LayoutStructure.Click += new System.EventHandler(this.LayoutStructure_Click);
             // 
@@ -340,7 +354,7 @@
             // 
             this.RenderOoXml.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.RenderOoXml.Enabled = false;
-            this.RenderOoXml.Location = new System.Drawing.Point(93, 530);
+            this.RenderOoXml.Location = new System.Drawing.Point(174, 530);
             this.RenderOoXml.Name = "RenderOoXml";
             this.RenderOoXml.Size = new System.Drawing.Size(75, 23);
             this.RenderOoXml.TabIndex = 21;
@@ -355,7 +369,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1137, 587);
             this.Controls.Add(this.RenderOoXml);
-            this.Controls.Add(this.LayoutStructure);
             this.Controls.Add(this.ClearChemistry);
             this.Controls.Add(this.SaveStructure);
             this.Controls.Add(this.ShowCml);
@@ -409,6 +422,7 @@
         private System.Windows.Forms.Button SearchChEBI;
         private System.Windows.Forms.Button SearchOpsin;
         private System.Windows.Forms.Button SearchPubChem;
+        private System.Windows.Forms.Button CalculateProperties;
     }
 }
 

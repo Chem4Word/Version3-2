@@ -250,7 +250,7 @@ namespace Chem4Word.ACME.Behaviors
             foreach (Point placement in preferredPlacements)
             {
                 var atomVisual = CurrentEditor.GetTargetedVisual(placement) as AtomVisual;
-                if (atomVisual != null && atomVisual.ParentAtom.Parent != parentMolecule)
+                if (atomVisual?.ParentAtom != null && atomVisual.ParentAtom.Parent != parentMolecule)
                 {
                     return true;
                 }
