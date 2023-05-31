@@ -172,9 +172,9 @@ $xml.Save($wixProj)
 # ---------------------------------------------------------- #
 
 # Update SignFiles.cmd
-Write-Host " Updating 'SignFiles.cmd'" -ForegroundColor Yellow
+Write-Host " Updating 'Sign-Files.cmd'" -ForegroundColor Yellow
 
-$file = "$($pwd)\..\Scripts\SignFiles.cmd"
+$file = "$($pwd)\..\Scripts\Sign-Files.cmd"
 Write-Host "$($file)" -ForegroundColor Green
 
 $findPattern = 'set release=Chem4Word-Setup.*'
