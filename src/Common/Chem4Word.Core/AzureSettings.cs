@@ -68,10 +68,10 @@ namespace Chem4Word.Core
             var today = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             // 1. Attempt to get from registry
-            GetFromRegistry();
+            var refreshFromWebRequired = GetFromRegistry();
 
             // 2. If not found or too old; attempt to get from Chem4Word web site(s)
-            if (string.IsNullOrEmpty(LastChecked) || !LastChecked.Equals(today))
+            if (refreshFromWebRequired || string.IsNullOrEmpty(LastChecked) || !LastChecked.Equals(today))
             {
                 GetFromWebsite(today);
             }
@@ -83,107 +83,152 @@ namespace Chem4Word.Core
             }
         }
 
-        private void GetFromRegistry()
+        private bool GetFromRegistry()
         {
-            var key = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordAzureSettingsRegistryKey, true);
-            if (key != null)
+            var refreshRequired = false;
+
+            try
             {
-                var names = key.GetValueNames();
-
-                if (names.Contains(nameof(ChemicalServicesUri)))
+                var key = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordAzureSettingsRegistryKey, true);
+                if (key != null)
                 {
-                    var chemicalServicesUri = key.GetValue(nameof(ChemicalServicesUri)).ToString();
-                    ChemicalServicesUri = chemicalServicesUri;
+                    var names = key.GetValueNames();
+
+                    if (names.Contains(nameof(ChemicalServicesUri)))
+                    {
+                        var chemicalServicesUri = key.GetValue(nameof(ChemicalServicesUri)).ToString();
+                        ChemicalServicesUri = chemicalServicesUri;
+                    }
+                    else
+                    {
+                        refreshRequired = true;
+                    }
+
+                    if (names.Contains(nameof(ServiceBusEndPoint)))
+                    {
+                        var serviceBusEndPoint = key.GetValue(nameof(ServiceBusEndPoint)).ToString();
+                        ServiceBusEndPoint = serviceBusEndPoint;
+                    }
+                    else
+                    {
+                        refreshRequired = true;
+                    }
+
+                    if (names.Contains(nameof(ServiceBusToken)))
+                    {
+                        var serviceBusToken = key.GetValue(nameof(ServiceBusToken)).ToString();
+                        ServiceBusToken = serviceBusToken;
+                    }
+                    else
+                    {
+                        refreshRequired = true;
+                    }
+
+                    if (names.Contains(nameof(ServiceBusQueue)))
+                    {
+                        var serviceBusQueue = key.GetValue(nameof(ServiceBusQueue)).ToString();
+                        ServiceBusQueue = serviceBusQueue;
+                    }
+                    else
+                    {
+                        refreshRequired = true;
+                    }
+
+                    if (names.Contains(nameof(LastChecked)))
+                    {
+                        var lastChecked = key.GetValue(nameof(LastChecked)).ToString();
+                        LastChecked = lastChecked;
+                    }
                 }
-
-                if (names.Contains(nameof(ServiceBusEndPoint)))
+                else
                 {
-                    var serviceBusEndPoint = key.GetValue(nameof(ServiceBusEndPoint)).ToString();
-                    ServiceBusEndPoint = serviceBusEndPoint;
-                }
-
-                if (names.Contains(nameof(ServiceBusToken)))
-                {
-                    var serviceBusToken = key.GetValue(nameof(ServiceBusToken)).ToString();
-                    ServiceBusToken = serviceBusToken;
-                }
-
-                if (names.Contains(nameof(ServiceBusQueue)))
-                {
-                    var serviceBusQueue = key.GetValue(nameof(ServiceBusQueue)).ToString();
-                    ServiceBusQueue = serviceBusQueue;
-                }
-
-                if (names.Contains(nameof(LastChecked)))
-                {
-                    var lastChecked = key.GetValue(nameof(LastChecked)).ToString();
-                    LastChecked = lastChecked;
+                    refreshRequired = true;
                 }
             }
+            catch
+            {
+                refreshRequired = true;
+            }
+
+            return refreshRequired;
         }
 
         private void GetFromWebsite(string today)
         {
-            var file = $"{Constants.Chem4WordVersionFiles}/AzureSettings.json";
-
-            var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
-            var found = false;
-            var temp = string.Empty;
-
-            foreach (var domain in Constants.OurDomains)
+            try
             {
-                using (var client = new HttpClient())
-                {
-                    try
-                    {
-                        client.DefaultRequestHeaders.Add("user-agent", "Chem4Word GetAzureSettings");
-                        client.BaseAddress = new Uri(domain);
-                        var response = client.GetAsync(file).Result;
-                        response.EnsureSuccessStatusCode();
+                var file = $"{Constants.Chem4WordVersionFiles}/AzureSettings.json";
 
-                        var result = response.Content.ReadAsStringAsync().Result;
-                        if (result.Contains("Chem4WordAzureSettings"))
+                var securityProtocol = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+                var found = false;
+                var temp = string.Empty;
+
+                foreach (var domain in Constants.OurDomains)
+                {
+                    using (var client = new HttpClient())
+                    {
+                        try
                         {
-                            found = true;
-                            temp = result;
+                            client.DefaultRequestHeaders.Add("user-agent", "Chem4Word GetAzureSettings");
+                            client.BaseAddress = new Uri(domain);
+                            var response = client.GetAsync(file).Result;
+                            response.EnsureSuccessStatusCode();
+
+                            var result = response.Content.ReadAsStringAsync().Result;
+                            if (result.Contains("Chem4WordAzureSettings"))
+                            {
+                                found = true;
+                                temp = result;
+                            }
+                        }
+                        catch
+                        {
+                            //Debugger.Break()
                         }
                     }
-                    catch
+
+                    if (found)
                     {
-                        //Debugger.Break()
+                        break;
                     }
                 }
 
-                if (found)
+                if (!string.IsNullOrEmpty(temp))
                 {
-                    break;
+                    var settings = JsonConvert.DeserializeObject<AzureSettings>(temp);
+                    ChemicalServicesUri = settings.ChemicalServicesUri;
+                    ServiceBusEndPoint = settings.ServiceBusEndPoint;
+                    ServiceBusToken = settings.ServiceBusToken;
+                    ServiceBusQueue = settings.ServiceBusQueue;
+                    LastChecked = today;
+                    _dirty = true;
                 }
             }
-
-            if (!string.IsNullOrEmpty(temp))
+            catch
             {
-                var settings = JsonConvert.DeserializeObject<AzureSettings>(temp);
-                ChemicalServicesUri = settings.ChemicalServicesUri;
-                ServiceBusEndPoint = settings.ServiceBusEndPoint;
-                ServiceBusToken = settings.ServiceBusToken;
-                ServiceBusQueue = settings.ServiceBusQueue;
-                LastChecked = today;
-                _dirty = true;
+                // Do Nothing
             }
         }
 
         private void SaveToRegistry(string today)
         {
-            var key = Registry.CurrentUser.CreateSubKey(Constants.Chem4WordAzureSettingsRegistryKey);
-            if (key != null)
+            try
             {
-                key.SetValue(nameof(ChemicalServicesUri), ChemicalServicesUri);
-                key.SetValue(nameof(ServiceBusEndPoint), ServiceBusEndPoint);
-                key.SetValue(nameof(ServiceBusToken), ServiceBusToken);
-                key.SetValue(nameof(ServiceBusQueue), ServiceBusQueue);
-                key.SetValue(nameof(LastChecked), today);
+                var key = Registry.CurrentUser.CreateSubKey(Constants.Chem4WordAzureSettingsRegistryKey);
+                if (key != null)
+                {
+                    key.SetValue(nameof(ChemicalServicesUri), ChemicalServicesUri);
+                    key.SetValue(nameof(ServiceBusEndPoint), ServiceBusEndPoint);
+                    key.SetValue(nameof(ServiceBusToken), ServiceBusToken);
+                    key.SetValue(nameof(ServiceBusQueue), ServiceBusQueue);
+                    key.SetValue(nameof(LastChecked), today);
+                }
+            }
+            catch
+            {
+                // Do Nothing
             }
         }
     }

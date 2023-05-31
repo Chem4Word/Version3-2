@@ -60,20 +60,20 @@ namespace Chem4Word
         public XDocument ThisVersion;
 
         public bool EventsEnabled = true;
+        public bool PlugInsHaveBeenLoaded;
 
-        public bool ChemistryAllowed = false;
+        public bool ChemistryAllowed;
         public string ChemistryProhibitedReason = "";
         private string _lastContentControlAdded = "";
 
-        private bool _chemistrySelected = false;
-        private bool _markAsChemistryHandled = false;
-        private bool _plugInsLoaded = false;
+        private bool _chemistrySelected;
+        private bool _markAsChemistryHandled;
 
         public bool OptionsReloadRequired = false;
         private int _rightClickEvents;
         private ConfigWatcher _configWatcher;
 
-        public bool LibraryState = false;
+        public bool LibraryState;
 
         private Thread _slowOperationsThread;
         public List<string> StartUpTimings = new List<string>();
@@ -201,6 +201,7 @@ namespace Chem4Word
         private void C4WAddIn_Startup(object sender, EventArgs e)
         {
             var module = $"{MethodBase.GetCurrentMethod().Name}()";
+
             try
             {
                 // Deliberate crash to test Error Reporting
@@ -307,7 +308,7 @@ namespace Chem4Word
                 ServicePointManager.UseNagleAlgorithm = false;
                 ServicePointManager.Expect100Continue = false;
 
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
                 _configWatcher = new ConfigWatcher(AddInInfo.ProductAppDataPath);
 
@@ -330,6 +331,8 @@ namespace Chem4Word
 
             try
             {
+                SetButtonStates(ButtonState.NoDocument);
+
                 LoadOptions();
 
                 AddInInfo = new C4wAddInInfo();
@@ -583,10 +586,13 @@ namespace Chem4Word
 
             try
             {
-                _slowOperationsThread.Join();
-                if (_slowOperationsThread.IsAlive)
+                if (_slowOperationsThread != null)
                 {
-                    _slowOperationsThread.Abort();
+                    _slowOperationsThread.Join();
+                    if (_slowOperationsThread.IsAlive)
+                    {
+                        _slowOperationsThread.Abort();
+                    }
                 }
 
                 if (Editors != null)
@@ -638,7 +644,6 @@ namespace Chem4Word
 
                 if (Ribbon != null)
                 {
-                    _plugInsLoaded = true;
                     if (VersionsBehind >= Constants.MaximumVersionsBehind)
                     {
                         SetButtonStates(ButtonState.Disabled);
@@ -863,6 +868,8 @@ namespace Chem4Word
             message = $"{module} examining {filesFound} files took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms";
             Debug.WriteLine(message);
             StartUpTimings.Add(message);
+
+            PlugInsHaveBeenLoaded = true;
         }
 
         public IChem4WordEditor GetEditorPlugIn(string name)
@@ -1065,20 +1072,75 @@ namespace Chem4Word
 
         private void SetButtonStates(ButtonState state)
         {
-            if (Ribbon != null && _plugInsLoaded)
+            if (Ribbon != null)
             {
-                // Always enabled
+                // Help is always enabled
                 Ribbon.HelpMenu.Enabled = true;
 
-                var plugInsLoaded = Editors.Count + Renderers.Count + Searchers.Count > 0;
-                // Enabled once any PlugIns are loaded
-                Ribbon.ChangeOptions.Enabled = plugInsLoaded;
-                IsEnabled = true;
-
-                switch (state)
+                if (PlugInsHaveBeenLoaded)
                 {
-                    case ButtonState.Disabled:
-                    case ButtonState.NoDocument:
+                    var plugInsLoaded = Editors.Count + Renderers.Count + Searchers.Count > 0;
+                    // Enabled once any PlugIns are loaded
+                    Ribbon.ChangeOptions.Enabled = plugInsLoaded;
+                    IsEnabled = true;
+
+                    switch (state)
+                    {
+                        case ButtonState.Disabled:
+                        case ButtonState.NoDocument:
+                            Ribbon.EditStructure.Enabled = false;
+                            Ribbon.EditStructure.Label = "Draw";
+                            Ribbon.EditLabels.Enabled = false;
+                            Ribbon.ViewCml.Enabled = false;
+                            Ribbon.ImportFromFile.Enabled = false;
+                            Ribbon.ExportToFile.Enabled = false;
+                            Ribbon.ShowAsMenu.Enabled = false;
+                            Ribbon.ShowNavigator.Enabled = false;
+                            Ribbon.ShowLibrary.Enabled = false;
+                            Ribbon.WebSearchMenu.Enabled = false;
+                            Ribbon.SaveToLibrary.Enabled = false;
+                            Ribbon.ArrangeMolecules.Enabled = false;
+                            Ribbon.ButtonsDisabled.Enabled = true;
+                            break;
+
+                        case ButtonState.CanEdit:
+                            Ribbon.EditStructure.Enabled = plugInsLoaded && Editors.Count > 0;
+                            Ribbon.EditStructure.Label = "Edit";
+                            Ribbon.EditLabels.Enabled = true;
+                            Ribbon.ViewCml.Enabled = true;
+                            Ribbon.ImportFromFile.Enabled = false;
+                            Ribbon.ExportToFile.Enabled = true;
+                            Ribbon.ShowAsMenu.Enabled = true;
+                            Ribbon.ShowNavigator.Enabled = true;
+                            Ribbon.ShowLibrary.Enabled = true;
+                            Ribbon.WebSearchMenu.Enabled = false;
+                            Ribbon.SaveToLibrary.Enabled = true;
+                            Ribbon.ArrangeMolecules.Enabled = true;
+                            Ribbon.ButtonsDisabled.Enabled = false;
+                            break;
+
+                        case ButtonState.CanInsert:
+                            Ribbon.EditStructure.Enabled = plugInsLoaded && Editors.Count > 0;
+                            Ribbon.EditStructure.Label = "Draw";
+                            Ribbon.EditLabels.Enabled = false;
+                            Ribbon.ViewCml.Enabled = false;
+                            Ribbon.ImportFromFile.Enabled = plugInsLoaded;
+                            Ribbon.ExportToFile.Enabled = false;
+                            Ribbon.ShowAsMenu.Enabled = false;
+                            Ribbon.ShowNavigator.Enabled = true;
+                            Ribbon.ShowLibrary.Enabled = true;
+                            Ribbon.WebSearchMenu.Enabled = plugInsLoaded && Searchers.Count > 0;
+                            Ribbon.SaveToLibrary.Enabled = false;
+                            Ribbon.ArrangeMolecules.Enabled = false;
+                            Ribbon.ButtonsDisabled.Enabled = false;
+                            break;
+                    }
+
+                    var betaValue = Globals.Chem4WordV3.ThisVersion.Root?.Element("IsBeta")?.Value;
+                    var isBeta = betaValue != null && bool.Parse(betaValue);
+
+                    if (IsEndOfLife || isBeta && !VersionAvailableIsBeta)
+                    {
                         Ribbon.EditStructure.Enabled = false;
                         Ribbon.EditStructure.Label = "Draw";
                         Ribbon.EditLabels.Enabled = false;
@@ -1092,61 +1154,9 @@ namespace Chem4Word
                         Ribbon.SaveToLibrary.Enabled = false;
                         Ribbon.ArrangeMolecules.Enabled = false;
                         Ribbon.ButtonsDisabled.Enabled = true;
-                        break;
 
-                    case ButtonState.CanEdit:
-                        Ribbon.EditStructure.Enabled = plugInsLoaded && Editors.Count > 0;
-                        Ribbon.EditStructure.Label = "Edit";
-                        Ribbon.EditLabels.Enabled = true;
-                        Ribbon.ViewCml.Enabled = true;
-                        Ribbon.ImportFromFile.Enabled = false;
-                        Ribbon.ExportToFile.Enabled = true;
-                        Ribbon.ShowAsMenu.Enabled = true;
-                        Ribbon.ShowNavigator.Enabled = true;
-                        Ribbon.ShowLibrary.Enabled = true;
-                        Ribbon.WebSearchMenu.Enabled = false;
-                        Ribbon.SaveToLibrary.Enabled = true;
-                        Ribbon.ArrangeMolecules.Enabled = true;
-                        Ribbon.ButtonsDisabled.Enabled = false;
-                        break;
-
-                    case ButtonState.CanInsert:
-                        Ribbon.EditStructure.Enabled = plugInsLoaded && Editors.Count > 0;
-                        Ribbon.EditStructure.Label = "Draw";
-                        Ribbon.EditLabels.Enabled = false;
-                        Ribbon.ViewCml.Enabled = false;
-                        Ribbon.ImportFromFile.Enabled = plugInsLoaded;
-                        Ribbon.ExportToFile.Enabled = false;
-                        Ribbon.ShowAsMenu.Enabled = false;
-                        Ribbon.ShowNavigator.Enabled = true;
-                        Ribbon.ShowLibrary.Enabled = true;
-                        Ribbon.WebSearchMenu.Enabled = plugInsLoaded && Searchers.Count > 0;
-                        Ribbon.SaveToLibrary.Enabled = false;
-                        Ribbon.ArrangeMolecules.Enabled = false;
-                        Ribbon.ButtonsDisabled.Enabled = false;
-                        break;
-                }
-
-                var betaValue = Globals.Chem4WordV3.ThisVersion.Root?.Element("IsBeta")?.Value;
-                var isBeta = betaValue != null && bool.Parse(betaValue);
-
-                if (IsEndOfLife || isBeta && !VersionAvailableIsBeta)
-                {
-                    Ribbon.EditStructure.Enabled = false;
-                    Ribbon.EditStructure.Label = "Draw";
-                    Ribbon.EditLabels.Enabled = false;
-                    Ribbon.ViewCml.Enabled = false;
-                    Ribbon.ImportFromFile.Enabled = false;
-                    Ribbon.ExportToFile.Enabled = false;
-                    Ribbon.ShowAsMenu.Enabled = false;
-                    Ribbon.ShowNavigator.Enabled = false;
-                    Ribbon.ShowLibrary.Enabled = false;
-                    Ribbon.WebSearchMenu.Enabled = false;
-                    Ribbon.SaveToLibrary.Enabled = false;
-                    Ribbon.ArrangeMolecules.Enabled = false;
-                    Ribbon.ButtonsDisabled.Enabled = true;
-
-                    IsEnabled = false;
+                        IsEnabled = false;
+                    }
                 }
             }
         }

@@ -56,7 +56,7 @@ namespace Chem4Word.Helpers
 
                     if (doCheck)
                     {
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Last check {delta.TotalDays:0} day(s) ago; Check frequency {frequency} days.");
+                        Globals.Chem4WordV3.Telemetry.Write(module, "AutomaticUpdate", $"Last check {delta.TotalDays:0} day(s) ago; Check frequency {frequency} days.");
                         Debug.WriteLine("Saving date last checked in Registry as Today");
                         RegistryKey registryKey = Registry.CurrentUser.CreateSubKey(Constants.Chem4WordRegistryKey);
                         registryKey?.SetValue(Constants.RegistryValueNameLastCheck, DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
@@ -327,7 +327,7 @@ namespace Chem4Word.Helpers
             string contents = null;
 
             var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
             bool foundOurXmlFile = false;
             foreach (var domain in Constants.OurDomains)
@@ -338,7 +338,7 @@ namespace Chem4Word.Helpers
 
                     try
                     {
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Looking for Chem4Word-Versions.xml at {domain}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, "AutomaticUpdate", $"Looking for Chem4Word-Versions.xml at {domain}");
 
                         client.DefaultRequestHeaders.Add("user-agent", "Chem4Word VersionChecker");
                         client.BaseAddress = new Uri(domain);

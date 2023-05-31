@@ -94,8 +94,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{53F5
 		Scripts\Install-Dev-Certificate.ps1 = Scripts\Install-Dev-Certificate.ps1
 		Scripts\Reset-User-Settings.ps1 = Scripts\Reset-User-Settings.ps1
 		Scripts\Set-Assembly-Version.ps1 = Scripts\Set-Assembly-Version.ps1
-		Scripts\SignAssembly.ps1 = Scripts\SignAssembly.ps1
-		Scripts\SignFiles.cmd = Scripts\SignFiles.cmd
+		Scripts\Sign-Assembly.ps1 = Scripts\Sign-Assembly.ps1
+		Scripts\Sign-Files.cmd = Scripts\Sign-Files.cmd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chem4Word.Model2", "Chemistry\Chem4Word.Model2\Chem4Word.Model2.csproj", "{C69BAB8F-4881-4D5F-9929-FC8470DF1E48}"

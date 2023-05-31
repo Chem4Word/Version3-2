@@ -153,9 +153,9 @@ if "$(ConfigurationName)" == "Vso-Ci" (
   goto :nocopy
 )
 
-if "$(ConfigurationName)-%25SignClient%25" == "Setup-Configured" (
+if "$(ConfigurationName)-%25SignTool%25" == "Setup-Configured" (
   powershell.exe -NoLogo -NonInteractive -ExecutionPolicy Unrestricted -Command ^
-  .'$(SolutionDir)Scripts\SignAssembly.ps1' ^
+  .'$(SolutionDir)Scripts\Sign-Assembly.ps1' ^
   -TargetFileName '$(TargetFileName)' ^
   -TargetPath '$(TargetPath)'
 )

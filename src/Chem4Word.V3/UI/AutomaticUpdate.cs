@@ -133,7 +133,7 @@ namespace Chem4Word.UI
                 if (File.Exists(destination)
                     && new FileInfo(destination).Length > 0)
                 {
-                    _telemetry.Write(module, "AutomaticUpdate", "Starting updater, to download " + _downloadUrl);
+                    _telemetry.Write(module, "AutomaticUpdate", "Starting updater to download " + _downloadUrl);
 
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.WorkingDirectory = downloadPath;

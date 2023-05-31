@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
@@ -333,6 +334,13 @@ namespace Chem4Word.Telemetry
             }
         }
 
+        private string GetVersionNumber()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var productVersion = assembly.GetName().Version;
+            return productVersion.ToString();
+        }
+
         private void WritePrivate(string operation, string level, string message)
         {
             Debug.WriteLine($"{operation} - {level} - {message}");
@@ -349,9 +357,7 @@ namespace Chem4Word.Telemetry
                     machineId = _helper.MachineId;
                     if (string.IsNullOrEmpty(_helper.AssemblyVersionNumber))
                     {
-                        var assembly = Assembly.GetExecutingAssembly();
-                        var productVersion = assembly.GetName().Version;
-                        versionNumber = productVersion.ToString();
+                        versionNumber = GetVersionNumber();
                     }
                     else
                     {
@@ -361,7 +367,17 @@ namespace Chem4Word.Telemetry
             }
             catch
             {
-                //
+                try
+                {
+                    // This is what _helper would have done had it been initialised ...
+                    versionNumber = GetVersionNumber();
+                    processId = Process.GetCurrentProcess().Id;
+                    machineId = SystemHelper.GetMachineId();
+                }
+                catch
+                {
+                    // Do nothing
+                }
             }
 
             var sbm = new OutputMessage(processId)

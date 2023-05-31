@@ -5,10 +5,8 @@
     <Version>
         <Number>3.2.11 Release 7</Number>
         <IsBeta>false</IsBeta>
-        <Released>01-Apr-2023</Released>
+        <Released>31-May-2023</Released>
         <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
             <Change>Performance: Send all molecules to Chemical Services Web Service in one call</Change>
             <Change>Internal: Update NuGet packages to latest</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>

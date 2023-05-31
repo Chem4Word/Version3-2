@@ -509,7 +509,7 @@ namespace Chem4Word
 
                                     var importErrors = new ImportErrors();
                                     importErrors.TopLeft = Globals.Chem4WordV3.WordTopLeft;
-                                    model.ScaleToAverageBondLength(40);
+                                    model.ScaleToAverageBondLength(Globals.Chem4WordV3.SystemOptions.BondLength);
                                     importErrors.Model = model;
                                     dialogResult = importErrors.ShowDialog();
                                 }
@@ -598,7 +598,10 @@ namespace Chem4Word
                 Globals.Chem4WordV3.LoadOptions();
             }
 
-            Globals.Chem4WordV3.EvaluateChemistryAllowed();
+            if (Globals.Chem4WordV3.PlugInsHaveBeenLoaded)
+            {
+                Globals.Chem4WordV3.EvaluateChemistryAllowed();
+            }
         }
 
         private void AfterButtonChecks(RibbonButton button)
@@ -637,11 +640,15 @@ namespace Chem4Word
                 }
             }
 
-            Globals.Chem4WordV3.EvaluateChemistryAllowed();
-            Globals.Chem4WordV3.ShowOrHideUpdateShield();
-            if (Globals.Chem4WordV3.ChemistryAllowed)
+            if (Globals.Chem4WordV3.PlugInsHaveBeenLoaded)
             {
-                Globals.Chem4WordV3.SelectChemistry(Globals.Chem4WordV3.Application.Selection);
+                Globals.Chem4WordV3.EvaluateChemistryAllowed();
+                Globals.Chem4WordV3.ShowOrHideUpdateShield();
+
+                if (Globals.Chem4WordV3.ChemistryAllowed)
+                {
+                    Globals.Chem4WordV3.SelectChemistry(Globals.Chem4WordV3.Application.Selection);
+                }
             }
         }
 
@@ -654,11 +661,10 @@ namespace Chem4Word
                 if (Globals.Chem4WordV3.IsEnabled)
                 {
                     Globals.Chem4WordV3.Telemetry.Write(module, "Information", "Started");
+
                     var application = Globals.Chem4WordV3.Application;
                     var document = application.ActiveDocument;
-
                     Word.ContentControl contentControl = null;
-
                     var wordSettings = new WordSettings(application);
 
                     try
@@ -937,6 +943,10 @@ namespace Chem4Word
                                         else
                                         {
                                             // Editing aborted due to errors
+                                            if (afterModel.GeneralErrors.Count > 0)
+                                            {
+                                                Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, afterModel.GeneralErrors));
+                                            }
                                             if (afterModel.AllErrors.Count > 0)
                                             {
                                                 Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, afterModel.AllErrors));
@@ -1929,7 +1939,7 @@ namespace Chem4Word
                 RegistryHelper.StoreMessage(module, "Triggered");
             }
 
-            if (Globals.Chem4WordV3.EventsEnabled)
+            if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.PlugInsHaveBeenLoaded)
             {
                 Globals.Chem4WordV3.EventsEnabled = false;
 
@@ -2110,7 +2120,7 @@ namespace Chem4Word
                 RegistryHelper.StoreMessage(module, "Triggered");
             }
 
-            if (Globals.Chem4WordV3.EventsEnabled)
+            if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.PlugInsHaveBeenLoaded)
             {
                 Globals.Chem4WordV3.EventsEnabled = false;
 
@@ -2167,7 +2177,7 @@ namespace Chem4Word
 
                 try
                 {
-                    Process.Start("https://www.youtube.com/channel/UCKX2kG9kZ3zoX0nCen5lfpQ");
+                    Process.Start("https://www.youtube.com/@chem4word");
                 }
                 catch (Exception ex)
                 {
@@ -2186,7 +2196,9 @@ namespace Chem4Word
         private void OnClick_ButtonsDisabled(object sender, RibbonControlEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
             BeforeButtonChecks();
+
             if (Globals.Chem4WordV3.Telemetry != null)
             {
                 Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
@@ -2198,8 +2210,15 @@ namespace Chem4Word
 
             try
             {
-                Globals.Chem4WordV3.EvaluateChemistryAllowed();
-                UserInteractions.InformUser($"Chem4Word buttons are disabled because {Globals.Chem4WordV3.ChemistryProhibitedReason}");
+                if (Globals.Chem4WordV3.PlugInsHaveBeenLoaded)
+                {
+                    Globals.Chem4WordV3.EvaluateChemistryAllowed();
+                    UserInteractions.InformUser($"Chem4Word buttons are disabled because {Globals.Chem4WordV3.ChemistryProhibitedReason}");
+                }
+                else
+                {
+                    UserInteractions.InformUser("Chem4Word buttons are disabled because no plug Ins were found.");
+                }
             }
             catch (Exception ex)
             {
@@ -2227,10 +2246,17 @@ namespace Chem4Word
 
             try
             {
-                var fa = new SystemInfo();
-                fa.TopLeft = Globals.Chem4WordV3.WordTopLeft;
+                if (Globals.Chem4WordV3.PlugInsHaveBeenLoaded)
+                {
+                    var fa = new SystemInfo();
+                    fa.TopLeft = Globals.Chem4WordV3.WordTopLeft;
 
-                fa.ShowDialog();
+                    fa.ShowDialog();
+                }
+                else
+                {
+                    UserInteractions.InformUser("Chem4Word is disabled because no plug Ins were found.");
+                }
             }
             catch (Exception ex)
             {

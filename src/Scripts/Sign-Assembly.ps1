@@ -7,7 +7,7 @@
 # -- Post-build Event :-
 #
 # powershell.exe -NoLogo -NonInteractive -ExecutionPolicy Unrestricted -Command ^
-#   .'$(ProjectDir)Scripts\SignAssembly.ps1' ^
+#   .'$(ProjectDir)Scripts\Sign-Assembly.ps1' ^
 #   -TargetFileName $(TargetFileName) ^
 #   -TargetPath $(TargetPath)
 
@@ -21,15 +21,16 @@ param
 
 try
 {
-	$signClientPath = "C:\Tools\Azure\SignClient"
-	$signClientExe = "$($signClientPath)\SignClient.exe"
-	$signClientSettings = "$($signClientPath)\appsettings.json"
+	$signToolPath = "C:\Tools\Azure\SignTool"
+	$signToolExe = "$($signToolPath)\Sign.exe"
 
-	if (Test-Path $signClientExe)
+	if (Test-Path $signToolExe)
 	{
 		# Call .Net Foundation Code Signing Service
 		Write-Output "Signing $($TargetFileName) ..."
-		& $signClientExe sign -c $signClientSettings -r $env:SignClientUser -s $env:SignClientPassword -n Chem4Word -i $TargetPath
+		& $signToolExe code azure-key-vault $TargetPath `
+			-kvt $env:SignToolTenantId -kvi $env:SignToolClientId -kvs $env:SignToolClientSecret -kvu $env:SignToolVaultUrl -kvc $env:SignToolCertificate `
+			-t "http://timestamp.digicert.com" -pn "Chem4Word" -d "Chem4Word installer" -u "https://www.chem4word.co.uk" -v Information
 	}
 
 	# Check that the file was signed
