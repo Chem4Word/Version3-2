@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Shared;
+using IChem4Word.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,12 +16,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Chem4Word.Core;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Shared;
-using IChem4Word.Contracts;
 
 namespace Chem4Word.Telemetry
 {
@@ -50,22 +49,22 @@ namespace Chem4Word.Telemetry
             _azureServiceBusWriter = new AzureServiceBusWriter(new AzureSettings(true));
         }
 
-        public void Write(string operation, string level, string message)
+        public void Write(string source, string level, string message)
         {
             string unwanted = "Chem4Word.V3.";
-            if (operation.StartsWith(unwanted))
+            if (source.StartsWith(unwanted))
             {
-                operation = operation.Remove(0, unwanted.Length);
+                source = source.Remove(0, unwanted.Length);
             }
             unwanted = "Chem4WordV3.";
-            if (operation.StartsWith(unwanted))
+            if (source.StartsWith(unwanted))
             {
-                operation = operation.Remove(0, unwanted.Length);
+                source = source.Remove(0, unwanted.Length);
             }
             unwanted = "Chem4Word.";
-            if (operation.StartsWith(unwanted))
+            if (source.StartsWith(unwanted))
             {
-                operation = operation.Remove(0, unwanted.Length);
+                source = source.Remove(0, unwanted.Length);
             }
 
             try
@@ -74,18 +73,18 @@ namespace Chem4Word.Telemetry
                     $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.Now)}.log");
                 using (StreamWriter w = File.AppendText(fileName))
                 {
-                    string logMessage = $"[{SafeDate.ToShortTime(DateTime.Now)}] {operation} - {level} - {message}";
+                    string logMessage = $"[{SafeDate.ToShortTime(DateTime.Now)}] {source} - {level} - {message}";
                     w.WriteLine(logMessage);
                 }
             }
             catch
             {
-                //
+                // Do nothing
             }
 
             if (_permissionGranted)
             {
-                WritePrivate(operation, level, message);
+                WritePrivate(source, level, message);
 
                 if (!_systemInfoSent
                     && _helper != null
@@ -121,7 +120,7 @@ namespace Chem4Word.Telemetry
                             }
                         }
 
-                        var failedToFetch =  _helper.GitStatus
+                        var failedToFetch = _helper.GitStatus
                                                      .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                                                      .FirstOrDefault(l => l.Contains("is not a git command"));
                         if (!string.IsNullOrEmpty(failedToFetch))
@@ -131,7 +130,6 @@ namespace Chem4Word.Telemetry
                             // git config --global credential.helper store
                             MessageBox.Show(@"Git fetch failed\nYou need to run 'git config --global --unset credential.helper' from a command prompt.", "WARNING");
                         }
-
                     }
                 }
             }
@@ -170,9 +168,8 @@ namespace Chem4Word.Telemetry
             {
                 WritePrivate("StartUp", "Information", _helper.Click2RunProductIds);
             }
-            WritePrivate("StartUp", "Information", Environment.GetCommandLineArgs()[0]);
 
-            //WritePrivate("StartUp", "Information", $"Browser Version: {_helper.BrowserVersion}");
+            WritePrivate("StartUp", "Information", Environment.GetCommandLineArgs()[0]);
 
             if (_helper.StartUpTimings != null)
             {
@@ -346,15 +343,22 @@ namespace Chem4Word.Telemetry
             Debug.WriteLine($"{operation} - {level} - {message}");
 
             var processId = 666;
-            var machineId = "00000000-0000-0000-0000-000000000000";
-            var versionNumber = $"{Constants.Chem4WordVersion}.666.666";
+            var machineId = Guid.Empty.ToString("D");
+            var versionNumber = Constants.Chem4WordVersion;
 
             try
             {
                 if (_helper != null)
                 {
                     processId = _helper.ProcessId;
-                    machineId = _helper.MachineId;
+                    if (string.IsNullOrEmpty(_helper.MachineId) || _helper.MachineId.Equals(Guid.Empty.ToString("D")))
+                    {
+                        SystemHelper.GetMachineId();
+                    }
+                    else
+                    {
+                        machineId = _helper.MachineId;
+                    }
                     if (string.IsNullOrEmpty(_helper.AssemblyVersionNumber))
                     {
                         versionNumber = GetVersionNumber();
@@ -363,6 +367,13 @@ namespace Chem4Word.Telemetry
                     {
                         versionNumber = _helper.AssemblyVersionNumber;
                     }
+                }
+                else
+                {
+                    // This is what _helper would have done had it been initialised ...
+                    versionNumber = GetVersionNumber();
+                    processId = Process.GetCurrentProcess().Id;
+                    machineId = SystemHelper.GetMachineId();
                 }
             }
             catch
@@ -380,7 +391,7 @@ namespace Chem4Word.Telemetry
                 }
             }
 
-            var sbm = new OutputMessage(processId)
+            var outputMessage = new OutputMessage(processId)
             {
                 MachineId = machineId,
                 Operation = operation,
@@ -389,7 +400,7 @@ namespace Chem4Word.Telemetry
                 AssemblyVersionNumber = versionNumber
             };
 
-            _azureServiceBusWriter.QueueMessage(sbm);
+            _azureServiceBusWriter.QueueMessage(outputMessage);
         }
     }
 }
