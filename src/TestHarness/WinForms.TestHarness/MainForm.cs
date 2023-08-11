@@ -955,12 +955,6 @@ namespace WinForms.TestHarness
                 // Code being tested
                 changedProperties = pc.CalculateProperties(model);
             }
-            else
-            {
-                // Existing code used by Chem4Word
-                var mols = model.GetAllMolecules();
-                changedProperties = pc.CalculateProperties(mols);
-            }
 
             stopwatch.Stop();
             Debug.WriteLine($"Calulating {changedProperties} changed properties took {stopwatch.Elapsed}");
