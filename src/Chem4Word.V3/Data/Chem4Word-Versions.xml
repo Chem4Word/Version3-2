@@ -7,7 +7,7 @@
         <IsBeta>false</IsBeta>
         <Released>31-Aug-2023</Released>
         <Changes>
-            <Change>...</Change>
+            <Change>Replace flawed implementation of Atom.BalancingVector with one that works correctly</Change>
             <Change>Don't send empty molecules to property calculator</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>

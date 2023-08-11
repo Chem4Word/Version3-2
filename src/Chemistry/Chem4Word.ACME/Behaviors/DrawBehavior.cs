@@ -5,11 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
 using Chem4Word.ACME.Adorners.Sketching;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing.Visuals;
@@ -18,6 +13,11 @@ using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using static Chem4Word.Model2.Helpers.Globals;
 
 namespace Chem4Word.ACME.Behaviors
@@ -366,7 +366,7 @@ namespace Chem4Word.ACME.Behaviors
             }
             else if (lastAtom.Degree == 1)
             {
-                Vector bondVector = lastAtom.Position - lastAtom.Neighbours.First().Position;
+                var bondVector = lastAtom.Position - lastAtom.Neighbours.First().Position;
 
                 var hour = SnapToHour(bondVector);
 
@@ -389,17 +389,11 @@ namespace Chem4Word.ACME.Behaviors
                     newDirection = balancingVector * EditController.Model.XamlBondLength;
                 }
             }
-            else if (lastAtom.Degree == 2)
+            else
             {
                 var balancingVector = lastAtom.BalancingVector();
-                balancingVector.Normalize();
                 newDirection = balancingVector * EditController.Model.XamlBondLength;
                 newTag = SnapToHour(balancingVector);
-            }
-            else //lastAtom.Degree >= 2:  could get congested
-            {
-                FindOpenSpace(lastAtom, EditController.Model.XamlBondLength, out newDirection);
-                newTag = SnapToHour(newDirection);
             }
 
             return (newDirection + lastAtom.Position, newTag);
@@ -407,73 +401,9 @@ namespace Chem4Word.ACME.Behaviors
             //local function
             ClockDirections SnapToHour(Vector bondVector)
             {
-                double bondAngle = Vector.AngleBetween(GeometryTool.ScreenNorth, bondVector);
-
-                ClockDirections hour = (ClockDirections)GeometryTool.SnapToClock(bondAngle);
-                return hour;
+                var bondAngle = Vector.AngleBetween(GeometryTool.ScreenNorth, bondVector);
+                return (ClockDirections)GeometryTool.SnapToClock(bondAngle);
             }
-        }
-
-        /// <summary>
-        /// Tries to find the best place to put a bond
-        /// by placing it in uncongested space
-        /// </summary>
-        /// <param name="rootAtom"></param>
-        /// <param name="modelXamlBondLength"></param>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        private void FindOpenSpace(Atom rootAtom, double modelXamlBondLength, out Vector vector)
-        {
-            //we need to work out which adjacent pairs of bonds around the atom have most space
-            //first, sort each bond around the atom by its position from twelve-o-clock
-            List<CandidatePlacement> possiblePlacements = new List<CandidatePlacement>();
-            var atomBonds = (from b in rootAtom.Bonds
-                             orderby b.AngleStartingAt(rootAtom)
-                             select b).ToList();
-            //add the first item in at the end so this makes comparison of pairs easier
-            atomBonds.Add(atomBonds[0]);
-            //now compare each bond with the previous bond and sort them by angle descending
-
-            for (int i = 1; i < atomBonds.Count; i++)
-            {
-                var otherAtom = atomBonds[i - 1].OtherAtom(rootAtom);
-                Vector vec0 = otherAtom.Position - rootAtom.Position;
-                var atom = atomBonds[i].OtherAtom(rootAtom);
-                Vector vec1 = atom.Position - rootAtom.Position;
-
-                vec0.Normalize();
-                vec1.Normalize();
-
-                var splitDirection = vec0 + vec1;
-                splitDirection.Normalize();
-
-                var angleBetween = Vector.AngleBetween(vec0, vec1);
-                if (angleBetween < 180d)
-                {
-                    var combinedWeights = atom.Degree + otherAtom.Degree;
-                    var possiblePlacement = rootAtom.Position + (splitDirection * modelXamlBondLength);
-                    CandidatePlacement cp = new CandidatePlacement
-                    {
-                        NeighbourWeights = combinedWeights,
-                        Orientation = splitDirection,
-                        Separation = (int)angleBetween,
-                        PossiblePlacement = possiblePlacement,
-                        Crowding = CrowdingOut(possiblePlacement)
-                    };
-                    possiblePlacements.Add(cp);
-                }
-            }
-
-            var sortedPlacements = (from p in possiblePlacements
-                                    orderby p.Crowding ascending, p.NeighbourWeights, p.Separation descending
-
-                                    select p);
-
-            Vector newPlacement = sortedPlacements.First().Orientation;
-
-            newPlacement.Normalize();
-            newPlacement *= modelXamlBondLength;
-            vector = newPlacement;
         }
 
         private bool VirginAtom(Atom lastAtom)

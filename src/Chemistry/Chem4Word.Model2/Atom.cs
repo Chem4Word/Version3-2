@@ -356,6 +356,7 @@ namespace Chem4Word.Model2
                                             }
                                             else
                                             {
+                                                // Change this to false to hide C if bonds are in a straight line
                                                 result = true;
                                             }
                                         }
@@ -552,62 +553,78 @@ namespace Chem4Word.Model2
         public bool IsUnsaturated => Bonds.Any(b => b.OrderValue >= 2);
 
         //drawing related properties
-        public Vector BalancingVector(bool forLabelPlacement = false)
+        public Vector BalancingVector()
         {
-            Vector vsumVector = GeometryTool.ScreenNorth;
+            // This code was adapted from an answer given by ChatGPT
+
+            var result = GeometryTool.ScreenNorth;
 
             if (Bonds.Any())
             {
-                double sumOfLengths = 0;
+                var angles = new List<double>();
                 foreach (var bond in Bonds)
                 {
-                    Vector v = bond.OtherAtom(this).Position - this.Position;
-
-                    if (forLabelPlacement)
-                    {
-                        // Multiply by bond order to bias away from double or triple bonds
-                        double order = bond.OrderValue.Value;
-                        if (order > 0.1)
-                        {
-                            v *= bond.OrderValue.Value;
-                        }
-                    }
-
-                    sumOfLengths += v.Length;
-                    vsumVector += v;
+                    var otherAtom = bond.OtherAtom(this);
+                    var angle = Vector.AngleBetween(GeometryTool.ScreenNorth, otherAtom.Position - Position);
+                    angles.Add(angle);
                 }
 
-                // Set tiny amount as 10% of average bond length
-                double tinyAmount = sumOfLengths / Bonds.Count() * 0.1;
-                double xy = vsumVector.Length;
-
-                // Is resultant vector is big enough for us to use?
-                if (xy >= tinyAmount)
+                if (angles.Count == 1)
                 {
-                    // Get vector in opposite direction
-                    vsumVector = -vsumVector;
-                    vsumVector.Normalize();
+                    var otherAtom = Bonds.First().OtherAtom(this);
+                    result = Position - otherAtom.Position;
                 }
                 else
                 {
-                    // Get vector of first bond
-                    Vector vector = Bonds.First().OtherAtom(this).Position - Position;
-                    if (Bonds.Count() == 2)
-                    {
-                        // Get vector at right angles
-                        vsumVector = vector.Perpendicular();
-                        vsumVector = -vsumVector;
-                    }
-                    else
-                    {
-                        // Get vector in opposite direction
-                        vsumVector = -vector;
-                    }
-                    vsumVector.Normalize();
+                    var leastCrowdedAngle = FindLeastCrowdedAngle(angles);
+                    result = VectorFromNorth(leastCrowdedAngle);
                 }
             }
 
-            return vsumVector;
+            result.Normalize();
+            return result;
+
+            // Local Functions
+
+            double FindLeastCrowdedAngle(List<double> existingAngles)
+            {
+                existingAngles.Sort();
+
+                double leastCrowdedAngle = 0;
+                double maxGap = 0;
+
+                // Iterate through pairs of adjacent existing angles to find the largest gap
+                for (var i = 0; i < existingAngles.Count - 1; i++)
+                {
+                    var gap = existingAngles[i + 1] - existingAngles[i];
+                    if (gap > maxGap)
+                    {
+                        maxGap = gap;
+                        leastCrowdedAngle = (existingAngles[i] + existingAngles[i + 1]) / 2;
+                    }
+                }
+
+                // Check for the gap between the first and last existing angles
+                var firstLastGap = 360 - (existingAngles[existingAngles.Count - 1] - existingAngles[0]);
+                if (firstLastGap > maxGap)
+                {
+                    leastCrowdedAngle = (existingAngles[existingAngles.Count - 1] + existingAngles[0] + 360) / 2;
+                }
+
+                return leastCrowdedAngle;
+            }
+
+            Vector VectorFromNorth(double angleDegrees)
+            {
+                var angleRadians = angleDegrees * (Math.PI / 180);
+
+                var cosAngle = Math.Cos(angleRadians);
+                var sinAngle = Math.Sin(angleRadians);
+                var newX = GeometryTool.ScreenNorth.X * cosAngle - GeometryTool.ScreenNorth.Y * sinAngle;
+                var newY = GeometryTool.ScreenNorth.X * sinAngle + GeometryTool.ScreenNorth.Y * cosAngle;
+
+                return new Vector(newX, newY);
+            }
         }
 
         private List<Atom> UnprocessedNeighbours(Predicate<Atom> unprocessedTest)
@@ -690,7 +707,7 @@ namespace Chem4Word.Model2
         public CompassPoints GetEmptySpaceForHs()
         {
             CompassPoints orientation;
-            double angleFromNorth = Vector.AngleBetween(GeometryTool.ScreenNorth, BalancingVector(true));
+            double angleFromNorth = Vector.AngleBetween(GeometryTool.ScreenNorth, BalancingVector());
             orientation = Bonds.Count() == 1
                 ? GeometryTool.SnapTo2EW(angleFromNorth)
                 : GeometryTool.SnapTo4NESW(angleFromNorth);
