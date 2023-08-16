@@ -5,8 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Text;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Drawing.Visuals
 {

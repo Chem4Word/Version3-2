@@ -5,14 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Media;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
@@ -23,6 +15,14 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using IChem4Word.Contracts;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Media;
 using A = DocumentFormat.OpenXml.Drawing;
 using Drawing = DocumentFormat.OpenXml.Wordprocessing.Drawing;
 using Point = System.Windows.Point;
@@ -160,7 +160,6 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                             break;
                     }
                 }
-
             }
 
             // Render Diagnostic Markers
@@ -1575,7 +1574,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             Point lineStart = reaction.TailPoint;
             Point lineEnd = reaction.HeadPoint;
 
-                  var tuple = OffsetPoints(lineStart, lineEnd);
+            var tuple = OffsetPoints(lineStart, lineEnd);
             var cmlStartPoint = tuple.Start;
             var cmlEndPoint = tuple.End;
             var cmlLineExtents = tuple.Extents;

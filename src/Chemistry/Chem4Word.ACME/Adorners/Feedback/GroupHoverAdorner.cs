@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Drawing.Visuals;
 using System.Windows;
 using System.Windows.Media;
-using Chem4Word.ACME.Drawing.Visuals;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {

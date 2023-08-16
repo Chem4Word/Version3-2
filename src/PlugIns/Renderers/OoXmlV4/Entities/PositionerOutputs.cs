@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic;
 using System.Collections.Generic;
 using System.Windows;
-using Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic;
 
 namespace Chem4Word.Renderer.OoXmlV4.Entities
 {

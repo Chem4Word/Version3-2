@@ -13,7 +13,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <model2:PeriodicTable x:Key="PeriodicTable" />
-            <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
+            <SolidColorBrush x:Key="Chem4WordBlue" Color="#2A579A" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ACMEResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -164,10 +164,10 @@
                         Style="{StaticResource ElementType}"
                         Tag="{Binding}">
                         <Border.ToolTip>
-                            <ToolTip Background="{x:Static SystemColors.WindowBrush}" BorderBrush="{StaticResource Chem4WordBrush}">
+                            <ToolTip Background="{x:Static SystemColors.WindowBrush}" BorderBrush="{StaticResource Chem4WordBlue}">
                                 <Border
                                     Background="{x:Static SystemColors.WindowBrush}"
-                                    BorderBrush="{StaticResource Chem4WordBrush}"
+                                    BorderBrush="{StaticResource Chem4WordBlue}"
                                     CornerRadius="2">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -183,40 +183,40 @@
                                             Grid.Row="0"
                                             Grid.Column="0"
                                             Margin="0,0,5,0"
-                                            Foreground="{StaticResource Chem4WordBrush}">
+                                            Foreground="{StaticResource Chem4WordBlue}">
                                             Name:
                                         </TextBlock>
                                         <TextBlock
                                             Grid.Row="0"
                                             Grid.Column="1"
                                             FontWeight="Bold"
-                                            Foreground="{StaticResource Chem4WordBrush}"
+                                            Foreground="{StaticResource Chem4WordBlue}"
                                             Text="{Binding Name}" />
                                         <TextBlock
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             Margin="0,0,5,0"
-                                            Foreground="{StaticResource Chem4WordBrush}">
+                                            Foreground="{StaticResource Chem4WordBlue}">
                                             Symbol:
                                         </TextBlock>
                                         <TextBlock
                                             Grid.Row="1"
                                             Grid.Column="1"
                                             FontWeight="Bold"
-                                            Foreground="{StaticResource Chem4WordBrush}"
+                                            Foreground="{StaticResource Chem4WordBlue}"
                                             Text="{Binding Symbol}" />
                                         <TextBlock
                                             Grid.Row="2"
                                             Grid.Column="0"
                                             Margin="0,0,5,0"
-                                            Foreground="{StaticResource Chem4WordBrush}">
+                                            Foreground="{StaticResource Chem4WordBlue}">
                                             Atomic Number:
                                         </TextBlock>
                                         <TextBlock
                                             Grid.Row="2"
                                             Grid.Column="1"
                                             FontWeight="Bold"
-                                            Foreground="{StaticResource Chem4WordBrush}"
+                                            Foreground="{StaticResource Chem4WordBlue}"
                                             Text="{Binding AtomicNumber}" />
                                     </Grid>
                                 </Border>

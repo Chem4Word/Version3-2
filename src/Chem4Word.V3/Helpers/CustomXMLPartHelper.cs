@@ -28,11 +28,9 @@ namespace Chem4Word.Helpers
         public static int ChemistryXmlParts(Word.Document document)
             => AllChemistryParts(document).Count;
 
-        public static CustomXMLPart FindCustomXmlPartInOtherDocuments(string id, Word.Document document)
+        public static CustomXMLPart FindCustomXmlPartInOtherDocuments(string id, string activeDocumentName)
         {
             CustomXMLPart result = null;
-
-            var activeDocumentName = document.Name;
 
             foreach (Word.Document otherDocument in Globals.Chem4WordV3.Application.Documents)
             {
@@ -69,7 +67,7 @@ namespace Chem4Word.Helpers
             return guid;
         }
 
-        public static CustomXMLPart GetCustomXmlPart(string id, Word.Document document)
+        public static CustomXMLPart GetCustomXmlPart(Word.Document document, string id)
         {
             CustomXMLPart result = null;
 

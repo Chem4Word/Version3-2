@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows.Media;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Utils
 {

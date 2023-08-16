@@ -5,11 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Globalization;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
-using Chem4Word.Model2.Helpers;
 
 namespace Chem4Word.ACME.Drawing.Text
 {

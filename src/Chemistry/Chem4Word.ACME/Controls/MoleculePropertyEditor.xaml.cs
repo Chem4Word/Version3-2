@@ -5,6 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Annotations;
+using Chem4Word.ACME.Entities;
+using Chem4Word.ACME.Models;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core;
+using Chem4Word.Model2.Converters.CML;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -13,12 +19,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using Chem4Word.ACME.Annotations;
-using Chem4Word.ACME.Entities;
-using Chem4Word.ACME.Models;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Core;
-using Chem4Word.Model2.Converters.CML;
 
 namespace Chem4Word.ACME.Controls
 {

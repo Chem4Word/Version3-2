@@ -5,12 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Drawing.Text;
+using Chem4Word.Core.Enums;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using Chem4Word.ACME.Drawing.Text;
-using Chem4Word.Core.Enums;
 
 namespace Chem4Word.ACME.Drawing.Visuals
 {

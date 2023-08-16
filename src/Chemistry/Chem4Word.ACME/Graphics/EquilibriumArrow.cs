@@ -4,9 +4,9 @@
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
+using Chem4Word.Core.Helpers;
 using System.Windows;
 using System.Windows.Media;
-using Chem4Word.Core.Helpers;
 
 namespace Chem4Word.ACME.Graphics
 {

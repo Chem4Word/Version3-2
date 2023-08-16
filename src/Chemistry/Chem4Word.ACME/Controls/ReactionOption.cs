@@ -5,8 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows;
 using Chem4Word.Model2;
+using System.Windows;
 
 namespace Chem4Word.ACME
 {

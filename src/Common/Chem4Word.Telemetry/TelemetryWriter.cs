@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 //  Copyright (c) 2023, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
@@ -24,6 +24,7 @@ namespace Chem4Word.Telemetry
     {
         private static AzureServiceBusWriter _azureServiceBusWriter;
         private static bool _systemInfoSent;
+        private static bool _gitInfoSent;
 
         private static SystemHelper _helper;
         private static WmiHelper _wmiHelper;
@@ -86,14 +87,16 @@ namespace Chem4Word.Telemetry
             {
                 WritePrivate(source, level, message);
 
-                if (!_systemInfoSent
-                    && _helper != null
+                if (_helper != null
                     && _helper?.IpAddress != null
                     && !_helper.IpAddress.Contains("0.0.0.0"))
                 {
-                    WriteStartUpInfo();
+                    if (!_systemInfoSent)
+                    {
+                        WriteStartUpInfo();
+                    }
 
-                    if (!string.IsNullOrEmpty(_helper.GitStatus))
+                    if (!_gitInfoSent && !string.IsNullOrEmpty(_helper.GitStatus))
                     {
                         var tracking = _helper.GitStatus
                                               .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
@@ -121,8 +124,8 @@ namespace Chem4Word.Telemetry
                         }
 
                         var failedToFetch = _helper.GitStatus
-                                                     .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                                                     .FirstOrDefault(l => l.Contains("is not a git command"));
+                                                   .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                                                   .FirstOrDefault(l => l.Contains("is not a git command"));
                         if (!string.IsNullOrEmpty(failedToFetch))
                         {
                             // One of these two commands is required to be run, most likely the first one ...
@@ -130,6 +133,9 @@ namespace Chem4Word.Telemetry
                             // git config --global credential.helper store
                             MessageBox.Show(@"Git fetch failed\nYou need to run 'git config --global --unset credential.helper' from a command prompt.", "WARNING");
                         }
+
+                        WritePrivate("StartUp", "Information", _helper.GitStatus);
+                        _gitInfoSent = true;
                     }
                 }
             }
@@ -286,10 +292,6 @@ namespace Chem4Word.Telemetry
                 WritePrivate("StartUp", "Information", string.Join(Environment.NewLine, OfficeHelper.GetWinWordSearchPaths()));
             }
 
-            if (!string.IsNullOrEmpty(_helper.GitStatus))
-            {
-                WritePrivate("StartUp", "Information", _helper.GitStatus);
-            }
 #endif
 
             // Add Knime Properies again to ensure they get sent
@@ -342,9 +344,11 @@ namespace Chem4Word.Telemetry
         {
             Debug.WriteLine($"{operation} - {level} - {message}");
 
+            // Default values to ensure we have something to log
             var processId = 666;
             var machineId = Guid.Empty.ToString("D");
-            var versionNumber = Constants.Chem4WordVersion;
+            // This is updated automatically by Set-Assembly-Version.ps1
+            var versionNumber = "3.2.12.666";
 
             try
             {
@@ -359,6 +363,7 @@ namespace Chem4Word.Telemetry
                     {
                         machineId = _helper.MachineId;
                     }
+
                     if (string.IsNullOrEmpty(_helper.AssemblyVersionNumber))
                     {
                         versionNumber = GetVersionNumber();

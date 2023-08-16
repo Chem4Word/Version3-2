@@ -5,8 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows;
 using Chem4Word.Renderer.OoXmlV4.OOXML;
+using System.Windows;
 
 namespace Chem4Word.Renderer.OoXmlV4.Entities
 {

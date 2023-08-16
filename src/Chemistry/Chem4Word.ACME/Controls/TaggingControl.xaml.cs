@@ -5,6 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Models.Chem4Word.Controls.TagControl;
+using Chem4Word.Model2.Annotations;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,8 +14,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using Chem4Word.ACME.Models.Chem4Word.Controls.TagControl;
-using Chem4Word.Model2.Annotations;
 
 namespace Chem4Word.ACME.Controls
 {

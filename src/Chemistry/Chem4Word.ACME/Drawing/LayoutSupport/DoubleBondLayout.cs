@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Model2.Enums;
 using System.Collections.Generic;
 using System.Windows;
-using Chem4Word.Model2.Enums;
 
 /* Descriptors are simple classes that define the shape of a bond visual.
    They simplify the transfer of information into and out of drawing routines.

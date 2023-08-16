@@ -5,6 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Shared;
+using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,8 +17,6 @@ using System.Net.Http;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Chem4Word.Shared;
-using Microsoft.Win32;
 
 namespace Chem4WordSetup
 {

@@ -5,13 +5,13 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Model2;
+using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Helpers;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Converters.CML;
-using Chem4Word.Model2.Helpers;
 using Xunit;
 
 namespace Chem4WordTests

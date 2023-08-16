@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows.Forms;
 using Chem4Word.ACME;
 using Microsoft.Office.Interop.Word;
+using System.Windows.Forms;
 
 namespace Chem4Word.Navigator
 {

@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Enums;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Chem4Word.Core.Enums;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Enums;
 
 namespace Chem4Word.Model2.Geometry
 {

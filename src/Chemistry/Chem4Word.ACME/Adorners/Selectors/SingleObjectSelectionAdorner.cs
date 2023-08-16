@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Controls;
+using Chem4Word.ACME.Drawing.Visuals;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Model2;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -12,10 +16,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using Chem4Word.ACME.Controls;
-using Chem4Word.ACME.Drawing.Visuals;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Model2;
 using static Chem4Word.ACME.Utils.GraphicsHelpers;
 using Geometry = System.Windows.Media.Geometry;
 

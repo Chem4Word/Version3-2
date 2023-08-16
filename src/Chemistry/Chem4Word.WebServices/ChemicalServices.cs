@@ -5,17 +5,17 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Telemetry;
+using IChem4Word.Contracts;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using Chem4Word.Core;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Telemetry;
-using IChem4Word.Contracts;
-using Newtonsoft.Json;
 
 namespace Chem4Word.WebServices
 {

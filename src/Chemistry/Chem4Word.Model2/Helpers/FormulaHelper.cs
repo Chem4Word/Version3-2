@@ -5,11 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Model2.Enums;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Chem4Word.Model2.Enums;
 
 namespace Chem4Word.Model2.Helpers
 {

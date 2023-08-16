@@ -5,12 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls.Primitives;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace Chem4Word.ACME.Adorners.Selectors
 {

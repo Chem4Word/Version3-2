@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows;
 using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
+using System.Windows;
 
 namespace Chem4Word.ACME
 {

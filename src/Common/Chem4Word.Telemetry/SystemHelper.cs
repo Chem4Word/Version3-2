@@ -5,6 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Shared;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,9 +20,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Shared;
-using Microsoft.Win32;
 
 namespace Chem4Word.Telemetry
 {
@@ -34,7 +34,7 @@ namespace Chem4Word.Telemetry
 
         public string SystemOs { get; set; }
 
-        public string WordProduct { get; set; }
+        public string WordProduct { get; set; } = "Unknown";
 
         public string Click2RunProductIds { get; set; }
 
@@ -426,6 +426,17 @@ namespace Chem4Word.Telemetry
                 {
                     int releaseKey = Convert.ToInt32(ndpKey.GetValue("Release"));
 
+                    // .Net 4.8.1
+                    if (releaseKey >= 533325)
+                    {
+                        DotNetVersion = $".NET 4.8.1 [{releaseKey}]";
+                        return;
+                    }
+                    if (releaseKey >= 533320)
+                    {
+                        DotNetVersion = $".NET 4.8.1 (W11 2022) [{releaseKey}]";
+                        return;
+                    }
                     // .Net 4.8
                     if (releaseKey >= 528449)
                     {

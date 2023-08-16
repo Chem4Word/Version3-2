@@ -5,15 +5,15 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Controls;
 using System;
 using System.Windows.Input;
-using Chem4Word.ACME.Controls;
 
-namespace Chem4Word.ACME.Commands.Block_Editing
+namespace Chem4Word.ACME.Commands.BlockEditing
 {
-    public class SuperscriptCommand : ICommand
+    public class SubscriptCommand : ICommand
     {
-        public SuperscriptCommand(AnnotationEditor editor)
+        public SubscriptCommand(AnnotationEditor editor)
         {
             Editor = editor;
         }
@@ -27,7 +27,7 @@ namespace Chem4Word.ACME.Commands.Block_Editing
 
         public void Execute(object parameter)
         {
-            Editor.ToggleSuperscript(Editor.Selection);
+            Editor.ToggleSubscript(Editor.Selection);
         }
 
         public void RaiseCanExecChanged()

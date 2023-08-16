@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Model2.Annotations;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Chem4Word.Model2.Annotations;
 
 namespace Chem4Word.ACME.Models
 {

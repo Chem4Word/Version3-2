@@ -5,9 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Windows.Forms;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Wpf;
@@ -15,6 +12,9 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.JSON;
 using IChem4Word.Contracts;
+using System;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace Chem4Word.Editor.ChemDoodleWeb800
 {

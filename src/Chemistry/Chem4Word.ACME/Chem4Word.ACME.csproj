@@ -102,9 +102,9 @@
     <Compile Include="Behaviors\CandidatePlacement.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\ReactionBehavior.cs" />
-    <Compile Include="Commands\Block Editing\InsertTextCommand.cs" />
-    <Compile Include="Commands\Block Editing\SuperscriptCommand.cs" />
-    <Compile Include="Commands\Block Editing\SubscriptCommand.cs" />
+    <Compile Include="Commands\BlockEditing\InsertTextCommand.cs" />
+    <Compile Include="Commands\BlockEditing\SuperscriptCommand.cs" />
+    <Compile Include="Commands\BlockEditing\SubscriptCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignBottomsCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignCentresCommand.cs" />
     <Compile Include="Commands\Layout\Alignment\AlignLeftsCommand.cs" />
@@ -161,11 +161,6 @@
     <Compile Include="Controls\TagItem.xaml.cs">
       <DependentUpon>TagItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Entities\WordCloudEntry.cs" />
-    <Compile Include="Entities\WordCloudTheme.cs" />
-    <Compile Include="Entities\WordCloudThemes.cs" />
-    <Compile Include="Enums\WordCloudThemeWordRotation.cs" />
-    <Compile Include="Models\WordDrawing.cs" />
     <Compile Include="Models\WordGroup.cs" />
     <Compile Include="Converters\BoolToColorConverter.cs" />
     <Compile Include="Converters\DefaultNameConverter.cs" />

@@ -5,10 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Linq;
-using System.Windows;
 using Chem4Word.ACME.Utils;
 using Chem4Word.Model2;
+using System.Linq;
+using System.Windows;
 
 namespace Chem4Word.ACME.Commands.Editing
 {

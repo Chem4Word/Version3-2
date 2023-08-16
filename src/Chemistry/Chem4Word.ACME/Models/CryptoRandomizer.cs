@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Interfaces;
 using System;
 using System.Security.Cryptography;
-using Chem4Word.ACME.Interfaces;
 
 namespace Chem4Word.ACME.Models
 {

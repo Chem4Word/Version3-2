@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME;
+using Chem4Word.Core.UI.Forms;
+using IChem4Word.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
-using Chem4Word.ACME;
-using Chem4Word.Core.UI.Forms;
-using IChem4Word.Contracts;
 
 namespace Chem4Word.Editor.ACME
 {

@@ -12,12 +12,15 @@
     </ResourceDictionary.MergedDictionaries>
 
     <!--  standard livery for Chem4Word  -->
-    <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
+    <SolidColorBrush x:Key="Chem4WordBlue" Color="#2A579A" />
     <SolidColorBrush x:Key="PinkLace" Color="#FFDDF4" />
     <SolidColorBrush x:Key="ACMEToolbarBackground" Color="#F1F1F1" />
-    <SolidColorBrush x:Key="DiagnosticOverlay" Color="PaleGreen" Opacity="0.5" />
+    <SolidColorBrush
+        x:Key="DiagnosticOverlay"
+        Opacity="0.5"
+        Color="PaleGreen" />
 
-    <!-- Fix weird binding errors -->
+    <!--  Fix weird binding errors  -->
     <Style TargetType="{x:Type ComboBoxItem}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -39,11 +42,14 @@
         <Setter Property="Data" Value="M 0,7 L 25,10 l 0 -7 Z" />
     </Style>
 
-    <!-- Reaction handling brushes-->
+    <!--  Reaction handling brushes  -->
     <SolidColorBrush x:Key="ReactantIndicatorBrush" Color="DarkBlue" />
     <SolidColorBrush x:Key="ProductIndicatorBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="ArrowIndicatorBrush" Color="Black" />
-    <SolidColorBrush x:Key="IndicatorBackgroundBrush" Color="White" Opacity="0.75" />
+    <SolidColorBrush
+        x:Key="IndicatorBackgroundBrush"
+        Opacity="0.75"
+        Color="White" />
 
     <!--  styles for bond fills  -->
     <SolidColorBrush x:Key="BlockedAdornerBrush" Color="LightGray" />
@@ -77,7 +83,7 @@
 
     <Style x:Key="RingButtonGraphic" TargetType="{x:Type Path}">
         <Setter Property="Height" Value="24" />
-        <Setter Property="Stroke" Value="{StaticResource ResourceKey=Chem4WordBrush}" />
+        <Setter Property="Stroke" Value="{StaticResource ResourceKey=Chem4WordBlue}" />
         <Setter Property="Width" Value="24" />
     </Style>
     <!--  used in the main ACME toolbar  -->

@@ -5,15 +5,15 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Models;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core;
 using System;
 using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using Chem4Word.ACME.Models;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Core;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace Chem4Word.ACME.Controls

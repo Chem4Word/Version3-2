@@ -5,10 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Converters.CML;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Chem4Word.Model2
 {

@@ -5,16 +5,16 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Drawing;
-using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Core.UI.Wpf;
+using System;
+using System.Drawing;
+using System.Reflection;
+using System.Text;
+using System.Windows.Forms;
 
 namespace Chem4Word.UI.WPF
 {

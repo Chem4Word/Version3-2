@@ -39,9 +39,7 @@ namespace Chem4Word.Core.Helpers
             if (count != 1)
             {
                 Debug.WriteLine("*** Unique match not found ***");
-#if DEBUG
                 Debugger.Break();
-#endif
             }
 
             return data;

@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Win32;
 
 namespace Chem4Word.Telemetry
 {

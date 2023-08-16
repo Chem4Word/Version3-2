@@ -225,7 +225,7 @@ namespace Chem4Word
                     PerformStartUpActions();
 
                     sw.Stop();
-                    message = $"{module} took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms";
+                    message = $"{module} took {SafeDouble.AsString0(sw.ElapsedMilliseconds)}ms";
                     StartUpTimings.Add(message);
                     Debug.WriteLine(message);
 
@@ -288,7 +288,7 @@ namespace Chem4Word
 
         private void SlowOperations()
         {
-            var module = $"{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -315,7 +315,7 @@ namespace Chem4Word
                 Telemetry = new TelemetryWriter(true, true, Helper);
 
                 sw.Stop();
-                message = $"{module} took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms";
+                message = $"{module} took {SafeDouble.AsString0(sw.ElapsedMilliseconds)}ms";
                 Debug.WriteLine(message);
                 StartUpTimings.Add(message);
             }
@@ -327,7 +327,7 @@ namespace Chem4Word
 
         private void PerformStartUpActions()
         {
-            var module = $"{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -422,7 +422,7 @@ namespace Chem4Word
 
         public void LoadNamesFromLibrary()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (LibraryOptions != null)
@@ -757,9 +757,9 @@ namespace Chem4Word
                             plugInsFound.AddRange(results);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception exception)
                     {
-                        Debug.WriteLine(ex.Message);
+                        Debug.WriteLine(exception.Message);
                     }
                 }
             }
@@ -1331,7 +1331,7 @@ namespace Chem4Word
 
         #region Events
 
-        private void OnWindowBeforeRightClick(Word.Selection sel, ref bool cancel)
+        private void OnWindowBeforeRightClick(Word.Selection selection, ref bool cancel)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -1343,9 +1343,9 @@ namespace Chem4Word
                     EvaluateChemistryAllowed(inRightClick: true);
                     if (ChemistryAllowed)
                     {
-                        if (sel.Start != sel.End)
+                        if (selection.Start != selection.End)
                         {
-                            HandleRightClick(sel);
+                            HandleRightClick(selection);
                         }
                     }
                 }
@@ -1847,7 +1847,7 @@ namespace Chem4Word
             }
         }
 
-        private void HandleLibraryPane(Word.Document doc, bool showPane, bool clear = false)
+        private void HandleLibraryPane(Word.Document document, bool showPane, bool clear = false)
         {
             #region Handle Library Task Panes
 
@@ -1860,7 +1860,7 @@ namespace Chem4Word
                     if (taskPane.Window != null)
                     {
                         var documentName = ((Word.Window)taskPane.Window).Document.Name;
-                        if (doc.Name.Equals(documentName))
+                        if (document.Name.Equals(documentName))
                         {
                             if (taskPane.Title.Equals(Constants.LibraryTaskPaneTitle))
                             {
@@ -2662,10 +2662,10 @@ namespace Chem4Word
         /// <summary>
         ///
         /// </summary>
-        /// <param name="sel">The current selection.</param>
+        /// <param name="selection">The current selection.</param>
         /// <param name="cancel">False when the event occurs.
         /// If the event procedure sets this argument to True, the default double-click action does not occur when the procedure is finished.</param>
-        private void OnWindowBeforeDoubleClick(Word.Selection sel, ref bool cancel)
+        private void OnWindowBeforeDoubleClick(Word.Selection selection, ref bool cancel)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -2743,9 +2743,9 @@ namespace Chem4Word
         /// <summary>
         ///
         /// </summary>
-        /// <param name="NewContentControl"></param>
-        /// <param name="InUndoRedo"></param>
-        private void OnContentControlAfterAdd(Word.ContentControl NewContentControl, bool InUndoRedo)
+        /// <param name="newContentControl"></param>
+        /// <param name="inUndoRedo"></param>
+        private void OnContentControlAfterAdd(Word.ContentControl newContentControl, bool inUndoRedo)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -2756,11 +2756,11 @@ namespace Chem4Word
                     LoadOptions();
                 }
 
-                var thisDocument = NewContentControl.Application.ActiveDocument;
+                var thisDocument = newContentControl.Application.ActiveDocument;
 
-                var ccId = NewContentControl.ID;
-                var ccTag = NewContentControl.Tag;
-                if (!InUndoRedo && !string.IsNullOrEmpty(ccTag))
+                var ccId = newContentControl.ID;
+                var ccTag = newContentControl.Tag;
+                if (!inUndoRedo && !string.IsNullOrEmpty(ccTag))
                 {
                     if (!ccId.Equals(_lastContentControlAdded))
                     {
@@ -2772,7 +2772,7 @@ namespace Chem4Word
                             var message = $"ContentControl {ccId} added; Looking for structure {ccTag}";
                             Telemetry.Write(module, "Information", message);
 
-                            var cxml = CustomXmlPartHelper.GetCustomXmlPart(ccTag, thisDocument);
+                            var cxml = CustomXmlPartHelper.GetCustomXmlPart(thisDocument, ccTag);
                             if (cxml != null)
                             {
                                 Telemetry.Write(module, "Information", "Found copy of " + ccTag + " in this document.");
@@ -2781,14 +2781,14 @@ namespace Chem4Word
                             {
                                 if (Globals.Chem4WordV3.Application.Documents.Count > 1)
                                 {
-                                    cxml = CustomXmlPartHelper.FindCustomXmlPartInOtherDocuments(ccTag, thisDocument);
+                                    cxml = CustomXmlPartHelper.FindCustomXmlPartInOtherDocuments(ccTag, thisDocument.Name);
                                     if (cxml != null)
                                     {
                                         Telemetry.Write(module, "Information", "Found copy of " + ccTag + " in other document, adding it into this.");
 
                                         // Generate new molecule Guid and apply it
                                         var newGuid = Guid.NewGuid().ToString("N");
-                                        NewContentControl.Tag = newGuid;
+                                        newContentControl.Tag = newGuid;
 
                                         var cmlConverter = new CMLConverter();
                                         var model = cmlConverter.Import(cxml.XML);
@@ -2824,8 +2824,8 @@ namespace Chem4Word
         ///
         /// </summary>
         /// <param name="contentControl"></param>
-        /// <param name="Cancel"></param>
-        private void OnContentControlBeforeDelete(Word.ContentControl contentControl, bool Cancel)
+        /// <param name="cancel"></param>
+        private void OnContentControlBeforeDelete(Word.ContentControl contentControl, bool cancel)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -2857,8 +2857,8 @@ namespace Chem4Word
         ///
         /// </summary>
         /// <param name="contentControl"></param>
-        /// <param name="Cancel"></param>
-        private void OnContentControlOnExit(Word.ContentControl contentControl, ref bool Cancel)
+        /// <param name="cancel"></param>
+        private void OnContentControlOnExit(Word.ContentControl contentControl, ref bool cancel)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 

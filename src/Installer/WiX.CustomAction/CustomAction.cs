@@ -5,6 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Shared;
+using Microsoft.Deployment.WindowsInstaller;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,9 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using Chem4Word.Shared;
-using Microsoft.Deployment.WindowsInstaller;
-using Microsoft.Win32;
 
 namespace WiX.CustomAction
 {
@@ -185,7 +185,6 @@ namespace WiX.CustomAction
                 {
                     DeleteSystemKey64(session, key);
                 }
-
             }
             catch (Exception ex)
             {

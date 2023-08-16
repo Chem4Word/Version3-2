@@ -1,4 +1,4 @@
-# SetAssemblyVersion.ps1
+# Set-Assembly-Version.ps1
 #
 # http://www.luisrocha.net/2009/11/setting-assembly-version-with-windows.html
 # http://blogs.msdn.com/b/dotnetinterop/archive/2008/04/21/powershell-script-to-batch-update-assemblyinfo-cs-with-new-version.aspx
@@ -192,6 +192,19 @@ Write-Host "$($file)" -ForegroundColor Green
 
 $findPattern = 'string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.*'
 $replaceWith = 'string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.' + "$($version).$($dottedname)" + '.msi";'
+
+(Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
+
+# ---------------------------------------------------------- #
+ 
+# Update TelemetryWriter.cs
+Write-Host " Updating 'TelemetryWriter.cs'" -ForegroundColor Yellow
+
+$file = "$($pwd)\..\Common\Chem4Word.Telemetry\TelemetryWriter.cs"
+Write-Host "$($file)" -ForegroundColor Green
+
+$findPattern = 'var versionNumber = .*'
+$replaceWith = 'var versionNumber = "' + "$($version)" + '.666";';
 
 (Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
 

@@ -5,18 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Media;
 using Chem4Word.ACME;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Editor.ACME;
@@ -32,7 +20,18 @@ using Chem4Word.Shared;
 using Chem4Word.Telemetry;
 using Chem4Word.WebServices;
 using Newtonsoft.Json;
-using static ScintillaNET.Style;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Media;
 using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace WinForms.TestHarness

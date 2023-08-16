@@ -136,8 +136,9 @@
                 </Grid.RowDefinitions>
                 <local:FormulaBlock
                     Grid.Row="0"
+                    FontFamily="Arial"
                     Foreground="{StaticResource Chem4WordBlue}"
-                    Formula="{Binding Path=Formula}" FontFamily="Arial" />
+                    Formula="{Binding Path=Formula}" />
                 <Expander
                     Grid.Row="1"
                     MaxWidth="{Binding ElementName=LibraryTopGrid, Path=ActualWidth}"
@@ -168,8 +169,9 @@
                 Visibility="{Binding ElementName=AcmeChemistryItem, Path=ItemMode, Converter={StaticResource EnumVisibilityConvertor}, ConverterParameter={x:Static enums:ChemistryItemMode.Navigator}}">
                 <local:FormulaBlock
                     Grid.Column="0"
+                    FontFamily="Arial"
                     Foreground="{StaticResource Chem4WordBlue}"
-                    Formula="{Binding Path=Formula}" FontFamily="Arial" />
+                    Formula="{Binding Path=Formula}" />
             </Grid>
             <!--  Top Panel for Catalogue Mode  -->
             <Grid
@@ -188,8 +190,9 @@
                     </Grid.ColumnDefinitions>
                     <local:FormulaBlock
                         Grid.Column="0"
+                        FontFamily="Arial"
                         Foreground="{StaticResource Chem4WordBlue}"
-                        Formula="{Binding Path=Formula}" FontFamily="Arial" />
+                        Formula="{Binding Path=Formula}" />
                     <CheckBox
                         Name="CheckBox"
                         Grid.Column="1"

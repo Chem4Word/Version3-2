@@ -5,24 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using Chem4Word.ACME.Adorners.Selectors;
 using Chem4Word.ACME.Behaviors;
 using Chem4Word.ACME.Commands;
@@ -47,6 +29,24 @@ using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
 using Chem4Word.Model2.Helpers;
 using IChem4Word.Contracts;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using static Chem4Word.Model2.Helpers.Globals;
 using Constants = Chem4Word.ACME.Resources.Constants;
 
@@ -1895,7 +1895,7 @@ namespace Chem4Word.ACME
                         }
                         else if (selectedItem is Reaction reaction)
                         {
-                            //TODO: Handle multiple reaction schemes in future. This is a kludge
+                            //TODO: [DCD] Handle multiple reaction schemes in future. This is a kludge
                             tempModel.DefaultReactionScheme.AddReaction(reaction);
                         }
                         else if (selectedItem is Annotation annotation)

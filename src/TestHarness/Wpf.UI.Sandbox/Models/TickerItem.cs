@@ -1,4 +1,4 @@
-﻿namespace Wpf.UI.Sandbox
+﻿namespace Wpf.UI.Sandbox.Models
 {
     internal class TickerItem
     {

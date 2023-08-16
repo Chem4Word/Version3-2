@@ -5,6 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Commands.BlockEditing;
+using Chem4Word.ACME.Utils;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Converters.CML;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,10 +17,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xml.Linq;
-using Chem4Word.ACME.Commands.Block_Editing;
-using Chem4Word.ACME.Utils;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Converters.CML;
 
 namespace Chem4Word.ACME.Controls
 {

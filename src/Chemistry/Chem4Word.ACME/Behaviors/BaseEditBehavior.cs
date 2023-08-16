@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Controls;
+using Chem4Word.Model2.Annotations;
+using Microsoft.Xaml.Behaviors;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Chem4Word.ACME.Controls;
-using Chem4Word.Model2.Annotations;
-using Microsoft.Xaml.Behaviors;
 
 namespace Chem4Word.ACME.Behaviors
 {

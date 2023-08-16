@@ -36,7 +36,14 @@ namespace Chem4Word.ACME
             get { return _activeController; }
             set
             {
+                //clear the current behaviour on the old controller
+                if (_activeController != null)
+                {
+                    _activeController.ActiveMode = null;
+                }
+                //now set the new controller
                 _activeController = value;
+
                 OnPropertyChanged();
             }
         }
@@ -284,15 +291,16 @@ namespace Chem4Word.ACME
                 BindControls(ActiveController);
 
                 ActiveController.OnFeedbackChange += ActiveControllerOnFeedbackChange;
+
+                //refresh the ring button
+                SetCurrentRing(BenzeneButton);
+                //refresh the selection button
+                SetSelectionMode(LassoButton);
+
+                //HACK: [DCD] Need to do this to put the editor into the right mode after refreshing the ring button
+                DrawButton.IsChecked = true;
+                ModeButton_OnChecked(DrawButton, new RoutedEventArgs());
             }
-
-            //refresh the ring button
-            SetCurrentRing(BenzeneButton);
-            //refresh the selection button
-            SetSelectionMode(LassoButton);
-
-            //HACK: [DCD] Need to do this to put the editor into the right mode after refreshing the ring button
-            ModeButton_OnChecked(DrawButton, new RoutedEventArgs());
         }
 
         private void ACMEControl_Loaded(object sender, RoutedEventArgs e)
@@ -364,13 +372,10 @@ namespace Chem4Word.ACME
         /// <param name="e"></param>
         private void ModeButton_OnChecked(object sender, RoutedEventArgs e)
         {
+            ActiveController.ActiveMode = null;
+
             if (ActiveController != null)
             {
-                if (ActiveController.ActiveMode != null)
-                {
-                    ActiveController.ActiveMode = null;
-                }
-
                 var radioButton = (RadioButton)sender;
 
                 if (radioButton.Tag is BaseEditBehavior bh)

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-namespace Wpf.UI.Sandbox
+namespace Wpf.UI.Sandbox.Controls
 {
     /// <summary>
     /// Interaction logic for Marquee.xaml

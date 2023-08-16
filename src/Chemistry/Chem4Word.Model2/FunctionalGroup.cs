@@ -5,10 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Reflection;
 using Chem4Word.Model2.Helpers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Chem4Word.Model2
 {
@@ -29,10 +29,6 @@ namespace Chem4Word.Model2
 
         [JsonProperty]
         public bool Internal { get; set; }
-
-        #region Overrides of ElementBase
-
-        #endregion
 
         /// <summary>
         /// Overall Atomic Weight of the Functional Group

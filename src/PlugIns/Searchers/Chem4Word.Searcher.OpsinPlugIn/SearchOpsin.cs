@@ -5,15 +5,15 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
+using Chem4Word.Model2.Converters.CML;
+using IChem4Word.Contracts;
 using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Media;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Model2.Converters.CML;
-using IChem4Word.Contracts;
 
 namespace Chem4Word.Searcher.OpsinPlugIn
 {

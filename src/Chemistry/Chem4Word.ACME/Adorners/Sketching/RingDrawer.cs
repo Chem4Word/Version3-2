@@ -5,15 +5,15 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Drawing.LayoutSupport;
 using Chem4Word.ACME.Models;
 using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Geometry;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Adorners.Sketching
 {

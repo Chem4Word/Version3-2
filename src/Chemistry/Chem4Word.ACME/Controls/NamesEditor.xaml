@@ -9,7 +9,7 @@
     d:DesignWidth="600"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <SolidColorBrush x:Key="Chem4WordBrush" Color="#2A579A" />
+        <SolidColorBrush x:Key="Chem4WordBlue" Color="#2A579A" />
         <SolidColorBrush x:Key="Chem4WordRed" Color="Red" />
         <SolidColorBrush x:Key="Chem4WordGreen" Color="Green" />
         <converters:EnabledConverter x:Key="EnabledConverter" />
@@ -22,7 +22,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border BorderBrush="{StaticResource Chem4WordBrush}" BorderThickness="2">
+    <Border BorderBrush="{StaticResource Chem4WordBlue}" BorderThickness="2">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

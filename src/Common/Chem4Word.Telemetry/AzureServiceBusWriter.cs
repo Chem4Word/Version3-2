@@ -5,6 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Azure.Messaging.ServiceBus;
+using Chem4Word.Core;
+using Chem4Word.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,9 +15,6 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
-using Chem4Word.Core;
-using Chem4Word.Core.Helpers;
 
 namespace Chem4Word.Telemetry
 {
@@ -121,6 +121,9 @@ namespace Chem4Word.Telemetry
 
         private async Task WriteMessage(OutputMessage message)
         {
+            var securityProtocol = ServicePointManager.SecurityProtocol;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
             try
             {
                 if (_sender != null)
@@ -165,6 +168,10 @@ namespace Chem4Word.Telemetry
                 {
                     // Do nothing
                 }
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = securityProtocol;
             }
         }
     }

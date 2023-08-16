@@ -5,8 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.ObjectModel;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 
 namespace Chem4Word.Model2
 {

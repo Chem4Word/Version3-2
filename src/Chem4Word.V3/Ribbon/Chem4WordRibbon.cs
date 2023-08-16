@@ -149,7 +149,7 @@ namespace Chem4Word
                                             Globals.Chem4WordV3.SystemOptions.SelectedRendererPlugIn);
                                     if (renderer != null)
                                     {
-                                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(guid, document);
+                                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, guid);
                                         if (customXmlPart != null)
                                         {
                                             // Stop Screen Updating and Disable Document Event Handlers
@@ -273,7 +273,7 @@ namespace Chem4Word
                             prefix = contentControl.Tag.Split(':')[0];
                         }
 
-                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
+                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, contentControl.Tag);
                         if (customXmlPart != null)
                         {
                             var used1D = ChemistryHelper.GetUsed1D(document, CustomXmlPartHelper.GuidFromTag(contentControl.Tag));
@@ -372,7 +372,7 @@ namespace Chem4Word
 
         private void OnClick_Options(object sender, RibbonControlEventArgs e)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             BeforeButtonChecks();
             if (Globals.Chem4WordV3.Telemetry != null)
             {
@@ -392,25 +392,25 @@ namespace Chem4Word
 
                     try
                     {
-                        var f = new Chem4WordSettingsHost(true);
+                        var settingsHost = new Chem4WordSettingsHost(true);
                         var options = Globals.Chem4WordV3.SystemOptions.Clone();
                         options.SettingsPath = Globals.Chem4WordV3.AddInInfo.ProductAppDataPath;
-                        f.SystemOptions = options;
-                        f.TopLeft = Globals.Chem4WordV3.WordTopLeft;
-                        f.SystemOptions.WordTopLeft = Globals.Chem4WordV3.WordTopLeft;
+                        settingsHost.SystemOptions = options;
+                        settingsHost.TopLeft = Globals.Chem4WordV3.WordTopLeft;
+                        settingsHost.SystemOptions.WordTopLeft = Globals.Chem4WordV3.WordTopLeft;
 
-                        var dr = f.ShowDialog();
+                        var dr = settingsHost.ShowDialog();
                         if (dr == DialogResult.OK)
                         {
-                            Globals.Chem4WordV3.SystemOptions = f.SystemOptions.Clone();
+                            Globals.Chem4WordV3.SystemOptions = settingsHost.SystemOptions.Clone();
                             // Re create telemetry object as it may now be disabled
                             Globals.Chem4WordV3.Telemetry = new TelemetryWriter(
                                 Globals.Chem4WordV3.SystemOptions.TelemetryEnabled,
                                 Globals.Chem4WordV3.IsBeta,
                                 Globals.Chem4WordV3.Helper);
-                            if (f.SystemOptions.Errors.Any())
+                            if (settingsHost.SystemOptions.Errors.Any())
                             {
-                                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", string.Join(Environment.NewLine, f.SystemOptions.Errors));
+                                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", string.Join(Environment.NewLine, settingsHost.SystemOptions.Errors));
                             }
                         }
                     }
@@ -701,7 +701,7 @@ namespace Chem4Word
                                         contentControl = sel.ContentControls[1];
                                         if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                                         {
-                                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
+                                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, contentControl.Tag);
                                             if (customXmlPart != null)
                                             {
                                                 beforeCml = customXmlPart.XML;
@@ -1049,7 +1049,7 @@ namespace Chem4Word
                         if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                         {
                             var document = Globals.Chem4WordV3.Application.ActiveDocument;
-                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
+                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, contentControl.Tag);
                             if (customXmlPart != null)
                             {
                                 var viewer = new XmlViewer();
@@ -1145,7 +1145,7 @@ namespace Chem4Word
                     if (contentControl.Title != null && contentControl.Title.Equals(Constants.ContentControlTitle))
                     {
                         var document = Globals.Chem4WordV3.Application.ActiveDocument;
-                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
+                        customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, contentControl.Tag);
                         if (customXmlPart != null)
                         {
                             var cmlConverter = new CMLConverter();
@@ -1213,11 +1213,11 @@ namespace Chem4Word
                     Globals.Chem4WordV3.EventsEnabled = false;
 
                     var application = Globals.Chem4WordV3.Application;
-                    var document = application.ActiveDocument;
 
                     try
                     {
                         var selection = application.Selection;
+                        var document = application.ActiveDocument;
                         Word.ContentControl contentControl = null;
                         CustomXMLPart customXmlPart = null;
 
@@ -1229,7 +1229,7 @@ namespace Chem4Word
                                 var guid = CustomXmlPartHelper.GuidFromTag(contentControl.Tag);
 
                                 var used1D = ChemistryHelper.GetUsed1D(document, guid);
-                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
+                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, contentControl.Tag);
                                 if (customXmlPart != null)
                                 {
                                     var cml = customXmlPart.XML;
@@ -1404,7 +1404,7 @@ namespace Chem4Word
             if (Globals.Chem4WordV3.EventsEnabled && Globals.Chem4WordV3.ChemistryAllowed)
             {
                 Globals.Chem4WordV3.EventsEnabled = false;
-                var app = Globals.Chem4WordV3.Application;
+                var application = Globals.Chem4WordV3.Application;
 
                 try
                 {
@@ -1455,8 +1455,8 @@ namespace Chem4Word
 
                 Globals.Chem4WordV3.EventsEnabled = true;
 
-                app.ActiveWindow.SetFocus();
-                app.Activate();
+                application.ActiveWindow.SetFocus();
+                application.Activate();
             }
 
             AfterButtonChecks(sender as RibbonButton);
@@ -1481,19 +1481,19 @@ namespace Chem4Word
 
                 try
                 {
-                    var app = Globals.Chem4WordV3.Application;
-                    var sel = app.Selection;
+                    var application = Globals.Chem4WordV3.Application;
+                    var selection = application.Selection;
                     Word.ContentControl cc = null;
                     CustomXMLPart customXmlPart = null;
 
-                    if (sel.ContentControls.Count > 0)
+                    if (selection.ContentControls.Count > 0)
                     {
                         Model model = null;
-                        cc = sel.ContentControls[1];
+                        cc = selection.ContentControls[1];
                         if (cc.Title != null && cc.Title.Equals(Constants.ContentControlTitle))
                         {
                             var document = Globals.Chem4WordV3.Application.ActiveDocument;
-                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(cc.Tag, document);
+                            customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, cc.Tag);
                             if (customXmlPart != null)
                             {
                                 var cml = customXmlPart.XML;
@@ -1525,7 +1525,7 @@ namespace Chem4Word
                             CustomTaskPane custTaskPane = null;
                             foreach (var taskPane in Globals.Chem4WordV3.CustomTaskPanes)
                             {
-                                if (app.ActiveWindow == taskPane.Window && taskPane.Title == Constants.LibraryTaskPaneTitle)
+                                if (application.ActiveWindow == taskPane.Window && taskPane.Title == Constants.LibraryTaskPaneTitle)
                                 {
                                     custTaskPane = taskPane;
                                 }
@@ -1696,7 +1696,7 @@ namespace Chem4Word
                             }
 
                             Globals.Chem4WordV3.LibraryState = ShowLibrary.Checked;
-                            ShowLibrary.Label = ShowLibrary.Checked ? "Close" : "Open ";
+                            ShowLibrary.Label = ShowLibrary.Checked ? "Close" : "Open";
 
                             if (ShowLibrary.Checked)
                             {
@@ -1832,7 +1832,7 @@ namespace Chem4Word
                                 var fullTag = contentControl.Tag;
                                 var guidString = CustomXmlPartHelper.GuidFromTag(contentControl.Tag);
 
-                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(contentControl.Tag, document);
+                                customXmlPart = CustomXmlPartHelper.GetCustomXmlPart(document, contentControl.Tag);
                                 if (customXmlPart != null)
                                 {
                                     var beforeCml = customXmlPart.XML;

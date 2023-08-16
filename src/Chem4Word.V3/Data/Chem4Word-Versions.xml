@@ -5,7 +5,7 @@
     <Version>
         <Number>3.2.12 Release 8</Number>
         <IsBeta>false</IsBeta>
-        <Released>31-Aug-2023</Released>
+        <Released>16-Aug-2023</Released>
         <Changes>
             <Change>Replace flawed implementation of Atom.BalancingVector with one that works correctly</Change>
             <Change>Don't send empty molecules to property calculator</Change>

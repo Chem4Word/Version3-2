@@ -5,8 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Diagnostics;
 using Chem4Word.Model2;
+using System.Diagnostics;
 
 namespace Chem4Word.ACME.Commands.Layout.Flipping
 {

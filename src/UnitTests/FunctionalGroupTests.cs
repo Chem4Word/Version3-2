@@ -5,10 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Helpers;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]

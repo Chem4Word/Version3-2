@@ -5,10 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Microsoft.Xaml.Behaviors;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.Xaml.Behaviors;
 
 namespace Chem4Word.ACME.Behaviors
 {

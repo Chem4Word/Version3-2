@@ -242,15 +242,15 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
-                Visibility="Collapsed"
-                Foreground="Black">
+                Foreground="Black"
+                Visibility="Collapsed">
                 Bond Path
             </TextBlock>
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="0"
                 Style="{StaticResource LabelTextBlock}"
-                Text="Length"/>
+                Text="Length" />
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="1"

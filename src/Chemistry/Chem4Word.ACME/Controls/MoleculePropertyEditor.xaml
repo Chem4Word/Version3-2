@@ -44,8 +44,8 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
-                Visibility="Collapsed"
-                Foreground="Black">
+                Foreground="Black"
+                Visibility="Collapsed">
                 Molecule Path
             </TextBlock>
 

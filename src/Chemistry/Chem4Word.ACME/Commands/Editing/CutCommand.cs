@@ -5,8 +5,8 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
 using Chem4Word.ACME.Enums;
+using System;
 
 namespace Chem4Word.ACME.Commands.Editing
 {

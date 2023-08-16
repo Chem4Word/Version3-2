@@ -5,12 +5,12 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME.Adorners.Sketching;
+using Chem4Word.ACME.Controls;
 using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
-using Chem4Word.ACME.Adorners.Sketching;
-using Chem4Word.ACME.Controls;
 
 namespace Chem4Word.ACME.Behaviors
 {

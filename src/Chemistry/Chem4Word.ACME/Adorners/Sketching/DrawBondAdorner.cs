@@ -5,9 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Media;
 using Chem4Word.ACME.Controls;
 using Chem4Word.ACME.Drawing;
 using Chem4Word.ACME.Drawing.LayoutSupport;
@@ -17,6 +14,9 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Annotations;
 using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Adorners.Sketching
 {

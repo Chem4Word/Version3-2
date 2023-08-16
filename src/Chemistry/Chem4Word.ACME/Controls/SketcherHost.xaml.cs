@@ -5,10 +5,10 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using IChem4Word.Contracts;
 using System;
 using System.ComponentModel;
 using System.Windows;
-using IChem4Word.Contracts;
 
 namespace Chem4Word.ACME.Controls
 {

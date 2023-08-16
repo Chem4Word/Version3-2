@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.ACME;
 using System.Windows;
 using System.Windows.Controls;
-using Chem4Word.ACME;
 
 namespace WinForms.TestHarness
 {

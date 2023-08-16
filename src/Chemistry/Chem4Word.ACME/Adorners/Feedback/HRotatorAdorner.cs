@@ -5,14 +5,14 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Windows;
-using System.Windows.Media;
 using Chem4Word.ACME.Drawing.Visuals;
 using Chem4Word.ACME.Enums;
 using Chem4Word.ACME.Graphics;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Annotations;
+using System;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Chem4Word.ACME.Adorners.Feedback
 {

@@ -203,7 +203,7 @@ namespace Chem4Word.Helpers
 
                                     target.Model.EnsureBondLength(Globals.Chem4WordV3.SystemOptions.BondLength, false);
 
-                                    // ToDo: Regenerate converted 2D structures
+                                    // ToDo: [MAW] Regenerate converted 2D structures
                                     break;
 
                                 case "new":

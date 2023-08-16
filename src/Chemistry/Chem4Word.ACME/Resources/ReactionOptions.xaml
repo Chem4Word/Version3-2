@@ -138,7 +138,7 @@
                 </GeometryDrawing>
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
-        
+
         <acme:ReactionOption Id="6" ReactionType="Resonance">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
@@ -166,7 +166,7 @@
                 </GeometryDrawing>
             </acme:ReactionOption.ReactionGraphic>
         </acme:ReactionOption>
-          <acme:ReactionOption Id="7" ReactionType="Retrosynthetic">
+        <acme:ReactionOption Id="7" ReactionType="Retrosynthetic">
             <acme:ReactionOption.ReactionGraphic>
                 <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Pen="{StaticResource ArrowPen}">
                     <GeometryDrawing.Geometry>
@@ -183,7 +183,7 @@
                                 StartPoint="0,7">
                                 <LineSegment Point="35,7" />
                             </PathFigure>
-                             <PathFigure
+                            <PathFigure
                                 IsClosed="False"
                                 IsFilled="False"
                                 StartPoint="33,1">

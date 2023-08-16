@@ -7,12 +7,12 @@
 
 // Shared file (Add As Link)
 
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Microsoft.Win32;
 
 namespace Chem4Word.Shared
 {
@@ -37,6 +37,7 @@ namespace Chem4Word.Shared
         {
             var paths = new List<string>();
 
+            paths.Add($"GetFromEnvironment => '{GetFromEnvironment()}'");
             paths.Add($"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'");
             paths.Add($"GetFromRegistryMethod2 => '{GetFromRegistryMethod2()}'");
             paths.Add($"GetFromRegistryMethod3 => '{GetFromRegistryMethod3()}'");
@@ -782,6 +783,19 @@ namespace Chem4Word.Shared
 
             if (result == null)
             {
+                try
+                {
+                    result = GetFromEnvironment();
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception.Message);
+                    Debugger.Break();
+                }
+            }
+
+            if (result == null)
+            {
                 Debug.WriteLine("SNAFU in GetWinWordPath() !");
                 Debugger.Break();
             }
@@ -904,6 +918,20 @@ namespace Chem4Word.Shared
             else
             {
                 Debug.WriteLine($@"Registry key '{rootKey}\{path}' not found!");
+            }
+
+            return result;
+        }
+
+        private static string GetFromEnvironment()
+        {
+            string result = null;
+
+            var commandLineArgs = Environment.GetCommandLineArgs();
+
+            if (commandLineArgs.Length >= 1)
+            {
+                result = commandLineArgs[0];
             }
 
             return result;

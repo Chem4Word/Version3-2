@@ -5,6 +5,15 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core;
+using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI.Forms;
+using Chem4Word.Core.UI.Wpf;
+using Chem4Word.Libraries.Database;
+using Chem4Word.Model2;
+using Chem4Word.Model2.Converters.CML;
+using IChem4Word.Contracts;
+using Ookii.Dialogs.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,15 +25,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Chem4Word.Core;
-using Chem4Word.Core.Helpers;
-using Chem4Word.Core.UI.Forms;
-using Chem4Word.Core.UI.Wpf;
-using Chem4Word.Libraries.Database;
-using Chem4Word.Model2;
-using Chem4Word.Model2.Converters.CML;
-using IChem4Word.Contracts;
-using Ookii.Dialogs.WinForms;
 using Forms = System.Windows.Forms;
 
 namespace Chem4Word.UI.WPF

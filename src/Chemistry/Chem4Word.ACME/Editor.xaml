@@ -1,14 +1,14 @@
 ﻿<UserControl
     x:Class="Chem4Word.ACME.Editor"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:acme="clr-namespace:Chem4Word.ACME"
     xmlns:behaviors="clr-namespace:Chem4Word.ACME.Behaviors"
     xmlns:control="clr-namespace:Chem4Word.ACME.Controls"
     xmlns:converters="clr-namespace:Chem4Word.ACME.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:graphics="clr-namespace:Chem4Word.ACME.Graphics"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:Chem4Word.ACME.Utils"
     x:Name="AcmeControl"
     Width="1024"
@@ -24,12 +24,11 @@
                 <ResourceDictionary Source="Resources/ControlStyles.xaml" />
                 <ResourceDictionary Source="Resources/ACMEResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <Style x:Key="MainTextStyle" TargetType="{x:Type TextBlock}">
+            <Style x:Key="ReactionAtomStyle" TargetType="{x:Type Run}">
                 <Setter Property="FontSize" Value="7" />
                 <Setter Property="FontFamily" Value="Arial" />
-                <Setter Property="HorizontalAlignment" Value="Center" />
             </Style>
-            <Style x:Key="SubscriptStyle" TargetType="{x:Type Run}">
+            <Style x:Key="ReactionSubscriptStyle" TargetType="{x:Type Run}">
                 <Setter Property="FontSize" Value="3.5" />
                 <Setter Property="FontFamily" Value="Arial" />
                 <Setter Property="BaselineAlignment" Value="Subscript" />
@@ -369,7 +368,10 @@
                     </Style.Triggers>
                 </Style>
             </ToolBarTray.Resources>
-            <ToolBar x:Name="SelectorToolbar" Height="40" ToolTip="Drawing">
+            <ToolBar
+                x:Name="SelectorToolbar"
+                Height="40"
+                ToolTip="Drawing">
                 <ToolBar.Resources>
                     <utils:BindingProxy x:Key="Proxy" Data="{Binding ElementName=AcmeControl}" />
                 </ToolBar.Resources>
@@ -543,7 +545,7 @@
                                                 Data="F1 M 28.5,17.4167L 53.8333,44.3333L 43.5417,44.3333L 49.875,55.4167L 43.5417,58.5833L 37.2083,47.5L 28.5,55.4167L 28.5,17.4167 Z"
                                                 Fill="{Binding ElementName=SelectorToolbar, Path=Background}"
                                                 Stretch="Fill"
-                                                Stroke="{StaticResource Chem4WordBrush}"
+                                                Stroke="{StaticResource Chem4WordBlue}"
                                                 StrokeThickness="1" />
                                         </Viewbox>
                                     </Grid>
@@ -588,7 +590,7 @@
                                                 Data="F1 M 28.5,17.4167L 53.8333,44.3333L 43.5417,44.3333L 49.875,55.4167L 43.5417,58.5833L 37.2083,47.5L 28.5,55.4167L 28.5,17.4167 Z"
                                                 Fill="{Binding ElementName=SelectorToolbar, Path=Background}"
                                                 Stretch="Fill"
-                                                Stroke="{StaticResource Chem4WordBrush}"
+                                                Stroke="{StaticResource Chem4WordBlue}"
                                                 StrokeThickness="1" />
                                         </Viewbox>
                                     </Grid>
@@ -768,9 +770,6 @@
                     ToolTip="Draw Chain">
                     <Viewbox>
                         <StaticResource ResourceKey="ChainPath" />
-                        <Viewbox.LayoutTransform>
-                            <RotateTransform Angle="180" />
-                        </Viewbox.LayoutTransform>
                     </Viewbox>
                     <RadioButton.Tag>
                         <behaviors:ChainBehavior EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
@@ -779,36 +778,25 @@
                 <!--  ReactionButton Hidden (Collapsed)  -->
                 <RadioButton
                     x:Name="ReactionButton"
+                    HorizontalContentAlignment="Center"
                     Click="ModeButton_OnChecked"
                     GroupName="Actions"
                     Style="{StaticResource ToolbarButtonStyle}"
-                    HorizontalContentAlignment="Center"
                     ToolTip="Draw Reaction">
-                    <RadioButton.Resources>
-                    </RadioButton.Resources>
+                    <RadioButton.Resources />
                     <Viewbox Stretch="Uniform">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="8" />
-                                <RowDefinition Height="0" />
-                                <RowDefinition />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="8" />
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Padding="0, 0, 0, 1"
-                                FontFamily="Arial"
-                                Style="{StaticResource MainTextStyle}">
-                                NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
+                            <TextBlock Grid.Row="0" FontSize="1">
+                                <Run Style="{StaticResource ReactionAtomStyle}">NH</Run>
+                                <Run Style="{StaticResource ReactionSubscriptStyle}">3</Run>
                             </TextBlock>
                             <graphics:StraightArrow
                                 Grid.Row="1"
-                                Grid.Column="1"
                                 ArrowHeadClosed="True"
                                 Fill="Black"
                                 HeadAngle="35"
@@ -817,11 +805,11 @@
                                 StrokeThickness="0.75"
                                 StartPoint="0, 1"
                                 EndPoint="12, 1" />
-                            <TextBlock
-                                Grid.Row="2"
-                                Padding="0,2"
-                                Grid.Column="1"
-                                Style="{StaticResource MainTextStyle}">H<Run Style="{StaticResource SubscriptStyle}">2</Run>O</TextBlock>
+                            <TextBlock Grid.Row="2" FontSize="1">
+                                <Run Style="{StaticResource ReactionAtomStyle}">H</Run>
+                                <Run Style="{StaticResource ReactionSubscriptStyle}">2</Run>
+                                <Run Style="{StaticResource ReactionAtomStyle}">O</Run>
+                            </TextBlock>
                         </Grid>
                     </Viewbox>
                     <RadioButton.Tag>
@@ -955,8 +943,9 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             FontFamily="Arial"
-                            Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBrush}}">
-                            <Run Foreground="Black">+</Run><Run Foreground="{StaticResource HBrush}">H</Run>
+                            Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBlue}}">
+                            <Run Foreground="Black">+</Run>
+                            <Run Foreground="{StaticResource HBrush}">H</Run>
                         </TextBlock>
                     </Viewbox>
                 </Button>
@@ -973,8 +962,9 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             FontFamily="Arial"
-                            Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBrush}}">
-                            <Run Foreground="Black">-</Run><Run Foreground="{StaticResource HBrush}">H</Run>
+                            Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBlue}}">
+                            <Run Foreground="Black">-</Run>
+                            <Run Foreground="{StaticResource HBrush}">H</Run>
                         </TextBlock>
                     </Viewbox>
                 </Button>
@@ -990,7 +980,7 @@
                             Height="24"
                             Margin="0,0,0,0"
                             Data="M9.8261027,14.856148C10.22809,14.856148 10.629084,14.856148 11.031085,14.957131 10.22809,17.265165 8.9231171,18.872173 8.4211259,19.474169L4.5061779,23.188221C3.8032012,23.790216,3.8032012,24.89423,4.4061885,25.497232L4.9071726,25.99922C5.5101752,26.701252,6.6141467,26.701252,7.3171391,26.099226L11.432081,22.284191C12.436063,21.481205 14.243026,20.67819 15.949009,19.875173 16.350996,21.682195 15.849004,23.690208 14.343031,25.09522L10.22809,28.910255C7.9191346,31.018276,4.3051924,31.018276,2.0972187,28.709265L1.5952277,28.207247C-0.61273084,25.898235,-0.51274154,22.385204,1.7962284,20.17617L5.9111547,16.262134C6.9151525,15.358136,8.4211259,14.856148,9.8261027,14.856148z M19.964938,10.239103C20.265944,10.239103 20.666937,10.33911 20.867924,10.640108 21.369915,11.142095 21.369915,12.046125 20.867924,12.548114L12.737053,20.076195C12.235062,20.578182 11.332077,20.578182 10.830085,20.076195 10.328094,19.574177 10.328094,18.671182 10.830085,18.169164L18.960955,10.540101C19.261961,10.33911,19.662957,10.239103,19.964938,10.239103z M25.886858,0C27.392832,2.1338451E-07,28.797808,0.60202569,29.901795,1.7060088L30.403786,2.2080271C32.611746,4.5170376,32.511755,8.0300691,30.202786,10.239103L26.087843,14.053132C24.681876,15.358136 22.674902,15.860154 20.867924,15.45915 21.168929,14.354129 21.67092,12.949118 23.276898,11.042088L27.392832,7.2270834C28.094817,6.6250579,28.094817,5.5210445,27.492821,4.9190495L26.99083,4.5170376C26.38885,3.8140287,25.284863,3.8140287,24.581871,4.4170311L20.566933,8.1310833C18.75997,9.3350732 17.253981,9.9381053 15.949009,10.33911 15.648003,8.5320871 16.249999,6.725065 17.655983,5.3200538L21.770909,1.4050113C22.975893,0.50201875,24.380869,2.1338451E-07,25.886858,0z"
-                            Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBrush}}"
+                            Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled, Converter={StaticResource EnabledConverter}, ConverterParameter={StaticResource ResourceKey=Chem4WordBlue}}"
                             Stretch="Uniform" />
                     </Viewbox>
                 </Button>
@@ -1063,8 +1053,8 @@
                 Width="Auto"
                 Height="40"
                 Band="1"
-                ToolTip="Reactions"
-                BandIndex="1">
+                BandIndex="1"
+                ToolTip="Reactions">
                 <ComboBox
                     Name="ReactionSelector"
                     Width="78"
@@ -1072,8 +1062,8 @@
                     ItemsSource="{StaticResource ReactionOptions}"
                     SelectedValue="{Binding ElementName=AcmeControl, Path=ActiveController.SelectedReactionType, Mode=TwoWay}"
                     SelectedValuePath="ReactionType"
-                    ToolTip="Reaction Type"
-                    Style="{StaticResource StandardCombo}">
+                    Style="{StaticResource StandardCombo}"
+                    ToolTip="Reaction Type">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <Image
@@ -1091,8 +1081,8 @@
                 <Separator />
                 <Button
                     x:Name="ReagentsButton"
-                    TextBlock.FontSize="6"
                     Command="{Binding ElementName=AcmeControl, Path=ActiveController.EditReagentsCommand}"
+                    TextBlock.FontSize="6"
                     ToolTip="Edit reagents">
                     <Viewbox Stretch="Uniform">
                         <Grid>
@@ -1101,22 +1091,15 @@
                                 <RowDefinition Height="2" />
                                 <RowDefinition Height="8" />
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
                             <TextBlock
                                 Grid.Row="0"
-                                Grid.Column="1"
-                                FontFamily="Arial"
-                                Padding="0, 0, 0, 1"
-                                Style="{StaticResource MainTextStyle}" HorizontalAlignment="Right">
-                                NH<Run Style="{StaticResource SubscriptStyle}">3</Run>
+                                HorizontalAlignment="Right"
+                                FontSize="1">
+                                <Run Style="{StaticResource ReactionAtomStyle}">NH</Run>
+                                <Run Style="{StaticResource ReactionSubscriptStyle}">3</Run>
                             </TextBlock>
                             <graphics:StraightArrow
                                 Grid.Row="1"
-                                Grid.Column="1"
                                 ArrowHeadClosed="True"
                                 Fill="Black"
                                 HeadAngle="35"
@@ -1124,16 +1107,21 @@
                                 Stroke="Black"
                                 StrokeThickness="0.75"
                                 StartPoint="0, 1"
-                                EndPoint="13, 1" />
-                            <Rectangle  Grid.Column="1" Grid.Row="2" Width="6" Height="6" Fill="LightGray" Margin="2" />
+                                EndPoint="12, 1" />
+                            <Rectangle
+                                Grid.Row="2"
+                                Width="6"
+                                Height="6"
+                                Margin="2"
+                                Fill="LightGray" />
                         </Grid>
                     </Viewbox>
                 </Button>
                 <Button
                     x:Name="ConditionsButton"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.EditConditionsCommand}"
                     TextBlock.FontSize="6"
-                    ToolTip="Edit conditions"
-                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.EditConditionsCommand}">
+                    ToolTip="Edit conditions">
                     <Viewbox Stretch="Uniform">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -1141,21 +1129,13 @@
                                 <RowDefinition Height="2" />
                                 <RowDefinition Height="8" />
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                FontFamily="Arial"
-                                Style="{StaticResource MainTextStyle}">
-                                H<Run Style="{StaticResource SubscriptStyle}">2</Run>O
+                            <TextBlock Grid.Row="2" FontSize="1">
+                                <Run Style="{StaticResource ReactionAtomStyle}">H</Run>
+                                <Run Style="{StaticResource ReactionSubscriptStyle}">2</Run>
+                                <Run Style="{StaticResource ReactionAtomStyle}">O</Run>
                             </TextBlock>
                             <graphics:StraightArrow
                                 Grid.Row="1"
-                                Grid.Column="1"
                                 ArrowHeadClosed="True"
                                 Fill="Black"
                                 HeadAngle="35"
@@ -1164,62 +1144,128 @@
                                 StrokeThickness="0.75"
                                 StartPoint="0,1"
                                 EndPoint="12,1" />
-                            <Rectangle Grid.Column="1" Grid.Row="0" Width="6" Height="6" Fill="LightGray" Margin="2" />
+                            <Rectangle
+                                Grid.Row="0"
+                                Width="6"
+                                Height="6"
+                                Margin="2"
+                                Fill="LightGray" />
                         </Grid>
                     </Viewbox>
                 </Button>
-                <RadioButton x:Name="PlusToolButton" Click="ModeButton_OnChecked"
+                <RadioButton
+                    x:Name="PlusToolButton"
+                    HorizontalContentAlignment="Center"
+                    Click="ModeButton_OnChecked"
                     GroupName="Actions"
                     Style="{StaticResource ToolbarButtonStyle}"
-                    HorizontalContentAlignment="Center"
                     ToolTip="Draw Plus Sign">
                     <Viewbox>
                         <Grid>
-                            <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
+                            <Grid
+                                Name="backgroundGrid"
+                                Width="48"
+                                Height="48"
+                                Visibility="Visible">
                                 <Rectangle Name="Rect" Visibility="Visible" />
                             </Grid>
-                            <Path Data="M12.126984,0L19.872009,0 19.872009,12.128 32,12.128 32,19.872999 19.872009,19.872999 19.872009,31.999 12.126984,31.999 12.126984,19.872999 0,19.872999 0,12.128 12.126984,12.128z" Stretch="Uniform" Fill="Black" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <RotateTransform Angle="0" />
-                                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
+                            <Path
+                                Width="26"
+                                Height="26"
+                                Data="M12.126984,0L19.872009,0 19.872009,12.128 32,12.128 32,19.872999 19.872009,19.872999 19.872009,31.999 12.126984,31.999 12.126984,19.872999 0,19.872999 0,12.128 12.126984,12.128z"
+                                Fill="Black"
+                                Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
                     <RadioButton.Tag>
-                        <behaviors:AnnotationBehavior DefaultText="+" StatusText="Click to insert a + sign" IsEditable="False"
-                            EditController="{Binding ElementName=AcmeControl, Path=ActiveController}" />
+                        <behaviors:AnnotationBehavior
+                            DefaultText="+"
+                            EditController="{Binding ElementName=AcmeControl, Path=ActiveController}"
+                            IsEditable="False"
+                            StatusText="Click to insert a + sign" />
                     </RadioButton.Tag>
                 </RadioButton>
-                <Button x:Name="AssignRolesButton"
-                        Style="{StaticResource CommandButtonStyle}"
-                        ToolTip="Assign Reaction Roles"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.AssignReactionRolesCommand}"
-                        Padding="1">
-                    <Viewbox Height="24" Width="24" Stretch="Uniform" Margin="1">
-                        <Canvas  Height="24" Width="24">
-                            <Ellipse Canvas.Top="0" Canvas.Left="0" Width="8" Height="8" Fill="DarkBlue" Stroke="DarkBlue" />
-                            <graphics:StraightArrow  StartPoint="8,8" EndPoint="16,16" Fill="Black" Stroke="Black" HeadLength="4" HeadAngle="45" ArrowHeadClosed="False" />
-                            <Ellipse Canvas.Left="16" Width="8" Canvas.Top="16"  Height="8" StrokeThickness="1.5" Stroke="DarkRed" Fill="DarkRed" />
+                <Button
+                    x:Name="AssignRolesButton"
+                    Padding="1"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.AssignReactionRolesCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Assign Reaction Roles">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Margin="1"
+                        Stretch="Uniform">
+                        <Canvas Width="24" Height="24">
+                            <Ellipse
+                                Canvas.Left="0"
+                                Canvas.Top="0"
+                                Width="8"
+                                Height="8"
+                                Fill="DarkBlue"
+                                Stroke="DarkBlue" />
+                            <graphics:StraightArrow
+                                ArrowHeadClosed="False"
+                                Fill="Black"
+                                HeadAngle="45"
+                                HeadLength="4"
+                                Stroke="Black"
+                                StartPoint="8,8"
+                                EndPoint="16,16" />
+                            <Ellipse
+                                Canvas.Left="16"
+                                Canvas.Top="16"
+                                Width="8"
+                                Height="8"
+                                Fill="DarkRed"
+                                Stroke="DarkRed"
+                                StrokeThickness="1.5" />
                         </Canvas>
                     </Viewbox>
                 </Button>
-                <Button x:Name="ClearRolesButton"
-                        Style="{StaticResource CommandButtonStyle}"
-                        ToolTip="Clear Reaction Roles"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.ClearReactionRolesCommand}"
-                        Padding="1">
-                    <Viewbox Height="24" Width="24" Stretch="Uniform" Margin="1">
-                        <Canvas  Height="24" Width="24">
-                            <Ellipse Canvas.Top="0" Canvas.Left="0" Width="8" Height="8" Fill="DarkBlue" Stroke="DarkBlue" />
-                            <graphics:StraightArrow  StartPoint="8,8" EndPoint="16,16" Fill="Black" Stroke="Black" HeadLength="4" HeadAngle="45" ArrowHeadClosed="False" />
-                            <Ellipse Canvas.Left="16" Width="8" Canvas.Top="16"  Height="8" StrokeThickness="1.5" Stroke="DarkRed" Fill="DarkRed" />
+                <Button
+                    x:Name="ClearRolesButton"
+                    Padding="1"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.ClearReactionRolesCommand}"
+                    Style="{StaticResource CommandButtonStyle}"
+                    ToolTip="Clear Reaction Roles">
+                    <Viewbox
+                        Width="24"
+                        Height="24"
+                        Margin="1"
+                        Stretch="Uniform">
+                        <Canvas Width="24" Height="24">
+                            <Ellipse
+                                Canvas.Left="0"
+                                Canvas.Top="0"
+                                Width="8"
+                                Height="8"
+                                Fill="DarkBlue"
+                                Stroke="DarkBlue" />
+                            <graphics:StraightArrow
+                                ArrowHeadClosed="False"
+                                Fill="Black"
+                                HeadAngle="45"
+                                HeadLength="4"
+                                Stroke="Black"
+                                StartPoint="8,8"
+                                EndPoint="16,16" />
+                            <Ellipse
+                                Canvas.Left="16"
+                                Canvas.Top="16"
+                                Width="8"
+                                Height="8"
+                                Fill="DarkRed"
+                                Stroke="DarkRed"
+                                StrokeThickness="1.5" />
 
-                            <Line X1="1" Y1="24" X2="24" Y2="0"  StrokeThickness="2" Stroke="Red" />
+                            <Line
+                                Stroke="Red"
+                                StrokeThickness="2"
+                                X1="1"
+                                X2="24"
+                                Y1="24"
+                                Y2="0" />
                         </Canvas>
                     </Viewbox>
                 </Button>
@@ -1227,8 +1273,8 @@
             <ToolBar
                 x:Name="AlignToolbar"
                 Band="1"
-                ToolTip="Align objects"
-                BandIndex="2">
+                BandIndex="2"
+                ToolTip="Align objects">
                 <Button
                     x:Name="AlignLeftButton"
                     Command="{Binding ElementName=AcmeControl, Path=ActiveController.AlignLeftsCommand}"
@@ -1238,7 +1284,7 @@
                         <Grid>
                             <Path
                                 Data="M0,0 L2,0 2,32 0,32Z M8,2 L8,8 18,8 18,2Z M6,0 L20,0 20,10 6,10Z M8,16 L8,22 26,22 26,16Z M6,14 L28,14 28,24 6,24Z"
-                                Fill="{StaticResource Chem4WordBrush}"
+                                Fill="{StaticResource Chem4WordBlue}"
                                 Stretch="Uniform" />
                             <graphics:StraightArrow
                                 ArrowHeadClosed="True"
@@ -1264,7 +1310,7 @@
                             </Grid.LayoutTransform>
                             <Path
                                 Data="M20,6 L20,16 26,16 26,6Z M6,2 L6,20 12,20 12,2Z M4,0 L14,0 14,10 18,10 18,4 28,4 28,10 32,10 32,12 28,12 28,18 18,18 18,12 14,12 14,22 4,22 4,12 0,12 0,10 4,10Z"
-                                Fill="{StaticResource Chem4WordBrush}"
+                                Fill="{StaticResource Chem4WordBlue}"
                                 Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
@@ -1278,7 +1324,7 @@
                         <Grid>
                             <Path
                                 Data="M26,0 L28,0 28,32 26,32Z M10,2 L10,8 20,8 20,2Z M8,0 L22,0 22,10 8,10Z M2,16 L2,22 20,22 20,16Z M0,14 L22,14 22,24 0,24Z"
-                                Fill="{StaticResource Chem4WordBrush}"
+                                Fill="{StaticResource Chem4WordBlue}"
                                 Stretch="Uniform" />
                             <graphics:StraightArrow
                                 ArrowHeadClosed="True"
@@ -1301,7 +1347,7 @@
                         <Grid>
                             <Path
                                 Data="M0,26 L32,26 32,28 0,28Z M24,10 L24,20 30,20 30,10Z M22,8 L32,8 32,22 22,22Z M10,2 L10,20 16,20 16,2Z M8,0 L18,0 18,22 8,22Z"
-                                Fill="{StaticResource Chem4WordBrush}"
+                                Fill="{StaticResource Chem4WordBlue}"
                                 Stretch="Uniform" />
                             <graphics:StraightArrow
                                 ArrowHeadClosed="True"
@@ -1324,7 +1370,7 @@
                         <Grid>
                             <Path
                                 Data="M20,6 L20,16 26,16 26,6Z M6,2 L6,20 12,20 12,2Z M4,0 L14,0 14,10 18,10 18,4 28,4 28,10 32,10 32,12 28,12 28,18 18,18 18,12 14,12 14,22 4,22 4,12 0,12 0,10 4,10Z"
-                                Fill="{StaticResource Chem4WordBrush}"
+                                Fill="{StaticResource Chem4WordBlue}"
                                 Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
@@ -1338,7 +1384,7 @@
                         <Grid>
                             <Path
                                 Data="M0,0 L32,0 32,2 0,2Z M10,8 L10,26 16,26 16,8Z M8,6 L18,6 18,28 8,28Z M24,8 L24,18 30,18 30,8Z M22,6 L32,6 32,20 22,20Z"
-                                Fill="{StaticResource Chem4WordBrush}"
+                                Fill="{StaticResource Chem4WordBlue}"
                                 Stretch="Uniform" />
                             <graphics:StraightArrow
                                 ArrowHeadClosed="True"
@@ -1354,24 +1400,26 @@
                 </Button>
                 <Separator />
             </ToolBar>
-            <ToolBar x:Name="FormattingToolbar"
+            <ToolBar
+                x:Name="FormattingToolbar"
                 Band="1"
+                BandIndex="3"
                 ToolTip="Formatting"
-                Visibility="{Binding ElementName=AcmeControl, Path=ActiveController.IsBlockEditing, Converter={StaticResource VisConverter}}"
-                BandIndex="3">
+                Visibility="{Binding ElementName=AcmeControl, Path=ActiveController.IsBlockEditing, Converter={StaticResource VisConverter}}">
 
-                <Button x:Name="SubscriptButton" HorizontalContentAlignment="Center"
-                             Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.MakeSubscriptCommand}">
+                <Button
+                    x:Name="SubscriptButton"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.MakeSubscriptCommand}">
                     <Button.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="5" />
                         </Style>
                     </Button.Resources>
                     <Button.Style>
-                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource CommandButtonStyle }">
+                        <Style BasedOn="{StaticResource CommandButtonStyle}" TargetType="{x:Type Button}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=AcmeControl,
-                                Path=ActiveController.SelectionIsSubscript}" Value="True">
+                                <DataTrigger Binding="{Binding ElementName=AcmeControl, Path=ActiveController.SelectionIsSubscript}" Value="True">
                                     <Setter Property="BorderBrush" Value="Gray" />
                                     <Setter Property="Background" Value="LightBlue" />
                                     <Setter Property="BorderThickness" Value="2" />
@@ -1379,33 +1427,32 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <Viewbox  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                        <Grid Height="32" Width="32">
-                            <Path Data="M27.875,11.07201C29.158997,11.07201 30.162003,11.412005 30.897995,12.091998 31.625992,12.774004 31.998001,13.624986 31.998001,14.637009 31.998001,15.215011 31.888,15.764997 31.684998,16.289991 31.472,16.811994 31.140991,17.355999 30.686996,17.926983 30.384995,18.306988 29.83699,18.853006 29.057999,19.564005 28.270996,20.271006 27.772003,20.746986 27.563995,20.979988 27.354004,21.21598 27.181992,21.441994 27.054001,21.663002L32,21.663002 31.996994,21.665993 31.996994,23.952001 23.268997,23.952001C23.365997,23.088995 23.649002,22.265999 24.121002,21.495003 24.595001,20.724983 25.524994,19.700998 26.919998,18.422008 28.039993,17.388988 28.729996,16.689009 28.985992,16.322004 29.32399,15.814985 29.498993,15.310012 29.498993,14.814986 29.498993,14.264999 29.348999,13.844987 29.050995,13.551011 28.753998,13.254014 28.341003,13.108994 27.813995,13.108994 27.297989,13.108994 26.882004,13.262986 26.57399,13.571 26.270996,13.880998 26.091003,14.395004 26.043991,15.113997L23.561996,14.866988C23.709991,13.517991 24.175995,12.541002 24.955994,11.952014 25.733002,11.364001 26.707993,11.07201 27.875,11.07201z M0.32299805,0L7.2720032,0 11.07399,5.9120115 15.080002,0 21.761002,0 14.47699,10.180989 22.432999,21.484993 15.447998,21.484993 11.071991,14.831984 6.6609955,21.486977 0,21.486977 0.00099182129,21.486 7.7549896,10.421009z" Stretch="Uniform" Fill="Black" Width="15" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
-                                            <TranslateTransform X="0" Y="2" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
+                    <Viewbox Stretch="Uniform">
+                        <Grid Width="32" Height="32">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="1"
+                                FontWeight="Bold">
+                                <Run FontSize="18">X</Run>
+                                <Run BaselineAlignment="Subscript" FontSize="9">2</Run>
+                            </TextBlock>
                         </Grid>
                     </Viewbox>
                 </Button>
-                <Button x:Name="SuperscriptButton" HorizontalContentAlignment="Center"
-                               Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.MakeSuperscriptCommand}">
+                <Button
+                    x:Name="SuperscriptButton"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.MakeSuperscriptCommand}">
                     <Button.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="5" />
                         </Style>
                     </Button.Resources>
                     <Button.Style>
-                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource CommandButtonStyle}">
+                        <Style BasedOn="{StaticResource CommandButtonStyle}" TargetType="{x:Type Button}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=AcmeControl,
-                                Path=ActiveController.SelectionIsSuperscript}" Value="True">
+                                <DataTrigger Binding="{Binding ElementName=AcmeControl, Path=ActiveController.SelectionIsSuperscript}" Value="True">
                                     <Setter Property="BorderBrush" Value="Gray" />
                                     <Setter Property="Background" Value="LightBlue" />
                                     <Setter Property="BorderThickness" Value="2" />
@@ -1413,28 +1460,40 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <Viewbox  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                        <Grid>
-                            <Path Data="M0.31499481,8.4949982L7.1100006,8.4949982 10.833,14.274999 14.756996,8.4949982 21.299995,8.4949982 14.162994,18.454017 21.951996,29.52 15.119995,29.52 10.834999,23.006997 6.5149994,29.52 0,29.52 7.5859985,18.691993z M27.960999,0C29.218994,-2.2532367E-07 30.198997,0.33200063 30.918999,1.0020141 31.631996,1.6700138 31.994995,2.5020149 31.994995,3.4960031 31.994995,4.0599987 31.889,4.5979936 31.686996,5.1080034 31.480995,5.6180131 31.156998,6.1520102 30.710999,6.7139914 30.417,7.0880148 29.883995,7.6220119 29.117996,8.3200104 28.349998,9.0159943 27.860001,9.4760163 27.653999,9.703006 27.449997,9.9350006 27.283997,10.160007 27.156998,10.369998L31.995995,10.369998 31.995995,12.61002 23.454994,12.61002C23.543999,11.767002 23.823997,10.963993 24.283997,10.204013 24.747993,9.4509919 25.659996,8.4440033 27.028,7.1919882 28.124001,6.1839926 28.797997,5.498018 29.043999,5.135988 29.379997,4.6390092 29.549995,4.1480114 29.549995,3.6660166 29.549995,3.126008 29.405998,2.7130134 29.110001,2.4259953 28.818001,2.1359868 28.412994,1.9920049 27.903,1.9920049 27.389999,1.9920049 26.987,2.1459966 26.686996,2.4479985 26.386993,2.7520149 26.218994,3.2550058 26.167,3.9580088L23.738998,3.7160044C23.881996,2.3900154 24.338997,1.4419864 25.101997,0.86401366 25.867996,0.28698717 26.818001,-2.2532367E-07 27.960999,0z" Stretch="Uniform" Fill="Black" Width="12" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                <Path.RenderTransform>
-                                    <TransformGroup>
-                                        <TransformGroup.Children>
-                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
-                                            <TranslateTransform X="0" Y="-.5" />
-                                        </TransformGroup.Children>
-                                    </TransformGroup>
-                                </Path.RenderTransform>
-                            </Path>
+                    <Viewbox Stretch="Uniform">
+                        <Grid Width="32" Height="32">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="1"
+                                FontWeight="Bold">
+                                <Run FontSize="18">X</Run>
+                                <Run BaselineAlignment="Superscript" FontSize="9">2</Run>
+                            </TextBlock>
                         </Grid>
                     </Viewbox>
                 </Button>
-                <Button x:Name="DegreeButton"  HorizontalContentAlignment="Center"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertDegreeCommand}">
-                    <TextBlock HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" FontFamily="Arial" >°C</TextBlock>
+                <Button
+                    x:Name="DegreeButton"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertDegreeCommand}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontFamily="Arial"
+                        FontSize="18"
+                        FontWeight="Bold">
+                        °C
+                    </TextBlock>
                 </Button>
-                <Button x:Name="SymbolButton"  HorizontalContentAlignment="Center"
-                        Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertSymbolCommand}"
-                        CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial">
+                <Button
+                    x:Name="SymbolButton"
+                    HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding ElementName=AcmeControl, Path=ActiveController.ActiveBlockEditor.InsertSymbolCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Tag}"
+                    FontFamily="Arial"
+                    FontSize="18"
+                    FontWeight="Bold">
                     <Button.Content>Δ</Button.Content>
                     <Button.Tag>Δ</Button.Tag>
                 </Button>
@@ -1452,7 +1511,10 @@
                     PlacementTarget="{Binding ElementName=SymbolButton}"
                     StaysOpen="False">
                     <Border>
-                        <UniformGrid Background="{x:Static SystemColors.WindowBrush}" Columns="3" Rows="2">
+                        <UniformGrid
+                            Background="{x:Static SystemColors.WindowBrush}"
+                            Columns="3"
+                            Rows="2">
                             <UniformGrid.Resources>
                                 <Style TargetType="{x:Type Button}">
                                     <Style.Setters>
@@ -1464,23 +1526,77 @@
                                     </Style.Setters>
                                 </Style>
                             </UniformGrid.Resources>
-                            <Button Name="DeltaButton" ToolTip="Delta" Tag="Δ">
-                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >Δ</TextBlock>
+                            <Button
+                                Name="DeltaButton"
+                                Tag="Δ"
+                                ToolTip="Delta">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontFamily="Arial"
+                                    FontSize="18"
+                                    FontWeight="Bold">
+                                    Δ
+                                </TextBlock>
                             </Button>
-                            <Button Name="AlphaButton" ToolTip="alpha" Tag="α">
-                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >α</TextBlock>
+                            <Button
+                                Name="AlphaButton"
+                                Tag="α"
+                                ToolTip="alpha">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontFamily="Arial"
+                                    FontSize="18"
+                                    FontWeight="Bold">
+                                    α
+                                </TextBlock>
                             </Button>
-                            <Button Name="BetaButton" ToolTip="beta" Tag="β">
-                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >β</TextBlock>
+                            <Button
+                                Name="BetaButton"
+                                Tag="β"
+                                ToolTip="beta">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontFamily="Arial"
+                                    FontSize="18"
+                                    FontWeight="Bold">
+                                    β
+                                </TextBlock>
                             </Button>
-                            <Button Name="GammaButton" ToolTip="gamma" Tag="γ">
-                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >γ</TextBlock>
+                            <Button
+                                Name="GammaButton"
+                                Tag="γ"
+                                ToolTip="gamma">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontFamily="Arial"
+                                    FontSize="18"
+                                    FontWeight="Bold">
+                                    γ
+                                </TextBlock>
                             </Button>
-                            <Button Name="MuButton" ToolTip="mu" Tag="μ">
-                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >μ</TextBlock>
+                            <Button
+                                Name="MuButton"
+                                Tag="μ"
+                                ToolTip="mu">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontFamily="Arial"
+                                    FontSize="18"
+                                    FontWeight="Bold">
+                                    μ
+                                </TextBlock>
                             </Button>
-                            <Button Name="NuButton" ToolTip="Degree" Tag="°">
-                                <TextBlock FontSize="18" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Arial" >°</TextBlock>
+                            <Button
+                                Name="NuButton"
+                                Tag="°"
+                                ToolTip="Degree">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontFamily="Arial"
+                                    FontSize="18"
+                                    FontWeight="Bold">
+                                    °
+                                </TextBlock>
                             </Button>
                         </UniformGrid>
                     </Border>
@@ -1499,32 +1615,37 @@
                 Background="White"
                 HorizontalScrollBarVisibility="Auto"
                 VerticalScrollBarVisibility="Auto">
-                <!-- the HostingCanvas is purely to field controls that cannot be hosted on
-                the ChemCanvas, such as the reagent/conditions editor.
-                The coordinate system maps to that of the ChemCanvas -->
-                <Canvas x:Name="HostingCanvas"
-                        MinWidth="2400"
-                        MinHeight="2400"
-                        DataContext="{Binding ElementName=AcmeControl, Path=ActiveController}">
-                    <!-- this is the drawing surface-->
+                <!--
+                    the HostingCanvas is purely to field controls that cannot be hosted on
+                    the ChemCanvas, such as the reagent/conditions editor.
+                    The coordinate system maps to that of the ChemCanvas
+                -->
+                <Canvas
+                    x:Name="HostingCanvas"
+                    MinWidth="2400"
+                    MinHeight="2400"
+                    DataContext="{Binding ElementName=AcmeControl, Path=ActiveController}">
+                    <!--  this is the drawing surface  -->
                     <control:EditorCanvas
                         x:Name="ChemCanvas"
-                        MinHeight="{Binding ElementName=HostingCanvas, Path=MinHeight}"
-                        MinWidth="{Binding ElementName=HostingCanvas, Path=MinWidth}"
-                        Height="{Binding ElementName=HostingCanvas, Path=Height}"
                         Width="{Binding ElementName=HostingCanvas, Path=Width}"
+                        Height="{Binding ElementName=HostingCanvas, Path=Height}"
+                        MinWidth="{Binding ElementName=HostingCanvas, Path=MinWidth}"
+                        MinHeight="{Binding ElementName=HostingCanvas, Path=MinHeight}"
                         Background="White"
-                        DisplayOverbondedAtoms="True">
-                    </control:EditorCanvas>
-                    <control:AnnotationEditor x:Name="ReactionBoxEditor"
-                                                  Height="Auto"
-                                                  Width="Auto"
-                                                  FontSize="{Binding BlockTextSize}"
-                                                  FontWeight="Normal"
-                                              Language="en-GB" xml:lang="en-GB"
-                                              Background="{x:Static SystemColors.WindowBrush}">
+                        DisplayOverbondedAtoms="True" />
+                    <control:AnnotationEditor
+                        x:Name="ReactionBoxEditor"
+                        Width="Auto"
+                        Height="Auto"
+                        xml:lang="en-GB"
+                        Background="{x:Static SystemColors.WindowBrush}"
+                        FontFamily="Arial"
+                        FontSize="{Binding BlockTextSize}"
+                        FontWeight="Normal"
+                        Language="en-GB">
                         <control:AnnotationEditor.BorderBrush>
-                            <SolidColorBrush Color="DarkOrange" Opacity="50" />
+                            <SolidColorBrush Opacity="50" Color="DarkOrange" />
                         </control:AnnotationEditor.BorderBrush>
                         <control:AnnotationEditor.Resources>
                             <Style TargetType="{x:Type FlowDocument}">
@@ -1540,7 +1661,7 @@
                                         <Setter Property="FontSize" Value="{Binding ScriptSize, Converter={StaticResource DoNothing}}" />
                                     </Trigger>
                                     <Trigger Property="BaselineAlignment" Value="Superscript">
-                                        <Setter Property="FontSize"  Value="{Binding ScriptSize}" />
+                                        <Setter Property="FontSize" Value="{Binding ScriptSize}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -1555,7 +1676,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Canvas="{Binding ElementName=HostingCanvas}"
-                FontFamily="Arial"
+                FontFamily="Segoe UI"
                 ScrollViewer="{Binding ElementName=DrawingArea}" />
         </Grid>
         <StatusBar

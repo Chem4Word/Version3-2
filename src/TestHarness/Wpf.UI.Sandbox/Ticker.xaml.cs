@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using Wpf.UI.Sandbox.Models;
 
 namespace Wpf.UI.Sandbox
 {
@@ -12,6 +13,7 @@ namespace Wpf.UI.Sandbox
     public partial class Ticker : Window
     {
         private int _index = 0;
+
         private List<TickerItem> _tickerItems = new List<TickerItem>
         {
             new TickerItem { Text = "#1 This is news item #1", Url = "https://item1" },

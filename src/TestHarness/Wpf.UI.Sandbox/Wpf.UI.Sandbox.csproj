@@ -69,18 +69,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Marquee.xaml.cs">
+    <Compile Include="Controls\Marquee.xaml.cs">
       <DependentUpon>Marquee.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ticker.xaml.cs">
       <DependentUpon>Ticker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TickerItem.cs" />
+    <Compile Include="Models\TickerItem.cs" />
     <Page Include="Launcher.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Marquee.xaml">
+    <Page Include="Controls\Marquee.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -139,5 +139,6 @@
       <Name>Chem4Word.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

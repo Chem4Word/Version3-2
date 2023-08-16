@@ -5,11 +5,11 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
 using Chem4Word.Renderer.OoXmlV4.TTF;
 using IChem4Word.Contracts;
+using System.Collections.Generic;
 
 namespace Chem4Word.Renderer.OoXmlV4.Entities
 {
