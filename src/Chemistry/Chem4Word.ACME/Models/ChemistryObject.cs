@@ -174,11 +174,18 @@ namespace Chem4Word.ACME.Models
 
         private void LoadOtherNames(string cml)
         {
-            XDocument cmlDoc = XDocument.Parse(cml);
-            XName nameNodeName = CMLNamespaces.cml + "name";
-            OtherNames = (from element in cmlDoc.Descendants(nameNodeName)
-                          where element.Name == nameNodeName
-                          select element.Value).Distinct().ToList();
+            if (cml != null && cml.StartsWith("<"))
+            {
+                XDocument cmlDoc = XDocument.Parse(cml);
+                XName nameNodeName = CMLNamespaces.cml + "name";
+                OtherNames = (from element in cmlDoc.Descendants(nameNodeName)
+                              where element.Name == nameNodeName
+                              select element.Value).Distinct().ToList();
+            }
+            else
+            {
+                Debugger.Break();
+            }
         }
     }
 }

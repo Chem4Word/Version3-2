@@ -250,7 +250,6 @@ namespace Chem4Word
             // HelpMenu
             // 
             this.HelpMenu.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.HelpMenu.Enabled = false;
             this.HelpMenu.Image = global::Chem4Word.Properties.Resources.Help;
             this.HelpMenu.Items.Add(this.ShowAbout);
             this.HelpMenu.Items.Add(this.ShowHome);

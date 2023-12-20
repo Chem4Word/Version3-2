@@ -158,10 +158,10 @@ namespace Chem4Word.Telemetry
                 try
                 {
                     var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                                $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.Now)}.log");
+                                                $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.UtcNow)}.log");
                     using (var streamWriter = File.AppendText(fileName))
                     {
-                        await streamWriter.WriteLineAsync($"[{SafeDate.ToShortTime(DateTime.Now)}] Exception in WriteMessage: {exception.Message}");
+                        await streamWriter.WriteLineAsync($"[{SafeDate.ToShortTime(DateTime.UtcNow)}] Exception in WriteMessage: {exception.Message}");
                     }
                 }
                 catch

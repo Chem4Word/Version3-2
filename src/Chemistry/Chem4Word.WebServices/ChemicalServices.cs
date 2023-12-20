@@ -45,7 +45,7 @@ namespace Chem4Word.WebServices
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            DateTime started = DateTime.Now;
+            DateTime started = DateTime.UtcNow;
 
             ChemicalServicesResult data = null;
             var securityProtocol = ServicePointManager.SecurityProtocol;
@@ -122,7 +122,7 @@ namespace Chem4Word.WebServices
                 ServicePointManager.SecurityProtocol = securityProtocol;
             }
 
-            DateTime ended = DateTime.Now;
+            DateTime ended = DateTime.UtcNow;
             TimeSpan duration = ended - started;
 
             Telemetry.Write(module, "Timing", $"Calling Azure http Function Took {SafeDouble.Duration(duration.TotalMilliseconds)}ms");

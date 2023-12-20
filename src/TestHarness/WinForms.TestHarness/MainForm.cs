@@ -264,7 +264,7 @@ namespace WinForms.TestHarness
                     var allAtoms = model.GetAllAtoms();
                     if (allAtoms.Any())
                     {
-                        var rnd = new Random(DateTime.Now.Millisecond);
+                        var rnd = new Random(DateTime.UtcNow.Millisecond);
 
                         var maxAtoms = allAtoms.Count;
                         int targetAtom = rnd.Next(0, maxAtoms);
@@ -942,21 +942,16 @@ namespace WinForms.TestHarness
             var version = assembly.GetName().Version;
             var pc = new PropertyCalculator(_telemetry, new Point(Left, Top), version.ToString());
 
-            int changedProperties = 0;
-
-            const bool UseNewCode = true;
+            int changedProperties;
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            if (UseNewCode)
-            {
-                // Code being tested
-                changedProperties = pc.CalculateProperties(model);
-            }
+            // Code being tested
+            changedProperties = pc.CalculateProperties(model);
 
             stopwatch.Stop();
-            Debug.WriteLine($"Calulating {changedProperties} changed properties took {stopwatch.Elapsed}");
+            Debug.WriteLine($"Calculating {changedProperties} changed properties took {stopwatch.Elapsed}");
             _lastCml = cc.Export(model);
 
             // Cause re-read of settings (in case they have changed)

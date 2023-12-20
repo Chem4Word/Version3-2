@@ -5,10 +5,13 @@
     <Version>
         <Number>3.2.14 Release 9</Number>
         <IsBeta>false</IsBeta>
-        <Released>31-Aug-2023</Released>
+        <Released>21-Dec-2023</Released>
         <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
+            <Change>Internal: Updated NuGet packages</Change>
+            <Change>BugFix: Backup and replace invalid database file</Change>
+            <Change>BugFix: Correct sdf export of atom properties</Change>
+            <Change>BugFix: Handle V3.3 structure in library</Change>
+            <Change>Information: Add Anti-Virus false positive warning</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
             <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>

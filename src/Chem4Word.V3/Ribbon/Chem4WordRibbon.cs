@@ -796,6 +796,7 @@ namespace Chem4Word
                                             var pc = new WebServices.PropertyCalculator(Globals.Chem4WordV3.Telemetry,
                                                                                         Globals.Chem4WordV3.WordTopLeft,
                                                                                         Globals.Chem4WordV3.AddInInfo.AssemblyVersionNumber);
+                                            afterModel.CreatorGuid = Globals.Chem4WordV3.Helper.MachineId;
                                             var changedProperties = pc.CalculateProperties(afterModel);
 
                                             if (isNewDrawing)
@@ -1176,6 +1177,7 @@ namespace Chem4Word
                                         var after = model.MeanBondLength;
                                         Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Structure rescaled from {SafeDouble.AsString(before)} to {SafeDouble.AsString(after)}");
                                         var converter = new SdFileConverter();
+                                        model.CreatorGuid = Globals.Chem4WordV3.Helper.MachineId;
                                         File.WriteAllText(sfd.FileName, converter.Export(model));
                                         break;
                                 }
@@ -2088,17 +2090,24 @@ namespace Chem4Word
                     Globals.Chem4WordV3.LoadOptions();
                 }
 
-                var behind = UpdateHelper.CheckForUpdates(Globals.Chem4WordV3.SystemOptions.AutoUpdateFrequency);
-                if (Globals.Chem4WordV3.IsEndOfLife)
+                if (Globals.Chem4WordV3.SystemOptions != null)
                 {
-                    UserInteractions.InformUser("This version of Chem4Word is no longer supported");
+                    var behind = UpdateHelper.CheckForUpdates(Globals.Chem4WordV3.SystemOptions.AutoUpdateFrequency);
+                    if (Globals.Chem4WordV3.IsEndOfLife)
+                    {
+                        UserInteractions.InformUser("This version of Chem4Word is no longer supported");
+                    }
+                    else
+                    {
+                        if (behind == 0)
+                        {
+                            UserInteractions.InformUser("Your version of Chem4Word is the latest");
+                        }
+                    }
                 }
                 else
                 {
-                    if (behind == 0)
-                    {
-                        UserInteractions.InformUser("Your version of Chem4Word is the latest");
-                    }
+                    UserInteractions.InformUser("Unable to check for updates because Chem4Word has not been initialised.");
                 }
 
                 Globals.Chem4WordV3.EventsEnabled = true;
@@ -2153,6 +2162,10 @@ namespace Chem4Word
                 }
 
                 Globals.Chem4WordV3.EventsEnabled = true;
+            }
+            else
+            {
+                UserInteractions.InformUser("Unable to locate user manual because Chem4Word has not been initialised.");
             }
 
             AfterButtonChecks(sender as RibbonButton);
@@ -2255,7 +2268,7 @@ namespace Chem4Word
                 }
                 else
                 {
-                    UserInteractions.InformUser("Chem4Word is disabled because no plug Ins were found.");
+                    UserInteractions.InformUser("System Info is unavailable because Chem4Word has not been initialised.");
                 }
             }
             catch (Exception ex)

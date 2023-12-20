@@ -18,8 +18,8 @@ namespace Chem4Word.Helpers
 {
     public static class RegistryHelper
     {
-        private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static readonly string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+        private static readonly string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
         private static int _counter = 1;
 
@@ -109,7 +109,6 @@ namespace Chem4Word.Helpers
 
         private static void SendValues(string module, string level, RegistryKey registryKey)
         {
-            var messageSize = 0;
             var names = registryKey.GetValueNames();
             var values = new List<string>();
 
@@ -125,26 +124,53 @@ namespace Chem4Word.Helpers
                 }
 
                 values.Add($"{timestamp} {message}");
-                messageSize += timestamp.Length + message.Length;
-                if (messageSize > 30000)
-                {
-                    // Send the first 30k
-                    SendData(module, level, values);
-                    values = new List<string>();
-                    messageSize = 0;
-                }
                 registryKey.DeleteValue(name);
             }
 
-            // Finally send the rest of the data
-            SendData(module, level, values);
+            // Group the messages by day
+            var groupedByDay = values
+                .GroupBy(g => g.Substring(0, 10))
+                .ToList();
+
+            var depth = 0;
+            foreach (var group in groupedByDay)
+            {
+                SendData(module, level, group.ToList(), ref depth);
+            }
         }
 
-        private static void SendData(string module, string level, List<string> values)
+        private static void SendData(string module, string level, List<string> values, ref int depth)
         {
             if (values.Any())
             {
-                Globals.Chem4WordV3.Telemetry.Write(module, level, string.Join(Environment.NewLine, values));
+                depth++;
+
+                var message = string.Join(Environment.NewLine, values);
+
+                if (values.Count == 1 || message.Length < 32_000)
+                {
+                    // Single value or message small enough to send
+                    Globals.Chem4WordV3.Telemetry.Write(module, level, message);
+                }
+                else
+                {
+                    // Ensure that the recursion doesn't get too deep
+                    if (depth < 4)
+                    {
+                        // Split it into smaller groups, by hour, minute, second
+                        var extra = depth * 3;
+                        var groups = values
+                                     .GroupBy(g => g.Substring(0, 10 + extra))
+                                     .ToList();
+
+                        foreach (var group in groups)
+                        {
+                            SendData(module, level, group.ToList(), ref depth);
+                        }
+                    }
+                }
+
+                depth--;
             }
         }
     }

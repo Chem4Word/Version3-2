@@ -28,6 +28,7 @@ namespace Chem4Word.Telemetry
 
         private static SystemHelper _helper;
         private static WmiHelper _wmiHelper;
+        private static bool _machineIdWritten;
 
         private readonly bool _permissionGranted;
         private readonly bool _isBeta;
@@ -71,10 +72,18 @@ namespace Chem4Word.Telemetry
             try
             {
                 string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.Now)}.log");
+                    $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.UtcNow)}.log");
                 using (StreamWriter w = File.AppendText(fileName))
                 {
-                    string logMessage = $"[{SafeDate.ToShortTime(DateTime.Now)}] {source} - {level} - {message}";
+                    if (!_machineIdWritten)
+                    {
+                        if (_helper != null && _helper.MachineId != Guid.Empty.ToString("D"))
+                        {
+                            w.WriteLine($"[{SafeDate.ToShortTime(DateTime.UtcNow)}] * InstallationId: {_helper.MachineId}");
+                            _machineIdWritten = true;
+                        }
+                    }
+                    string logMessage = $"[{SafeDate.ToShortTime(DateTime.UtcNow)}] {source} - {level} - {message}";
                     w.WriteLine(logMessage);
                 }
             }

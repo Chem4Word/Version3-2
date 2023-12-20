@@ -151,7 +151,7 @@ namespace Chem4Word.Model2.Converters.MDL
                     }
 
                     CtabProcessor pct = new CtabProcessor();
-                    pct.ExportToStream(atoms, bonds, writer);
+                    pct.ExportToStream(writer, atoms, bonds, model.CreatorGuid);
 
                     DataProcessor dp = new DataProcessor(_propertyTypes);
                     dp.ExportToStream(names, formulas, writer);

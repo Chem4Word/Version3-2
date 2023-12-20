@@ -57,6 +57,30 @@ namespace Chem4Word.Libraries.Database
                 _sdFileConverter = new SdFileConverter();
                 _cmlConverter = new CMLConverter();
 
+                if (File.Exists(libraryTarget))
+                {
+                    try
+                    {
+                        // Source https://www.connectionstrings.com/sqlite/
+                        var conn = new SQLiteConnection($"Data Source={libraryTarget};Synchronous=Full");
+                        conn.Open();
+
+                        // If we get here, the file we tried to open is a valid SQLite database
+                        conn.Close();
+                    }
+                    catch (Exception exception)
+                    {
+                        var message = exception.Message.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        var unique = string.Join(Environment.NewLine, message.Distinct().ToArray());
+                        _telemetry.Write(module, "Exception", $"Exception {unique}");
+                        var backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
+                        _telemetry.Write(module, "Information", "Backing up bad database file");
+                        File.Copy(libraryTarget, backup);
+                        File.Delete(libraryTarget);
+                    }
+                }
+
+                // Create seed database if required
                 if (!File.Exists(libraryTarget))
                 {
                     _telemetry.Write(module, "Information", "Copying initial Library database");
@@ -145,7 +169,7 @@ namespace Chem4Word.Libraries.Database
                 {
                     // Backup before patching
                     var database = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
-                    var backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.Now)} {Constants.LibraryFileName}");
+                    var backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
                     File.Copy(database, backup);
 
                     if (!ApplyPatches(conn, currentVersion))

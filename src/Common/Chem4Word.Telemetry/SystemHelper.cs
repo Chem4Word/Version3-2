@@ -98,7 +98,7 @@ namespace Chem4Word.Telemetry
             {
                 List<string> timings = new List<string>();
 
-                string message = $"SystemHelper.Initialise() started at {SafeDate.ToLongDate(DateTime.Now)}";
+                string message = $"SystemHelper.Initialise() started at {SafeDate.ToLongDate(DateTime.UtcNow)}";
                 timings.Add(message);
                 Debug.WriteLine(message);
 
@@ -214,7 +214,7 @@ namespace Chem4Word.Telemetry
                 // Dead Link [2022-12-08] _placesToTry.Add("https://api6.ipify.org/");
                 _placesToTry.Add("https://v4v6.ipv6-test.com/api/myip.php");
 
-                message = $"GetIpAddress started at {SafeDate.ToLongDate(DateTime.Now)}";
+                message = $"GetIpAddress started at {SafeDate.ToLongDate(DateTime.UtcNow)}";
                 StartUpTimings.Add(message);
                 Debug.WriteLine(message);
 
@@ -245,7 +245,7 @@ namespace Chem4Word.Telemetry
                 GetScreens();
 
 #if DEBUG
-                message = $"GetGitStatus started at {SafeDate.ToLongDate(DateTime.Now)}";
+                message = $"GetGitStatus started at {SafeDate.ToLongDate(DateTime.UtcNow)}";
                 StartUpTimings.Add(message);
                 Debug.WriteLine(message);
 
@@ -309,10 +309,6 @@ namespace Chem4Word.Telemetry
                             {
                                 result = thisTime;
                             }
-                            else
-                            {
-                                Debugger.Break();
-                            }
                         }
 
                         eventInstance = elReader.ReadEvent();
@@ -368,7 +364,7 @@ namespace Chem4Word.Telemetry
             }
             GitStatus = string.Join(Environment.NewLine, result.ToArray());
 
-            var message = $"GetGitStatus finished at {SafeDate.ToLongDate(DateTime.Now)}";
+            var message = $"GetGitStatus finished at {SafeDate.ToLongDate(DateTime.UtcNow)}";
             StartUpTimings.Add(message);
             Debug.WriteLine(message);
         }

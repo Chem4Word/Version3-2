@@ -89,7 +89,7 @@ namespace Chem4Word.WebServices
                     }
                     else
                     {
-                        // Signify now that we are not going to try these ones
+                        // Signify now that we are not going to try these
                         changed += UpsertProperty(molecule.Names, CMLConstants.ValueChem4WordInchiName, "Unable to calculate");
                         changed += UpsertProperty(molecule.Names, CMLConstants.ValueChem4WordInchiKeyName, "Unable to calculate");
                         changed += UpsertProperty(molecule.Names, CMLConstants.ValueChem4WordResolverIupacName, "Not requested");
@@ -109,6 +109,7 @@ namespace Chem4Word.WebServices
             if (tempModel.TotalAtomsCount > 0)
             {
                 var molConverter = new SdFileConverter();
+                tempModel.CreatorGuid = inputModel.CreatorGuid;
                 var sdfile = molConverter.Export(tempModel);
 
                 try

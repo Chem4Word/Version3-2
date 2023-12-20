@@ -76,13 +76,13 @@ namespace Chem4Word.Model2.Converters.MDL
             return result;
         }
 
-        public void ExportToStream(List<Atom> atoms, List<Bond> bonds, StreamWriter writer)
+        public void ExportToStream(StreamWriter writer, List<Atom> atoms, List<Bond> bonds, string creator)
         {
             atomByNumber = new Dictionary<int, Atom>();
             bondByNumber = new Dictionary<int, Bond>();
             numberByAtom = new Dictionary<Atom, int>();
 
-            WriteHeader(writer, atoms.Count, bonds.Count);
+            WriteHeader(writer, atoms.Count, bonds.Count, creator);
             WriteAtoms(writer, atoms);
             WriteBonds(writer, bonds);
             WriteProperties(writer, atoms);
@@ -360,16 +360,7 @@ namespace Chem4Word.Model2.Converters.MDL
 
         #region Exporting From Model
 
-        //private void WriteCtab(StreamWriter writer)
-        //{
-        //    WriteHeader(writer);
-        //    WriteAtoms(writer);
-        //    WriteBonds(writer);
-        //    WriteProperties(writer);
-        //    writer.WriteLine(MDLConstants.M_END);
-        //}
-
-        private void WriteHeader(StreamWriter writer, int atoms, int bonds)
+        private void WriteHeader(StreamWriter writer, int atoms, int bonds, string creator)
         {
             // Line 1 - Molecule Name (80)
             writer.WriteLine("");
@@ -386,10 +377,10 @@ namespace Chem4Word.Model2.Converters.MDL
             // Ss == scaling factors
             // E == Energy
             // R == registry number
-            writer.WriteLine($"  Chem4Wrd{SafeDate.ToMdlHeaderTime(DateTime.Now)}");
+            writer.WriteLine($"  Chem4Wrd{SafeDate.ToMdlHeaderTime(DateTime.UtcNow)}");
 
             // Line 3 - Comments (80)
-            writer.WriteLine("");
+            writer.WriteLine(Truncate80(creator));
 
             // Counts line
             // 01234567890123456789012345678901234567890123456789012345678901234567890123456789
@@ -404,6 +395,11 @@ namespace Chem4Word.Model2.Converters.MDL
             // v == version number
             writer.WriteLine($"{OutputMDLInt(atoms)}{OutputMDLInt(bonds)}  0     0  0              0 V2000");
         }
+
+        private string Truncate80(string info) =>
+            info.Length > 80
+                ? info.Substring(0, 80)
+                : info;
 
         private void WriteAtoms(StreamWriter writer, List<Atom> atoms)
         {
@@ -726,9 +722,15 @@ namespace Chem4Word.Model2.Converters.MDL
 
             StringBuilder output = new StringBuilder();
 
+            var lineFeedRequired = false;
+
             for (int i = 0; i < (float)count / 8f; i++)
             {
                 int thisLineCount = (count - i * 8) > 8 ? 8 : count - i * 8;
+                if (lineFeedRequired)
+                {
+                    output.AppendLine("");
+                }
                 output.Append(propertyType + "  " + thisLineCount);
                 for (int j = 0; j < thisLineCount; j++)
                 {
@@ -736,6 +738,8 @@ namespace Chem4Word.Model2.Converters.MDL
                     string value = OutputMDLInt(values[j + i * 8]);
                     output.Append(" " + atomNumber + " " + value);
                 }
+
+                lineFeedRequired = true;
             }
 
             return output.ToString().TrimEnd();

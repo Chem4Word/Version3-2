@@ -539,6 +539,7 @@ namespace Chem4Word.Model2
         private readonly Dictionary<Guid, Annotation> _annotations;
         public ReadOnlyDictionary<Guid, Annotation> Annotations;
         public string CustomXmlPartGuid { get; set; }
+        public string CreatorGuid { get; set; }
 
         public List<string> GeneralErrors { get; set; }
 

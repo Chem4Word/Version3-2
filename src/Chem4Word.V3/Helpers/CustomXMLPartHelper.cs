@@ -145,7 +145,7 @@ namespace Chem4Word.Helpers
                         try
                         {
                             var guid = Guid.NewGuid().ToString("N");
-                            var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+                            var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
 
                             var fileName = Path.Combine(backupFolder, $"Chem4Word-Orphaned-Structure-{timestamp}-{guid}.cml");
                             File.WriteAllText(fileName, XmlHelper.AddHeader(customXmlPart.XML));

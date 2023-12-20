@@ -158,7 +158,7 @@ namespace Chem4Word.Helpers
             {
                 string extension = document.FullName.Split('.').Last();
                 string guid = Guid.NewGuid().ToString("N");
-                string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+                string timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
                 string destination = Path.Combine(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath, "Backups", $"Chem4Word-{timestamp}-{guid}.{extension}");
                 File.Copy(document.FullName, destination);
             }

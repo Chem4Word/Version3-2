@@ -3030,7 +3030,7 @@ namespace Chem4Word.ACME
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                DebugHelper.WriteLine($"Started at {SafeDate.ToShortTime(DateTime.Now)}");
+                DebugHelper.WriteLine($"Started at {SafeDate.ToShortTime(DateTime.UtcNow)}");
 
                 //take a snapshot of the current selection
                 var currentSelection = SelectedItems.ToList();
@@ -3170,7 +3170,7 @@ namespace Chem4Word.ACME
                 }
 
                 DebugHelper.WriteLine($"Timing: {sw.ElapsedMilliseconds}ms");
-                DebugHelper.WriteLine($"Finished at {DateTime.Now}");
+                DebugHelper.WriteLine($"Finished at {DateTime.UtcNow}");
             }
             catch (Exception exception)
             {
