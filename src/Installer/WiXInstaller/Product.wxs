@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <!-- For automatic upgrade to work only first three parts of version number are used -->
-  <Product Id="*" Name="Chemistry Add-In for Microsoft Word 2022 Release 9" Manufacturer="Chem4Word" Version="3.2.14.8755" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033">
+  <Product Id="*" Name="Chemistry Add-In for Microsoft Word 2022 Release 10" Manufacturer="Chem4Word" Version="3.2.15.8756" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of Chem4Word is already installed." />
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
@@ -233,10 +233,13 @@
         <File Id="Microsoft.VisualStudio.Tools.Applications.Runtime.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.VisualStudio.Tools.Applications.Runtime.dll" />
       </Component>
       <!-- OpenXML SDK -->
-      <Component Id="OpenXML.SDK">
+      <Component Id="OpenXml.SDK">
         <File Id="DocumentFormat.OpenXml.dll" Source="$(var.Chem4Word.V3.TargetDir)DocumentFormat.OpenXml.dll" />
       </Component>
-      <Component Id="OpenXML.SDK.Dependancy">
+      <Component Id="OpenXml.FrameWork">
+        <File Id="DocumentFormat.OpenXml.Framework.dll" Source="$(var.Chem4Word.V3.TargetDir)DocumentFormat.OpenXml.Framework.dll" />
+      </Component>
+      <Component Id="OpenXml.SDK.Dependency">
         <File Id="WindowsBase.dll" Source="$(var.Chem4Word.V3.TargetDir)WindowsBase.dll" />
       </Component>
       <!-- Database -->
