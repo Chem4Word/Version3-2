@@ -486,12 +486,10 @@ namespace Chem4Word.Model2.Converters.CML
         private XElement GetXElement(Bond bond, CmlFormat format = CmlFormat.Default)
         {
             var order = bond.Order;
-            if (format != CmlFormat.Default)
+            if (format != CmlFormat.Default
+                && bond.OrderValue != null)
             {
-                if (bond.OrderValue != null)
-                {
-                    order = bond.OrderValue.Value.ToString(CultureInfo.InvariantCulture);
-                }
+                order = bond.OrderValue.Value.ToString(CultureInfo.InvariantCulture);
             }
 
             var result = new XElement(CMLNamespaces.cml + CMLConstants.TagBond,

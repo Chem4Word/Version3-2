@@ -3,20 +3,33 @@
 <ChangeLog>
     <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
     <Version>
-        <Number>3.2.14 Release 9</Number>
+        <Number>3.2.16 Release 11</Number>
         <IsBeta>false</IsBeta>
-        <Released>21-Dec-2023</Released>
+        <Released>01-Jan-2024</Released>
+        <Changes>
+            <Change>...</Change>
+            <Change>...</Change>
+            <Change>...</Change>
+            <Change>...</Change>
+            <Change>...</Change>
+            <Change>...</Change>
+            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
+            <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
+            <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
+        </Changes>
+        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.16.Release.11.msi</Url>
+    </Version>
+    <Version>
+        <Number>3.2.15 Release 10</Number>
+        <IsBeta>false</IsBeta>
+        <Released>22-Dec-2023</Released>
         <Changes>
             <Change>Internal: Updated NuGet packages</Change>
             <Change>BugFix: Backup and replace invalid database file</Change>
             <Change>BugFix: Correct sdf export of atom properties</Change>
             <Change>BugFix: Handle V3.3 structure in library</Change>
             <Change>Information: Add Anti-Virus false positive warning</Change>
-            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
-            <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
-            <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
         </Changes>
-        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.14.Release.9.msi</Url>
     </Version>
     <Version>
         <Number>3.2.12 Release 8</Number>
