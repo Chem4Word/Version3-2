@@ -396,10 +396,19 @@ namespace Chem4Word.Model2.Converters.MDL
             writer.WriteLine($"{OutputMDLInt(atoms)}{OutputMDLInt(bonds)}  0     0  0              0 V2000");
         }
 
-        private string Truncate80(string info) =>
-            info.Length > 80
-                ? info.Substring(0, 80)
-                : info;
+        private string Truncate80(string info)
+        {
+            string result = string.Empty;
+
+            if (!string.IsNullOrEmpty(info))
+            {
+                result = info.Length > 80
+                    ? info.Substring(0, 80)
+                    : info;
+            }
+
+            return result;
+        }
 
         private void WriteAtoms(StreamWriter writer, List<Atom> atoms)
         {
