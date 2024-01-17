@@ -7,6 +7,7 @@ $source = "$($pwd)\Chem4Word-Setup.3.1.16.Release.6.msi";
 $targets = @();
 
 $targets += "Chem4Word.Setup.2.0.1.0.Beta.2.msi"
+$targets += "Chem4Word2.0.1.0 Beta 4 Setup.msi"
 $targets += "Chem4Word.Setup.2.0.1.0.Beta.5.msi"
 $targets += "Chem4Word.Setup.2.0.1.0.Beta.6.msi"
 $targets += "Chem4Word.Setup.2.0.1.0.Beta.8.msi"

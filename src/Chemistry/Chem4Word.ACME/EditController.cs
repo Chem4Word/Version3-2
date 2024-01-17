@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2023, The .NET Foundation.
+//  Copyright (c) 2024, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -962,7 +962,9 @@ namespace Chem4Word.ACME
                 }
                 else
                 {
-                    WriteTelemetry(module, "Exception", "_selectedBondOptionId is {null}");
+                    WriteTelemetry(module, "Warning", "_selectedBondOptionId is {null}");
+                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    Debugger.Break();
                 }
             }
             catch (Exception exception)
@@ -1516,7 +1518,7 @@ namespace Chem4Word.ACME
 
         public void AddNewBond(Atom a, Atom b, Molecule mol, string order = null, BondStereo? stereo = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var startAtomInfo = "{null}";
@@ -1538,6 +1540,7 @@ namespace Chem4Word.ACME
                         startAtomInfo = $"{a.InternalId} not found";
                     }
                 }
+
                 var endAtomInfo = "{null}";
                 if (b != null)
                 {
@@ -1561,8 +1564,26 @@ namespace Chem4Word.ACME
                 var orderInfo = order ?? CurrentBondOrder;
                 WriteTelemetry(module, "Debug", $"StartAtom: {startAtomInfo}; EndAtom: {endAtomInfo}; BondOrder; {orderInfo}");
 
-                // Only allow a bond to be created if both atoms are children of the molecule passed in
-                if (a.Parent == mol && b.Parent == mol)
+                // Bond can be created if both atoms are children of the molecule passed in
+                var canAdd = a.Parent == mol && b.Parent == mol;
+                if (!canAdd)
+                {
+                    WriteTelemetry(module, "Warning", $"Not adding bond to molecule because atoms don't have same parent molecule{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    Debugger.Break();
+                }
+
+                // Bond can be created if it's end atoms are different
+                canAdd = a.InternalId != b.InternalId;
+                if (!canAdd)
+                {
+                    WriteTelemetry(module, "Warning", $"Not adding bond to molecule because StartAtom == EndAtom{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    Debugger.Break();
+                }
+
+                // If we get here and canAdd is true we can add this bond
+                if (canAdd)
                 {
                     //keep a handle on some current properties
                     int theoreticalRings = mol.TheoreticalRings;
@@ -1644,6 +1665,8 @@ namespace Chem4Word.ACME
                 else
                 {
                     WriteTelemetry(module, "Warning", $"Molecule: {mol.Path}{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    Debugger.Break();
                 }
             }
             catch (Exception exception)
@@ -2339,6 +2362,8 @@ namespace Chem4Word.ACME
                                                   OrderSingle, BondStereo.None);
                         if (insertedAtom == null)
                         {
+                            WriteTelemetry(module, "Warning", "Inserted Atom is null");
+                            WriteTelemetry(module, "StackTrace", Environment.StackTrace);
                             Debugger.Break();
                         }
 
@@ -2458,6 +2483,8 @@ namespace Chem4Word.ACME
                                             stereo: BondStereo.None);
                     if (lastAtom == null)
                     {
+                        WriteTelemetry(module, "Warning", "lastAtom is null");
+                        WriteTelemetry(module, "StackTrace", Environment.StackTrace);
                         Debugger.Break();
                     }
                 }
@@ -2468,6 +2495,8 @@ namespace Chem4Word.ACME
                                             stereo: BondStereo.None);
                     if (lastAtom == null)
                     {
+                        WriteTelemetry(module, "Warning", "lastAtom is null");
+                        WriteTelemetry(module, "StackTrace", Environment.StackTrace);
                         Debugger.Break();
                     }
                     if (placement != placements.Last())
@@ -3285,6 +3314,7 @@ namespace Chem4Word.ACME
                         startAtomInfo = $"{a.SymbolText} @ {PointHelper.AsString(a.Position)}";
                     }
                 }
+
                 var endAtomInfo = "{null}";
                 if (b != null)
                 {
@@ -4535,8 +4565,6 @@ namespace Chem4Word.ACME
 
         private void WriteTelemetryException(string source, Exception exception)
         {
-            Debugger.Break();
-
             if (Telemetry != null)
             {
                 Telemetry.Write(source, "Exception", exception.Message);
@@ -4546,6 +4574,8 @@ namespace Chem4Word.ACME
             {
                 RegistryHelper.StoreException(source, exception);
             }
+
+            Debugger.Break();
         }
 
         private void CheckModelIntegrity(string module)
@@ -5016,13 +5046,22 @@ namespace Chem4Word.ACME
         // aligns a set of molecules given a set of adjusting transforms
         private void AlignMolecules(List<Molecule> molsToAlign, List<Transform> adjustments)
         {
-            //first check to see whether or not we have an equal number of adjustments and molecules
-            Debug.Assert(molsToAlign.Count == adjustments.Count);
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            UndoManager.BeginUndoBlock();
-            MultiTransformMolecules(adjustments, molsToAlign);
-            AddObjectListToSelection(molsToAlign.Cast<BaseObject>().ToList());
-            UndoManager.EndUndoBlock();
+            //first check to see whether or not we have an equal number of adjustments and molecules
+            if (molsToAlign.Count == adjustments.Count)
+            {
+                UndoManager.BeginUndoBlock();
+                MultiTransformMolecules(adjustments, molsToAlign);
+                AddObjectListToSelection(molsToAlign.Cast<BaseObject>().ToList());
+                UndoManager.EndUndoBlock();
+            }
+            else
+            {
+                WriteTelemetry(module, "Warning", "Number of adjustments and molecules are not equal");
+                WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                Debugger.Break();
+            }
         }
 
         //edits the current reagent block
@@ -5121,8 +5160,8 @@ namespace Chem4Word.ACME
             {
                 oldText = reaction.ConditionsText?.Trim() ?? "";
             }
-            //only commit the text if it's been chnaged.
 
+            //only commit the text if it's been changed.
             string result = editor.GetDocument();
             if (oldText != result)
             {
@@ -5230,7 +5269,7 @@ namespace Chem4Word.ACME
             if ((SelectionType & SelectionTypeCode.Molecule) == SelectionTypeCode.Molecule
                 && (SelectionType & SelectionTypeCode.Reaction) == SelectionTypeCode.Reaction)
             {
-                return SelectedItems.OfType<Reaction>().ToList().Count == 1 && (ReactantsInSelection.Any() & ProductsInSelection.Any());
+                return SelectedItems.OfType<Reaction>().ToList().Count == 1 && (ReactantsInSelection.Any() && ProductsInSelection.Any());
             }
             return false;
         }

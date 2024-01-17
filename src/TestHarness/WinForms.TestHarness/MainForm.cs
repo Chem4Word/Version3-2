@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2023, The .NET Foundation.
+//  Copyright (c) 2024, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -10,6 +10,7 @@ using Chem4Word.Core.Helpers;
 using Chem4Word.Editor.ACME;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
+using Chem4Word.Model2.Converters.JSON;
 using Chem4Word.Model2.Converters.MDL;
 using Chem4Word.Model2.Helpers;
 using Chem4Word.Renderer.OoXmlV4;
@@ -77,9 +78,10 @@ namespace WinForms.TestHarness
                 Model model = null;
 
                 StringBuilder sb = new StringBuilder();
-                sb.Append("All molecule files (*.mol, *.sdf, *.cml, *.xml)|*.mol;*.sdf;*.cml;*.xml");
+                sb.Append("All molecule files (*.cml, *.xml, *.mol, *.sdf, *.json)|*.cml;*.xml;*.mol;*.sdf;*.json");
                 sb.Append("|CML molecule files (*.cml, *.xml)|*.cml;*.xml");
                 sb.Append("|MDL molecule files (*.mol, *.sdf)|*.mol;*.sdf");
+                sb.Append("|ChemDoodle Web json files (*.json)|*.json");
 
                 openFileDialog1.Title = "Open Structure";
                 openFileDialog1.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
@@ -121,11 +123,26 @@ namespace WinForms.TestHarness
                             stopwatch.Stop();
                             elapsed1 = stopwatch.Elapsed;
                             break;
+
+                        case ".json":
+                            stopwatch = new Stopwatch();
+                            stopwatch.Start();
+                            var jsonConvertor = new JSONConverter();
+                            model = jsonConvertor.Import(mol);
+                            stopwatch.Stop();
+                            elapsed1 = stopwatch.Elapsed;
+                            break;
                     }
 
                     if (model != null)
                     {
-                        if (model.GeneralErrors.Count == 0 && model.AllErrors.Count == 0 && model.AllWarnings.Count == 0)
+                        if (model.AllWarnings.Count > 0)
+                        {
+                            _telemetry.Write(module, "Warnings", string.Join(Environment.NewLine, model.AllWarnings));
+                            MessageBox.Show(string.Join(Environment.NewLine, model.AllWarnings), "Model has warnings!");
+                        }
+
+                        if (model.AllErrors.Count == 0 && model.GeneralErrors.Count == 0)
                         {
                             var originalBondLength = model.MeanBondLength;
                             model.EnsureBondLength(20, false);
@@ -159,9 +176,9 @@ namespace WinForms.TestHarness
                         {
                             var errors = model.GeneralErrors;
                             errors.AddRange(model.AllErrors);
-                            errors.AddRange(model.AllWarnings);
 
-                            MessageBox.Show(string.Join(Environment.NewLine, errors), "Model has errors or warnings!");
+                            _telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, errors));
+                            MessageBox.Show(string.Join(Environment.NewLine, errors), "Model has Errors!");
                         }
                     }
                 }
@@ -378,19 +395,19 @@ namespace WinForms.TestHarness
 
             if (model != null)
             {
-                if (model.AllErrors.Any() || model.AllWarnings.Any())
+                if (model.AllErrors.Any() || model.GeneralErrors.Any())
                 {
                     List<string> lines = new List<string>();
+
+                    if (model.GeneralErrors.Any())
+                    {
+                        lines.Add("General Error(s)");
+                        lines.AddRange(model.GeneralErrors);
+                    }
                     if (model.AllErrors.Any())
                     {
-                        lines.Add("Error(s)");
+                        lines.Add("All Error(s)");
                         lines.AddRange(model.AllErrors);
-                    }
-
-                    if (model.AllWarnings.Any())
-                    {
-                        lines.Add("Warnings(s)");
-                        lines.AddRange(model.AllWarnings);
                     }
 
                     MessageBox.Show(string.Join(Environment.NewLine, lines));
@@ -595,9 +612,14 @@ namespace WinForms.TestHarness
                 Model m = cmlConverter.Import(_lastCml);
                 m.CustomXmlPartGuid = "";
 
-                string filter = "CML molecule files (*.cml, *.xml)|*.cml;*.xml|MDL molecule files (*.mol, *.sdf)|*.mol;*.sdf";
-                using (SaveFileDialog sfd = new SaveFileDialog { Filter = filter })
+                StringBuilder sb = new StringBuilder();
+                sb.Append("CML molecule files (*.cml, *.xml)|*.cml;*.xml");
+                sb.Append("|MDL molecule files (*.mol, *.sdf)|*.mol;*.sdf");
+                sb.Append("|ChemDoodle Web json files (*.json)|*.json");
+
+                using (SaveFileDialog sfd = new SaveFileDialog { Filter = sb.ToString() })
                 {
+                    sfd.AddExtension = true;
                     DialogResult dr = sfd.ShowDialog();
                     if (dr == DialogResult.OK)
                     {
@@ -621,6 +643,11 @@ namespace WinForms.TestHarness
                                 _telemetry.Write(module, "Information", $"Structure rescaled from {before.ToString("#0.00")} to {after.ToString("#0.00")}");
                                 SdFileConverter converter = new SdFileConverter();
                                 File.WriteAllText(sfd.FileName, converter.Export(m));
+                                break;
+
+                            case ".json":
+                                var jsonConverter = new JSONConverter();
+                                File.WriteAllText(sfd.FileName, jsonConverter.Export(m));
                                 break;
                         }
                     }

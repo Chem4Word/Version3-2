@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2023, The .NET Foundation.
+//  Copyright (c) 2024, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -296,15 +296,22 @@ namespace Chem4Word.Model2.Converters.JSON
                     {
                         var sa = atoms[b.b.Value];
                         var ea = atoms[b.e.Value];
-                        Bond newBond = new Bond()
+                        if (!sa.Equals(ea))
                         {
-                            StartAtomInternalId = sa,
-                            EndAtomInternalId = ea,
-                            Stereo = s,
-                            Order = o
-                        };
-                        newMol.AddBond(newBond);
-                        newBond.Parent = newMol;
+                            Bond newBond = new Bond()
+                                           {
+                                               StartAtomInternalId = sa,
+                                               EndAtomInternalId = ea,
+                                               Stereo = s,
+                                               Order = o
+                                           };
+                            newMol.AddBond(newBond);
+                            newBond.Parent = newMol;
+                        }
+                        else
+                        {
+                            newMol.Warnings.Add($"Bond {b.i} is skipped as it's invalid");
+                        }
                     }
                 }
             }

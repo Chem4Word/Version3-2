@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2023, The .NET Foundation.
+//  Copyright (c) 2024, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -838,8 +838,17 @@ namespace Chem4Word.Model2.Converters.CML
                     molecule.Errors.Add($"Duplicate bond {newBond.Id}: atoms [{bondElement.Attribute("atomRefs2").Value}] are already connected by a bond.");
                 }
 
-                molecule.AddBond(newBond);
-                newBond.Parent = molecule;
+                // Check for bond with same start and end atom
+                var invalid = newBond.StartAtomInternalId == newBond.EndAtomInternalId;
+                if (!invalid)
+                {
+                    molecule.AddBond(newBond);
+                    newBond.Parent = molecule;
+                }
+                else
+                {
+                    molecule.Warnings.Add($"Bond {newBond.Id} skipped as it's invalid");
+                }
             }
 
             foreach (XElement formulaElement in formulaElements)

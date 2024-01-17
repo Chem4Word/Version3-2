@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2023, The .NET Foundation.
+//  Copyright (c) 2024, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -348,10 +348,20 @@ namespace Chem4Word.Model2.Converters.MDL
                         thisBond.Stereo = BondStereoFromMolfile(ParseInteger(stereo));
                     }
 
-                    // add bond to molecule
-                    _molecule.AddBond(thisBond);
-                    thisBond.Parent = _molecule;
-                    bondByNumber.Add(idx, thisBond);
+                    // Check for bond with same start and end atom
+                    var invalid = thisBond.StartAtomInternalId == thisBond.EndAtomInternalId;
+                    if (!invalid)
+                    {
+                        // add bond to molecule
+                        _molecule.AddBond(thisBond);
+                        thisBond.Parent = _molecule;
+                        bondByNumber.Add(idx, thisBond);
+                    }
+                    else
+                    {
+                        _molecule.Warnings.Add("Bond is skipped as it's invalid");
+                        _molecule.Warnings.Add($"{line}");
+                    }
                 }
             }
         }
