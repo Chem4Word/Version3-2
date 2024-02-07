@@ -38,13 +38,13 @@ namespace Chem4Word.Library
             _telemetry = telemetry;
             _libraryOptions = libraryOptions;
 
-            ChemistryItems = new ObservableCollection<ACME.Models.ChemistryObject>();
+            ChemistryItems = new ObservableCollection<ChemistryObject>();
             ChemistryItems.CollectionChanged += ChemistryItems_CollectionChanged;
 
             LoadChemistryItems();
         }
 
-        private void LoadChemistryItems()
+        public void LoadChemistryItems()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -57,7 +57,7 @@ namespace Chem4Word.Library
 
                 foreach (var chemistryDto in dto)
                 {
-                    var obj = new ACME.Models.ChemistryObject
+                    var obj = new ChemistryObject
                     {
                         Id = chemistryDto.Id,
                         Cml = chemistryDto.Cml,
@@ -118,7 +118,7 @@ namespace Chem4Word.Library
                 if (!_initializing)
                 {
                     var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
-                    foreach (ACME.Models.ChemistryObject chemistry in eOldItems)
+                    foreach (ChemistryObject chemistry in eOldItems)
                     {
                         lib.DeleteChemistry(chemistry.Id);
                     }
@@ -141,7 +141,7 @@ namespace Chem4Word.Library
                 if (!_initializing)
                 {
                     var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
-                    foreach (ACME.Models.ChemistryObject chemistry in eNewItems)
+                    foreach (ChemistryObject chemistry in eNewItems)
                     {
                         var cmlConverter = new CMLConverter();
                         chemistry.Id = lib.AddChemistry(cmlConverter.Import(chemistry.Cml), chemistry.Name, chemistry.Formula);

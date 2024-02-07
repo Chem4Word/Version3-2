@@ -7,6 +7,7 @@
 
 using Chem4Word.ACME;
 using Chem4Word.ACME.Models;
+using Chem4Word.Core;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Helpers;
@@ -14,11 +15,15 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace Chem4Word.Library
 {
@@ -75,6 +80,19 @@ namespace Chem4Word.Library
                                 {
                                     case "Library|InsertCopy":
                                         TaskPaneHelper.InsertChemistry(true, Globals.Chem4WordV3.Application, clicked.Cml, true);
+                                        break;
+
+                                    case "Library|DeleteStructure":
+                                        StringBuilder sb = new StringBuilder();
+                                        sb.AppendLine("Do you wish to delete the chemistry?");
+                                        sb.AppendLine($"  {clicked.Name}");
+                                        DialogResult dr = UserInteractions.AskUserYesNo(sb.ToString());
+                                        if (dr == DialogResult.Yes)
+                                        {
+                                            var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
+                                            lib.DeleteChemistry(clicked.Id);
+                                            controller.LoadChemistryItems();
+                                        }
                                         break;
                                 }
                             }

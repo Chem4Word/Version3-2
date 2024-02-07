@@ -262,16 +262,31 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <ItemsControl
+                    <Button
                         Grid.Column="0"
-                        MinHeight="15"
-                        Foreground="{StaticResource Chem4WordBlue}"
-                        ItemsSource="{Binding Path=Tags}"
-                        Style="{StaticResource TagListStyle}">
-                        <i:Interaction.Behaviors>
-                            <behaviors:IgnoreMouseWheelBehavior />
-                        </i:Interaction.Behaviors>
-                    </ItemsControl>
+                        Width="32"
+                        Height="32"
+                        Click="OnItemButtonClick"
+                        HorizontalAlignment="Left"
+                        Style="{StaticResource NavButtonStyle}"
+                        Tag="Library|DeleteStructure">
+                        <Button.ToolTip>Delete the chemistry from your library</Button.ToolTip>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas
+                                Width="32"
+                                Height="32"
+                                ClipToBounds="True">
+                                <Path
+                                    Canvas.Left="4"
+                                    Canvas.Top="4"
+                                    Width="24"
+                                    Height="24"
+                                    Fill="{StaticResource Chem4WordBlue}"
+                                    Stretch="Fill"
+                                    Style="{StaticResource DelButtonPath}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
                     <Button
                         Grid.Column="1"
                         Width="32"

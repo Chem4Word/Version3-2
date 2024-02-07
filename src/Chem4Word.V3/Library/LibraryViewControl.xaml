@@ -60,16 +60,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid>
-            <ComboBox FontSize="16" SelectedIndex="0">
-                <ComboBoxItem>Library.db</ComboBoxItem>
-            </ComboBox>
-        </Grid>
         <GroupBox
-            Grid.Row="1"
+            Grid.Row="0"
             Background="White"
             BorderBrush="{StaticResource Chem4WordBlue}"
             BorderThickness="2"
@@ -149,7 +143,7 @@
                 </Button>
             </Grid>
         </GroupBox>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <ListBox
                 x:Name="LibraryList"
                 HorizontalAlignment="Stretch"
