@@ -500,7 +500,7 @@ namespace Chem4Word
 
                     // ... as we are seeing some errors here ?
                     // Re-Initialise Telemetry with granted permissions
-                    Telemetry = new TelemetryWriter(IsBeta || SystemOptions.TelemetryEnabled, IsBeta, Helper);
+                    Telemetry = new TelemetryWriter(IsBeta || Debugger.IsAttached || SystemOptions.TelemetryEnabled, IsBeta, Helper);
 
                     try
                     {

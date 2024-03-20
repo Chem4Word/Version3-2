@@ -218,6 +218,18 @@ namespace Chem4Word.Shared
                 {
                     foreach (var p2 in products)
                     {
+                        if (p2.Contains("2024"))
+                        {
+                            versionNumber = "2024";
+                            break;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(versionNumber))
+                {
+                    foreach (var p2 in products)
+                    {
                         if (p2.Contains("2021"))
                         {
                             versionNumber = "2021";

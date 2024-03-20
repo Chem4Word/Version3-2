@@ -19,7 +19,7 @@ namespace Chem4Word.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -172,8 +172,6 @@ namespace Chem4Word.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;cml:cml convention=&quot;conventions:molecular&quot; xmlns:conventions=&quot;http://www.xml-cml.org/convention/&quot; xmlns:cml=&quot;http://www.xml-cml.org/schema&quot; xmlns:cmlDict=&quot;http://www.xml-cml.org/dictionary/cml/&quot; xmlns:nameDict=&quot;http://www.xml-cml.org/dictionary/cml/name/&quot;&gt;
-        ///  &lt;cml:molecule id=&quot;m1&quot;&gt;
-        ///  &lt;/cml:molecule&gt;
         ///&lt;/cml:cml&gt;.
         /// </summary>
         internal static string EmptyStructure_cml {
@@ -238,46 +236,6 @@ namespace Chem4Word.Properties {
         internal static System.Drawing.Bitmap Find {
             get {
                 object obj = ResourceManager.GetObject("Find", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Gallery_Delete {
-            get {
-                object obj = ResourceManager.GetObject("Gallery_Delete", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Gallery_Find {
-            get {
-                object obj = ResourceManager.GetObject("Gallery_Find", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Gallery_Save {
-            get {
-                object obj = ResourceManager.GetObject("Gallery_Save", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Gallery_Toggle {
-            get {
-                object obj = ResourceManager.GetObject("Gallery_Toggle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -368,6 +326,46 @@ namespace Chem4Word.Properties {
         internal static System.Drawing.Bitmap LabelValid {
             get {
                 object obj = ResourceManager.GetObject("LabelValid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Library_Delete {
+            get {
+                object obj = ResourceManager.GetObject("Library_Delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Library_Find {
+            get {
+                object obj = ResourceManager.GetObject("Library_Find", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Library_Save {
+            get {
+                object obj = ResourceManager.GetObject("Library_Save", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Library_Toggle {
+            get {
+                object obj = ResourceManager.GetObject("Library_Toggle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

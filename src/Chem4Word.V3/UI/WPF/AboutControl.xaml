@@ -58,7 +58,7 @@
                 TextWrapping="Wrap" />
             <DockPanel Margin="5" LastChildFill="True">
                 <TextBlock>
-                    <Hyperlink Click="OnChemDoodleClick" TextDecorations="None">
+                    <Hyperlink Click="OnClick_ChemDoodle" TextDecorations="None">
                         <Image
                             Height="30"
                             HorizontalAlignment="Right"
@@ -75,19 +75,19 @@
                     TextWrapping="Wrap" />
             </DockPanel>
             <TextBlock Margin="5,0,0,0">
-                <Hyperlink Click="OnTeamsiteLinkClicked">Visit the Project web site</Hyperlink>
+                <Hyperlink Click="OnClick_MainWebsite">Visit the Project web site</Hyperlink>
             </TextBlock>
             <TextBlock Margin="5,0,0,0">
-                <Hyperlink Click="OnSourceCodeLinkClicked">Visit our GitHub repository to view the source code</Hyperlink>
+                <Hyperlink Click="OnClick_SourceCode">Visit our GitHub repository to view the source code</Hyperlink>
             </TextBlock>
             <TextBlock Margin="5,0,0,0">
-                <Hyperlink Click="OnYouTubeLinkClicked">See our tutorials on YouTube</Hyperlink>
+                <Hyperlink Click="OnClick_YouTube">See our tutorials on YouTube</Hyperlink>
             </TextBlock>
             <TextBlock Margin="5,0,0,0">
-                <Hyperlink Click="OnSponsorLinkClicked">Visit our page on our sponsor's web site (The .NET Foundation)</Hyperlink>
+                <Hyperlink Click="OnClick_Sponsor">Visit our page on our sponsor's web site (The .NET Foundation)</Hyperlink>
             </TextBlock>
             <TextBlock Margin="5,0,0,0">
-                <Hyperlink Click="OnCambridgeLinkClicked">Visit the University of Cambridge Chemistry Department</Hyperlink>
+                <Hyperlink Click="OnClick_Cambridge">Visit the University of Cambridge Chemistry Department</Hyperlink>
             </TextBlock>
             <TextBlock
                 Margin="5"
@@ -96,7 +96,7 @@
                 TextAlignment="Justify"
                 TextWrapping="Wrap" />
             <TextBlock Margin="5,0,0,0">
-                <Hyperlink Click="OnFacebookLinkClicked">Join our Facebook Group</Hyperlink>
+                <Hyperlink Click="OnClick_Facebook">Join our Facebook Group</Hyperlink>
             </TextBlock>
         </StackPanel>
     </Grid>

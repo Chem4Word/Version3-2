@@ -175,7 +175,11 @@ namespace Chem4Word
                             }
                             else
                             {
-                                var options = JsonConvert.DeserializeObject<Chem4WordOptions>(fileContents);
+                                var settings = new JsonSerializerSettings
+                                               {
+                                                   CheckAdditionalContent = false
+                                               };
+                                var options = JsonConvert.DeserializeObject<Chem4WordOptions>(fileContents, settings);
                                 SetValuesFromCopy(options);
 
                                 var temp = JsonConvert.SerializeObject(options, Formatting.Indented);

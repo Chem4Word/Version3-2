@@ -364,11 +364,6 @@
     <Compile Include="Library\LibraryController.cs" />
     <Compile Include="Navigator\NavigatorSupport.cs" />
     <Compile Include="Navigator\NavigatorController.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\CustomXMLPartHelper.cs" />
     <Compile Include="Helpers\C4wAddInInfo.cs" />
     <Compile Include="Helpers\Upgrader.cs" />
@@ -382,6 +377,11 @@
       <DependentUpon>NavigatorViewControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Ribbon\Chem4WordRibbon.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -472,10 +472,10 @@
     <Content Include="Resources\Button Images\Office-2016\Edit-Labels.png" />
     <EmbeddedResource Include="Resources\Button Images\Office-2016\File-Open.png" />
     <Content Include="Resources\Button Images\Office-2016\File-Save.png" />
-    <EmbeddedResource Include="Resources\Button Images\Office-2016\Gallery-Delete.png" />
-    <Content Include="Resources\Button Images\Office-2016\Gallery-Find.png" />
-    <EmbeddedResource Include="Resources\Button Images\Office-2016\Gallery-Save.png" />
-    <EmbeddedResource Include="Resources\Button Images\Office-2016\Gallery-Toggle.png" />
+    <EmbeddedResource Include="Resources\Button Images\Office-2016\Library-Delete.png" />
+    <Content Include="Resources\Button Images\Office-2016\Library-Find.png" />
+    <EmbeddedResource Include="Resources\Button Images\Office-2016\Library-Save.png" />
+    <EmbeddedResource Include="Resources\Button Images\Office-2016\Library-Toggle.png" />
     <Content Include="Resources\Button Images\Office-2016\Navigator-Toggle.png" />
     <Content Include="Resources\Button Images\Office-2016\Seperate-Molecules.png" />
     <Content Include="Resources\Button Images\Office-2016\WebSearch.png" />

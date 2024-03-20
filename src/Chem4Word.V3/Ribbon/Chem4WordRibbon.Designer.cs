@@ -131,7 +131,7 @@ namespace Chem4Word
             // 
             this.ShowLibrary.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
             this.ShowLibrary.Enabled = false;
-            this.ShowLibrary.Image = global::Chem4Word.Properties.Resources.Gallery_Find;
+            this.ShowLibrary.Image = global::Chem4Word.Properties.Resources.Library_Find;
             this.ShowLibrary.Label = "Open";
             this.ShowLibrary.Name = "ShowLibrary";
             this.ShowLibrary.ScreenTip = "Import a structure from the Library";
@@ -142,7 +142,7 @@ namespace Chem4Word
             // 
             this.SaveToLibrary.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
             this.SaveToLibrary.Enabled = false;
-            this.SaveToLibrary.Image = global::Chem4Word.Properties.Resources.Gallery_Save;
+            this.SaveToLibrary.Image = global::Chem4Word.Properties.Resources.Library_Save;
             this.SaveToLibrary.Label = "Add";
             this.SaveToLibrary.Name = "SaveToLibrary";
             this.SaveToLibrary.ScreenTip = "Add the selected structure to the Library";

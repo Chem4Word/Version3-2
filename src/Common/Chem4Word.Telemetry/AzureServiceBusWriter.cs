@@ -55,8 +55,9 @@ namespace Chem4Word.Telemetry
                     _client = new ServiceBusClient($"{_settings.ServiceBusEndPoint};{_settings.ServiceBusToken}", clientOptions);
                     _sender = _client.CreateSender(_settings.ServiceBusQueue);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Debug.WriteLine(ex.Message);
                     Debugger.Break();
                     // Do nothing
                 }
@@ -152,8 +153,8 @@ namespace Chem4Word.Telemetry
             }
             catch (Exception exception)
             {
-                Debugger.Break();
                 Debug.WriteLine($"Exception in WriteMessage: {exception.Message}");
+                Debugger.Break();
 
                 try
                 {

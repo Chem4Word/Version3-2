@@ -5,17 +5,15 @@
     <Version>
         <Number>3.2.18 Release 14</Number>
         <IsBeta>false</IsBeta>
-        <Released>28-Feb-2024</Released>
+        <Released>28-Mar-2024</Released>
         <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>...</Change>
+            <Change>Correct Facebook url in Help -> About</Change>
+            <Change>Add detection of Office 2024</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
             <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
         </Changes>
-        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.17.Release.12.msi</Url>
+        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.18.Release.14.msi</Url>
     </Version>
     <Version>
         <Number>3.2.17 Release 12</Number>

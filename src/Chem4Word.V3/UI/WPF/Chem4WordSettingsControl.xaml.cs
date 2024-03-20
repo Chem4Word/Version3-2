@@ -71,27 +71,27 @@ namespace Chem4Word.UI.WPF
                 SearcherSettingsButtonImage.Source = bitmap;
             }
 
-            // Tab 4 - Libaray
-            imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "Gallery-Toggle.png");
+            // Tab 4 - Library
+            imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "Library-Toggle.png");
             if (imageStream != null)
             {
                 var bitmap = CreateImageFromStream(imageStream);
                 ImportIntoLibraryButtonImage.Source = bitmap;
             }
-            imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "Gallery-Save.png");
+            imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "Library-Save.png");
             if (imageStream != null)
             {
                 var bitmap = CreateImageFromStream(imageStream);
                 ExportFromLibraryButtonImage.Source = bitmap;
             }
-            imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "Gallery-Delete.png");
+            imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "Library-Delete.png");
             if (imageStream != null)
             {
                 var bitmap = CreateImageFromStream(imageStream);
                 EraseLibraryButtonImage.Source = bitmap;
             }
 
-            // Tab 5 Maintenance
+            // Tab 5 - Maintenance
             imageStream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "File-Open.png");
             if (imageStream != null)
             {

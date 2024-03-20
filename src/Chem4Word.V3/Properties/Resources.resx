@@ -214,9 +214,6 @@
   <data name="File_Save" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\button images\office-2016\file-save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Gallery_Toggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\button images\office-2016\gallery-toggle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Navigator_Toggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\button images\office-2016\navigator-toggle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -225,12 +222,6 @@
   </data>
   <data name="WebSearch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\button images\office-2016\websearch.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Gallery_Find" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\button images\office-2016\gallery-find.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Gallery_Save" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\button images\office-2016\gallery-save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Seperate_Molecules" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\button images\office-2016\seperate-molecules.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -268,9 +259,6 @@
   <data name="YouTube" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\button images\youtube.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Gallery_Delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\button images\office-2016\gallery-delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Locked" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\button images\locked.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -279,5 +267,17 @@
   </data>
   <data name="SingleCarbon_cml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\singlecarbon.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Library_Delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Button Images\Office-2016\Library-Delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Library_Find" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Button Images\Office-2016\Library-Find.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Library_Save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Button Images\Office-2016\Library-Save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Library_Toggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Button Images\Office-2016\Library-Toggle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

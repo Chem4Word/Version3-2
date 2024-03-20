@@ -15,23 +15,85 @@ namespace Chem4Word.Telemetry
 {
     public class WmiHelper
     {
-        private const string QueryProcessor = "SELECT Name,NumberOfLogicalProcessors,CurrentClockSpeed FROM Win32_Processor";
-        private const string QueryOperatingSystem = "SELECT ProductType,Caption,Version FROM Win32_OperatingSystem";
-        private const string QueryPhysicalMemory = "SELECT Capacity FROM Win32_PhysicalMemory";
-        private const string QueryAntiVirusProduct = "SELECT DisplayName,ProductState FROM AntiVirusProduct";
-
         private const string Workstation = "Workstation";
         private const string DomainController = "Domain Controller";
         private const string Server = "Server";
-
         private const string Unknown = "Unknown";
 
         public WmiHelper()
         {
+            GetWin32ComputerSystemData();
             GetWin32ProcessorData();
-            GetWin32PhysicalMemoryData();
             GetWin32OperatingSystemData();
             GetAntiVirusStatus();
+        }
+
+        #region Fields
+
+        private string _manufacturer;
+
+        public string Manufacturer
+        {
+            get
+            {
+                if (_manufacturer == null)
+                {
+                    try
+                    {
+                        GetWin32ComputerSystemData();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
+                }
+
+                return _manufacturer;
+            }
+        }
+
+        private string _model;
+
+        public string Model
+        {
+            get
+            {
+                if (_model == null)
+                {
+                    try
+                    {
+                        GetWin32ComputerSystemData();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
+                }
+
+                return _model;
+            }
+        }
+
+        private string _systemFamily;
+
+        public string SystemFamily
+        {
+            get
+            {
+                if (_systemFamily == null)
+                {
+                    try
+                    {
+                        GetWin32ComputerSystemData();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
+                }
+
+                return _systemFamily;
+            }
         }
 
         private string _cpuName;
@@ -48,11 +110,33 @@ namespace Chem4Word.Telemetry
                     }
                     catch (Exception)
                     {
-                        //
+                        // Do Nothing
                     }
                 }
 
                 return _cpuName;
+            }
+        }
+
+        private string _totalPhysicalMemory;
+
+        public string TotalPhysicalMemory
+        {
+            get
+            {
+                if (_totalPhysicalMemory == null)
+                {
+                    try
+                    {
+                        GetWin32ComputerSystemData();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
+                }
+
+                return _totalPhysicalMemory;
             }
         }
 
@@ -70,7 +154,7 @@ namespace Chem4Word.Telemetry
                     }
                     catch (Exception)
                     {
-                        //
+                        // Do Nothing
                     }
                 }
 
@@ -92,33 +176,11 @@ namespace Chem4Word.Telemetry
                     }
                     catch (Exception)
                     {
-                        //
+                        // Do Nothing
                     }
                 }
 
                 return _logicalProcessors;
-            }
-        }
-
-        private string _physicalMemory;
-
-        public string PhysicalMemory
-        {
-            get
-            {
-                if (_physicalMemory == null)
-                {
-                    try
-                    {
-                        GetWin32PhysicalMemoryData();
-                    }
-                    catch (Exception)
-                    {
-                        //
-                    }
-                }
-
-                return _physicalMemory;
             }
         }
 
@@ -136,7 +198,7 @@ namespace Chem4Word.Telemetry
                     }
                     catch (Exception)
                     {
-                        //
+                        // Do Nothing
                     }
                 }
 
@@ -158,7 +220,7 @@ namespace Chem4Word.Telemetry
                     }
                     catch (Exception)
                     {
-                        //
+                        // Do Nothing
                     }
                 }
 
@@ -180,7 +242,7 @@ namespace Chem4Word.Telemetry
                     }
                     catch (Exception)
                     {
-                        //
+                        // Do Nothing
                     }
                 }
 
@@ -196,125 +258,201 @@ namespace Chem4Word.Telemetry
             {
                 if (_antiVirusStatus == null)
                 {
-                    GetAntiVirusStatus();
+                    try
+                    {
+                        GetAntiVirusStatus();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
                 }
 
                 return _antiVirusStatus;
             }
         }
 
+        #endregion Fields
+
+        private void GetWin32ComputerSystemData()
+        {
+            var fields = new List<string> { "Manufacturer", "Model", "SystemFamily", "TotalPhysicalMemory" };
+
+            var sysObjects = GetWmiObjects(@"root\CIMV2", "Win32_ComputerSystem", fields);
+
+            foreach (var managementBaseObject in sysObjects)
+            {
+                var mgtObject = (ManagementObject)managementBaseObject;
+                foreach (var field in fields)
+                {
+                    switch (field)
+                    {
+                        case "Manufacturer":
+                            try
+                            {
+                                _manufacturer = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _manufacturer = "?";
+                            }
+                            break;
+
+                        case "Model":
+                            try
+                            {
+                                _model = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _model = "?";
+                            }
+                            break;
+
+                        case "SystemFamily":
+                            try
+                            {
+                                _systemFamily = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _systemFamily = "?";
+                            }
+                            break;
+
+                        case "TotalPhysicalMemory":
+                            try
+                            {
+                                var temp = ObjectAsString(mgtObject[field]);
+                                var memory = ulong.Parse(temp);
+                                _totalPhysicalMemory = SafeDouble.AsString0((double)memory / (1024 * 1024 * 1024)) + "GiB";
+                            }
+                            catch
+                            {
+                                _totalPhysicalMemory = "?";
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
         private void GetWin32ProcessorData()
         {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(QueryProcessor);
-            ManagementObjectCollection objCol = searcher.Get();
+            var fields = new List<string> { "Name", "NumberOfLogicalProcessors", "MaxClockSpeed" };
 
-            foreach (var o in objCol)
+            var sysObjects = GetWmiObjects(@"root\CIMV2", "Win32_Processor", fields);
+
+            foreach (var managementBaseObject in sysObjects)
             {
-                var mgtObject = (ManagementObject)o;
-                try
+                var mgtObject = (ManagementObject)managementBaseObject;
+                foreach (var field in fields)
                 {
-                    string temp = mgtObject["Name"].ToString();
-                    // Replace tab with space
-                    temp = temp.Replace("\t", " ");
-                    // Replace up to 15 double spaces with single space
-                    int i = 0;
-                    while (temp.IndexOf("  ", StringComparison.InvariantCulture) != -1)
+                    switch (field)
                     {
-                        temp = temp.Replace("  ", " ");
-                        i++;
-                        if (i > 15)
-                        {
+                        case "Name":
+                            try
+                            {
+                                _cpuName = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _cpuName = "?";
+                            }
                             break;
-                        }
+
+                        case "NumberOfLogicalProcessors":
+                            try
+                            {
+                                _logicalProcessors = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _logicalProcessors = "?";
+                            }
+                            break;
+
+                        case "MaxClockSpeed":
+                            try
+                            {
+                                var speed = double.Parse(ObjectAsString(mgtObject[field])) / 1024;
+                                _cpuSpeed = SafeDouble.AsString(speed) + "GHz";
+                            }
+                            catch
+                            {
+                                _cpuSpeed = "?";
+                            }
+                            break;
                     }
-
-                    _cpuName = temp;
-                }
-                catch
-                {
-                    _cpuName = "?";
-                }
-
-                try
-                {
-                    _logicalProcessors = mgtObject["NumberOfLogicalProcessors"].ToString();
-                }
-                catch
-                {
-                    _logicalProcessors = "?";
-                }
-
-                try
-                {
-                    double speed = double.Parse(mgtObject["CurrentClockSpeed"].ToString()) / 1024;
-                    _cpuSpeed = SafeDouble.AsString(speed) + "GHz";
-                }
-                catch
-                {
-                    _cpuSpeed = "?";
                 }
             }
         }
 
         private void GetWin32OperatingSystemData()
         {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(QueryOperatingSystem);
-            ManagementObjectCollection objCol = searcher.Get();
+            var fields = new List<string> { "ProductType", "Caption", "Version" };
 
-            try
+            var sysObjects = GetWmiObjects(@"root\CIMV2", "Win32_OperatingSystem", fields);
+
+            foreach (var managementBaseObject in sysObjects)
             {
-                foreach (var o in objCol)
+                var mgtObject = (ManagementObject)managementBaseObject;
+                foreach (var field in fields)
                 {
-                    var mgtObject = (ManagementObject)o;
-
-                    var productType = int.Parse(mgtObject["ProductType"].ToString());
-                    switch (productType)
+                    switch (field)
                     {
-                        case 1:
-                            _productType = Workstation;
+                        case "ProductType":
+                            try
+                            {
+                                var productType = int.Parse(ObjectAsString(mgtObject[field]));
+                                switch (productType)
+                                {
+                                    case 1:
+                                        _productType = Workstation;
+                                        break;
+
+                                    case 2:
+                                        _productType = DomainController;
+                                        break;
+
+                                    case 3:
+                                        _productType = Server;
+                                        break;
+
+                                    default:
+                                        _productType = Unknown + $" [{productType}]";
+                                        break;
+                                }
+                            }
+                            catch
+                            {
+                                _productType = "?";
+                            }
                             break;
 
-                        case 2:
-                            _productType = DomainController;
+                        case "Caption":
+                            try
+                            {
+                                _osCaption = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _osCaption = "?";
+                            }
                             break;
 
-                        case 3:
-                            _productType = Server;
-                            break;
-
-                        default:
-                            _productType = Unknown + $" [{productType}]";
+                        case "Version":
+                            try
+                            {
+                                _osVersion = ObjectAsString(mgtObject[field]);
+                            }
+                            catch
+                            {
+                                _osVersion = "?";
+                            }
                             break;
                     }
-
-                    _osCaption = mgtObject["Caption"].ToString();
-                    _osVersion = mgtObject["Version"].ToString();
                 }
-            }
-            catch
-            {
-                // Do Nothing
-            }
-        }
-
-        private void GetWin32PhysicalMemoryData()
-        {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(QueryPhysicalMemory);
-            ManagementObjectCollection objCol = searcher.Get();
-
-            try
-            {
-                UInt64 capacity = 0;
-                foreach (var o in objCol)
-                {
-                    var mgtObject = (ManagementObject)o;
-                    capacity += (UInt64)mgtObject["Capacity"];
-                }
-                _physicalMemory = SafeDouble.AsString0((double)capacity / (1024 * 1024 * 1024)) + "GB";
-            }
-            catch
-            {
-                _physicalMemory = "?";
             }
         }
 
@@ -331,18 +469,20 @@ namespace Chem4Word.Telemetry
             // Only works if not a server
             if (!string.IsNullOrEmpty(ProductType) && ProductType.Equals(Workstation))
             {
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher(@"root\SecurityCenter2", QueryAntiVirusProduct);
-                ManagementObjectCollection objCol = searcher.Get();
+                var fields = new List<string> { "DisplayName", "ProductState"};
+
+                var sysObjects = GetWmiObjects(@"root\SecurityCenter2", "AntiVirusProduct", fields);
 
                 try
                 {
-                    List<string> products = new List<string>();
-                    foreach (var o in objCol)
-                    {
-                        var mgtObject = (ManagementObject)o;
-                        var product = mgtObject["DisplayName"].ToString();
+                    var products = new List<string>();
 
-                        var status = int.Parse(mgtObject["ProductState"].ToString());
+                    foreach (var managementBaseObject in sysObjects)
+                    {
+                        var mgtObject = (ManagementObject)managementBaseObject;
+
+                        var product = ObjectAsString(mgtObject["DisplayName"]);
+                        var status = int.Parse(ObjectAsString(mgtObject["ProductState"]));
 
                         var hex = Hex(status);
                         var bin = Binary(status);
@@ -353,9 +493,9 @@ namespace Chem4Word.Telemetry
                         // 13th bit = On Access Scanning (Memory Resident Scanning) is on, this tells you that the product is scanning every file that you open as opposed to just scanning at regular intervals.
                         //  5th Bit = If this is true (==1) the virus scanner is out of date
 
-                        bool enabled = GetBit(reversed, 18);
-                        bool scanning = GetBit(reversed, 12);
-                        bool outdated = GetBit(reversed, 4);
+                        var enabled = GetBit(reversed, 18);
+                        var scanning = GetBit(reversed, 12);
+                        var outdated = GetBit(reversed, 4);
 
                         products.Add($"{product} Status: {status} [0x{hex}] --> Enabled: {enabled} Scanning: {scanning} Outdated: {outdated}");
                     }
@@ -368,6 +508,41 @@ namespace Chem4Word.Telemetry
                     _antiVirusStatus = $"{exception.Message}";
                 }
             }
+        }
+
+        private ManagementObjectCollection GetWmiObjects(string nameSpace, string className, List<string> fields)
+        {
+            // https://stackoverflow.com/questions/28989279/communicating-with-non-english-wmi
+            // https://www.autoitscript.com/autoit3/docs/appendix/OSLangCodes.htm
+
+            var options = new ConnectionOptions
+                          {
+                              Locale = "MS_409" // en-US
+                          };
+            var scope = new ManagementScope($"{nameSpace}", options);
+            scope.Connect();
+
+            var objectQuery = new ObjectQuery($"SELECT {string.Join(",", fields)} FROM {className}");
+
+            var searcher = new ManagementObjectSearcher(scope, objectQuery);
+            var objects = searcher.Get();
+
+            return objects;
+        }
+
+        #region Utility methods
+
+        private string ObjectAsString(object input)
+        {
+            var temp = input.ToString();
+
+            // Replace tab with space
+            temp = temp.Replace("\t", " ");
+
+            // Replace double spaces with single space
+            temp = temp.Replace("  ", " ");
+
+            return temp.Trim();
         }
 
         private string Hex(int value)
@@ -417,5 +592,7 @@ namespace Chem4Word.Telemetry
                 return false;
             }
         }
+
+        #endregion Utility methods
     }
 }

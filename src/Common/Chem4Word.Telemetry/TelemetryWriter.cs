@@ -69,6 +69,12 @@ namespace Chem4Word.Telemetry
                 source = source.Remove(0, unwanted.Length);
             }
 
+            if (string.IsNullOrEmpty(message))
+            {
+                Debug.WriteLine("message should not be empty");
+                Debugger.Break();
+            }
+
             try
             {
                 string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -220,10 +226,11 @@ namespace Chem4Word.Telemetry
             // Log Wmi Gathered Data
             lines = new List<string>();
 
+            lines.Add($"SYS: {_wmiHelper.Manufacturer} - {_wmiHelper.Model} - {_wmiHelper.SystemFamily}");
             lines.Add($"CPU: {_wmiHelper.CpuName}");
             lines.Add($"CPU Cores: {_wmiHelper.LogicalProcessors}");
             lines.Add($"CPU Speed: {_wmiHelper.CpuSpeed}");
-            lines.Add($"Physical Memory: {_wmiHelper.PhysicalMemory}");
+            lines.Add($"Memory: {_wmiHelper.TotalPhysicalMemory}");
             lines.Add($"Booted Up: {_helper.LastBootUpTime}");
             lines.Add($"Logged In: {_helper.LastLoginTime}");
 
