@@ -367,7 +367,7 @@ namespace Chem4Word.Telemetry
             var processId = 666;
             var machineId = Guid.Empty.ToString("D");
             // This is updated automatically by Set-Assembly-Version.ps1
-            var versionNumber = "3.2.19.666";
+            var versionNumber = "3.2.20.666";
 
             try
             {

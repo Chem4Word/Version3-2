@@ -3,6 +3,19 @@
 <ChangeLog>
     <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
     <Version>
+        <Number>3.2.20 Release 16</Number>
+        <IsBeta>false</IsBeta>
+        <Released>31-Aug-2024</Released>
+        <Changes>
+            <Change>...</Change>
+            <Change>...</Change>
+            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
+            <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
+            <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
+        </Changes>
+        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.20.Release.16.msi</Url>
+    </Version>
+    <Version>
         <Number>3.2.19 Release 15</Number>
         <IsBeta>false</IsBeta>
         <Released>07-Aug-2024</Released>
@@ -15,7 +28,6 @@
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
             <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
         </Changes>
-        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.19.Release.15.msi</Url>
     </Version>
     <Version>
         <Number>3.2.18 Release 14</Number>
