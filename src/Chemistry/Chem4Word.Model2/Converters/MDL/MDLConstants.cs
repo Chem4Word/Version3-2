@@ -12,7 +12,7 @@ namespace Chem4Word.Model2.Converters.MDL
     {
         public const string M_CHG = "M  CHG";             // Represents the tag in the MDL Properties Block for Charge
         public const string M_ISO = "M  ISO";             // Represents the tag in the MDL Properties Block for an Isotopes list
-        public const string M_RAD = "M  RAD";             // Represents the tag in the MDL Properties Block for an Radical list
+        public const string M_RAD = "M  RAD";             // Represents the tag in the MDL Properties Block for a Radical list
 
         public const string M_END = "M  END";             // Represents the tag in the MDL Properties Block terminating the MolFile
         public const string SDF_END = "$$$$";             // Represents the end of the SD file block

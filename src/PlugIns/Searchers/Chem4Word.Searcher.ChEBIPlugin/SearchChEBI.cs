@@ -60,6 +60,11 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         #region Methods
 
+        private void SearchFor_TextChanged(object sender, EventArgs e)
+        {
+            SearchButton.Enabled = TextHelper.IsValidSearchString(SearchFor.Text);
+        }
+
         private void EnableImport()
         {
             bool state = ResultsListView.SelectedItems.Count > 0
@@ -75,77 +80,75 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void ExecuteSearch()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             ErrorsAndWarnings.Text = "";
             using (new WaitCursor())
             {
                 display1.Chemistry = null;
-                if (!string.IsNullOrEmpty(SearchFor.Text))
+
+                ChebiWebServiceService ws = new ChebiWebServiceService();
+                getLiteEntityResponse results;
+
+                var securityProtocol = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+                ws.Url = UserOptions.ChEBIWebServiceUri;
+                ws.UserAgent = "Chem4Word";
+
+                results = ws.getLiteEntity(new getLiteEntity
                 {
-                    ChebiWebServiceService ws = new ChebiWebServiceService();
-                    getLiteEntityResponse results;
+                    search = SearchFor.Text,
+                    maximumResults = UserOptions.MaximumResults,
+                    searchCategory = SearchCategory.ALL,
+                    stars = StarsCategory.ALL
+                });
 
-                    var securityProtocol = ServicePointManager.SecurityProtocol;
-                    ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
-                    ws.Url = UserOptions.ChEBIWebServiceUri;
-                    ws.UserAgent = "Chem4Word";
-
-                    results = ws.getLiteEntity(new getLiteEntity
+                try
+                {
+                    var allResults = results.@return;
+                    ResultsListView.Items.Clear();
+                    ResultsListView.Enabled = true;
+                    if (allResults.Length > 0)
                     {
-                        search = SearchFor.Text,
-                        maximumResults = UserOptions.MaximumResults,
-                        searchCategory = SearchCategory.ALL,
-                        stars = StarsCategory.ALL
-                    });
-
-                    try
-                    {
-                        var allResults = results.@return;
-                        ResultsListView.Items.Clear();
-                        ResultsListView.Enabled = true;
-                        if (allResults.Length > 0)
+                        foreach (LiteEntity res in allResults)
                         {
-                            foreach (LiteEntity res in allResults)
-                            {
-                                var li = new ListViewItem();
-                                li.Text = res.chebiId;
-                                li.Tag = res;
-                                ListViewItem.ListViewSubItem name =
-                                    new ListViewItem.ListViewSubItem(li, res.chebiAsciiName);
-                                li.SubItems.Add(name);
+                            var li = new ListViewItem();
+                            li.Text = res.chebiId;
+                            li.Tag = res;
+                            ListViewItem.ListViewSubItem name =
+                                new ListViewItem.ListViewSubItem(li, res.chebiAsciiName);
+                            li.SubItems.Add(name);
 
-                                ListViewItem.ListViewSubItem score =
-                                    new ListViewItem.ListViewSubItem(li, res.searchScore.ToString());
-                                li.SubItems.Add(score);
-                                ResultsListView.Items.Add(li);
-                            }
+                            ListViewItem.ListViewSubItem score =
+                                new ListViewItem.ListViewSubItem(li, res.searchScore.ToString());
+                            li.SubItems.Add(score);
+                            ResultsListView.Items.Add(li);
+                        }
 
-                            ResultsListView.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-                        }
-                        else
-                        {
-                            ErrorsAndWarnings.Text = "Sorry: No results found.";
-                        }
+                        ResultsListView.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        if (ex.Message.Equals("The operation has timed out"))
-                        {
-                            ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
-                        }
-                        else
-                        {
-                            ErrorsAndWarnings.Text = ex.Message;
-                            Telemetry.Write(module, "Exception", ex.Message);
-                            Telemetry.Write(module, "Exception", ex.StackTrace);
-                        }
+                        ErrorsAndWarnings.Text = "Sorry: No results found.";
                     }
-                    finally
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Equals("The operation has timed out"))
                     {
-                        ServicePointManager.SecurityProtocol = securityProtocol;
+                        ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
                     }
+                    else
+                    {
+                        ErrorsAndWarnings.Text = ex.Message;
+                        Telemetry.Write(module, "Exception", ex.Message);
+                        Telemetry.Write(module, "Exception", ex.StackTrace);
+                    }
+                }
+                finally
+                {
+                    ServicePointManager.SecurityProtocol = securityProtocol;
                 }
             }
 

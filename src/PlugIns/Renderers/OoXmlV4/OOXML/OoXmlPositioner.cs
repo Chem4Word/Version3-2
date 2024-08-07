@@ -289,7 +289,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             }
             else
             {
-                // ToDo: Implement if required
+                // ToDo: [MAW] Implement if required
                 Debugger.Break();
             }
 
@@ -938,50 +938,53 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
                 // Create other character groups
 
-                // Determine position of implicit hydrogens if any
-                var orientation = atom.ImplicitHPlacement;
-
                 // Implicit Hydrogens
                 GroupOfCharacters hydrogens = null;
 
-                var implicitHCount = atom.ImplicitHydrogenCount;
-                if (implicitHCount > 0)
+                // Determine position of implicit hydrogens if any
+                var orientation = atom.ImplicitHPlacement;
+
+                if (Inputs.Options.ShowHydrogens)
                 {
-                    hydrogens = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
-                                                      Inputs.TtfCharacterSet, Inputs.MeanBondLength);
-
-                    // Create characters
-                    hydrogens.AddCharacter('H', atomColour);
-                    if (implicitHCount > 1)
+                    var implicitHCount = atom.ImplicitHydrogenCount;
+                    if (implicitHCount > 0)
                     {
-                        foreach (var character in implicitHCount.ToString())
+                        hydrogens = new GroupOfCharacters(atom.Position, atom.Path, atom.Parent.Path,
+                                                          Inputs.TtfCharacterSet, Inputs.MeanBondLength);
+
+                        // Create characters
+                        hydrogens.AddCharacter('H', atomColour);
+                        if (implicitHCount > 1)
                         {
-                            hydrogens.AddCharacter(character, atomColour, true);
+                            foreach (var character in implicitHCount.ToString())
+                            {
+                                hydrogens.AddCharacter(character, atomColour, true);
+                            }
                         }
+
+                        // Adjust position of block
+                        switch (orientation)
+                        {
+                            case CompassPoints.North:
+                                hydrogens.AdjustPosition(main.BoundingBox.TopLeft - hydrogens.BoundingBox.BottomLeft);
+                                hydrogens.Nudge(CompassPoints.East, main.BoundingBox.Width / 2 - OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) / 2);
+                                break;
+
+                            case CompassPoints.East:
+                                hydrogens.AdjustPosition(main.BoundingBox.TopRight - hydrogens.BoundingBox.TopLeft);
+                                break;
+
+                            case CompassPoints.South:
+                                hydrogens.AdjustPosition(main.BoundingBox.BottomLeft - hydrogens.BoundingBox.TopLeft);
+                                hydrogens.Nudge(CompassPoints.East, main.BoundingBox.Width / 2 - OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) / 2);
+                                break;
+
+                            case CompassPoints.West:
+                                hydrogens.AdjustPosition(main.BoundingBox.TopLeft - hydrogens.BoundingBox.TopRight);
+                                break;
+                        }
+                        hydrogens.Nudge(orientation);
                     }
-
-                    // Adjust position of block
-                    switch (orientation)
-                    {
-                        case CompassPoints.North:
-                            hydrogens.AdjustPosition(main.BoundingBox.TopLeft - hydrogens.BoundingBox.BottomLeft);
-                            hydrogens.Nudge(CompassPoints.East, main.BoundingBox.Width / 2 - OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) / 2);
-                            break;
-
-                        case CompassPoints.East:
-                            hydrogens.AdjustPosition(main.BoundingBox.TopRight - hydrogens.BoundingBox.TopLeft);
-                            break;
-
-                        case CompassPoints.South:
-                            hydrogens.AdjustPosition(main.BoundingBox.BottomLeft - hydrogens.BoundingBox.TopLeft);
-                            hydrogens.Nudge(CompassPoints.East, main.BoundingBox.Width / 2 - OoXmlHelper.ScaleCsTtfToCml(_hydrogenCharacter.Width, Inputs.MeanBondLength) / 2);
-                            break;
-
-                        case CompassPoints.West:
-                            hydrogens.AdjustPosition(main.BoundingBox.TopLeft - hydrogens.BoundingBox.TopRight);
-                            break;
-                    }
-                    hydrogens.Nudge(orientation);
                 }
 
                 // Charge

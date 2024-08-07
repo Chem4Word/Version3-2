@@ -35,71 +35,73 @@ namespace Chem4Word.Searcher.OpsinPlugIn
             InitializeComponent();
         }
 
+        private void SearchFor_TextChanged(object sender, EventArgs e)
+        {
+            SearchButton.Enabled = TextHelper.IsValidSearchString(SearchFor.Text);
+        }
+
         private void SearchButton_Click(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            if (!string.IsNullOrEmpty(SearchFor.Text))
+            Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
+
+            display1.Chemistry = null;
+            display1.Clear();
+
+            Cursor = Cursors.WaitCursor;
+
+            var securityProtocol = ServicePointManager.SecurityProtocol;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+            UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + SearchFor.Text);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);
+            request.Timeout = 30000;
+            request.Accept = "chemical/x-cml";
+            request.UserAgent = "Chem4Word";
+
+            HttpWebResponse response;
+            try
             {
-                Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
-
-                display1.Chemistry = null;
-                display1.Clear();
-
-                Cursor = Cursors.WaitCursor;
-
-                var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
-                UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + SearchFor.Text);
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);
-                request.Timeout = 30000;
-                request.Accept = "chemical/x-cml";
-                request.UserAgent = "Chem4Word";
-
-                HttpWebResponse response;
-                try
+                response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode.Equals(HttpStatusCode.OK))
                 {
-                    response = (HttpWebResponse)request.GetResponse();
-                    if (response.StatusCode.Equals(HttpStatusCode.OK))
-                    {
-                        ProcessResponse(response);
-                    }
-                    else
-                    {
-                        Telemetry.Write(module, "Warning", $"Status code {response.StatusCode} was returned by the server");
-                        ShowFailureMessage($"An unexpected status code {response.StatusCode} was returned by the server");
-                    }
+                    ProcessResponse(response);
                 }
-                catch (WebException ex)
+                else
                 {
-                    HttpWebResponse webResponse = (HttpWebResponse)ex.Response;
-                    switch (webResponse.StatusCode)
-                    {
-                        case HttpStatusCode.NotFound:
-                            ShowFailureMessage($"No valid representation of the name '{SearchFor.Text}' has been found");
-                            break;
+                    Telemetry.Write(module, "Warning", $"Status code {response.StatusCode} was returned by the server");
+                    ShowFailureMessage($"An unexpected status code {response.StatusCode} was returned by the server");
+                }
+            }
+            catch (WebException ex)
+            {
+                HttpWebResponse webResponse = (HttpWebResponse)ex.Response;
+                switch (webResponse.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        ShowFailureMessage($"No valid representation of the name '{SearchFor.Text}' has been found");
+                        break;
 
-                        case HttpStatusCode.RequestTimeout:
-                            ShowFailureMessage("Please try again later - the service has timed out");
-                            break;
+                    case HttpStatusCode.RequestTimeout:
+                        ShowFailureMessage("Please try again later - the service has timed out");
+                        break;
 
-                        default:
-                            Telemetry.Write(module, "Warning", $"Status code: {webResponse.StatusCode}  was returned by the server");
-                            break;
-                    }
+                    default:
+                        Telemetry.Write(module, "Warning", $"Status code: {webResponse.StatusCode}  was returned by the server");
+                        break;
                 }
-                catch (Exception ex)
-                {
-                    Telemetry.Write(module, "Exception", ex.Message);
-                    Telemetry.Write(module, "Exception", ex.StackTrace);
-                    ShowFailureMessage($"An unexpected error has occurred: {ex.Message}");
-                }
-                finally
-                {
-                    ServicePointManager.SecurityProtocol = securityProtocol;
-                    Cursor = Cursors.Default;
-                }
+            }
+            catch (Exception ex)
+            {
+                Telemetry.Write(module, "Exception", ex.Message);
+                Telemetry.Write(module, "Exception", ex.StackTrace);
+                ShowFailureMessage($"An unexpected error has occurred: {ex.Message}");
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = securityProtocol;
+                Cursor = Cursors.Default;
             }
         }
 

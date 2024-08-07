@@ -88,21 +88,23 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
         }
 
+        private void SearchFor_TextChanged(object sender, EventArgs e)
+        {
+            SearchButton.Enabled = TextHelper.IsValidSearchString(SearchFor.Text);
+        }
+
         private void SearchButton_Click(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                if (!string.IsNullOrEmpty(SearchFor.Text))
-                {
-                    Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
+                Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
 
-                    ErrorsAndWarnings.Text = "";
-                    display1.Chemistry = null;
-                    display1.Clear();
+                ErrorsAndWarnings.Text = "";
+                display1.Chemistry = null;
+                display1.Clear();
 
-                    ExecuteSearch(0);
-                }
+                ExecuteSearch(0);
             }
             catch (Exception ex)
             {
@@ -182,7 +184,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            if (!string.IsNullOrEmpty(SearchFor.Text))
+            if (TextHelper.IsValidSearchString(SearchFor.Text))
             {
                 Cursor = Cursors.WaitCursor;
 

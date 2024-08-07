@@ -880,6 +880,8 @@ namespace Chem4Word
 
         public IChem4WordEditor GetEditorPlugIn(string name)
         {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
             IChem4WordEditor plugin = null;
 
             if (!string.IsNullOrEmpty(name))
@@ -892,9 +894,17 @@ namespace Chem4Word
                         plugin.Telemetry = Telemetry;
                         plugin.SettingsPath = AddInInfo.ProductAppDataPath;
                         plugin.TopLeft = WordTopLeft;
+
                         break;
                     }
                 }
+            }
+
+            if (plugin == null)
+            {
+                Telemetry.Write(module, "Warning", $"Could not find editor plug in {name}");
+                Debug.WriteLine($"Could not find editor plug in {name}");
+                Debugger.Break();
             }
 
             return plugin;
@@ -902,6 +912,8 @@ namespace Chem4Word
 
         public IChem4WordRenderer GetRendererPlugIn(string name)
         {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
             IChem4WordRenderer plugin = null;
 
             if (!string.IsNullOrEmpty(name))
@@ -914,9 +926,17 @@ namespace Chem4Word
                         plugin.Telemetry = Telemetry;
                         plugin.SettingsPath = AddInInfo.ProductAppDataPath;
                         plugin.TopLeft = WordTopLeft;
+
                         break;
                     }
                 }
+            }
+            
+            if (plugin == null)
+            {
+                Telemetry.Write(module, "Warning", $"Could not find renderer plug in {name}");
+                Debug.WriteLine($"Could not find renderer plug in {name}");
+                Debugger.Break();
             }
 
             return plugin;
@@ -924,6 +944,8 @@ namespace Chem4Word
 
         public IChem4WordSearcher GetSearcherPlugIn(string name)
         {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
             IChem4WordSearcher plugin = null;
 
             if (!string.IsNullOrEmpty(name))
@@ -936,9 +958,17 @@ namespace Chem4Word
                         plugin.Telemetry = Telemetry;
                         plugin.SettingsPath = AddInInfo.ProductAppDataPath;
                         plugin.TopLeft = WordTopLeft;
+
                         break;
                     }
                 }
+            }
+
+            if (plugin == null)
+            {
+                Telemetry.Write(module, "Warning", $"Could not find searcher plug in {name}");
+                Debug.WriteLine($"Could not find searcher plug in {name}");
+                Debugger.Break();
             }
 
             return plugin;

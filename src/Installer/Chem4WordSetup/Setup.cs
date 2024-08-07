@@ -68,7 +68,8 @@ namespace Chem4WordSetup
 
             OperatingSystem osVer = Environment.OSVersion;
             // Check that OsVerion is greater or equal to 6.1
-            if (osVer.Version.Major >= 6 && osVer.Version.Minor >= 1)
+            if (osVer.Version.Major >= 6 && osVer.Version.Minor >= 1
+                || osVer.Version.Major >= 10)
             {
                 // Running Windows 7 or Windows 2008 R2
                 isOperatingSystemWindows7Plus = true;

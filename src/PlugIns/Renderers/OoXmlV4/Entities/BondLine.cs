@@ -71,10 +71,11 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public BondLine Copy()
         {
-            var copy = new BondLine(Style, Start, End, Bond);
-
-            copy.Colour = Colour;
-            copy.Width = Width;
+            var copy = new BondLine(Style, Start, End, Bond)
+            {
+                Colour = Colour,
+                Width = Width
+            };
 
             return copy;
         }
@@ -129,12 +130,13 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
 
         public List<Point> WedgeOutline()
         {
-            var outline = new List<Point>();
-
-            outline.Add(Nose);
-            outline.Add(LeftTail);
-            outline.Add(Tail);
-            outline.Add(RightTail);
+            var outline = new List<Point>
+                          {
+                              Nose,
+                              LeftTail,
+                              Tail,
+                              RightTail
+                          };
 
             return outline;
         }

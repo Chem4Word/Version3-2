@@ -58,6 +58,9 @@ namespace Chem4Word.Telemetry
 
         public string DotNetVersion { get; set; }
 
+        public string UserName { get; set; }
+        public bool IsDomainUser { get; set; }
+
         public string Screens { get; set; }
 
         public string GitStatus { get; set; }
@@ -104,6 +107,23 @@ namespace Chem4Word.Telemetry
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
+
+                var userDomainName = Environment.UserDomainName;
+                var userName = Environment.UserName;
+                var machineName = Environment.MachineName;
+
+                if (userDomainName.Equals(machineName))
+                {
+                    // Local account
+                    UserName = $"{userName} on {machineName}";
+                    IsDomainUser = false;
+                }
+                else
+                {
+                    // Domain account
+                    UserName = $@"{userDomainName}\{userName} on {machineName}";
+                    IsDomainUser = true;
+                }
 
                 WordVersion = -1;
 

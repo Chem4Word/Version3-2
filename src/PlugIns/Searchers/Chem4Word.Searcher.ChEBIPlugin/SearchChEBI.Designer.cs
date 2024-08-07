@@ -38,10 +38,10 @@
             this.NameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ScoreHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.display1 = new Chem4Word.ACME.Display();
             this.ShowMolfile = new System.Windows.Forms.Button();
             this.ErrorsAndWarnings = new System.Windows.Forms.TextBox();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.display1 = new Chem4Word.ACME.Display();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -58,10 +58,12 @@
             this.SearchFor.Name = "SearchFor";
             this.SearchFor.Size = new System.Drawing.Size(895, 23);
             this.SearchFor.TabIndex = 2;
+            this.SearchFor.TextChanged += new System.EventHandler(this.SearchFor_TextChanged);
             // 
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchButton.Enabled = false;
             this.SearchButton.Location = new System.Drawing.Point(915, 12);
             this.SearchButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.SearchButton.Name = "SearchButton";
@@ -117,6 +119,7 @@
             this.ResultsListView.FullRowSelect = true;
             this.ResultsListView.GridLines = true;
             this.ResultsListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.ResultsListView.HideSelection = false;
             this.ResultsListView.Location = new System.Drawing.Point(0, 0);
             this.ResultsListView.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.ResultsListView.Name = "ResultsListView";
@@ -151,19 +154,6 @@
             this.panel1.Size = new System.Drawing.Size(528, 450);
             this.panel1.TabIndex = 0;
             // 
-            // elementHost1
-            // 
-            this.elementHost1.BackColor = System.Drawing.Color.White;
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Padding = new System.Windows.Forms.Padding(12);
-            this.elementHost1.Size = new System.Drawing.Size(526, 448);
-            this.elementHost1.TabIndex = 1;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.display1;
-            // 
             // ShowMolfile
             // 
             this.ShowMolfile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -188,6 +178,19 @@
             this.ErrorsAndWarnings.Size = new System.Drawing.Size(889, 81);
             this.ErrorsAndWarnings.TabIndex = 15;
             this.ErrorsAndWarnings.WordWrap = false;
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.BackColor = System.Drawing.Color.White;
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Padding = new System.Windows.Forms.Padding(12);
+            this.elementHost1.Size = new System.Drawing.Size(526, 448);
+            this.elementHost1.TabIndex = 1;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.display1;
             // 
             // SearchChEBI
             // 

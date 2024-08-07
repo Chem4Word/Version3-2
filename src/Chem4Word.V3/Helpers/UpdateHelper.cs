@@ -252,7 +252,7 @@ namespace Chem4Word.Helpers
                     if (expires != null)
                     {
                         var expiryDate = SafeDate.Parse(expires.Value);
-                        if (DateTime.Now.ToUniversalTime() > expiryDate)
+                        if (DateTime.UtcNow > expiryDate)
                         {
                             Globals.Chem4WordV3.IsEndOfLife = true;
                             registryKey?.SetValue(Constants.RegistryValueNameEndOfLife, "true");

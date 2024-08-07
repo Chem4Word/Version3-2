@@ -164,10 +164,11 @@ namespace Chem4Word.Telemetry
             var product = _helper.WordProduct;
             if (product.Contains("[16."))
             {
-                // If this is Office 2016/2019/2021/365
+                // If this is Office 2016/2019/2021/2024/365
                 if (product.Contains("2016")
                     || product.Contains("2019")
                     || product.Contains("2021")
+                    || product.Contains("2024")
                     || product.Contains("365"))
                 {
                     // Word version is set
@@ -182,12 +183,12 @@ namespace Chem4Word.Telemetry
         private void WriteStartUpInfo()
         {
             FixUpWordVersion();
-            AddKnimeProperies();
+            AddChartGeneratorProperties();
 
             WritePrivate("StartUp", "Information", $"Internal Version {_helper.WordVersion}");
             if (!string.IsNullOrEmpty(_helper.Click2RunProductIds))
             {
-                WritePrivate("StartUp", "Information", _helper.Click2RunProductIds);
+                WritePrivate("StartUp", "Information", $"{_helper.Click2RunProductIds}");
             }
 
             WritePrivate("StartUp", "Information", Environment.GetCommandLineArgs()[0]);
@@ -233,8 +234,8 @@ namespace Chem4Word.Telemetry
             lines.Add($"Memory: {_wmiHelper.TotalPhysicalMemory}");
             lines.Add($"Booted Up: {_helper.LastBootUpTime}");
             lines.Add($"Logged In: {_helper.LastLoginTime}");
-
             lines.Add($"Type: {_wmiHelper.ProductType}");
+
             if (!string.IsNullOrEmpty(_wmiHelper.AntiVirusStatus))
             {
                 lines.Add("AntiVirus:");
@@ -310,20 +311,19 @@ namespace Chem4Word.Telemetry
 
 #endif
 
-            // Add Knime Properies again to ensure they get sent
-            AddKnimeProperies();
+            AddChartGeneratorProperties();
 
             _systemInfoSent = true;
         }
 
-        private void AddKnimeProperies()
+        private void AddChartGeneratorProperties()
         {
-            // Used by Andy's Knime protocol
+            // Used by nightly chart generator for website
 
             // OS Info
             if (string.IsNullOrEmpty(_wmiHelper.OSVersion) || string.IsNullOrEmpty(_wmiHelper.OSCaption))
             {
-                WritePrivate("StartUp", "Information", _helper.SystemOs);
+                WritePrivate("StartUp", "Information", $"{_helper.SystemOs}");
             }
             else
             {
@@ -332,20 +332,23 @@ namespace Chem4Word.Telemetry
                 WritePrivate("StartUp", "Information", $"{_wmiHelper.OSCaption} {bits} [{_wmiHelper.OSVersion}] {culture}");
             }
 
+            WritePrivate("StartUp", "Information", $"UUID: {_wmiHelper.Uuid}");
+            WritePrivate("StartUp", "Information", $"User: {_helper.UserName}");
+
             // Dot Net Version
-            WritePrivate("StartUp", "Information", _helper.DotNetVersion);
+            WritePrivate("StartUp", "Information", $"{_helper.DotNetVersion}");
 
             // Word Version
-            WritePrivate("StartUp", "Information", _helper.WordProduct);
+            WritePrivate("StartUp", "Information", $"{_helper.WordProduct}");
 
             // Add-In Version
-            WritePrivate("StartUp", "Information", _helper.AddInVersion);
+            WritePrivate("StartUp", "Information", $"{_helper.AddInVersion}");
 
             // IP Address
             if (!_helper.IpAddress.Contains("8.8.8.8"))
             {
-                WritePrivate("StartUp", "Information", _helper.IpAddress); // ** Used by Andy's Knime protocol
-                WritePrivate("StartUp", "Information", _helper.IpObtainedFrom);
+                WritePrivate("StartUp", "Information", $"{_helper.IpAddress}"); // ** Used by nightly chart generator
+                WritePrivate("StartUp", "Information", $"{_helper.IpObtainedFrom}");
             }
         }
 

@@ -108,7 +108,7 @@ namespace Chem4Word.Shared
 
                 string officeProductName = string.Empty;
 
-                // If this is Office 2016/2019/2021/365
+                // If this is Office 2016/2019/2021/2024/365
                 if (wordVersionNumber.StartsWith("16."))
                 {
                     officeProductName = DecodeClickToRun(clickToRun);
@@ -204,6 +204,8 @@ namespace Chem4Word.Shared
                 }
 
                 string versionNumber = "";
+
+                // If this is Office 2016/2019/2021/2024/365
 
                 foreach (var p1 in products)
                 {

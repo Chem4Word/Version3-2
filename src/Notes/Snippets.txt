@@ -1,4 +1,16 @@
-﻿//. Reflection
+﻿<Style x:Key="FixBindingErrors" TargetType="ListBoxItem">
+    <!--
+        We need to define these two properties twice to fix binding errors see answer which I [Mike Williams] have commented on at
+        https://stackoverflow.com/questions/160391/listbox-with-grid-as-itemspaneltemplate-produces-weird-binding-errors
+    -->
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+</Style>
+
+string Cml = Encoding.UTF8.GetString(Chemistry);
+byte[] Chemistry = Encoding.UTF8.GetBytes(Cml);
+
+//. Reflection
 private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
 private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 

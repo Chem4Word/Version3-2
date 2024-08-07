@@ -5,10 +5,12 @@
     <Version>
         <Number>3.2.19 Release 15</Number>
         <IsBeta>false</IsBeta>
-        <Released>01-Apr-2024</Released>
+        <Released>07-Aug-2024</Released>
         <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
+            <Change>BugFix: Prevent html input in searchers</Change>
+            <Change>UX: Prohibit import of binary files</Change>
+            <Change>BugFix: User unable to hide Hydrogens in Renderer (seen in Word document)</Change>
+            <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-30105)</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
             <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>

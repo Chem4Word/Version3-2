@@ -458,119 +458,127 @@ namespace Chem4Word
                         Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Importing file '{ofd.SafeFileName}'");
                         if (ofd.FileName != null)
                         {
-                            var fileType = Path.GetExtension(ofd.FileName).ToLower();
-                            Model model = null;
-                            var mol = string.Empty;
-                            var cml = string.Empty;
-
-                            using (var fileStream = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            if (FileSystemHelper.IsBinary(ofd.FileName))
                             {
-                                using (var textReader = new StreamReader(fileStream, true))
-                                {
-                                    mol = textReader.ReadToEnd();
-                                }
+                                Globals.Chem4WordV3.Telemetry.Write(module, "Warning", $"File '{ofd.SafeFileName}' detected as binary");
+                                UserInteractions.InformUser("Sorry, Binary files such as images and office documents etc can't be imported");
                             }
-
-                            switch (fileType)
+                            else
                             {
-                                case ".cml":
-                                    var cmlConverter = new CMLConverter();
-                                    model = cmlConverter.Import(mol);
-                                    break;
+                                var fileType = Path.GetExtension(ofd.FileName).ToLower();
+                                Model model = null;
+                                var mol = string.Empty;
+                                var cml = string.Empty;
 
-                                case ".mol":
-                                case ".sdf":
-                                    var sdFileConverter = new SdFileConverter();
-                                    model = sdFileConverter.Import(mol);
-                                    break;
-
-                                default:
-                                    // No need to do anything as model is already null
-                                    break;
-                            }
-
-                            if (model != null)
-                            {
-                                dialogResult = DialogResult.OK;
-                                if (model.GeneralErrors.Count > 0 || model.AllErrors.Count > 0 || model.AllWarnings.Count > 0)
+                                using (var fileStream = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                                 {
-                                    if (model.AllErrors.Count > 0)
+                                    using (var textReader = new StreamReader(fileStream, true))
                                     {
-                                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllErrors));
+                                        mol = textReader.ReadToEnd();
                                     }
-                                    if (model.GeneralErrors.Count > 0)
-                                    {
-                                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.GeneralErrors));
-                                    }
-                                    if (model.AllWarnings.Count > 0)
-                                    {
-                                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllWarnings));
-                                    }
-
-                                    var importErrors = new ImportErrors();
-                                    importErrors.TopLeft = Globals.Chem4WordV3.WordTopLeft;
-                                    model.ScaleToAverageBondLength(Globals.Chem4WordV3.SystemOptions.BondLength);
-                                    importErrors.Model = model;
-                                    dialogResult = importErrors.ShowDialog();
                                 }
 
-                                if (dialogResult == DialogResult.OK)
+                                switch (fileType)
                                 {
-                                    model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
+                                    case ".cml":
+                                        var cmlConverter = new CMLConverter();
+                                        model = cmlConverter.Import(mol);
+                                        break;
 
-                                    // Remove Explicit Hydrogens if required
-                                    if (Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromFile)
-                                    {
-                                        model.RemoveExplicitHydrogens();
-                                    }
+                                    case ".mol":
+                                    case ".sdf":
+                                        var sdFileConverter = new SdFileConverter();
+                                        model = sdFileConverter.Import(mol);
+                                        break;
 
-                                    var outcome = model.EnsureBondLength(Globals.Chem4WordV3.SystemOptions.BondLength,
-                                                           Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromFile);
-                                    if (!string.IsNullOrEmpty(outcome))
-                                    {
-                                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", outcome);
-                                    }
+                                    default:
+                                        // No need to do anything as model is already null
+                                        break;
+                                }
 
-                                    var cmlConverter = new CMLConverter();
-                                    cml = cmlConverter.Export(model);
-                                    if (model.TotalAtomsCount > 0)
+                                if (model != null)
+                                {
+                                    dialogResult = DialogResult.OK;
+                                    if (model.GeneralErrors.Count > 0 || model.AllErrors.Count > 0 || model.AllWarnings.Count > 0)
                                     {
-                                        var cc = ChemistryHelper.Insert2DChemistry(activeDocument, cml, true);
-                                        if (cc != null)
+                                        if (model.AllErrors.Count > 0)
                                         {
-                                            // Move selection point into the Content Control which was just inserted
-                                            application.Selection.SetRange(cc.Range.Start, cc.Range.End);
+                                            Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllErrors));
                                         }
-                                    }
-                                    else
-                                    {
-                                        if (model.Molecules.Any() && model.Molecules.Values.First().Names.Any())
+                                        if (model.GeneralErrors.Count > 0)
                                         {
-                                            var cc = ChemistryHelper.Insert1DChemistry(activeDocument, model.Molecules.Values.First().Names[0].Value, false,
-                                                                                       $"{model.Molecules.Values.First().Names[0].Id}:{model.CustomXmlPartGuid}");
-                                            activeDocument.CustomXMLParts.Add(XmlHelper.AddHeader(cml));
+                                            Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.GeneralErrors));
+                                        }
+                                        if (model.AllWarnings.Count > 0)
+                                        {
+                                            Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllWarnings));
+                                        }
+
+                                        var importErrors = new ImportErrors();
+                                        importErrors.TopLeft = Globals.Chem4WordV3.WordTopLeft;
+                                        model.ScaleToAverageBondLength(Globals.Chem4WordV3.SystemOptions.BondLength);
+                                        importErrors.Model = model;
+                                        dialogResult = importErrors.ShowDialog();
+                                    }
+
+                                    if (dialogResult == DialogResult.OK)
+                                    {
+                                        model.CustomXmlPartGuid = Guid.NewGuid().ToString("N");
+
+                                        // Remove Explicit Hydrogens if required
+                                        if (Globals.Chem4WordV3.SystemOptions.RemoveExplicitHydrogensOnImportFromFile)
+                                        {
+                                            model.RemoveExplicitHydrogens();
+                                        }
+
+                                        var outcome = model.EnsureBondLength(Globals.Chem4WordV3.SystemOptions.BondLength,
+                                                               Globals.Chem4WordV3.SystemOptions.SetBondLengthOnImportFromFile);
+                                        if (!string.IsNullOrEmpty(outcome))
+                                        {
+                                            Globals.Chem4WordV3.Telemetry.Write(module, "Information", outcome);
+                                        }
+
+                                        var cmlConverter = new CMLConverter();
+                                        cml = cmlConverter.Export(model);
+                                        if (model.TotalAtomsCount > 0)
+                                        {
+                                            var cc = ChemistryHelper.Insert2DChemistry(activeDocument, cml, true);
                                             if (cc != null)
                                             {
                                                 // Move selection point into the Content Control which was just inserted
                                                 application.Selection.SetRange(cc.Range.Start, cc.Range.End);
                                             }
                                         }
+                                        else
+                                        {
+                                            if (model.Molecules.Any() && model.Molecules.Values.First().Names.Any())
+                                            {
+                                                var cc = ChemistryHelper.Insert1DChemistry(activeDocument, model.Molecules.Values.First().Names[0].Value, false,
+                                                                                           $"{model.Molecules.Values.First().Names[0].Id}:{model.CustomXmlPartGuid}");
+                                                activeDocument.CustomXMLParts.Add(XmlHelper.AddHeader(cml));
+                                                if (cc != null)
+                                                {
+                                                    // Move selection point into the Content Control which was just inserted
+                                                    application.Selection.SetRange(cc.Range.Start, cc.Range.End);
+                                                }
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                            else
-                            {
-                                if (mol.ToLower().Contains("v3000"))
-                                {
-                                    UserInteractions.InformUser("Sorry, V3000 molfiles are not supported");
                                 }
                                 else
                                 {
-                                    var x = new Exception("Could not import file");
-                                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", mol);
-                                    using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, x))
+                                    if (mol.ToLower().Contains("v3000"))
                                     {
-                                        form.ShowDialog();
+                                        UserInteractions.InformUser("Sorry, V3000 molfiles are not supported");
+                                    }
+                                    else
+                                    {
+                                        var x = new Exception("Could not import file");
+                                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", mol);
+                                        using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, x))
+                                        {
+                                            form.ShowDialog();
+                                        }
                                     }
                                 }
                             }

@@ -7,6 +7,7 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,7 +16,7 @@ using System.Threading;
 
 namespace Chem4Word.Helpers
 {
-    public class ConfigWatcher
+    public class ConfigWatcher : IDisposable
     {
         // Files to watch for
         private const string _filter = "*.json";
@@ -47,6 +48,14 @@ namespace Chem4Word.Helpers
             _watcher.EnableRaisingEvents = true;
         }
 
+        public void Dispose()
+        {
+            _watcher.EnableRaisingEvents = false;
+            _watcher.Changed -= OnChanged;
+
+            _watcher.Dispose();
+        }
+
         private void OnChanged(object source, FileSystemEventArgs e)
         {
             if (_handleEvents)
@@ -56,20 +65,20 @@ namespace Chem4Word.Helpers
                     _handleEvents = false;
                     _watcher.EnableRaisingEvents = false;
 
-                    Dictionary<string, Config> sourceConfigs = new Dictionary<string, Config>();
+                    var sourceConfigs = new Dictionary<string, Config>();
 
-                    string thisFile = e.FullPath;
+                    var thisFile = e.FullPath;
                     Debug.WriteLine($"Trigger file is {thisFile}");
                     Thread.Sleep(250);
 
-                    using (StreamReader sr = File.OpenText(e.FullPath))
+                    using (var sr = File.OpenText(e.FullPath))
                     {
-                        using (JsonTextReader reader = new JsonTextReader(sr))
+                        using (var reader = new JsonTextReader(sr))
                         {
-                            JObject jObject = (JObject)JToken.ReadFrom(reader);
+                            var jObject = (JObject)JToken.ReadFrom(reader);
                             foreach (var config in _watchedConfigs)
                             {
-                                JToken t = jObject[config.Name];
+                                var t = jObject[config.Name];
                                 if (t != null)
                                 {
                                     sourceConfigs.Add(config.Name, new Config { Type = config.Type, Value = t.Value<string>() });
@@ -80,22 +89,22 @@ namespace Chem4Word.Helpers
 
                     if (sourceConfigs.Any())
                     {
-                        string[] files = Directory.GetFiles(_watchedPath, _filter);
+                        var files = Directory.GetFiles(_watchedPath, _filter);
                         foreach (var file in files)
                         {
                             if (!file.Equals(thisFile))
                             {
                                 JObject jObject = null;
 
-                                List<JToken> targetTokens = new List<JToken>();
-                                using (StreamReader sr = File.OpenText(file))
+                                var targetTokens = new List<JToken>();
+                                using (var sr = File.OpenText(file))
                                 {
-                                    using (JsonTextReader reader = new JsonTextReader(sr))
+                                    using (var reader = new JsonTextReader(sr))
                                     {
                                         jObject = (JObject)JToken.ReadFrom(reader);
                                         foreach (var config in _watchedConfigs)
                                         {
-                                            JToken t = jObject[config.Name];
+                                            var t = jObject[config.Name];
                                             if (t != null)
                                             {
                                                 targetTokens.Add(t);
@@ -106,7 +115,7 @@ namespace Chem4Word.Helpers
 
                                 if (targetTokens.Any())
                                 {
-                                    bool write = false;
+                                    var write = false;
 
                                     foreach (var target in targetTokens)
                                     {
@@ -138,7 +147,7 @@ namespace Chem4Word.Helpers
                                     {
                                         Debug.WriteLine($"Writing file {file}");
                                         Globals.Chem4WordV3.OptionsReloadRequired = true;
-                                        string json = JsonConvert.SerializeObject(jObject, Formatting.Indented);
+                                        var json = JsonConvert.SerializeObject(jObject, Formatting.Indented);
                                         File.WriteAllText(file, json);
                                     }
                                 }

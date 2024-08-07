@@ -46,10 +46,12 @@
             this.SearchFor.Name = "SearchFor";
             this.SearchFor.Size = new System.Drawing.Size(444, 23);
             this.SearchFor.TabIndex = 0;
+            this.SearchFor.TextChanged += new System.EventHandler(this.SearchFor_TextChanged);
             // 
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchButton.Enabled = false;
             this.SearchButton.Font = new System.Drawing.Font("Tahoma", 9.75F);
             this.SearchButton.Location = new System.Drawing.Point(467, 13);
             this.SearchButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -92,7 +94,7 @@
             this.LabelInfo.AutoSize = true;
             this.LabelInfo.Location = new System.Drawing.Point(14, 450);
             this.LabelInfo.Name = "LabelInfo";
-            this.LabelInfo.Size = new System.Drawing.Size(20, 16);
+            this.LabelInfo.Size = new System.Drawing.Size(19, 16);
             this.LabelInfo.TabIndex = 9;
             this.LabelInfo.Text = "...";
             // 

@@ -62,6 +62,7 @@
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchButton.Enabled = false;
             this.SearchButton.Location = new System.Drawing.Point(789, 13);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(87, 29);
@@ -78,6 +79,7 @@
             this.SearchFor.Name = "SearchFor";
             this.SearchFor.Size = new System.Drawing.Size(770, 23);
             this.SearchFor.TabIndex = 0;
+            this.SearchFor.TextChanged += new System.EventHandler(this.SearchFor_TextChanged);
             // 
             // Results
             // 
@@ -91,6 +93,7 @@
             this.Results.FullRowSelect = true;
             this.Results.GridLines = true;
             this.Results.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.Results.HideSelection = false;
             this.Results.Location = new System.Drawing.Point(0, 0);
             this.Results.Name = "Results";
             this.Results.Size = new System.Drawing.Size(467, 428);

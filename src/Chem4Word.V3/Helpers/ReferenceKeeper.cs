@@ -6,19 +6,27 @@
 // ---------------------------------------------------------------------------
 
 using Azure.Messaging.ServiceBus;
+using System;
 
 namespace Chem4Word.Helpers
 {
     /// <summary>
     /// The sole purpose of this class is to keep references to assemblies which may only be used in supporting assemblies
     /// </summary>
-    public class ReferenceKeeper
+    public class ReferenceKeeper : IDisposable
     {
         private ServiceBusClient ServiceBusClient { get; }
 
+        private Guid _objectId;
+
         public ReferenceKeeper()
         {
-            // Nothing to do here ...
+            _objectId = Guid.NewGuid();
+        }
+
+        public void Dispose()
+        {
+            //
         }
     }
 }

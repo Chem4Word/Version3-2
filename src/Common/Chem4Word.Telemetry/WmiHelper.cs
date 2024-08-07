@@ -23,6 +23,7 @@ namespace Chem4Word.Telemetry
         public WmiHelper()
         {
             GetWin32ComputerSystemData();
+            GetWin32ComputerSystemProductData();
             GetWin32ProcessorData();
             GetWin32OperatingSystemData();
             GetAntiVirusStatus();
@@ -228,6 +229,28 @@ namespace Chem4Word.Telemetry
             }
         }
 
+        private string _osSku;
+
+        public string OSSKU
+        {
+            get
+            {
+                if (_osSku == null)
+                {
+                    try
+                    {
+                        GetWin32OperatingSystemData();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
+                }
+
+                return _osSku;
+            }
+        }
+
         private string _productType;
 
         public string ProductType
@@ -247,6 +270,57 @@ namespace Chem4Word.Telemetry
                 }
 
                 return _productType;
+            }
+        }
+
+        private string _uuid;
+
+        public string Uuid
+        {
+            get
+            {
+                if (_uuid == null)
+                {
+                    try
+                    {
+                        GetWin32ComputerSystemProductData();
+                    }
+                    catch (Exception)
+                    {
+                        // Do Nothing
+                    }
+                }
+
+                return _uuid;
+            }
+        }
+
+        private void GetWin32ComputerSystemProductData()
+        {
+            var fields = new List<string> { "UUID" };
+
+            var sysObjects = GetWmiObjects(@"root\CIMV2", "Win32_ComputerSystemProduct", fields);
+
+            foreach (var managementBaseObject in sysObjects)
+            {
+                var mgtObject = (ManagementObject)managementBaseObject;
+                foreach (var field in fields)
+                {
+                    switch (field)
+                    {
+                        case "UUID":
+                            try
+                            {
+                                _uuid = ObjectAsString(mgtObject[field]).ToLower();
+                            }
+                            catch
+                            {
+                                _uuid = "?";
+                            }
+
+                            break;
+                    }
+                }
             }
         }
 
@@ -390,7 +464,7 @@ namespace Chem4Word.Telemetry
 
         private void GetWin32OperatingSystemData()
         {
-            var fields = new List<string> { "ProductType", "Caption", "Version" };
+            var fields = new List<string> { "ProductType", "Caption", "Version", "BuildNumber", "OperatingSystemSKU" };
 
             var sysObjects = GetWmiObjects(@"root\CIMV2", "Win32_OperatingSystem", fields);
 
@@ -420,7 +494,7 @@ namespace Chem4Word.Telemetry
                                         break;
 
                                     default:
-                                        _productType = Unknown + $" [{productType}]";
+                                        _productType = $"{Unknown} ProductType: [{productType}]";
                                         break;
                                 }
                             }
@@ -451,6 +525,17 @@ namespace Chem4Word.Telemetry
                                 _osVersion = "?";
                             }
                             break;
+
+                        case "OperatingSystemSKU":
+                            try
+                            {
+                                _osSku = DecodeSKU(ObjectAsString(mgtObject[field]));
+                            }
+                            catch
+                            {
+                                _osSku = "?";
+                            }
+                            break;
                     }
                 }
             }
@@ -469,7 +554,7 @@ namespace Chem4Word.Telemetry
             // Only works if not a server
             if (!string.IsNullOrEmpty(ProductType) && ProductType.Equals(Workstation))
             {
-                var fields = new List<string> { "DisplayName", "ProductState"};
+                var fields = new List<string> { "DisplayName", "ProductState" };
 
                 var sysObjects = GetWmiObjects(@"root\SecurityCenter2", "AntiVirusProduct", fields);
 
@@ -516,9 +601,9 @@ namespace Chem4Word.Telemetry
             // https://www.autoitscript.com/autoit3/docs/appendix/OSLangCodes.htm
 
             var options = new ConnectionOptions
-                          {
-                              Locale = "MS_409" // en-US
-                          };
+            {
+                Locale = "MS_409" // en-US
+            };
             var scope = new ManagementScope($"{nameSpace}", options);
             scope.Connect();
 
@@ -543,6 +628,224 @@ namespace Chem4Word.Telemetry
             temp = temp.Replace("  ", " ");
 
             return temp.Trim();
+        }
+
+        private string DecodeSKU(string sku)
+        {
+            // OperatingSystemSKU
+            // https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-operatingsystem
+            // https: //learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getproductinfo
+
+            string result;
+
+            switch (sku)
+            {
+                case "1":
+                    result = "Ultimate Edition";
+                    break;
+
+                case "2":
+                    result = "Home Basic Edition";
+                    break;
+
+                case "3":
+                    result = "Home Premium Edition";
+                    break;
+
+                case "4":
+                    result = "Enterprise Edition";
+                    break;
+
+                case "6":
+                    result = "Business Edition";
+                    break;
+
+                case "7":
+                    result = "Windows Server Standard Edition (Desktop Experience installation)";
+                    break;
+
+                case "8":
+                    result = "Windows Server Datacenter Edition (Desktop Experience installation)";
+                    break;
+
+                case "9":
+                    result = "Small Business Server Edition";
+                    break;
+
+                case "10":
+                    result = "Enterprise Server Edition";
+                    break;
+
+                case "11":
+                    result = "Starter Edition";
+                    break;
+
+                case "12":
+                    result = "Datacenter Server Core Edition";
+                    break;
+
+                case "13":
+                    result = "Standard Server Core Edition";
+                    break;
+
+                case "14":
+                    result = "Enterprise Server Core Edition";
+                    break;
+
+                case "17":
+                    result = "Web Server Edition";
+                    break;
+
+                case "19":
+                    result = "Home Server Edition";
+                    break;
+
+                case "20":
+                    result = "Storage Express Server Edition";
+                    break;
+
+                case "21":
+                    result = "Windows Storage Server Standard Edition (Desktop Experience installation)";
+                    break;
+
+                case "22":
+                    result = "Windows Storage Server Workgroup Edition (Desktop Experience installation)";
+                    break;
+
+                case "23":
+                    result = "Storage Enterprise Server Edition";
+                    break;
+
+                case "24":
+                    result = "Server For Small Business Edition";
+                    break;
+
+                case "25":
+                    result = "Small Business Server Premium Edition";
+                    break;
+
+                case "27":
+                    result = "Windows Enterprise Edition";
+                    break;
+
+                case "28":
+                    result = "Windows Ultimate Edition";
+                    break;
+
+                case "29":
+                    result = "Windows Server Web Server Edition (Server Core installation)";
+                    break;
+
+                case "36":
+                    result = "Windows Server Standard Edition without Hyper-V";
+                    break;
+
+                case "37":
+                    result = "Windows Server Datacenter Edition without Hyper-V (full installation)";
+                    break;
+
+                case "38":
+                    result = "Windows Server Enterprise Edition without Hyper-V (full installation)";
+                    break;
+
+                case "39":
+                    result = "Windows Server Datacenter Edition without Hyper-V (Server Core installation)";
+                    break;
+
+                case "40":
+                    result = "Windows Server Standard Edition without Hyper-V (Server Core installation)";
+                    break;
+
+                case "41":
+                    result = "Windows Server Enterprise Edition without Hyper-V (Server Core installation)";
+                    break;
+
+                case "42":
+                    result = "Microsoft Hyper-V Server";
+                    break;
+
+                case "43":
+                    result = "Storage Server Express Edition (Server Core installation)";
+                    break;
+
+                case "44":
+                    result = "Storage Server Standard Edition (Server Core installation)n";
+                    break;
+
+                case "45":
+                    result = "Storage Server Workgroup Edition (Server Core installation)";
+                    break;
+
+                case "46":
+                    result = "Storage Server Enterprise Edition (Server Core installation)";
+                    break;
+
+                case "48":
+                    result = "Windows Professional";
+                    break;
+
+                case "50":
+                    result = "Windows Server Essentials (Desktop Experience installation)";
+                    break;
+
+                case "63":
+                    result = "Small Business Server Premium (Server Core installation)";
+                    break;
+
+                case "64":
+                    result = "Windows Compute Cluster Server without Hyper-V";
+                    break;
+
+                case "97":
+                    result = "Windows RT";
+                    break;
+
+                case "101":
+                    result = "Windows Home";
+                    break;
+
+                case "103":
+                    result = "Windows Professional with Media Center";
+                    break;
+
+                case "104":
+                    result = "Windows Mobile";
+                    break;
+
+                case "123":
+                    result = "Windows IoT (Internet of Things) Core";
+                    break;
+
+                case "143":
+                    result = "Windows Server Datacenter Edition (Nano Server installation)";
+                    break;
+
+                case "144":
+                    result = "Windows Server Standard Edition (Nano Server installation)";
+                    break;
+
+                case "147":
+                    result = "Windows Server Datacenter Edition (Server Core installation)";
+                    break;
+
+                case "148":
+                    result = "Windows Server Standard Edition (Server Core installation)";
+                    break;
+
+                case "175":
+                    result = "Windows Enterprise for Virtual Desktops (Azure Virtual Desktop)";
+                    break;
+
+                case "407":
+                    result = "Windows Server Datacenter: Azure Edition";
+                    break;
+
+                default:
+                    result = $"{Unknown} SKU: [{sku}]";
+                    break;
+            }
+
+            return result;
         }
 
         private string Hex(int value)

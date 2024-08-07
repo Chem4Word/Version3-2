@@ -20,7 +20,7 @@ namespace Chem4Word.Core.UI.Controls
 {
     public class CustomProgressBar : Control
     {
-        // Source https://code.msdn.microsoft.com/windowsdesktop/Custom-Colored-ProgressBar-a68b61de
+        // Source https://code.msdn.microsoft.com/windowsdesktop/Custom-Colored-ProgressBar-a68b61de (Error 404 (26-Feb-2024))
 
         private Blend _bBlend = new Blend();
         private int _minimum = 0;
@@ -67,11 +67,11 @@ namespace Chem4Word.Core.UI.Controls
 
         public CustomProgressBar()
         {
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.SupportsTransparentBackColor, true);
-            base.TabStop = false;
-            this.Size = new Size(200, 23);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.SupportsTransparentBackColor, true);
+            TabStop = false;
+            Size = new Size(200, 23);
             _bBlend.Positions = new float[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
-            this.GradiantPosition = GradiantArea.Top;
+            GradiantPosition = GradiantArea.Top;
             base.BackColor = Color.Transparent;
             _foreColorBrush = new SolidBrush(base.ForeColor);
             _borderPen = new Pen(Color.Black);
@@ -79,7 +79,7 @@ namespace Chem4Word.Core.UI.Controls
 
         [Category("Appearance"), Description("The foreground color of the ProgressBars text.")]
         [Browsable(true)]
-        public override System.Drawing.Color ForeColor
+        public override Color ForeColor
         {
             get { return base.ForeColor; }
             set
@@ -106,7 +106,7 @@ namespace Chem4Word.Core.UI.Controls
                     value = _backColor;
                 }
                 _backColor = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -123,7 +123,7 @@ namespace Chem4Word.Core.UI.Controls
                     value = _progressColor;
                 }
                 _progressColor = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -136,7 +136,7 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _gradiantColor = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -151,7 +151,7 @@ namespace Chem4Word.Core.UI.Controls
                 if (value > _maximum)
                     value = _maximum - 1;
                 _minimum = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -166,7 +166,7 @@ namespace Chem4Word.Core.UI.Controls
                 if (value <= _minimum)
                     value = _minimum + 1;
                 _maximum = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -183,7 +183,7 @@ namespace Chem4Word.Core.UI.Controls
                 if (value > _maximum)
                     value = _maximum;
                 _value = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -196,7 +196,7 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _border = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -214,7 +214,7 @@ namespace Chem4Word.Core.UI.Controls
                 }
                 _borderColor = value;
                 _borderPen.Color = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -227,7 +227,7 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _showPercentage = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -240,7 +240,7 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _showText = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -269,7 +269,7 @@ namespace Chem4Word.Core.UI.Controls
                 {
                     _bBlend.Factors = new float[] { 0f, 0f, 0.4f, 0.6f, 0.7f, 0.8f }; //Shine Bottom
                 }
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -281,7 +281,7 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _image = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -295,7 +295,7 @@ namespace Chem4Word.Core.UI.Controls
             {
                 _imageLayout = value;
                 if (_image != null)
-                    this.Refresh();
+                    Refresh();
             }
         }
 
@@ -308,7 +308,7 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _roundedCorners = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -321,24 +321,24 @@ namespace Chem4Word.Core.UI.Controls
             set
             {
                 _progressDirection = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
-        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+        protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             Point StartPoint = new Point(0, 0);
-            Point EndPoint = new Point(0, this.Height);
+            Point EndPoint = new Point(0, Height);
 
             if (_progressDirection == ProgressDir.Vertical)
             {
-                EndPoint = new Point(this.Width, 0);
+                EndPoint = new Point(Width, 0);
             }
 
             using (GraphicsPath gp = new GraphicsPath())
             {
-                Rectangle rec = new Rectangle(0, 0, this.Width, this.Height);
+                Rectangle rec = new Rectangle(0, 0, Width, Height);
                 int rad = Convert.ToInt32(rec.Height / 2.5);
                 if (rec.Width < rec.Height)
                     rad = Convert.ToInt32(rec.Width / 2.5);
@@ -418,7 +418,7 @@ namespace Chem4Word.Core.UI.Controls
                 {
                     if (_imageLayout == ImageLayoutType.Stretch)
                     {
-                        e.Graphics.DrawImage(_image, 0, 0, this.Width, this.Height);
+                        e.Graphics.DrawImage(_image, 0, 0, Width, Height);
                     }
                     else if (_imageLayout == ImageLayoutType.None)
                     {
@@ -426,8 +426,8 @@ namespace Chem4Word.Core.UI.Controls
                     }
                     else
                     {
-                        int xx = Convert.ToInt32((this.Width / 2) - (_image.Width / 2));
-                        int yy = Convert.ToInt32((this.Height / 2) - (_image.Height / 2));
+                        int xx = Convert.ToInt32((Width / 2) - (_image.Width / 2));
+                        int yy = Convert.ToInt32((Height / 2) - (_image.Height / 2));
                         e.Graphics.DrawImage(_image, xx, yy);
                     }
                 }
@@ -436,18 +436,18 @@ namespace Chem4Word.Core.UI.Controls
                 {
                     string perc = "";
                     if (_showText)
-                        perc = this.Text;
+                        perc = Text;
                     if (_showPercentage)
                         perc += Convert.ToString(Convert.ToInt32(((double)100 / (double)(_maximum - _minimum)) * _value)) + "%";
                     using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
                     {
-                        e.Graphics.DrawString(perc, this.Font, _foreColorBrush, new Rectangle(0, 0, this.Width, this.Height), sf);
+                        e.Graphics.DrawString(perc, Font, _foreColorBrush, new Rectangle(0, 0, Width, Height), sf);
                     }
                 }
 
                 if (_border)
                 {
-                    rec = new Rectangle(0, 0, this.Width - 1, this.Height - 1);
+                    rec = new Rectangle(0, 0, Width - 1, Height - 1);
                     if (_roundedCorners)
                     {
                         gp.Reset();
@@ -466,9 +466,9 @@ namespace Chem4Word.Core.UI.Controls
             }
         }
 
-        protected override void OnTextChanged(System.EventArgs e)
+        protected override void OnTextChanged(EventArgs e)
         {
-            this.Refresh();
+            Refresh();
             base.OnTextChanged(e);
         }
 
@@ -480,62 +480,10 @@ namespace Chem4Word.Core.UI.Controls
         }
 
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
-        public override System.Drawing.Color BackColor
+        public override Color BackColor
         {
             get { return base.BackColor; }
             set { base.BackColor = Color.Transparent; }
-        }
-
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [System.Obsolete("BackgroundImageLayout is not implemented.", true)]
-        public new ImageLayout BackgroundImageLayout
-        {
-            get { return base.BackgroundImageLayout; }
-            set
-            {
-                // throw new NotImplementedException("BackgroundImageLayout is not implemented.");
-            }
-        }
-
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [System.Obsolete("BackgroundImage is not implemented.", true)]
-        public new Image BackgroundImage
-        {
-            get { return null; }
-            set
-            {
-                // throw new NotImplementedException("BackgroundImage is not implemented.");
-            }
-        }
-
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [System.Obsolete("TabStop is not implemented.", true)]
-        public new bool TabStop
-        {
-            get { return false; }
-            set
-            {
-                // throw new NotImplementedException("TabStop is not implemented.");
-            }
-        }
-
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [System.Obsolete("TabIndex is not implemented.", true)]
-        public new int TabIndex
-        {
-            get { return base.TabIndex; }
-            set
-            {
-                // throw new NotImplementedException("TabIndex is not implemented.");
-            }
         }
     }
 }

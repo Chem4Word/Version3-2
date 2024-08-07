@@ -13,3 +13,5 @@ rem pvk2pfx -pvk Chem4WordAddIn.pvk -spc Chem4WordAddIn.cer -pfx Chem4WordAddIn.
 
 makecert.exe -n "CN=Chem4Word AddIn" -r -pe -a sha512 -len 4096 -cy authority -sv Chem4WordAddIn.pvk Chem4WordAddIn.cer 
 pvk2pfx.exe -pvk Chem4WordAddIn.pvk -spc Chem4WordAddIn.cer -pfx Chem4WordAddIn.pfx -po Password_123
+
+git add -f Chem4WordAddIn.pfx
