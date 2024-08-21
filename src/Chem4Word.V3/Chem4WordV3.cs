@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -84,6 +85,8 @@ namespace Chem4Word
         public Chem4WordOptions SystemOptions;
         public LibraryOptions LibraryOptions;
         public TelemetryWriter Telemetry;
+
+        private System.Timers.Timer _timer;
 
         public List<IChem4WordEditor> Editors = new List<IChem4WordEditor>();
         public List<IChem4WordRenderer> Renderers = new List<IChem4WordRenderer>();
@@ -332,6 +335,11 @@ namespace Chem4Word
 
             try
             {
+                _timer = new System.Timers.Timer(1000);
+                _timer.Elapsed += OnTimerElapsed;
+                _timer.AutoReset = true;
+                _timer.Enabled = true;
+
                 SetButtonStates(ButtonState.NoDocument);
 
                 LoadOptions();
@@ -418,6 +426,23 @@ namespace Chem4Word
                 {
                     form.ShowDialog();
                 }
+            }
+        }
+
+        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (Telemetry != null
+                && Helper != null
+                && !string.IsNullOrEmpty(Helper.IpAddress)
+                && !Helper.IpAddress.Equals("0.0.0.0")
+                && !Helper.IpAddress.Equals("0.0.0.0"))
+            {
+                RegistryHelper.SendSetupActions();
+                RegistryHelper.SendUpdateActions();
+                RegistryHelper.SendMsiActions();
+
+                _timer.Enabled = false;
+                _timer.Elapsed -= OnTimerElapsed;
             }
         }
 
@@ -931,7 +956,7 @@ namespace Chem4Word
                     }
                 }
             }
-            
+
             if (plugin == null)
             {
                 Telemetry.Write(module, "Warning", $"Could not find renderer plug in {name}");
@@ -1633,6 +1658,8 @@ namespace Chem4Word
                 Telemetry.Write(module, "Exception", ex.ToString());
             }
 
+            ClearChemistryContextMenus();
+
             if (selectedWords.Count > 0)
             {
                 AddChemistryMenuPopup(selectedWords);
@@ -1711,7 +1738,8 @@ namespace Chem4Word
                             var popupControl = (CommandBarPopup)contextMenu.FindControl(
                                 MsoControlType.msoControlPopup, Type.Missing,
                                 ContextMenuTag, true, true);
-                            if (popupControl != null)
+                            if (popupControl != null
+                                && popupControl.Caption.Equals(ContextMenuText))
                             {
                                 popupControl.Delete(true);
                             }
@@ -1852,6 +1880,8 @@ namespace Chem4Word
                                 // Call disable first to ensure events not registered multiple times
                                 DisableContentControlEvents();
                                 EnableContentControlEvents();
+
+                                ClearChemistryContextMenus();
 
                                 SelectChemistry(document.Application.Selection);
                                 EvaluateChemistryAllowed();

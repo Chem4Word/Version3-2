@@ -58,6 +58,7 @@
     <Content Include="Chem4Word.ico" />
     <Content Include="EULA.rtf" />
     <Content Include="Test.cmd" />
+    <Content Include="Testing\Insert Test Messages.reg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Chem4Word.V3\Chem4Word.V3.csproj">
@@ -68,6 +69,9 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Testing" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

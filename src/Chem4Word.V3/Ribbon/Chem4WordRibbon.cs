@@ -618,6 +618,7 @@ namespace Chem4Word
             {
                 RegistryHelper.SendSetupActions();
                 RegistryHelper.SendUpdateActions();
+                RegistryHelper.SendMsiActions();
                 RegistryHelper.SendMessages();
                 RegistryHelper.SendExceptions();
             }

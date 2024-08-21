@@ -85,6 +85,17 @@ namespace Chem4Word.Helpers
             }
         }
 
+        public static void SendMsiActions()
+        {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordMsiActionsRegistryKey, true);
+            if (registryKey != null)
+            {
+                SendValues(module, "Setup", registryKey);
+            }
+        }
+
         public static void SendMessages()
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -103,7 +114,7 @@ namespace Chem4Word.Helpers
             var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordExceptionsRegistryKey, true);
             if (registryKey != null)
             {
-                SendValues(module, "Exceptions", registryKey);
+                SendValues(module, "Exception", registryKey);
             }
         }
 

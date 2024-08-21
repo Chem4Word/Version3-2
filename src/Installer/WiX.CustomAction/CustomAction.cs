@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 //  Copyright (c) 2024, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
@@ -77,6 +78,45 @@ namespace WiX.CustomAction
                 {
                     session.Log("  Error: Chem4Word installation folder not found !!!");
                 }
+            }
+            catch (Exception ex)
+            {
+                session.Log($"** Exception: {ex.Message} **");
+            }
+
+            session.Log($"End {nameof(SetupChem4Word)}()");
+
+            return ActionResult.Success;
+        }
+
+        [CustomAction]
+        public static ActionResult SetupChem4WordUser(Session session)
+        {
+            session.Log($"Begin {nameof(SetupChem4Word)}()");
+
+            session.Log($"  Running as {Environment.UserName}");
+
+            try
+            {
+                const string baseKey = @"SOFTWARE\Chem4Word V3";
+
+                var key = Registry.CurrentUser.OpenSubKey(baseKey, true);
+                if (key == null)
+                {
+                    key = Registry.CurrentUser.CreateSubKey(baseKey);
+                }
+
+                string actionsKey = $@"{baseKey}\MsiActions";
+                key = Registry.CurrentUser.OpenSubKey(actionsKey, true);
+                if (key == null)
+                {
+                    key = key = Registry.CurrentUser.CreateSubKey(actionsKey);
+                }
+
+                var versionNumber = "3.2.20.8999";
+
+                string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+                key.SetValue(timestamp, $"[-] V{versionNumber} - Installed");
             }
             catch (Exception ex)
             {

@@ -68,7 +68,7 @@ function Update-AllAssemblyInfoFiles ($version)
 
 # ---------------------------------------------------------- #
 
-# Validate arguments 
+# Validate arguments
 if ($args -ne $null) {
 	if ($version -eq '/?')
 	{
@@ -171,6 +171,19 @@ $xml.Save($wixProj)
 
 # ---------------------------------------------------------- #
 
+# Update Test.cmd
+Write-Host " Updating 'Test.cmd'" -ForegroundColor Yellow
+
+$file = "$($pwd)\..\Installer\WiXInstaller\Test.cmd"
+Write-Host "$($file)" -ForegroundColor Green
+
+$findPattern = 'set release=Chem4Word-Setup.*'
+$replaceWith = "set release=Chem4Word-Setup.$($version).$($dottedname).msi"
+
+(Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
+
+# ---------------------------------------------------------- #
+
 # Update SignFiles.cmd
 Write-Host " Updating 'Sign-Files.cmd'" -ForegroundColor Yellow
 
@@ -205,6 +218,19 @@ Write-Host "$($file)" -ForegroundColor Green
 
 $findPattern = 'var versionNumber = .*'
 $replaceWith = 'var versionNumber = "' + "$($version)" + '.666";';
+
+(Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
+
+# ---------------------------------------------------------- #
+
+# Update CustomAction.cs
+Write-Host " Updating 'CustomAction.cs'" -ForegroundColor Yellow
+
+$file = "$($pwd)\..\Installer\WiX.CustomAction\CustomAction.cs"
+Write-Host "$($file)" -ForegroundColor Green
+
+$findPattern = 'var versionNumber = .*'
+$replaceWith = 'var versionNumber = "' + "$($version)" + "." + "$($delta.Days)"  + '";';
 
 (Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
 
