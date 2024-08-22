@@ -1,7 +1,7 @@
 dir bin\Setup\
 rem pause
 
-set release=Chem4Word-Setup.3.2.20.Release.16.msi
+set release=Chem4Word-Setup.3.2.21.Release.17.msi
 
 del setup.log
 del remove.log
