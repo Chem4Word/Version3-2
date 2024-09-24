@@ -187,18 +187,22 @@ namespace Chem4Word.Telemetry
 
                 #region Get Office/Word Version
 
+                var functionName = "";
                 try
                 {
+                    functionName = "OfficeHelper.GetClick2RunProductIds()";
                     Click2RunProductIds = OfficeHelper.GetClick2RunProductIds();
 
+                    functionName = "OfficeHelper.GetWinWordVersionNumber()";
                     WordVersion = OfficeHelper.GetWinWordVersionNumber();
 
+                    functionName = "OfficeHelper.GetWordProduct()";
                     WordProduct = OfficeHelper.GetWordProduct(Click2RunProductIds);
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message);
-                    WordProduct = "Exception " + ex.Message;
+                    WordProduct = $"Exception in '{functionName}' " + ex.Message;
                 }
 
                 #endregion Get Office/Word Version

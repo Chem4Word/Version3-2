@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Core.Enums;
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
@@ -228,8 +229,8 @@ namespace Chem4Word.Model2.Converters.CML
             if (cmlElement.Attribute(CMLConstants.AttributeX2) != null && cmlElement.Attribute(CMLConstants.AttributeY2) != null)
             {
                 result = new Point(
-                    Double.Parse(cmlElement.Attribute(CMLConstants.AttributeX2).Value, CultureInfo.InvariantCulture),
-                    Double.Parse(cmlElement.Attribute(CMLConstants.AttributeY2).Value, CultureInfo.InvariantCulture));
+                    SafeDouble.Parse(cmlElement.Attribute(CMLConstants.AttributeX2).Value),
+                    SafeDouble.Parse(cmlElement.Attribute(CMLConstants.AttributeY2).Value));
                 found = true;
             }
 
@@ -239,8 +240,8 @@ namespace Chem4Word.Model2.Converters.CML
                 if (cmlElement.Attribute(CMLConstants.AttributeX3) != null && cmlElement.Attribute(CMLConstants.AttributeY3) != null)
                 {
                     result = new Point(
-                        Double.Parse(cmlElement.Attribute(CMLConstants.AttributeX3).Value, CultureInfo.InvariantCulture),
-                        Double.Parse(cmlElement.Attribute(CMLConstants.AttributeY3).Value, CultureInfo.InvariantCulture));
+                        SafeDouble.Parse(cmlElement.Attribute(CMLConstants.AttributeX3).Value),
+                        SafeDouble.Parse(cmlElement.Attribute(CMLConstants.AttributeY3).Value));
                     found = true;
                 }
             }

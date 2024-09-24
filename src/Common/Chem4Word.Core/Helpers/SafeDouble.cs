@@ -46,5 +46,14 @@ namespace Chem4Word.Core.Helpers
         /// <returns></returns>
         public static string AsString0(double value)
             => value.ToString("#,##0", CultureInfo.InvariantCulture);
+
+        /// <summary>
+        /// Parses a value into a double in a culture independent manner
+        /// In chemistry files doubles are always represented using comma for thousands and dot for decimal point
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static double Parse(string value)
+            => double.Parse(value, CultureInfo.InvariantCulture);
     }
 }

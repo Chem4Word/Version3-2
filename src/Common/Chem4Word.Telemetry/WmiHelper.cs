@@ -449,7 +449,7 @@ namespace Chem4Word.Telemetry
                         case "MaxClockSpeed":
                             try
                             {
-                                var speed = double.Parse(ObjectAsString(mgtObject[field])) / 1024;
+                                var speed = SafeDouble.Parse(ObjectAsString(mgtObject[field])) / 1024;
                                 _cpuSpeed = SafeDouble.AsString(speed) + "GHz";
                             }
                             catch

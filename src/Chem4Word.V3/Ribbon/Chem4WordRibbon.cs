@@ -616,9 +616,9 @@ namespace Chem4Word
         {
             if (Globals.Chem4WordV3.Telemetry != null)
             {
+                RegistryHelper.SendMsiActions();
                 RegistryHelper.SendSetupActions();
                 RegistryHelper.SendUpdateActions();
-                RegistryHelper.SendMsiActions();
                 RegistryHelper.SendMessages();
                 RegistryHelper.SendExceptions();
             }
@@ -842,6 +842,10 @@ namespace Chem4Word
 
                                             if (changedProperties > 0)
                                             {
+                                                afterModel.SetAnyMissingNameIds();
+                                                afterModel.ReLabelGuids();
+                                                afterModel.Relabel(true);
+
                                                 using (var host =
                                                        new EditLabelsHost(
                                                            new AcmeOptions(Globals.Chem4WordV3.AddInInfo.ProductAppDataPath)))
@@ -1392,15 +1396,18 @@ namespace Chem4Word
                     {
                         foreach (var searcher in Globals.Chem4WordV3.Searchers.OrderBy(s => s.DisplayOrder))
                         {
-                            var ribbonButton = this.Factory.CreateRibbonButton();
+                            if (searcher.DisplayOrder >= 0)
+                            {
+                                var ribbonButton = this.Factory.CreateRibbonButton();
 
-                            ribbonButton.Label = searcher.ShortName;
-                            ribbonButton.Tag = searcher.Name;
-                            ribbonButton.SuperTip = searcher.Description;
-                            ribbonButton.Image = searcher.Image;
-                            ribbonButton.Click += OnClick_Searcher;
+                                ribbonButton.Label = searcher.ShortName;
+                                ribbonButton.Tag = searcher.Name;
+                                ribbonButton.SuperTip = searcher.Description;
+                                ribbonButton.Image = searcher.Image;
+                                ribbonButton.Click += OnClick_Searcher;
 
-                            WebSearchMenu.Items.Add(ribbonButton);
+                                WebSearchMenu.Items.Add(ribbonButton);
+                            }
                         }
                     }
                 }

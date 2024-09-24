@@ -191,9 +191,9 @@ namespace Chem4Word.Model2.Converters.MDL
                     // create atom
                     Atom thisAtom = new Atom();
 
-                    double x = Double.Parse(GetSubString(line, 0, 9), CultureInfo.InvariantCulture);
-                    double y = Double.Parse(GetSubString(line, 10, 9), CultureInfo.InvariantCulture);
-                    double z = Double.Parse(GetSubString(line, 20, 9), CultureInfo.InvariantCulture);
+                    double x = SafeDouble.Parse(GetSubString(line, 0, 9));
+                    double y = SafeDouble.Parse(GetSubString(line, 10, 9));
+                    double z = SafeDouble.Parse(GetSubString(line, 20, 9));
 
                     // Inverting Y co-ordinate to make it the right way up.
                     thisAtom.Position = new Point(x, 0 - y);
@@ -941,7 +941,7 @@ namespace Chem4Word.Model2.Converters.MDL
 
         private static string OutputMDLFloat(double value)
         {
-            string s = value.ToString("0.0000", CultureInfo.InvariantCulture);
+            string s = SafeDouble.AsCMLString(value);
             while (s.Length < 10)
             {
                 s = " " + s;

@@ -23,30 +23,30 @@ namespace Chem4Word.Core
         /// Used in ChemicalServices.cs; ServicePointManager.FindServicePoint(...)
         /// </summary>
         [JsonProperty]
-        public string ChemicalServicesUri { get; set; }
+        public string ChemicalServicesUri { get; private set; }
 
         /// <summary>
         /// Used in AzureServiceBusWriter.cs to construct ServiceBusClient
         /// </summary>
         [JsonProperty]
-        public string ServiceBusEndPoint { get; set; }
+        public string ServiceBusEndPoint { get; private set; }
 
         /// <summary>
         /// Used in AzureServiceBusWriter.cs to construct ServiceBusClient
         /// </summary>
         [JsonProperty]
-        public string ServiceBusToken { get; set; }
+        public string ServiceBusToken { get; private set; }
 
         /// <summary>
         /// Used in AzureServiceBusWriter.cs; CreateSender
         /// </summary>
         [JsonProperty]
-        public string ServiceBusQueue { get; set; }
+        public string ServiceBusQueue { get; private set; }
 
         /// <summary>
         /// Stores when last checked
         /// </summary>
-        public string LastChecked { get; set; }
+        public string LastChecked { get; private set; }
 
         private bool _dirty;
 
@@ -70,7 +70,7 @@ namespace Chem4Word.Core
             // 1. Attempt to get from registry
             var refreshFromWebRequired = GetFromRegistry();
 
-            // 2. If not found or too old; attempt to get from Chem4Word web site(s)
+            // 2. If missing / not found / too old; attempt to get from Chem4Word web site(s)
             if (refreshFromWebRequired || string.IsNullOrEmpty(LastChecked) || !LastChecked.Equals(today))
             {
                 GetFromWebsite(today);
@@ -198,12 +198,14 @@ namespace Chem4Word.Core
                 if (!string.IsNullOrEmpty(temp))
                 {
                     var settings = JsonConvert.DeserializeObject<AzureSettings>(temp);
+
+                    _dirty = LastChecked != today;
+
                     ChemicalServicesUri = settings.ChemicalServicesUri;
                     ServiceBusEndPoint = settings.ServiceBusEndPoint;
                     ServiceBusToken = settings.ServiceBusToken;
                     ServiceBusQueue = settings.ServiceBusQueue;
                     LastChecked = today;
-                    _dirty = true;
                 }
             }
             catch

@@ -5,6 +5,7 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
 using Newtonsoft.Json;
@@ -245,7 +246,7 @@ namespace Chem4Word.Model2.Converters.JSON
                     string o;
                     if (b.o != null)
                     {
-                        o = Bond.OrderValueToOrder(double.Parse(b.o.ToString()));
+                        o = Bond.OrderValueToOrder(SafeDouble.Parse(b.o.ToString()));
                     }
                     else
                     {
