@@ -6,6 +6,7 @@ set signtoolpath=C:\Tools\Azure\SignTool\sign.exe
 
 echo Copying files to %working%
 copy ..\Chem4Word.V3\Data\Chem4Word-Versions.xml %working% > nul
+copy ..\Chem4Word.V3\Data\index.html %working% > nul
 
 copy ..\Installer\Chem4WordSetup\bin\Setup\Chem4Word-Setup.exe %working% > nul
 copy ..\Installer\WiXInstaller\bin\Setup\%release% %working% > nul

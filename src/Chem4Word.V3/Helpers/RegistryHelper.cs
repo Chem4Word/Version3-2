@@ -120,63 +120,85 @@ namespace Chem4Word.Helpers
 
         private static void SendValues(string module, string level, RegistryKey registryKey)
         {
-            var names = registryKey.GetValueNames();
-            var values = new List<string>();
+            var keys = registryKey.GetValueNames();
+            var values = new List<RegistryMessage>();
 
-            foreach (var name in names)
+            foreach (var key in keys)
             {
-                var message = registryKey.GetValue(name).ToString();
+                var value = registryKey.GetValue(key).ToString();
 
-                var timestamp = name;
+                var timestamp = key;
                 var bracket = timestamp.IndexOf("[", StringComparison.InvariantCulture);
                 if (bracket > 0)
                 {
                     timestamp = timestamp.Substring(0, bracket).Trim();
                 }
 
-                values.Add($"{timestamp} {message}");
-                registryKey.DeleteValue(name);
-            }
-
-            // Group the messages by day
-            var groupedByDay = values
-                .GroupBy(g => g.Substring(0, 10))
-                .ToList();
-
-            var depth = 0;
-            foreach (var group in groupedByDay)
-            {
-                SendData(module, level, group.ToList(), ref depth);
-            }
-        }
-
-        private static void SendData(string module, string level, List<string> values, ref int depth)
-        {
-            if (values.Any())
-            {
-                depth++;
-
-                var message = string.Join(Environment.NewLine, values);
-
-                if (values.Count == 1 || message.Length < 32_000)
+                var temp = new RegistryMessage
                 {
-                    // Single value or message small enough to send
-                    Globals.Chem4WordV3.Telemetry.Write(module, level, message);
+                    Date = timestamp
+                };
+
+                bracket = value.IndexOf("]", StringComparison.InvariantCulture);
+                if (bracket > 0)
+                {
+                    temp.ProcessId = value.Substring(1, bracket - 1).Trim();
+                    temp.Message = value.Substring(bracket + 1).Trim();
                 }
                 else
                 {
-                    // Ensure that the recursion doesn't get too deep
-                    if (depth < 4)
-                    {
-                        // Split it into smaller groups, by hour, minute, second
-                        var extra = depth * 3;
-                        var groups = values
-                                     .GroupBy(g => g.Substring(0, 10 + extra))
-                                     .ToList();
+                    temp.Message = value;
+                }
 
-                        foreach (var group in groups)
+                values.Add(temp);
+                registryKey.DeleteValue(key);
+            }
+
+            // Group the messages by day
+            var days = values
+                .GroupBy(g => g.Date.Substring(0, 10))
+                .ToList();
+
+            var depth = 0;
+            foreach (var day in days)
+            {
+                SendData(module, level, day.ToList(), ref depth);
+            }
+        }
+
+        private static void SendData(string module, string level, List<RegistryMessage> messages, ref int depth)
+        {
+            if (messages.Any())
+            {
+                depth++;
+
+                // Group messages by process id
+                var processes = messages
+                    .GroupBy(g => g.ProcessId)
+                    .ToList();
+
+                foreach (var process in processes)
+                {
+                    var message = string.Join(Environment.NewLine, process.ToList());
+                    // Maximum length of a message in Azure Service bus is 32K, use 125 for testing
+                    if (message.Length < 32_000)
+                    {
+                        Globals.Chem4WordV3.Telemetry.Write(module, level, message);
+                    }
+                    else
+                    {
+                        if (depth < 4)
                         {
-                            SendData(module, level, group.ToList(), ref depth);
+                            var extra = depth * 3;
+
+                            // Re-Group by Hour, Minute, Second based on depth
+                            var groups = messages
+                                .GroupBy(g => g.Date.Substring(0, 10 + extra))
+                                .ToList();
+                            foreach (var group in groups)
+                            {
+                                SendData(module, level, group.ToList(), ref depth);
+                            }
                         }
                     }
                 }
