@@ -67,6 +67,18 @@ namespace Chem4Word.Helpers
             return guid;
         }
 
+        public static string PrefixFromTag(string tag)
+        {
+            var prefix = string.Empty;
+
+            if (!string.IsNullOrEmpty(tag))
+            {
+                prefix = tag.Contains(":") ? tag.Split(':')[0] : tag;
+            }
+
+            return prefix;
+        }
+
         public static CustomXMLPart GetCustomXmlPart(Word.Document document, string id)
         {
             CustomXMLPart result = null;

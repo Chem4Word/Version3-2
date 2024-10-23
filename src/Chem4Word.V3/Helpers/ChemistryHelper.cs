@@ -199,13 +199,8 @@ namespace Chem4Word.Helpers
 
             foreach (var target in targets)
             {
-                var prefix = "";
                 var ccTag = target.Value;
-
-                if (ccTag != null && ccTag.Contains(":"))
-                {
-                    prefix = ccTag.Split(':')[0];
-                }
+                var prefix = CustomXmlPartHelper.PrefixFromTag(target.Value);
 
                 if (ccTag != null && ccTag.Equals(cxmlId))
                 {
