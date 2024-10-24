@@ -333,7 +333,9 @@ namespace Chem4Word.Telemetry
             }
 
             WritePrivate("StartUp", "Information", $"UUID: {_wmiHelper.Uuid}");
+#if DEBUG
             WritePrivate("StartUp", "Information", $"User: {_helper.UserName}");
+#endif
 
             // Dot Net Version
             WritePrivate("StartUp", "Information", $"{_helper.DotNetVersion}");
