@@ -5,11 +5,11 @@
     <Version>
         <Number>3.2.22 Release 18</Number>
         <IsBeta>false</IsBeta>
-        <Released>31-Oct-2024</Released>
+        <Released>01-Jan-2025</Released>
         <Changes>
             <Change>...</Change>
             <Change>...</Change>
-            <Change>...</Change>
+            <Change>Prevent search for empty string</Change>
             <Change>BugFix: Copy/Paste of 1D structure into new document - Pasted structure not editable.</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>

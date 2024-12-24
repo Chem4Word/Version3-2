@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2024, The .NET Foundation.
+//  Copyright (c) 2025, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -77,6 +77,8 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                 NextButton.Enabled = false;
                 PreviousButton.Enabled = false;
                 ImportButton.Enabled = false;
+                SearchButton.Enabled = false;
+
                 Results.Enabled = false;
                 AcceptButton = SearchButton;
 
@@ -98,13 +100,14 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
+                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+                Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
                 ErrorsAndWarnings.Text = "";
                 display1.Chemistry = null;
                 display1.Clear();
 
-                ExecuteSearch(0);
+                ExecuteSearch(searchFor, 0);
             }
             catch (Exception ex)
             {
@@ -117,7 +120,8 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                ExecuteSearch(-1);
+                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+                ExecuteSearch(searchFor, -1);
             }
             catch (Exception ex)
             {
@@ -130,7 +134,8 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                ExecuteSearch(1);
+                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+                ExecuteSearch(searchFor, 1);
             }
             catch (Exception ex)
             {
@@ -180,56 +185,57 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
         }
 
-        private void ExecuteSearch(int direction)
+        private void ExecuteSearch(string searchFor, int direction)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            if (TextHelper.IsValidSearchString(SearchFor.Text))
-            {
-                Cursor = Cursors.WaitCursor;
+            Cursor = Cursors.WaitCursor;
 
-                string webCall;
-                if (direction == 0)
+            string webCall;
+            if (direction == 0)
+            {
+                webCall = string.Format(CultureInfo.InvariantCulture,
+                                        "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}",
+                                        UserOptions.PubChemWebServiceUri, searchFor, UserOptions.ResultsPerCall);
+            }
+            else
+            {
+                if (direction == 1)
                 {
+                    int startFrom = firstResult + numResults;
                     webCall = string.Format(CultureInfo.InvariantCulture,
-                            "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}",
-                            UserOptions.PubChemWebServiceUri, SearchFor.Text, UserOptions.ResultsPerCall);
+                                            "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
+                                            UserOptions.PubChemWebServiceUri, searchFor, UserOptions.ResultsPerCall, webEnv, startFrom);
                 }
                 else
                 {
-                    if (direction == 1)
-                    {
-                        int startFrom = firstResult + numResults;
-                        webCall = string.Format(CultureInfo.InvariantCulture,
-                                "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
-                                UserOptions.PubChemWebServiceUri, SearchFor.Text, UserOptions.ResultsPerCall, webEnv, startFrom);
-                    }
-                    else
-                    {
-                        int startFrom = firstResult - numResults;
-                        webCall = string.Format(CultureInfo.InvariantCulture,
-                                "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
-                                UserOptions.PubChemWebServiceUri, SearchFor.Text, UserOptions.ResultsPerCall, webEnv, startFrom);
-                    }
+                    int startFrom = firstResult - numResults;
+                    webCall = string.Format(CultureInfo.InvariantCulture,
+                                            "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
+                                            UserOptions.PubChemWebServiceUri, searchFor, UserOptions.ResultsPerCall, webEnv, startFrom);
                 }
+            }
 
-                var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            var securityProtocol = ServicePointManager.SecurityProtocol;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-                var request = (HttpWebRequest)WebRequest.Create(webCall);
+            var request = (HttpWebRequest)WebRequest.Create(webCall);
 
-                request.Timeout = 30000;
-                request.UserAgent = "Chem4Word";
+            request.Timeout = 30000;
+            request.UserAgent = "Chem4Word";
 
-                HttpWebResponse response;
-                try
+            HttpWebResponse httpWebResponse;
+            try
+            {
+                httpWebResponse = (HttpWebResponse)request.GetResponse();
+                if (HttpStatusCode.OK.Equals(httpWebResponse.StatusCode))
                 {
-                    response = (HttpWebResponse)request.GetResponse();
-                    if (HttpStatusCode.OK.Equals(response.StatusCode))
+                    using (var responseStream = httpWebResponse.GetResponseStream())
                     {
-                        using (var resStream = response.GetResponseStream())
+                        var responseBody = new StreamReader(responseStream).ReadToEnd();
+                        try
                         {
-                            var resultDocument = XDocument.Load(new StreamReader(resStream));
+                            var resultDocument = XDocument.Parse(responseBody);
                             // Get the count of results
                             resultsCount = int.Parse(resultDocument.XPathSelectElement("//Count").Value);
                             // Current position
@@ -287,33 +293,39 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                                 ErrorsAndWarnings.Text = "Sorry, no results were found.";
                             }
                         }
-                    }
-                    else
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine($"Status code {response.StatusCode} was returned by the server");
-                        Telemetry.Write(module, "Warning", sb.ToString());
-                        UserInteractions.AlertUser(sb.ToString());
+                        catch (Exception innerException)
+                        {
+                            Telemetry.Write(module, "Exception", innerException.Message);
+                            Telemetry.Write(module, "Exception", innerException.StackTrace);
+                            Telemetry.Write(module, "Exception(Data)", responseBody);
+                        }
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    if (ex.Message.Equals("The operation has timed out"))
-                    {
-                        ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
-                    }
-                    else
-                    {
-                        ErrorsAndWarnings.Text = ex.Message;
-                        Telemetry.Write(module, "Exception", ex.Message);
-                        Telemetry.Write(module, "Exception", ex.StackTrace);
-                    }
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine($"Status code {httpWebResponse.StatusCode} was returned by the server");
+                    Telemetry.Write(module, "Warning", sb.ToString());
+                    UserInteractions.AlertUser(sb.ToString());
                 }
-                finally
+            }
+            catch (Exception outerException)
+            {
+                if (outerException.Message.Equals("The operation has timed out"))
                 {
-                    ServicePointManager.SecurityProtocol = securityProtocol;
-                    Cursor = Cursors.Default;
+                    ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
                 }
+                else
+                {
+                    ErrorsAndWarnings.Text = outerException.Message;
+                    Telemetry.Write(module, "Exception", outerException.Message);
+                    Telemetry.Write(module, "Exception", outerException.StackTrace);
+                }
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = securityProtocol;
+                Cursor = Cursors.Default;
             }
         }
 

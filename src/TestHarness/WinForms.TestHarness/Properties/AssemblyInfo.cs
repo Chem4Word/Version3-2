@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2024, The .NET Foundation.
+//  Copyright (c) 2025, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Chem4Word")]
 [assembly: AssemblyProduct("WinForms.TestHarness")]
-[assembly: AssemblyCopyright("© Chem4Word 2024. All rights reserved.")]
+[assembly: AssemblyCopyright("© Chem4Word 2025. All rights reserved.")]
 [assembly: AssemblyTrademark("Chem4Word")]
 [assembly: AssemblyCulture("")]
 
@@ -35,5 +35,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.22.9070")]
-[assembly: AssemblyFileVersion("3.2.22.9070")]
+[assembly: AssemblyVersion("3.2.22.9132")]
+[assembly: AssemblyFileVersion("3.2.22.9132")]

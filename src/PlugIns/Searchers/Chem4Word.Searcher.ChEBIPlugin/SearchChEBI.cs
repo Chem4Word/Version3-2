@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2024, The .NET Foundation.
+//  Copyright (c) 2025, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -78,7 +78,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
-        private void ExecuteSearch()
+        private void ExecuteSearch(string searchFor)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
@@ -98,7 +98,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
                 results = ws.getLiteEntity(new getLiteEntity
                 {
-                    search = SearchFor.Text,
+                    search = searchFor,
                     maximumResults = UserOptions.MaximumResults,
                     searchCategory = SearchCategory.ALL,
                     stars = StarsCategory.ALL
@@ -332,16 +332,18 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                if (!string.IsNullOrEmpty(SearchFor.Text))
+                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+
+                if (!string.IsNullOrEmpty(searchFor))
                 {
-                    Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
+                    Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
                     _lastModel = null;
                     _lastMolfile = string.Empty;
                     display1.Chemistry = null;
                     display1.Clear();
 
-                    ExecuteSearch();
+                    ExecuteSearch(searchFor);
                 }
             }
             catch (Exception ex)
@@ -365,13 +367,13 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     Top = (int)sensible.Y;
                 }
 
-                ResultsListView.Enabled = false;
-                ResultsListView.Items.Clear();
-
-                AcceptButton = SearchButton;
-
                 display1.Background = Brushes.White;
                 display1.HighlightActive = false;
+
+                ResultsListView.Enabled = false;
+                ResultsListView.Items.Clear();
+                AcceptButton = SearchButton;
+                SearchButton.Enabled = false;
 
                 EnableImport();
 

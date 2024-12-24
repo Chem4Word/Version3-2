@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2024, The .NET Foundation.
+//  Copyright (c) 2025, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -44,7 +44,8 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            Telemetry.Write(module, "Information", $"User searched for '{SearchFor.Text}'");
+            var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+            Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
             display1.Chemistry = null;
             display1.Clear();
@@ -54,7 +55,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
             var securityProtocol = ServicePointManager.SecurityProtocol;
             ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + SearchFor.Text);
+            UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + searchFor);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);
             request.Timeout = 30000;
             request.Accept = "chemical/x-cml";
@@ -80,7 +81,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                 switch (webResponse.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        ShowFailureMessage($"No valid representation of the name '{SearchFor.Text}' has been found");
+                        ShowFailureMessage($"No valid representation of the name '{searchFor}' has been found");
                         break;
 
                     case HttpStatusCode.RequestTimeout:
@@ -156,9 +157,13 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                 Left = (int)sensible.X;
                 Top = (int)sensible.Y;
             }
+
             display1.Background = Brushes.White;
             display1.HighlightActive = false;
+
             ImportButton.Enabled = false;
+            SearchButton.Enabled = false;
+
             LabelInfo.Text = "";
             AcceptButton = SearchButton;
         }

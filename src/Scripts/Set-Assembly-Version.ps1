@@ -19,7 +19,7 @@ function Help {
 	"Sets the AssemblyVersion and AssemblyFileVersion of AssemblyInfo.cs files`n"
 	".\SetAssemblyVersion.ps1 [VersionNumber] -path [SearchPath] -released [Released] -name [Name]`n"
 	"   [VersionNumber]     The version number to set, for example: 1.2.3"
-	"   [Released]          The release date, for example: 01-Jan-2024"
+	"   [Released]          The release date, for example: 01-Jan-2025"
 	"   [Name]              The name, for example: Beta 2"
 	"   [SearchPath]        The path to search for AssemblyInfo files.`n"
 }
