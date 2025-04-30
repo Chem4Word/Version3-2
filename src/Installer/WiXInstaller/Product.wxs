@@ -1,6 +1,6 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <!-- For automatic upgrade to work only first three parts of version number are used -->
-  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 18" Manufacturer="Chem4Word" Version="3.2.22.9251" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
+  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 19" Manufacturer="Chem4Word" Version="3.2.23.9404" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
     <MajorUpgrade DowngradeErrorMessage="A newer version of Chem4Word is already installed." />
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
     <!-- EULA Must be edited in WordPad NOT Word -->

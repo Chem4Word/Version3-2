@@ -1,6 +1,6 @@
 @echo off
 
-set release=Chem4Word-Setup.3.2.22.Release.18.msi
+set release=Chem4Word-Setup.3.2.23.Release.19.msi
 set working=C:\Temp
 set signtoolpath=C:\Tools\Azure\SignTool\sign.exe
 
@@ -9,7 +9,7 @@ copy ..\Chem4Word.V3\Data\Chem4Word-Versions.xml %working% > nul
 copy ..\Chem4Word.V3\Data\index.html %working% > nul
 
 copy ..\Installer\Chem4WordSetup\bin\Setup\Chem4Word-Setup.exe %working% > nul
-copy ..\Installer\WiXInstaller\bin\Setup\%release% %working% > nul
+copy ..\Installer\WiXInstaller\bin\x86\Setup\%release% %working% > nul
 
 pushd %working%
 dir
