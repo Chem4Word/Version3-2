@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Azure.Messaging.ServiceBus;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
-using Chem4Word.Shared;
 using IChem4Word.Contracts;
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Chem4Word.Shared;
 
 namespace Chem4Word.Telemetry
 {
@@ -53,7 +54,7 @@ namespace Chem4Word.Telemetry
 
         public void Write(string source, string level, string message)
         {
-            string unwanted = "Chem4Word.V3.";
+            var unwanted = "Chem4Word.V3.";
             if (source.StartsWith(unwanted))
             {
                 source = source.Remove(0, unwanted.Length);
@@ -77,9 +78,9 @@ namespace Chem4Word.Telemetry
 
             try
             {
-                string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.UtcNow)}.log");
-                using (StreamWriter w = File.AppendText(fileName))
+                var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                            $@"Chem4Word.V3\Telemetry\{SafeDate.ToIsoShortDate(DateTime.UtcNow)}.log");
+                using (var w = File.AppendText(fileName))
                 {
                     if (!_machineIdWritten)
                     {
@@ -89,7 +90,7 @@ namespace Chem4Word.Telemetry
                             _machineIdWritten = true;
                         }
                     }
-                    string logMessage = $"[{SafeDate.ToShortTime(DateTime.UtcNow)}] {source} - {level} - {message}";
+                    var logMessage = $"[{SafeDate.ToShortTime(DateTime.UtcNow)}] {source} - {level} - {message}";
                     w.WriteLine(logMessage);
                 }
             }
@@ -156,6 +157,20 @@ namespace Chem4Word.Telemetry
             }
         }
 
+        public void SendZipFile(byte[] bytes, string fileName)
+        {
+            var message = new ServiceBusMessage(bytes)
+            {
+                ContentType = "application/zip"
+            };
+
+            message.ApplicationProperties.Add("FileName", fileName);
+            message.ApplicationProperties.Add("MachineId", _helper.MachineId);
+            message.ApplicationProperties.Add("Chem4WordVersion", _helper.AddInVersion);
+
+            _azureServiceBusWriter.SendZipFileMessage(message);
+        }
+
         /// <summary>
         /// "Last chance" fix for missing word version number
         /// </summary>
@@ -198,7 +213,7 @@ namespace Chem4Word.Telemetry
                 WritePrivate("StartUp", "Timing", string.Join(Environment.NewLine, _helper.StartUpTimings));
             }
 
-            List<string> lines = new List<string>();
+            var lines = new List<string>();
 
             if (_helper.SystemUtcDateTime > DateTime.MinValue)
             {
@@ -212,12 +227,12 @@ namespace Chem4Word.Telemetry
                 lines.Add($"Calculated UTC Offset is {_helper.UtcOffset}");
                 if (_helper.UtcOffset > 0)
                 {
-                    TimeSpan delta = TimeSpan.FromTicks(_helper.UtcOffset);
+                    var delta = TimeSpan.FromTicks(_helper.UtcOffset);
                     lines.Add($"System UTC DateTime is {delta} ahead of Server time");
                 }
                 if (_helper.UtcOffset < 0)
                 {
-                    TimeSpan delta = TimeSpan.FromTicks(0 - _helper.UtcOffset);
+                    var delta = TimeSpan.FromTicks(0 - _helper.UtcOffset);
                     lines.Add($"System UTC DateTime is {delta} behind Server time");
                 }
 
@@ -268,10 +283,10 @@ namespace Chem4Word.Telemetry
 #if DEBUG
             lines = new List<string>();
 
-            string clientName = Environment.GetEnvironmentVariable("CLIENTNAME");
-            string userDomainName = Environment.UserDomainName;
-            string userName = Environment.UserName;
-            string machineName = Environment.MachineName;
+            var clientName = Environment.GetEnvironmentVariable("CLIENTNAME");
+            var userDomainName = Environment.UserDomainName;
+            var userName = Environment.UserName;
+            var machineName = Environment.MachineName;
             string userSummary;
 
             if (userDomainName.Equals(machineName))
@@ -296,8 +311,8 @@ namespace Chem4Word.Telemetry
             lines.Add($"Debug - Environment.OSVersion: {Environment.OSVersion}");
             lines.Add($"Debug - Environment.Version: {Environment.Version}");
 
-            lines.Add($"Debug - Environment.CommandLine: {Environment.CommandLine}");
             lines.Add($"Debug - AddIn Location: {_helper.AddInLocation}");
+            lines.Add($"Debug - Environment.CommandLine: {Environment.CommandLine}");
 
             WritePrivate("StartUp", "Information", string.Join(Environment.NewLine, lines));
 
@@ -327,8 +342,8 @@ namespace Chem4Word.Telemetry
             }
             else
             {
-                string bits = Environment.Is64BitOperatingSystem ? "64bit" : "32bit";
-                string culture = CultureInfo.CurrentCulture.Name;
+                var bits = Environment.Is64BitOperatingSystem ? "64bit" : "32bit";
+                var culture = CultureInfo.CurrentCulture.Name;
                 WritePrivate("StartUp", "Information", $"{_wmiHelper.OSCaption} {bits} [{_wmiHelper.OSVersion}] {culture}");
             }
 
@@ -378,7 +393,7 @@ namespace Chem4Word.Telemetry
                     processId = _helper.ProcessId;
                     if (string.IsNullOrEmpty(_helper.MachineId) || _helper.MachineId.Equals(Guid.Empty.ToString("D")))
                     {
-                        SystemHelper.GetMachineId();
+                        machineId = SystemHelper.GetMachineId();
                     }
                     else
                     {

@@ -52,7 +52,7 @@ namespace Chem4Word.WebServices
 
             try
             {
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
                 using (HttpClient httpClient = new HttpClient())
                 {

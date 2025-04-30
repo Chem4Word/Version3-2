@@ -69,6 +69,10 @@ namespace Chem4Word.ACME
         public event PropertyChangedEventHandler PropertyChanged;
 
         public double Standoff => SymbolSize / 6;
+
+        /// <summary>
+        /// This model is the model being actively edited
+        /// </summary>
         public Model Model { get; }
 
         public double SymbolScalingFactor => 1.5;

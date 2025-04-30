@@ -53,7 +53,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
             Cursor = Cursors.WaitCursor;
 
             var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
             UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + searchFor);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);

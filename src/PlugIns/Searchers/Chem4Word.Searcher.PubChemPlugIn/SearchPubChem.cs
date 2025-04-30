@@ -217,7 +217,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
 
             var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
             var request = (HttpWebRequest)WebRequest.Create(webCall);
 
@@ -343,7 +343,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             request.UserAgent = "Chem4Word";
 
             var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
             HttpWebResponse response;
             try
@@ -429,7 +429,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                     // https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/241/record/SDF
 
                     var securityProtocol = ServicePointManager.SecurityProtocol;
-                    ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                    ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
                     try
                     {

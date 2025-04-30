@@ -358,10 +358,10 @@ namespace Chem4Word.ACME.Behaviors
             Vector newDirection;
 
             ClockDirections newTag;
-
+            var newBondLength = EditController.CurrentBondLength * ScaleFactorForXaml;
             if (lastAtom.Degree == 0) //isolated atom
             {
-                newDirection = ClockDirections.II.ToVector() * EditController.Model.XamlBondLength;
+                newDirection = ClockDirections.II.ToVector() * newBondLength;
                 newTag = ClockDirections.II;
             }
             else if (lastAtom.Degree == 1)
@@ -374,7 +374,7 @@ namespace Chem4Word.ACME.Behaviors
                 {
                     //Tag is used to store the direction the atom sprouted from its previous atom
                     newTag = GetNewSproutDirection(hour);
-                    newDirection = newTag.ToVector() * EditController.Model.XamlBondLength;
+                    newDirection = newTag.ToVector() * newBondLength;
                 }
                 else //it has sprouted, so where to put the new branch?
                 {
@@ -386,13 +386,13 @@ namespace Chem4Word.ACME.Behaviors
                     var balancingVector = -(vecA + vecB);
                     balancingVector.Normalize();
                     newTag = SnapToHour(balancingVector);
-                    newDirection = balancingVector * EditController.Model.XamlBondLength;
+                    newDirection = balancingVector * newBondLength;
                 }
             }
             else
             {
                 var balancingVector = lastAtom.BalancingVector();
-                newDirection = balancingVector * EditController.Model.XamlBondLength;
+                newDirection = balancingVector * newBondLength;
                 newTag = SnapToHour(balancingVector);
             }
 

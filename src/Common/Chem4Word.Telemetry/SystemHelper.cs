@@ -748,7 +748,7 @@ namespace Chem4Word.Telemetry
             {
                 if (url.StartsWith("https"))
                 {
-                    ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                    ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
                 }
 
                 if (WebRequest.Create(url) is HttpWebRequest request)

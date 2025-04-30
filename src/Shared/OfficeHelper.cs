@@ -18,6 +18,27 @@ namespace Chem4Word.Shared
 {
     public static class OfficeHelper
     {
+        // Office 2007 https://support.microsoft.com/en-us/kb/928516
+        // Office 2010 https://support.microsoft.com/en-us/kb/2186281
+        // Office 2013 https://support.microsoft.com/en-us/kb/2786054
+        // Office 2016 https://support.microsoft.com/en-us/kb/3120274
+
+        //           1         2         3
+        // 01234567890123456789012345678901234567
+        // {BRMMmmmm-PPPP-LLLL-p000-D000000FF1CE}
+
+        // The following table describes the characters of the GUID.
+        // B    Release version 0-9, A-F
+        // R    Release type 0-9, A-F
+        // MM   Major version 0-9
+        // mmmm Minor version 0-9
+        // PPPP Product ID 0-9, A-F
+        // LLLL Language identifier 0-9, A-F
+        // p    0 for x86, 1 for x64 0-1
+        // 000  Reserved for future use, currently 0 0
+        // D    1 for debug, 0 for ship 0-1
+        // 000000FF1CE Office Family ID
+
         private static string WinwordAppPath = @"Software\Microsoft\Windows\CurrentVersion\App Paths\winword.exe";
 
         private static string InstallRootTemplate64 = @"SOFTWARE\Microsoft\Office\{0}.0\Word\InstallRoot";
@@ -396,27 +417,6 @@ namespace Chem4Word.Shared
 
         private static string DecodeBits(string officeGuid)
         {
-            // Office 2007 https://support.microsoft.com/en-us/kb/928516
-            // Office 2010 https://support.microsoft.com/en-us/kb/2186281
-            // Office 2013 https://support.microsoft.com/en-us/kb/2786054
-            // Office 2016 https://support.microsoft.com/en-us/kb/3120274
-
-            //           1         2         3
-            // 01234567890123456789012345678901234567
-            // {BRMMmmmm-PPPP-LLLL-p000-D000000FF1CE}
-
-            // The following table describes the characters of the GUID.
-            // B    Release version 0-9, A-F
-            // R    Release type 0-9, A-F
-            // MM   Major version 0-9
-            // mmmm Minor version 0-9
-            // PPPP Product ID 0-9, A-F
-            // LLLL Language identifier 0-9, A-F
-            // p    0 for x86, 1 for x64 0-1
-            // 000  Reserved for future use, currently 0 0
-            // D    1 for debug, 0 for ship 0-1
-            // 000000FF1CE Office Family ID
-
             string result = "";
 
             string releaseVersion = officeGuid.Substring(1, 1);
@@ -446,27 +446,6 @@ namespace Chem4Word.Shared
 
         private static string DecodeOfficeGuid(string officeGuid)
         {
-            // Office 2007 https://support.microsoft.com/en-us/kb/928516
-            // Office 2010 https://support.microsoft.com/en-us/kb/2186281
-            // Office 2013 https://support.microsoft.com/en-us/kb/2786054
-            // Office 2016 https://support.microsoft.com/en-us/kb/3120274
-
-            //           1         2         3
-            // 01234567890123456789012345678901234567
-            // {BRMMmmmm-PPPP-LLLL-p000-D000000FF1CE}
-
-            // The following table describes the characters of the GUID.
-            // B    Release version 0-9, A-F
-            // R    Release type 0-9, A-F
-            // MM   Major version 0-9
-            // mmmm Minor version 0-9
-            // PPPP Product ID 0-9, A-F
-            // LLLL Language identifier 0-9, A-F
-            // p    0 for x86, 1 for x64 0-1
-            // 000  Reserved for future use, currently 0 0
-            // D    1 for debug, 0 for ship 0-1
-            // 000000FF1CE Office Family ID
-
             string result = "";
 
             string releaseVersion = officeGuid.Substring(1, 1);
@@ -541,7 +520,7 @@ namespace Chem4Word.Shared
                             break;
 
                         default:
-                            result = "Microsoft Office 2007 " + officeGuid;
+                            result = "Microsoft Office 2007 {" + officeGuid + "}";
                             break;
                     }
                     break;
@@ -591,7 +570,7 @@ namespace Chem4Word.Shared
                             break;
 
                         default:
-                            result = "Microsoft Office 2010 " + officeGuid;
+                            result = "Microsoft Office 2010 {" + officeGuid + "}";
                             break;
                     }
                     break;
@@ -633,7 +612,7 @@ namespace Chem4Word.Shared
                             break;
 
                         default:
-                            result = "Microsoft Office 2013 " + officeGuid;
+                            result = "Microsoft Office 2013 {" + officeGuid + "}";
                             break;
                     }
                     break;
@@ -642,7 +621,7 @@ namespace Chem4Word.Shared
 
                 case 16:
 
-                    #region Office 2016 / 365 / 2019
+                    #region Office 2016 / 2019 / 2024 / 365
 
                     switch (productId)
                     {
@@ -663,12 +642,12 @@ namespace Chem4Word.Shared
                             break;
 
                         default:
-                            result = "Microsoft Office 2016 " + officeGuid;
+                            result = "Microsoft Office 2016 {" + officeGuid + "}";
                             break;
                     }
                     break;
 
-                    #endregion Office 2016 / 365 / 2019
+                    #endregion Office 2016 / 2019 / 2024 / 365
             }
 
             #region 32 / 64 bit

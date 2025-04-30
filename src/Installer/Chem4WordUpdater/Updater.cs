@@ -37,26 +37,26 @@ namespace Chem4WordUpdater
             InitializeComponent();
             if (args.Length > 0)
             {
-                bool ok = true;
-                string[] pp = args[0].ToLower().Split(new char[] { '/', '.', '-' }, StringSplitOptions.RemoveEmptyEntries);
+                var ok = true;
+                var parts = args[0].ToLower().Split(new char[] { '/', '.', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
                 // Check 1 ensure that website is the source
-                if (!(pp[0].Equals("https:") || pp[0].Equals("http:")))
+                if (!(parts[0].Equals("https:") || parts[0].Equals("http:")))
                 {
                     ok = false;
                 }
 
                 if (ok)
                 {
-                    // Check 2 ensure that chem4word occours twice
-                    var x = pp.Where(p => p.Contains("chem4word")).Count();
+                    // Check 2 ensure that chem4word occurs twice
+                    var x = parts.Where(p => p.Contains("chem4word")).Count();
                     if (x != 2)
                     {
                         ok = false;
                     }
 
                     // Check 3 ensure that file is exe or msi
-                    if (!(pp.Last().Equals("msi") || pp.Last().Equals("exe")))
+                    if (!(parts.Last().Equals("msi") || parts.Last().Equals("exe")))
                     {
                         ok = false;
                     }
@@ -83,7 +83,7 @@ namespace Chem4WordUpdater
             }
         }
 
-        private void Cancel_Click(object sender, EventArgs e)
+        private void OnClick_Cancel(object sender, EventArgs e)
         {
             RegistryHelper.WriteAction("Update was cancelled by User");
             timer1.Enabled = false;
@@ -99,9 +99,9 @@ namespace Chem4WordUpdater
             Close();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void OnTick_timer1(object sender, EventArgs e)
         {
-            int wordCount = ShowWordProcesses();
+            var wordCount = ShowWordProcesses();
             if (wordCount == 0 && _downloadCompleted)
             {
                 RegistryHelper.WriteAction("Conditions right to run Update");
@@ -111,8 +111,33 @@ namespace Chem4WordUpdater
                 Thread.Sleep(1000);
 
                 RegistryHelper.WriteAction("Running Chem4Word Update");
-                int exitCode = RunProcess(_downloadedFile, "");
-                RegistryHelper.WriteAction($"Chem4Word ExitCode: {exitCode}");
+                const int retryLimit = 3;
+                var exitCode = -1;
+                var retries = 0;
+                while (exitCode != 0 && retries < retryLimit)
+                {
+                    exitCode = ProcessHelper.RunMsi(_downloadedFile);
+                    RegistryHelper.WriteAction($"Chem4Word ExitCode: {exitCode} Attempt: {retries}");
+                    if (exitCode == 0)
+                    {
+                        break;
+                    }
+
+                    if (exitCode == 1602 || exitCode == 1603)
+                    {
+                        if (retries < retryLimit - 1)
+                        {
+                            Information.Text = $"ExitCode: {exitCode}; Waiting for a few seconds before trying again!";
+                            Application.DoEvents();
+                            Thread.Sleep(3000);
+                        }
+                        retries++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
                 if (exitCode == 0)
                 {
@@ -130,7 +155,7 @@ namespace Chem4WordUpdater
 
         private int ShowWordProcesses()
         {
-            Process[] processes = Process.GetProcessesByName("winword");
+            var processes = Process.GetProcessesByName("winword");
 
             WordInstances.Items.Clear();
             foreach (var proc in processes)
@@ -148,7 +173,10 @@ namespace Chem4WordUpdater
 
         private bool DownloadFile(string url)
         {
-            bool started = false;
+            var started = false;
+
+            var securityProtocol = ServicePointManager.SecurityProtocol;
+
             _sw = new Stopwatch();
             _sw.Start();
 
@@ -158,13 +186,13 @@ namespace Chem4WordUpdater
 
                 RegistryHelper.WriteAction($"Downloading {url}");
 
-                string[] parts = url.Split('/');
-                string filename = parts[parts.Length - 1];
+                var parts = url.Split('/');
+                var filename = parts[parts.Length - 1];
 
                 _msiOriginalFileName = filename;
-                string guid = Guid.NewGuid().ToString("N");
+                var guid = Guid.NewGuid().ToString("N");
 
-                string downloadPath = FolderHelper.GetPath(KnownFolder.Downloads);
+                var downloadPath = FolderHelper.GetPath(KnownFolder.Downloads);
                 if (!Directory.Exists(downloadPath))
                 {
                     downloadPath = Path.GetTempPath();
@@ -172,8 +200,7 @@ namespace Chem4WordUpdater
 
                 _downloadedFile = Path.Combine(downloadPath, filename);
 
-                var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 _webClient = new WebClient();
                 _webClient.Headers.Add("user-agent", "Chem4Word Updater");
@@ -189,6 +216,10 @@ namespace Chem4WordUpdater
             {
                 RegistryHelper.WriteAction(ex.Message);
                 Information.Text = ex.Message;
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = securityProtocol;
             }
 
             return started;
@@ -219,7 +250,7 @@ namespace Chem4WordUpdater
             }
             else
             {
-                FileInfo fi = new FileInfo(_downloadedFile);
+                var fi = new FileInfo(_downloadedFile);
                 if (fi.Length == 0)
                 {
                     _retryCount++;
@@ -240,9 +271,9 @@ namespace Chem4WordUpdater
                     UpdateNow.Enabled = false;
                     Information.Text = "Your update has been downloaded.  It will be automatically installed once all Microsoft Word processes are closed.";
                     RegistryHelper.WriteAction($"Downloading of {_downloadTarget} took {_sw.ElapsedMilliseconds.ToString("#,##0", CultureInfo.InvariantCulture)}ms");
-                    double seconds = _sw.ElapsedMilliseconds / 1000.0;
-                    double kiloBytes = fi.Length / 1024.0;
-                    double speed = kiloBytes / seconds / 1000.0;
+                    var seconds = _sw.ElapsedMilliseconds / 1000.0;
+                    var kiloBytes = fi.Length / 1024.0;
+                    var speed = kiloBytes / seconds / 1000.0;
                     RegistryHelper.WriteAction($"Download speed {speed.ToString("#,##0.000", CultureInfo.InvariantCulture)}MiB/s");
                 }
             }
@@ -253,38 +284,7 @@ namespace Chem4WordUpdater
             progressBar1.Value = e.ProgressPercentage;
         }
 
-        private int RunProcess(string exePath, string arguments)
-        {
-            int exitCode = -1;
-
-            // Erase previously stored Update Checks
-            RegistryKey key = Registry.CurrentUser.CreateSubKey(Constants.Chem4WordRegistryKey);
-            if (key != null)
-            {
-                try
-                {
-                    key.DeleteValue(Constants.RegistryValueNameLastCheck);
-                    key.DeleteValue(Constants.RegistryValueNameVersionsBehind);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                }
-            }
-
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = arguments;
-            start.FileName = exePath;
-            using (Process proc = Process.Start(start))
-            {
-                proc.WaitForExit();
-                exitCode = proc.ExitCode;
-            }
-
-            return exitCode;
-        }
-
-        private void Updater_FormClosing(object sender, FormClosingEventArgs e)
+        private void OnFormClosing_Updater(object sender, FormClosingEventArgs e)
         {
             if (!_userCancelledUpdate)
             {
@@ -292,11 +292,11 @@ namespace Chem4WordUpdater
             }
         }
 
-        private void Updater_Load(object sender, EventArgs e)
+        private void OnLoad_Updater(object sender, EventArgs e)
         {
             // Move up and left by half the form size
-            Left = Left - Width / 2;
-            Top = Top - Height / 2;
+            Left -= Width / 2;
+            Top -= Height / 2;
         }
     }
 }

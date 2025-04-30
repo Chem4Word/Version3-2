@@ -1,16 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <!-- For automatic upgrade to work only first three parts of version number are used -->
-  <Product Id="*" Name="Chemistry Add-In for Microsoft Word 2022 Release 18" Manufacturer="Chem4Word" Version="3.2.22.9132" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 18" Manufacturer="Chem4Word" Version="3.2.22.9251" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
     <MajorUpgrade DowngradeErrorMessage="A newer version of Chem4Word is already installed." />
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
     <!-- EULA Must be edited in WordPad NOT Word -->
     <WixVariable Id="WixUILicenseRtf" Value="EULA.rtf" />
-    <Property Id="ARPCOMMENTS">This is the WiX installer for Chemistry Add-In for Microsoft Word</Property>
-    <Property Id="ARPHELPLINK">https://www.chem4word.co.uk/help</Property>
-    <Property Id="ARPURLINFOABOUT">https://www.chem4word.co.uk/about</Property>
-    <Property Id="ARPURLUPDATEINFO">https://www.chem4word.co.uk/update</Property>
+    <Property Id="ARPCOMMENTS" Value="This is the WiX installer for Chemistry Add-In for Microsoft Word" />
+    <Property Id="ARPHELPLINK" Value="https://www.chem4word.co.uk/help" />
+    <Property Id="ARPURLINFOABOUT" Value="https://www.chem4word.co.uk/about" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://www.chem4word.co.uk/update" />
     <Property Id="ARPNOMODIFY" Value="1" />
     <WixVariable Id="WixUIBannerBmp" Value="WixUIBanner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="WixUIDialog.bmp" />
@@ -34,35 +32,35 @@
       </DirectorySearch>
     </Property>
     <!-- Ensure Word not running -->
-    <Condition Message="Word is running. Please close it then run this installer again."><![CDATA[Installed OR (NOT WINWORDPROCESSCOUNT)]]></Condition>
+    <Launch Condition="Installed OR (NOT WINWORDPROCESSCOUNT)" Message="Word is running. Please close it then run this installer again." />
     <!-- Ensure Chem4Word 2 removed -->
-    <Condition Message="Please uninstall version 2 of Chem4Word, then run this installer again."><![CDATA[Installed OR (NOT CHEM4WORDV2)]]></Condition>
+    <Launch Condition="Installed OR (NOT CHEM4WORDV2)" Message="Please uninstall version 2 of Chem4Word, then run this installer again." />
     <!-- Ensure Windows 7 plus -->
     <!-- https://msdn.microsoft.com/library/aa370556.aspx -->
-    <Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher."><![CDATA[Installed OR (VersionNT >= 601)]]></Condition>
+    <Launch Condition="Installed OR (VersionNT &gt;= 601)" Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher." />
     <!-- Ensure .Net Framework 4.6.2 -->
     <!-- https://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx#detect_net -->
     <PropertyRef Id="NETFRAMEWORK45" />
-    <Condition Message="This application requires .NET Framework 4.6.2. Please install the .NET Framework then run this installer again."><![CDATA[Installed OR NETFRAMEWORK45 >= "#394802"]]></Condition>
+    <Launch Condition="Installed OR NETFRAMEWORK45 &gt;= &quot;#394802&quot;" Message="This application requires .NET Framework 4.6.2. Please install the .NET Framework then run this installer again." />
     <!-- Include our Custom Actions assembly -->
     <!-- https://blogs.msdn.microsoft.com/jschaffe/2012/10/23/creating-wix-custom-actions-in-c-and-passing-parameters/ -->
     <!-- https://www.codeproject.com/Articles/132918/Creating-Custom-Action-for-WIX-Written-in-Managed -->
     <Binary Id="WiX.CustomAction.dll" SourceFile="..\Wix.CustomAction\bin\x86\$(var.Configuration)\WiX.CustomAction.CA.dll" />
-    <CustomAction Id="WordProcessCount" BinaryKey="WiX.CustomAction.dll" DllEntry="WordProcessCount" Return="check" Execute="immediate" />
-    <CustomAction Id="CleanUserRegistry" BinaryKey="WiX.CustomAction.dll" DllEntry="CleanUserRegistry" Return="check" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="CleanSystemRegistry" BinaryKey="WiX.CustomAction.dll" DllEntry="CleanSystemRegistry" Return="check" Execute="deferred" Impersonate="no" />
-    <CustomAction Id="SetupChem4Word" BinaryKey="WiX.CustomAction.dll" DllEntry="SetupChem4Word" Return="check" Execute="deferred" Impersonate="no" />
-    <CustomAction Id="SetupChem4WordUser" BinaryKey="WiX.CustomAction.dll" DllEntry="SetupChem4WordUser" Return="check" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="RemoveChem4Word" BinaryKey="WiX.CustomAction.dll" DllEntry="RemoveChem4Word" Return="check" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="WordProcessCount" DllEntry="WordProcessCount" Return="check" Execute="immediate" BinaryRef="WiX.CustomAction.dll" />
+    <CustomAction Id="CleanUserRegistry" DllEntry="CleanUserRegistry" Return="check" Execute="deferred" Impersonate="yes" BinaryRef="WiX.CustomAction.dll" />
+    <CustomAction Id="CleanSystemRegistry" DllEntry="CleanSystemRegistry" Return="check" Execute="deferred" Impersonate="no" BinaryRef="WiX.CustomAction.dll" />
+    <CustomAction Id="SetupChem4Word" DllEntry="SetupChem4Word" Return="check" Execute="deferred" Impersonate="no" BinaryRef="WiX.CustomAction.dll" />
+    <CustomAction Id="SetupChem4WordUser" DllEntry="SetupChem4WordUser" Return="check" Execute="deferred" Impersonate="yes" BinaryRef="WiX.CustomAction.dll" />
+    <CustomAction Id="RemoveChem4Word" DllEntry="RemoveChem4Word" Return="check" Execute="deferred" Impersonate="no" BinaryRef="WiX.CustomAction.dll" />
     <InstallUISequence>
       <Custom Action="WordProcessCount" Before="LaunchConditions" />
     </InstallUISequence>
     <InstallExecuteSequence>
-      <Custom Action="CleanUserRegistry" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="CleanSystemRegistry" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="SetupChem4Word" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="SetupChem4WordUser" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="RemoveChem4Word" Before="InstallFinalize">Installed</Custom>
+      <Custom Action="CleanUserRegistry" Before="InstallFinalize" Condition="NOT Installed" />
+      <Custom Action="CleanSystemRegistry" Before="InstallFinalize" Condition="NOT Installed" />
+      <Custom Action="SetupChem4Word" Before="InstallFinalize" Condition="NOT Installed" />
+      <Custom Action="SetupChem4WordUser" Before="InstallFinalize" Condition="NOT Installed" />
+      <Custom Action="RemoveChem4Word" Before="InstallFinalize" Condition="Installed" />
     </InstallExecuteSequence>
     <Property Id="VSTODESIGNTIME">
       <RegistrySearch Id="VSTODesignTime" Root="HKLM" Key="SOFTWARE\Microsoft\VSTO_DT\VS10\Feature" Type="raw" />
@@ -70,7 +68,7 @@
     <Property Id="VSTORUNTIMEREDIST">
       <RegistrySearch Id="VSTORuntimeRedist" Root="HKLM" Key="SOFTWARE\Microsoft\VSTO Runtime Setup\v4R" Name="Version" Type="raw" />
     </Property>
-    <Condition Message="The Visual Studio 2010 Tools for Office Runtime is not installed. Please download and install from https://www.microsoft.com/en-GB/download/details.aspx?id=48217."><![CDATA[Installed OR VSTODESIGNTIME OR VSTORUNTIMEREDIST >= "10.0.60724"]]></Condition>
+    <Launch Condition="Installed OR VSTODESIGNTIME OR VSTORUNTIMEREDIST &gt;= &quot;10.0.60724&quot;" Message="The Visual Studio 2010 Tools for Office Runtime is not installed. Please download and install from https://www.microsoft.com/en-GB/download/details.aspx?id=48217." />
     <UI Id="UserInterface">
       <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
       <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
@@ -86,31 +84,29 @@
       <DialogRef Id="ResumeDlg" />
       <DialogRef Id="UserExit" />
       <DialogRef Id="WelcomeEulaDlg" />
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
-      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
-      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
-      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
-      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg" />
       <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Read the User Manual" />
-      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
-      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="DisplayUserManual">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="DisplayUserManual" Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
     </UI>
     <CustomAction Id="DisplayUserManual" Directory="MANUAL" ExeCommand="cmd.exe /c start Chem4Word-Version3-2-User-Manual.docx" Execute="immediate" Return="asyncNoWait" />
     <UIRef Id="WixUI_Common" />
-  </Product>
+  </Package>
   <!-- Define directory structure -->
   <Fragment>
     <!-- User Directory Id attributes MUST BE UPPERCASE !! -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLFOLDER" Name="Chem4Word V3">
-          <Directory Id="PLUGINSFOLDER" Name="PlugIns" />
-          <Directory Id="MANUAL" Name="Manual" />
-          <Directory Id="SQLITEX64" Name="x64" />
-          <Directory Id="SQLITEX86" Name="x86" />
-        </Directory>
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="INSTALLFOLDER" Name="Chem4Word V3">
+        <Directory Id="PLUGINSFOLDER" Name="PlugIns" />
+        <Directory Id="MANUAL" Name="Manual" />
+        <Directory Id="SQLITEX64" Name="x64" />
+        <Directory Id="SQLITEX86" Name="x86" />
       </Directory>
-    </Directory>
+    </StandardDirectory>
   </Fragment>
   <!-- The Chem4Word DLLs etc -->
   <Fragment>

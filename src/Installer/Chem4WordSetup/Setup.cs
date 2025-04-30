@@ -14,6 +14,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -50,23 +51,23 @@ namespace Chem4WordSetup
             InitializeComponent();
         }
 
-        private void Setup_Load(object sender, EventArgs e)
+        private void OnLoad_Setup(object sender, EventArgs e)
         {
             // Move up and left by half the form size
-            Left = Left - Width / 2;
-            Top = Top - Height / 2;
+            Left -= Width / 2;
+            Top -= Height / 2;
 
             Show();
             Application.DoEvents();
 
-            bool isDesignTimeInstalled = false;
-            bool isRuntimeInstalled = false;
-            bool isOperatingSystemWindows7Plus = false;
-            bool isChem4WordVersion3Installed = false;
+            var isDesignTimeInstalled = false;
+            var isRuntimeInstalled = false;
+            var isOperatingSystemWindows7Plus = false;
+            var isChem4WordVersion3Installed = false;
 
             #region Detect Windows Version
 
-            OperatingSystem osVer = Environment.OSVersion;
+            var osVer = Environment.OSVersion;
             // Check that OsVerion is greater or equal to 6.1
             if (osVer.Version.Major >= 6 && osVer.Version.Minor >= 1
                 || osVer.Version.Major >= 10)
@@ -82,7 +83,7 @@ namespace Chem4WordSetup
 
             #region Detect Word
 
-            bool isWordInstalled = OfficeHelper.GetWinWordVersionNumber() >= 2010;
+            var isWordInstalled = OfficeHelper.GetWinWordVersionNumber() >= 2010;
 
             #endregion Detect Word
 
@@ -98,7 +99,7 @@ namespace Chem4WordSetup
 
             #region Detect Design Time VSTO
 
-            string feature = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO_DT\VS10\Feature");
+            var feature = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO_DT\VS10\Feature");
             if (!string.IsNullOrEmpty(feature))
             {
                 isDesignTimeInstalled = true;
@@ -108,18 +109,18 @@ namespace Chem4WordSetup
 
             #region Detect Runtime VSTO
 
-            string version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO Runtime Setup\v4R", "Version");
+            var version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO Runtime Setup\v4R", "Version");
             if (string.IsNullOrEmpty(version))
             {
                 version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VSTO Runtime Setup\v4R", "Version");
             }
 
-            Version mimimumVersion = new Version("10.0.60724");
-            int result = -2;
+            var mimimumVersion = new Version("10.0.60724");
+            var result = -2;
 
             if (!string.IsNullOrEmpty(version))
             {
-                Version installedVersion = new Version(version);
+                var installedVersion = new Version(version);
                 result = installedVersion.CompareTo(mimimumVersion);
 
                 if (result >= 0)
@@ -160,7 +161,7 @@ namespace Chem4WordSetup
 
             #region Is Chem4Word Installed
 
-            bool isChem4WordVersion2Installed = FindOldVersion();
+            var isChem4WordVersion2Installed = FindOldVersion();
 
             #endregion Is Chem4Word Installed
 
@@ -235,7 +236,7 @@ namespace Chem4WordSetup
 
         private string GetRegistryValue(string keyName, string valueName = "")
         {
-            string result = "";
+            var result = "";
 
             try
             {
@@ -255,7 +256,7 @@ namespace Chem4WordSetup
 
         private string ChangeDomain(string input)
         {
-            string output = input;
+            var output = input;
 
             if (!string.IsNullOrEmpty(_domainUsed))
             {
@@ -272,14 +273,14 @@ namespace Chem4WordSetup
         {
             string contents = null;
 
-            bool foundOurXmlFile = false;
+            var foundOurXmlFile = false;
 
             var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             foreach (var domain in OurDomains)
             {
-                using (HttpClient client = new HttpClient())
+                using (var client = new HttpClient())
                 {
                     string exceptionMessage;
 
@@ -293,7 +294,7 @@ namespace Chem4WordSetup
                         response.EnsureSuccessStatusCode();
                         Debug.Write(response.StatusCode);
 
-                        string result = response.Content.ReadAsStringAsync().Result;
+                        var result = response.Content.ReadAsStringAsync().Result;
                         if (result.Contains(VersionsFileMarker))
                         {
                             foundOurXmlFile = true;
@@ -339,7 +340,7 @@ namespace Chem4WordSetup
 
         private string GetExceptionMessages(Exception ex)
         {
-            string message = ex.Message;
+            var message = ex.Message;
 
             if (ex.InnerException != null)
             {
@@ -349,7 +350,7 @@ namespace Chem4WordSetup
             return message;
         }
 
-        private void Action_Click(object sender, EventArgs e)
+        private void OnClick_Action(object sender, EventArgs e)
         {
             if (Action.Text.Equals("Install"))
             {
@@ -396,7 +397,7 @@ namespace Chem4WordSetup
                     {
                         VstoInstalled.Indicator = Properties.Resources.Runing;
                         _state = State.WaitingForInstaller;
-                        int exitCode = RunProcess(_downloadedFile, "/passive /norestart");
+                        var exitCode = RunProcess(_downloadedFile, "/passive /norestart");
                         RegistryHelper.WriteAction($"VSTO ExitCode: {exitCode}");
                         switch (exitCode)
                         {
@@ -457,11 +458,38 @@ namespace Chem4WordSetup
                     {
                         AddInInstalled.Indicator = Properties.Resources.Runing;
                         _state = State.WaitingForInstaller;
-                        int exitCode = RunProcess(_downloadedFile, "");
-                        RegistryHelper.WriteAction($"Chem4Word ExitCode: {exitCode}");
+
+                        const int retryLimit = 3;
+                        var exitCode = -1;
+                        var retries = 0;
+                        while (exitCode != 0 && retries < retryLimit)
+                        {
+                            exitCode = ProcessHelper.RunMsi(_downloadedFile);
+                            RegistryHelper.WriteAction($"Chem4Word ExitCode: {exitCode} Attempt: {retries}");
+                            if (exitCode == 0)
+                            {
+                                break;
+                            }
+
+                            if (exitCode == 1602 || exitCode == 1603)
+                            {
+                                if (retries < retryLimit - 1)
+                                {
+                                    Information.Text = $"ExitCode: {exitCode}; Waiting for a few seconds before trying again!";
+                                    Application.DoEvents();
+                                    Thread.Sleep(3000);
+                                }
+                                retries++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
                         if (exitCode == 0)
                         {
-                            RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryKeyName, true);
+                            var key = Registry.CurrentUser.OpenSubKey(RegistryKeyName, true);
                             if (key == null)
                             {
                                 key = Registry.CurrentUser.CreateSubKey(RegistryKeyName);
@@ -472,7 +500,7 @@ namespace Chem4WordSetup
                                 try
                                 {
                                     // Erase previously stored Update Checks etc
-                                    foreach (string keyName in key.GetSubKeyNames())
+                                    foreach (var keyName in key.GetSubKeyNames())
                                     {
                                         key.DeleteValue(keyName);
                                     }
@@ -523,12 +551,12 @@ namespace Chem4WordSetup
 
         private bool FindCurrentVersion()
         {
-            bool found = false;
+            var found = false;
 
             if (Environment.Is64BitOperatingSystem)
             {
                 // Try "C:\Program Files (x86)" first
-                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
                 found = File.Exists(Path.Combine(pf, DetectV3AddIn));
 
                 if (!found)
@@ -541,7 +569,7 @@ namespace Chem4WordSetup
             else
             {
                 // Try "C:\Program Files"
-                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                 found = File.Exists(Path.Combine(pf, DetectV3AddIn));
             }
 
@@ -550,12 +578,12 @@ namespace Chem4WordSetup
 
         private bool FindOldVersion()
         {
-            bool found = false;
+            var found = false;
 
             if (Environment.Is64BitOperatingSystem)
             {
                 // Try "C:\Program Files (x86)" first
-                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
                 found = File.Exists(Path.Combine(pf, DetectV2AddIn));
 
                 if (!found)
@@ -568,7 +596,7 @@ namespace Chem4WordSetup
             else
             {
                 // Try "C:\Program Files"
-                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                 found = File.Exists(Path.Combine(pf, DetectV2AddIn));
             }
 
@@ -577,15 +605,17 @@ namespace Chem4WordSetup
 
         private int RunProcess(string exePath, string arguments)
         {
-            int exitCode = -1;
+            var exitCode = -1;
 
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = arguments;
-            start.FileName = exePath;
-            using (Process proc = Process.Start(start))
+            var processStartInfo = new ProcessStartInfo
+                        {
+                            Arguments = arguments,
+                            FileName = exePath
+                        };
+            using (var process = Process.Start(processStartInfo))
             {
-                proc.WaitForExit();
-                exitCode = proc.ExitCode;
+                process.WaitForExit();
+                exitCode = process.ExitCode;
             }
 
             return exitCode;
@@ -593,21 +623,23 @@ namespace Chem4WordSetup
 
         private bool DownloadFile(string url)
         {
-            bool started = false;
+            var started = false;
+
+            var securityProtocol = ServicePointManager.SecurityProtocol;
 
             _sw = new Stopwatch();
             _sw.Start();
 
             try
             {
-                string[] parts = url.Split('/');
-                string filename = parts[parts.Length - 1];
+                var parts = url.Split('/');
+                var filename = parts[parts.Length - 1];
                 _downloadSource = filename;
 
                 progressBar1.Value = 0;
                 Cursor.Current = Cursors.WaitCursor;
 
-                string downloadPath = FolderHelper.GetPath(KnownFolder.Downloads);
+                var downloadPath = FolderHelper.GetPath(KnownFolder.Downloads);
                 if (!Directory.Exists(downloadPath))
                 {
                     downloadPath = Path.GetTempPath();
@@ -627,8 +659,7 @@ namespace Chem4WordSetup
                     }
                 }
 
-                var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 _webClient = new WebClient();
                 _webClient.Headers.Add("user-agent", "Chem4Word Bootstrapper");
@@ -644,6 +675,10 @@ namespace Chem4WordSetup
             {
                 RegistryHelper.WriteAction(ex.Message);
                 Information.Text = ex.Message;
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = securityProtocol;
             }
 
             return started;
@@ -689,7 +724,7 @@ namespace Chem4WordSetup
                 _webClient.Dispose();
                 _webClient = null;
 
-                FileInfo fi = new FileInfo(_downloadedFile);
+                var fi = new FileInfo(_downloadedFile);
                 if (fi.Length == 0)
                 {
                     _retryCount++;
@@ -707,9 +742,9 @@ namespace Chem4WordSetup
                 else
                 {
                     RegistryHelper.WriteAction($"Downloading of {_downloadSource} took {_sw.ElapsedMilliseconds.ToString("#,##0", CultureInfo.InvariantCulture)}ms");
-                    double seconds = _sw.ElapsedMilliseconds / 1000.0;
-                    double kiloBytes = fi.Length / 1024.0;
-                    double speed = kiloBytes / seconds / 1000.0;
+                    var seconds = _sw.ElapsedMilliseconds / 1000.0;
+                    var kiloBytes = fi.Length / 1024.0;
+                    var speed = kiloBytes / seconds / 1000.0;
                     RegistryHelper.WriteAction($"Download speed {speed.ToString("#,##0.000", CultureInfo.InvariantCulture)}MiB/s");
                     switch (_state)
                     {
@@ -737,7 +772,7 @@ namespace Chem4WordSetup
             Done
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void OnTick_timer1(object sender, EventArgs e)
         {
             HandleNextState();
         }

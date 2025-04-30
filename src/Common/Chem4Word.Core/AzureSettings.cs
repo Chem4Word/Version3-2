@@ -160,7 +160,7 @@ namespace Chem4Word.Core
                 var file = $"{Constants.Chem4WordVersionFiles}/AzureSettings.json";
 
                 var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
                 var found = false;
                 var temp = string.Empty;

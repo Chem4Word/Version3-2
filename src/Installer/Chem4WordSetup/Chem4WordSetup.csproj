@@ -12,14 +12,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -82,6 +75,9 @@
     </Compile>
     <Compile Include="..\..\Shared\OfficeHelper.cs">
       <Link>OfficeHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\ProcessHelper.cs">
+      <Link>ProcessHelper.cs</Link>
     </Compile>
     <Compile Include="..\..\Shared\RegistryWOW6432.cs">
       <Link>RegistryWOW6432.cs</Link>

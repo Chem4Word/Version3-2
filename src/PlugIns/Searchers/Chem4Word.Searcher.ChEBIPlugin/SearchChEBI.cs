@@ -91,7 +91,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 getLiteEntityResponse results;
 
                 var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
                 ws.Url = UserOptions.ChEBIWebServiceUri;
                 ws.UserAgent = "Chem4Word";
@@ -160,7 +160,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             using (new WaitCursor())
             {
                 var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
                 ChebiWebServiceService ws = new ChebiWebServiceService();
                 getCompleteEntityResponse results;

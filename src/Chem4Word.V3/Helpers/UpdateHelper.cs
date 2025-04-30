@@ -327,7 +327,7 @@ namespace Chem4Word.Helpers
             string contents = null;
 
             var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
             bool foundOurXmlFile = false;
             foreach (var domain in Constants.OurDomains)

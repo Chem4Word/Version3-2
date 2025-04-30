@@ -49,7 +49,7 @@
             this.Action.TabIndex = 1;
             this.Action.Text = "Install";
             this.Action.UseVisualStyleBackColor = true;
-            this.Action.Click += new System.EventHandler(this.Action_Click);
+            this.Action.Click += new System.EventHandler(this.OnClick_Action);
             // 
             // progressBar1
             // 
@@ -71,7 +71,7 @@
             // timer1
             // 
             this.timer1.Interval = 250;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timer1.Tick += new System.EventHandler(this.OnTick_timer1);
             // 
             // WindowsInstalled
             // 
@@ -144,7 +144,7 @@
             this.Name = "Setup";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Setup Chemistry Add-In for Microsoft Word";
-            this.Load += new System.EventHandler(this.Setup_Load);
+            this.Load += new System.EventHandler(this.OnLoad_Setup);
             this.ResumeLayout(false);
 
         }

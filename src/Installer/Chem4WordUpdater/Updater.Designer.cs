@@ -57,7 +57,7 @@
             this.UpdateNow.TabIndex = 6;
             this.UpdateNow.Text = "Cancel";
             this.UpdateNow.UseVisualStyleBackColor = true;
-            this.UpdateNow.Click += new System.EventHandler(this.Cancel_Click);
+            this.UpdateNow.Click += new System.EventHandler(this.OnClick_Cancel);
             // 
             // Information
             // 
@@ -71,7 +71,7 @@
             // timer1
             // 
             this.timer1.Interval = 250;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timer1.Tick += new System.EventHandler(this.OnTick_timer1);
             // 
             // WordInstances
             // 
@@ -115,8 +115,8 @@
             this.Name = "Updater";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Chem4Word Updater";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Updater_FormClosing);
-            this.Load += new System.EventHandler(this.Updater_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing_Updater);
+            this.Load += new System.EventHandler(this.OnLoad_Updater);
             this.ResumeLayout(false);
             this.PerformLayout();
 

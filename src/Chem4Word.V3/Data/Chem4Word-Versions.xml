@@ -5,11 +5,12 @@
     <Version>
         <Number>3.2.22 Release 18</Number>
         <IsBeta>false</IsBeta>
-        <Released>01-Jan-2025</Released>
+        <Released>30-Apr-2025</Released>
         <Changes>
-            <Change>...</Change>
-            <Change>...</Change>
-            <Change>Prevent search for empty string</Change>
+            <Change>System: Update WiX installer to latest</Change>
+            <Change>System: Add Chem4Word installer re-tries (max 3) if msi ExitCode is 1602 or 1603</Change>
+            <Change>BugFix: Bond Length is now set properly on sprout and copy/paste</Change>
+            <Change>BugFix: Prevent search for empty string</Change>
             <Change>BugFix: Copy/Paste of 1D structure into new document - Pasted structure not editable.</Change>
             <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
             <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>

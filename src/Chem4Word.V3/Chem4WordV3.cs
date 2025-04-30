@@ -13,6 +13,7 @@ using Chem4Word.Libraries;
 using Chem4Word.Library;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Navigator;
+using Chem4Word.Shared;
 using Chem4Word.Telemetry;
 using IChem4Word.Contracts;
 using Microsoft.Office.Core;
@@ -21,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -276,6 +278,11 @@ namespace Chem4Word
         private void C4WAddIn_Shutdown(object sender, EventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            Debug.WriteLine("Starting Shutdown ...");
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             try
             {
                 if (Ribbon != null)
@@ -288,11 +295,15 @@ namespace Chem4Word
                 Debug.WriteLine($"{module} {exception.Message}");
                 RegistryHelper.StoreException(module, exception);
             }
+
+            stopwatch.Stop();
+            Debug.WriteLine($"Shutdown took {stopwatch.ElapsedMilliseconds:N0}ms");
         }
 
         private void SlowOperations()
         {
             var module = $"{MethodBase.GetCurrentMethod()?.Name}()";
+            var securityProtocol = ServicePointManager.SecurityProtocol;
 
             try
             {
@@ -306,13 +317,11 @@ namespace Chem4Word
 
                 LoadPlugins();
 
-                Helper = new SystemHelper(StartUpTimings);
-
                 ServicePointManager.DefaultConnectionLimit = 100;
                 ServicePointManager.UseNagleAlgorithm = false;
                 ServicePointManager.Expect100Continue = false;
 
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 _configWatcher = new ConfigWatcher(AddInInfo.ProductAppDataPath);
 
@@ -327,6 +336,10 @@ namespace Chem4Word
             {
                 // Do Nothing
             }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = securityProtocol;
+            }
         }
 
         private void PerformStartUpActions()
@@ -339,6 +352,8 @@ namespace Chem4Word
                 _timer.Elapsed += OnTimerElapsed;
                 _timer.AutoReset = true;
                 _timer.Enabled = true;
+
+                Helper = new SystemHelper(StartUpTimings);
 
                 SetButtonStates(ButtonState.NoDocument);
 
@@ -447,8 +462,69 @@ namespace Chem4Word
                 RegistryHelper.SendSetupActions();
                 RegistryHelper.SendUpdateActions();
 
-                // Early check for updates with longer that normal period
+                CollectAndSendMsiLogs();
+
+                // Early check for updates but with longer that normal period
                 UpdateHelper.CheckForUpdates(30);
+            }
+        }
+
+        private void CollectAndSendMsiLogs()
+        {
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+
+            var downloadPath = FolderHelper.GetPath(KnownFolder.Downloads);
+            if (!Directory.Exists(downloadPath))
+            {
+                downloadPath = Path.GetTempPath();
+            }
+
+            var logFiles = Directory.GetFiles(downloadPath, "Chem4Word-Setup.*.log");
+            foreach (var logFile in logFiles)
+            {
+                try
+                {
+                    var fileInfo = new FileInfo(logFile);
+                    var fileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
+                    var zipFile = Path.Combine(fileInfo.DirectoryName, $"{fileName}.zip");
+
+                    ZipLogFile(logFile, zipFile);
+
+                    if (File.Exists(zipFile))
+                    {
+                        var fileBytes = File.ReadAllBytes(zipFile);
+                        Globals.Chem4WordV3.Telemetry.SendZipFile(fileBytes, $"{fileName}.zip");
+                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"{fileName}.zip uploaded");
+
+                        Thread.Sleep(25);
+                        File.Delete(zipFile);
+                        Thread.Sleep(25);
+                        File.Delete(logFile);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    if (Telemetry != null)
+                    {
+                        Telemetry.Write(module, "Exception", exception.Message);
+                        Telemetry.Write(module, "Exception", exception.StackTrace);
+                    }
+                    else
+                    {
+                        RegistryHelper.StoreException(module, exception);
+                    }
+                }
+            }
+        }
+
+        private static void ZipLogFile(string logFilePath, string zipFilePath)
+        {
+            using (var zipToOpen = new FileStream(zipFilePath, FileMode.Create))
+            {
+                using (var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+                {
+                    archive.CreateEntryFromFile(logFilePath, Path.GetFileName(logFilePath));
+                }
             }
         }
 

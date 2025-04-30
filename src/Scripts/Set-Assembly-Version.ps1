@@ -153,8 +153,8 @@ $wixFile = "$($pwd)\..\Installer\WiXInstaller\Product.wxs"
 Write-Host "$($wixFile)" -ForegroundColor Green
 
 $xml = [xml](Get-Content $wixFile)
-$xml.Wix.Product.Version = "$($version).$($delta.Days)"
-$xml.Wix.Product.Name = "Chemistry Add-In for Microsoft Word 2022 $($name)"
+$xml.Wix.Package.Version = "$($version).$($delta.Days)"
+$xml.Wix.Package.Name = "Chemistry Add-In for Microsoft Word 2022 $($name)"
 $xml.Save($wixFile)
 
 # ---------------------------------------------------------- #
@@ -166,7 +166,7 @@ Write-Host "$($wixProj)" -ForegroundColor Green
 
 $xml = [xml](Get-Content $wixProj)
 $dottedname = $name.Replace(" ", ".")
-$xml.Project.PropertyGroup[0].OutputName = "Chem4Word-Setup.$($version).$($dottedname)"
+$xml.Project.PropertyGroup.OutputName = "Chem4Word-Setup.$($version).$($dottedname)"
 $xml.Save($wixProj)
 
 # ---------------------------------------------------------- #

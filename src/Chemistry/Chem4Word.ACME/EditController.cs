@@ -2583,6 +2583,8 @@ namespace Chem4Word.ACME
         public void AddHydrogens()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            var newBondLength = CurrentBondLength * ScaleFactorForXaml;
             try
             {
                 WriteTelemetry(module, "Debug", "Called");
@@ -2666,7 +2668,7 @@ namespace Chem4Word.ACME
                             {
                                 Element = Globals.PeriodicTable.H,
                                 Position = atom.Position +
-                                                    vector * (Model.XamlBondLength * Common.ExplicitHydrogenBondPercentage)
+                                                    vector * (newBondLength * Common.ExplicitHydrogenBondPercentage)
                             };
                             newAtoms.Add(aa);
                             if (!parents.ContainsKey(aa.InternalId))

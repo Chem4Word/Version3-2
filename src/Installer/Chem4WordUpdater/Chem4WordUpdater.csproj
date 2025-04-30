@@ -12,14 +12,6 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -92,6 +84,9 @@
   <ItemGroup>
     <Compile Include="..\..\Shared\FolderHelper.cs">
       <Link>FolderHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\ProcessHelper.cs">
+      <Link>ProcessHelper.cs</Link>
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="RegistryHelper.cs" />
