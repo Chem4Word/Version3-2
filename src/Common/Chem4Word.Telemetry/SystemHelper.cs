@@ -202,7 +202,7 @@ namespace Chem4Word.Telemetry
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message);
-                    WordProduct = $"Exception in '{functionName}' " + ex.Message;
+                    WordProduct = $"Exception in '{functionName}'" + Environment.NewLine + ex;
                 }
 
                 #endregion Get Office/Word Version

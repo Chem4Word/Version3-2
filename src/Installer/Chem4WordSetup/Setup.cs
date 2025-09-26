@@ -14,6 +14,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -31,10 +32,13 @@ namespace Chem4WordSetup
         private const string RegistryKeyName = @"SOFTWARE\Chem4Word V3";
 
         private const string DetectV2AddIn = @"Chemistry Add-in for Word\Chem4Word.AddIn.vsto";
-        private const string DetectV3AddIn = @"Chem4Word V3\Chem4Word.V3.vsto";
+        private const string DetectV3AddIn = @"Chem4Word V3\Chem4Word.V3.dll";
 
         private const string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.23.Release.19.msi";
         private const string VstoInstaller = "https://www.chem4word.co.uk/files3-2/vstor_redist.exe";
+
+        private bool _isHigherVersionInstalled;
+        private Version _currentVersion;
 
         private WebClient _webClient;
         private string _downloadedFile = string.Empty;
@@ -63,12 +67,11 @@ namespace Chem4WordSetup
             var isDesignTimeInstalled = false;
             var isRuntimeInstalled = false;
             var isOperatingSystemWindows7Plus = false;
-            var isChem4WordVersion3Installed = false;
 
             #region Detect Windows Version
 
             var osVer = Environment.OSVersion;
-            // Check that OsVerion is greater or equal to 6.1
+            // Check that OsVersion is greater or equal to 6.1
             if (osVer.Version.Major >= 6 && osVer.Version.Minor >= 1
                 || osVer.Version.Major >= 10)
             {
@@ -88,7 +91,26 @@ namespace Chem4WordSetup
             #endregion Detect Word
 
             WordInstalled.Indicator = isWordInstalled ? Properties.Resources.Word : Properties.Resources.Halt;
+            WordRunning.Indicator = Properties.Resources.Halt;
             Application.DoEvents();
+
+            if (isWordInstalled)
+            {
+                if (WordIsRunning())
+                {
+                    RegistryHelper.WriteAction("Word is running");
+                    WordRunning.Indicator = Properties.Resources.No;
+                    Information.Text = "Please close all instances of Microsoft Word to continue.";
+                    Action.Text = "Waiting";
+                    Action.Enabled = false;
+                    timer2.Enabled = true;
+                }
+                else
+                {
+                    WordRunning.Description = "Microsoft Word is not running";
+                    WordRunning.Indicator = Properties.Resources.Yes;
+                }
+            }
 
             #region .Net Framework
 
@@ -109,19 +131,19 @@ namespace Chem4WordSetup
 
             #region Detect Runtime VSTO
 
-            var version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO Runtime Setup\v4R", "Version");
-            if (string.IsNullOrEmpty(version))
+            var vstoVersion = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO Runtime Setup\v4R", "Version");
+            if (string.IsNullOrEmpty(vstoVersion))
             {
-                version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VSTO Runtime Setup\v4R", "Version");
+                vstoVersion = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VSTO Runtime Setup\v4R", "Version");
             }
 
-            var mimimumVersion = new Version("10.0.60724");
+            var minimumVstoVersion = new Version("10.0.60724");
             var result = -2;
 
-            if (!string.IsNullOrEmpty(version))
+            if (!string.IsNullOrEmpty(vstoVersion))
             {
-                var installedVersion = new Version(version);
-                result = installedVersion.CompareTo(mimimumVersion);
+                var installedVersion = new Version(vstoVersion);
+                result = installedVersion.CompareTo(minimumVstoVersion);
 
                 if (result >= 0)
                 {
@@ -132,14 +154,14 @@ namespace Chem4WordSetup
             // SOFTWARE\Microsoft\VSTO_DT\VS10\Feature
             if (!isRuntimeInstalled)
             {
-                version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO_DT\VS10\Feature");
+                vstoVersion = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VSTO_DT\VS10\Feature");
 
-                if (string.IsNullOrEmpty(version))
+                if (string.IsNullOrEmpty(vstoVersion))
                 {
-                    version = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VSTO_DT\VS10\Feature");
+                    vstoVersion = GetRegistryValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VSTO_DT\VS10\Feature");
                 }
 
-                if (!string.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(vstoVersion))
                 {
                     isRuntimeInstalled = true;
                 }
@@ -161,6 +183,14 @@ namespace Chem4WordSetup
 
             #region Is Chem4Word Installed
 
+            var thisVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            _currentVersion = GetCurrentVersion();
+
+            if (_currentVersion >= thisVersion)
+            {
+                _isHigherVersionInstalled = true;
+            }
+
             var isChem4WordVersion2Installed = FindOldVersion();
 
             #endregion Is Chem4Word Installed
@@ -174,14 +204,16 @@ namespace Chem4WordSetup
                     AddInInstalled.Description = "Version 2 of Chem4Word detected";
                     Information.Text = "A previous version of Chem4Word has been detected, please uninstall it.";
                     Action.Text = "Cancel";
+                    Action.Enabled = true;
                 }
-                else if (isChem4WordVersion3Installed)
+                else if (_isHigherVersionInstalled)
                 {
-                    RegistryHelper.WriteAction("Version 3 of Chem4Word detected");
-                    AddInInstalled.Indicator = Properties.Resources.Yes;
-                    AddInInstalled.Description = "Version 3 of Chem4Word detected";
-                    Information.Text = "Nothing to do.";
+                    RegistryHelper.WriteAction($"Newer Chem4Word detected V{_currentVersion}");
+                    AddInInstalled.Indicator = Properties.Resources.Halt;
+                    AddInInstalled.Description = $"V{_currentVersion} of Chem4Word detected";
+                    Information.Text = "Can't continue, because a newer version of Chem4Word has been detected.";
                     Action.Text = "Cancel";
+                    Action.Enabled = true;
                 }
                 else
                 {
@@ -218,7 +250,7 @@ namespace Chem4WordSetup
                 if (!isWordInstalled)
                 {
                     WordInstalled.Indicator = Properties.Resources.No;
-                    Information.Text = "Please install Microsoft Word 2010 or 2013 or 2016.";
+                    Information.Text = "Please install Microsoft Word (2010, 2013, 2016, 2019, 2024 or 365).";
                 }
 
                 if (!isOperatingSystemWindows7Plus)
@@ -232,6 +264,13 @@ namespace Chem4WordSetup
 
                 Action.Text = "Cancel";
             }
+        }
+
+        private bool WordIsRunning()
+        {
+            // Detect if word is running
+            var processes = Process.GetProcessesByName("winword");
+            return processes.Length != 0;
         }
 
         private string GetRegistryValue(string keyName, string valueName = "")
@@ -516,7 +555,7 @@ namespace Chem4WordSetup
                             progressBar1.Value = 100;
 
                             AddInInstalled.Indicator = Properties.Resources.Yes;
-                            Information.Text = "Chem4Word successfully installed. Please start Microsoft Word, then select Chemistry Tab in ribbon";
+                            Information.Text = "Chem4Word successfully installed. Please start Microsoft Word, then select Chemistry Tab in the ribbon.";
                             Action.Text = "Finish";
                         }
                         else
@@ -524,8 +563,9 @@ namespace Chem4WordSetup
                             AddInInstalled.Indicator = Properties.Resources.No;
                             Information.Text = $"Error installing Chem4Word; ExitCode: {exitCode}";
                             Action.Text = "Exit";
-                            _state = State.Done;
                         }
+
+                        _state = State.Done;
                     }
                     catch (Exception ex)
                     {
@@ -549,16 +589,18 @@ namespace Chem4WordSetup
             }
         }
 
-        private bool FindCurrentVersion()
+        private Version GetCurrentVersion()
         {
+            var result = new Version(0, 0, 0, 0);
+            var path = string.Empty;
             var found = false;
 
             if (Environment.Is64BitOperatingSystem)
             {
                 // Try "C:\Program Files (x86)" first
                 var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-                found = File.Exists(Path.Combine(pf, DetectV3AddIn));
-
+                path = Path.Combine(pf, DetectV3AddIn);
+                found = File.Exists(path);
                 if (!found)
                 {
                     // Try "C:\Program Files"
@@ -570,10 +612,17 @@ namespace Chem4WordSetup
             {
                 // Try "C:\Program Files"
                 var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                found = File.Exists(Path.Combine(pf, DetectV3AddIn));
+                path = Path.Combine(pf, DetectV3AddIn);
+                found = File.Exists(Path.Combine(path));
             }
 
-            return found;
+            if (found)
+            {
+                FileVersionInfo fi = FileVersionInfo.GetVersionInfo(path);
+                result = new Version(fi.FileVersion);
+            }
+
+            return result;
         }
 
         private bool FindOldVersion()
@@ -608,10 +657,10 @@ namespace Chem4WordSetup
             var exitCode = -1;
 
             var processStartInfo = new ProcessStartInfo
-                        {
-                            Arguments = arguments,
-                            FileName = exePath
-                        };
+            {
+                Arguments = arguments,
+                FileName = exePath
+            };
             using (var process = Process.Start(processStartInfo))
             {
                 process.WaitForExit();
@@ -760,21 +809,35 @@ namespace Chem4WordSetup
             }
         }
 
-        private enum State
-        {
-            DownloadVsto = 0,
-            WaitingForVstoDownload,
-            InstallVsto,
-            DownloadChem4Word,
-            WaitingForChem4WordDownload,
-            InstallChem4Word,
-            WaitingForInstaller,
-            Done
-        }
-
         private void OnTick_timer1(object sender, EventArgs e)
         {
             HandleNextState();
+        }
+
+        private void OnTick_timer2(object sender, EventArgs e)
+        {
+            if (!WordIsRunning())
+            {
+                RegistryHelper.WriteAction("Word is no longer running");
+
+                WordRunning.Description = "Microsoft Word is not running";
+                WordRunning.Indicator = Properties.Resources.Yes;
+
+                if (_isHigherVersionInstalled)
+                {
+                    AddInInstalled.Indicator = Properties.Resources.Halt;
+                    AddInInstalled.Description = $"V{_currentVersion} of Chem4Word detected";
+                    Information.Text = "Can't continue, because a newer version of Chem4Word has been detected.";
+                    Action.Text = "Cancel";
+                }
+                else
+                {
+                    Information.Text = "Click on Install to start downloading and installing the required components.";
+                    Action.Text = "Install";
+                }
+                Action.Enabled = true;
+                timer2.Enabled = false;
+            }
         }
     }
 }

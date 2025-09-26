@@ -11,7 +11,6 @@
     <AssemblyName>Chem4Word.Searcher.ChEBIPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -84,6 +83,8 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="ChEBIOptions.cs" />
+    <Compile Include="Models\Result.cs" />
+    <Compile Include="Models\Source.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -108,11 +109,7 @@
     <Compile Include="ChEBISettings.Designer.cs">
       <DependentUpon>ChEBISettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Web References\ChEBI\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
-    </Compile>
+    <Compile Include="Models\SearchResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -120,29 +117,6 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\ChEBI\ChebiWebServices.wsdl" />
-    <None Include="Web References\ChEBI\Entity1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ChEBI\getCompleteEntityResponse1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ChEBI\getLiteEntityResponse1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ChEBI\getOntologyChildrenResponse1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ChEBI\getOntologyParentsResponse1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ChEBI\getUpdatedPolymerResponse1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ChEBI\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -167,9 +141,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -184,19 +155,7 @@
   <ItemGroup>
     <None Include="Resources\Images\chebi.png" />
   </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://www.ebi.ac.uk/webservices/chebi/2.0/webservice%3fwsdl">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\ChEBI\</RelPath>
-      <UpdateFromURL>http://www.ebi.ac.uk/webservices/chebi/2.0/webservice%3fwsdl</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Chem4Word_Searcher_ChEBIPlugin_uk_ac_ebi_www_ChebiWebServiceService</CachedSettingsPropName>
-    </WebReferenceUrl>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" == "Vso-Ci" (

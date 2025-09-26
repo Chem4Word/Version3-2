@@ -49,6 +49,7 @@ Azure Devops Build must be set to use VS2022 build agent
 |System.Data.SQLite.Linq|1.0.119.0|Public Domain|2|
 |System.Data.SQLite|1.0.119.0|Public Domain|2|
 |System.Diagnostics.DiagnosticSource|8.0.1|Public Domain|2|
+|System.IO.Compression.ZipFile|4.3.0|MIT|1|
 |System.IO.FileSystem.Primitives|4.3.0|MS-.NET-Library|2|
 |System.IO.Packaging|8.0.1|MIT|2|
 |System.Memory.Data|8.0.1|MIT|2|
@@ -68,6 +69,11 @@ Azure Devops Build must be set to use VS2022 build agent
 |System.Threading.Tasks.Extensions|4.5.4|MIT|2|
 |System.ValueTuple|4.5.0|MIT|6|
 |Unofficial.Ionic.Zip|1.9.1.8|Unknown ?|3|
+|WixToolset.Dtf.CustomAction|6.0.2|OSI|1|
+|WixToolset.Dtf.WindowsInstaller|6.0.2|OSI|1|
+|WixToolset.NetFx.wixext|6.0.2|OSI|1|
+|WixToolset.UI.wixext|6.0.2|OSI|1|
+|WixToolset.Util.wixext|6.0.2|OSI|1|
 |xunit.abstractions|2.0.3|Apache-2.0|1|
 |xunit.analyzers|1.16.0|Apache-2.0|1|
 |xunit.assert|2.9.2|Apache-2.0|1|
@@ -77,6 +83,7 @@ Azure Devops Build must be set to use VS2022 build agent
 |xunit.runner.console|2.9.2|Apache-2.0|1|
 |xunit.runner.visualstudio|2.8.2|Apache-2.0|1|
 |xunit|2.9.2|Apache-2.0|1|
+
 ## Acknowledgements
 1. [CEVOpen](https://github.com/petermr/CEVOpen) - This data represents about 2100 unique chemical names of volatile plant chemicals (essential oils) from the EssoilDB 1.0 database (compiled from the scientific literature over about 10 years in Dr Yadav's laboratory). They are made available for re-use by anyone for any purpose (CC0). We would appreciate acknowledgement of EssoilDB and the following people who extracted and cleaned the data during 2019. (Gitanjali Yadav, Ambarish Kumar, Peter Murray-Rust).
 

@@ -11,7 +11,6 @@ using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -130,13 +129,20 @@ namespace Chem4Word.Model2.Converters.MDL
             // Read Line #4 - Counts
             string counts = SdFileConverter.GetNextLine(reader);
 
-            if (counts.ToLower().Contains("v2000"))
+            if (counts.Length != 39)
+            {
+                _molecule.Warnings.Add($"Line {SdFileConverter.LineNumber}: Counts line is not 39 characters");
+            }
+            var lowerCounts = counts.ToLower();
+            if (lowerCounts.Contains("v2000"))
             {
                 try
                 {
-                    result.Atoms = ParseInteger(counts, 0, 3);
-                    result.Bonds = ParseInteger(counts, 3, 3);
-                    result.Version = GetSubString(counts, 34, 5).ToUpper();
+                    result.Atoms = ParseInteger(lowerCounts, 0, 3);
+                    result.Bonds = ParseInteger(lowerCounts, 3, 3);
+                    // Handle counts line that is short
+                    var index = lowerCounts.IndexOf("v", StringComparison.InvariantCulture);
+                    result.Version = GetSubString(lowerCounts, index, 5).ToUpper();
                 }
                 catch (Exception ex)
                 {

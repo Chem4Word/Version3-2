@@ -56,7 +56,7 @@ namespace Chem4Word.Shared
 
         public static List<string> GetWinWordSearchPaths()
         {
-            var paths = new List<string>();
+            List<string> paths = new List<string>();
 
             paths.Add($"GetFromEnvironment => '{GetFromEnvironment()}'");
             paths.Add($"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'");
@@ -94,7 +94,7 @@ namespace Chem4Word.Shared
         /// <returns></returns>
         public static int GetWinWordVersionNumber(string path = null)
         {
-            int result;
+            int result = -1;
 
             if (path == null)
             {
@@ -103,13 +103,12 @@ namespace Chem4Word.Shared
 
             if (!string.IsNullOrEmpty(path))
             {
-                var fi = GetWinWordVersion(path);
+                FileVersionInfo fi = GetWinWordVersion(path);
 
-                result = HumanOfficeVersion(fi.FileMajorPart);
-            }
-            else
-            {
-                result = -1;
+                if (fi != null)
+                {
+                    result = HumanOfficeVersion(fi.FileMajorPart);
+                }
             }
 
             return result;
@@ -123,7 +122,7 @@ namespace Chem4Word.Shared
 
             if (!string.IsNullOrEmpty(pathToWinword))
             {
-                var fi = GetWinWordVersion(pathToWinword);
+                FileVersionInfo fi = GetWinWordVersion(pathToWinword);
 
                 string wordVersionNumber = fi.FileVersion;
 
@@ -191,12 +190,12 @@ namespace Chem4Word.Shared
 
             if (!string.IsNullOrEmpty(clickToRun))
             {
-                var products = clickToRun.Split(',').Select(p => p.ToLower()).ToList();
+                List<string> products = clickToRun.Split(',').Select(p => p.ToLower()).ToList();
 
                 // Loop backward so that we can remove products we don't care about
                 for (int i = products.Count - 1; i >= 0; i--)
                 {
-                    var p0 = products[i];
+                    string p0 = products[i];
                     if (p0.Contains("access")
                         || p0.Contains("excel")
                         || p0.Contains("outlook")
@@ -218,7 +217,7 @@ namespace Chem4Word.Shared
 
                 for (int i = 0; i < products.Count; i++)
                 {
-                    foreach (var name in stringArray)
+                    foreach (string name in stringArray)
                     {
                         products[i] = products[i].Replace(name, "");
                     }
@@ -228,7 +227,7 @@ namespace Chem4Word.Shared
 
                 // If this is Office 2016/2019/2021/2024/365
 
-                foreach (var p1 in products)
+                foreach (string p1 in products)
                 {
                     if (p1.Contains("365"))
                     {
@@ -239,7 +238,7 @@ namespace Chem4Word.Shared
 
                 if (string.IsNullOrEmpty(versionNumber))
                 {
-                    foreach (var p2 in products)
+                    foreach (string p2 in products)
                     {
                         if (p2.Contains("2024"))
                         {
@@ -251,7 +250,7 @@ namespace Chem4Word.Shared
 
                 if (string.IsNullOrEmpty(versionNumber))
                 {
-                    foreach (var p2 in products)
+                    foreach (string p2 in products)
                     {
                         if (p2.Contains("2021"))
                         {
@@ -263,7 +262,7 @@ namespace Chem4Word.Shared
 
                 if (string.IsNullOrEmpty(versionNumber))
                 {
-                    foreach (var p2 in products)
+                    foreach (string p2 in products)
                     {
                         if (p2.Contains("2019"))
                         {
@@ -280,7 +279,7 @@ namespace Chem4Word.Shared
 
                 string productName = "";
 
-                foreach (var p3 in products)
+                foreach (string p3 in products)
                 {
                     if (p3.Contains("standard"))
                     {
@@ -709,7 +708,7 @@ namespace Chem4Word.Shared
                     }
                     break;
 
-                case 16: // Word 2016
+                case 16: // Word 2016, 2019, 2024 or 365
                     break;
             }
 
@@ -864,7 +863,7 @@ namespace Chem4Word.Shared
             // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\16.0\Word\InstallRoot == "C:\Program Files\Microsoft Office\root\Office16\"
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Office\16.0\Word\InstallRoot == "C:\Program Files (x86)\Microsoft Office\root\Office16\"
 
-            foreach (var version in OfficeVersions)
+            foreach (int version in OfficeVersions)
             {
                 string search = string.Format(InstallRootTemplate32, version);
                 string path = GetRegistryValue(Registry.LocalMachine, search, "Path");
@@ -920,7 +919,7 @@ namespace Chem4Word.Shared
         {
             string result = null;
 
-            var commandLineArgs = Environment.GetCommandLineArgs();
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
 
             if (commandLineArgs.Length >= 1)
             {
@@ -936,9 +935,9 @@ namespace Chem4Word.Shared
 
             string result = null;
 
-            foreach (var version in OfficeVersions)
+            foreach (int version in OfficeVersions)
             {
-                foreach (var template in FileSearchTemplates)
+                foreach (string template in FileSearchTemplates)
                 {
                     string programFiles;
                     if (Environment.Is64BitOperatingSystem && Environment.Is64BitProcess)
@@ -1035,12 +1034,12 @@ namespace Chem4Word.Shared
                     version = 2013;
                     break;
 
-                case 16:
+                case 16: // Versions 2016, 2019, 2024 and 365 all have major version of 16
                     version = 2016;
                     break;
 
-                case 17:
-                    version = 2019;
+                case 17: // Version 17 does not exist yet so return something bigger than 2010
+                    version = 2099;
                     break;
             }
 

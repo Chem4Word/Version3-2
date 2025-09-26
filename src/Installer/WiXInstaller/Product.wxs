@@ -1,6 +1,6 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <!-- For automatic upgrade to work only first three parts of version number are used -->
-  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 19" Manufacturer="Chem4Word" Version="3.2.23.9404" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
+  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 19" Manufacturer="Chem4Word" Version="3.2.23.9398" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
     <MajorUpgrade DowngradeErrorMessage="A newer version of Chem4Word is already installed." />
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
     <!-- EULA Must be edited in WordPad NOT Word -->
@@ -9,7 +9,7 @@
     <Property Id="ARPHELPLINK" Value="https://www.chem4word.co.uk/help" />
     <Property Id="ARPURLINFOABOUT" Value="https://www.chem4word.co.uk/about" />
     <Property Id="ARPURLUPDATEINFO" Value="https://www.chem4word.co.uk/update" />
-    <Property Id="ARPNOMODIFY" Value="1" />
+    <!--<Property Id="ARPNOMODIFY" Value="1" /> Allow ChangeButton to be enabled, to remove "DEBUG: Error 2836:" from setup logs -->
     <WixVariable Id="WixUIBannerBmp" Value="WixUIBanner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="WixUIDialog.bmp" />
     <Icon Id="Chem4Word.ico" SourceFile="Chem4Word.ico" />
@@ -45,7 +45,7 @@
     <!-- Include our Custom Actions assembly -->
     <!-- https://blogs.msdn.microsoft.com/jschaffe/2012/10/23/creating-wix-custom-actions-in-c-and-passing-parameters/ -->
     <!-- https://www.codeproject.com/Articles/132918/Creating-Custom-Action-for-WIX-Written-in-Managed -->
-    <Binary Id="WiX.CustomAction.dll" SourceFile="..\Wix.CustomAction\bin\x86\$(var.Configuration)\WiX.CustomAction.CA.dll" />
+    <Binary Id="WiX.CustomAction.dll" SourceFile="..\Wix.CustomAction.V6\bin\$(var.Configuration)\net452\WiX.CustomAction.V6.CA.dll" />
     <CustomAction Id="WordProcessCount" DllEntry="WordProcessCount" Return="check" Execute="immediate" BinaryRef="WiX.CustomAction.dll" />
     <CustomAction Id="CleanUserRegistry" DllEntry="CleanUserRegistry" Return="check" Execute="deferred" Impersonate="yes" BinaryRef="WiX.CustomAction.dll" />
     <CustomAction Id="CleanSystemRegistry" DllEntry="CleanSystemRegistry" Return="check" Execute="deferred" Impersonate="no" BinaryRef="WiX.CustomAction.dll" />

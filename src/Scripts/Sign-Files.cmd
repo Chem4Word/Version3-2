@@ -9,7 +9,7 @@ copy ..\Chem4Word.V3\Data\Chem4Word-Versions.xml %working% > nul
 copy ..\Chem4Word.V3\Data\index.html %working% > nul
 
 copy ..\Installer\Chem4WordSetup\bin\Setup\Chem4Word-Setup.exe %working% > nul
-copy ..\Installer\WiXInstaller\bin\x86\Setup\%release% %working% > nul
+copy ..\Installer\WiXInstaller\bin\x86\Setup\en-us\%release% %working% > nul
 
 pushd %working%
 dir

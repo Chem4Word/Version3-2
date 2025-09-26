@@ -266,8 +266,8 @@
                         Grid.Column="0"
                         Width="32"
                         Height="32"
-                        Click="OnItemButtonClick"
                         HorizontalAlignment="Left"
+                        Click="OnItemButtonClick"
                         Style="{StaticResource NavButtonStyle}"
                         Tag="Library|DeleteStructure">
                         <Button.ToolTip>Delete the chemistry from your library</Button.ToolTip>

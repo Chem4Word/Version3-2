@@ -6,7 +6,6 @@
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Shared;
-using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;

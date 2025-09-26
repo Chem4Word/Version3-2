@@ -300,12 +300,12 @@ namespace Chem4Word.Model2.Converters.JSON
                         if (!sa.Equals(ea))
                         {
                             Bond newBond = new Bond()
-                                           {
-                                               StartAtomInternalId = sa,
-                                               EndAtomInternalId = ea,
-                                               Stereo = s,
-                                               Order = o
-                                           };
+                            {
+                                StartAtomInternalId = sa,
+                                EndAtomInternalId = ea,
+                                Stereo = s,
+                                Order = o
+                            };
                             newMol.AddBond(newBond);
                             newBond.Parent = newMol;
                         }

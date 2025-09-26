@@ -128,5 +128,35 @@
     "ExternalName": "> <PUBCHEM_OPENEYE_ISO_SMILES>",
     "InternalName": "pubchem:IsoSmiles",
     "IsFormula": true
+  },
+  {
+    "ExternalName": "> <ID>",
+    "InternalName": "external:Id",
+    "IsFormula": false
+  },
+  {
+    "ExternalName": "> <CAS_REGISTRY_NUMBER>",
+    "InternalName": "external:CasRegistryNumber",
+    "IsFormula": false
+  },
+  {
+    "ExternalName": "> <INCHIKEY>",
+    "InternalName": "external:InchiKey",
+    "IsFormula": false
+  },
+  {
+    "ExternalName": "> <NAME>",
+    "InternalName": "chem4word:Name",
+    "IsFormula": false
+  },
+  {
+    "ExternalName": "> <IUPAC_NAME>",
+    "InternalName": "chebi:IupacName",
+    "IsFormula": false
+  },
+  {
+    "ExternalName": "> <FORMULA>",
+    "InternalName": "chem4word:Formula",
+    "IsFormula": true
   }
 ]

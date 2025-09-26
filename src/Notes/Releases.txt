@@ -1,6 +1,6 @@
 ﻿# Set Build Numbers
 
-.\Set-Assembly-Version.ps1 -version 3.2.23 -name "Release 19" -released "30-Sep-2025" -path ..
+.\Set-Assembly-Version.ps1 -version 3.2.23 -name "Release 19" -released "24-Sep-2025" -path ..
 
 .\Set-Assembly-Version.ps1 -version 3.2.22 -name "Release 18" -released "30-Apr-2025" -path ..
 .\Set-Assembly-Version.ps1 -version 3.2.21 -name "Release 17" -released "09-Oct-2024" -path ..

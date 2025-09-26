@@ -47,7 +47,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         #region Properties
 
         [JsonProperty]
-        public string ChEBIWebServiceUri { get; set; }
+        public string ChEBIWebService2Uri { get; set; }
 
         [JsonProperty]
         public int DisplayOrder { get; set; }
@@ -116,7 +116,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void SetValuesFromCopy(ChEBIOptions options)
         {
-            ChEBIWebServiceUri = options.StripTrailingSlash(options.ChEBIWebServiceUri);
+            ChEBIWebService2Uri = options.StripTrailingSlash(options.ChEBIWebService2Uri);
             DisplayOrder = options.DisplayOrder;
             MaximumResults = options.MaximumResults;
         }
@@ -170,7 +170,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         public void RestoreDefaults()
         {
-            ChEBIWebServiceUri = Constants.DefaultChEBIWebServiceUri;
+            ChEBIWebService2Uri = Constants.DefaultChEBIWebServiceUri;
             DisplayOrder = Constants.DefaultDisplayOrder;
             MaximumResults = Constants.DefaultMaximumSearchResults;
         }

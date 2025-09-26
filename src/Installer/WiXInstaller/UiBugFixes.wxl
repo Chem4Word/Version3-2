@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+    <UI Dialog="ExitDialog" Control="BottomLine" Width="370" />
+    <UI Dialog="FatalError" Control="BottomLine" Width="370" />
+    <UI Dialog="PrepareDlg" Control="BottomLine" Width="370" />
+    <UI Dialog="UserExit" Control="BottomLine" Width="370" />
+    <UI Dialog="WelcomeEulaDlg" Control="BottomLine" Width="370" />
+
+    <UI Dialog="MaintenanceTypeDlg" Control="BannerLine" Width="370" />
+    <UI Dialog="MaintenanceTypeDlg" Control="BottomLine" Width="370" />
+    <UI Dialog="MaintenanceWelcomeDlg" Control="BannerLine" Width="370" />
+    <UI Dialog="MaintenanceWelcomeDlg" Control="BottomLine" Width="370" />
+    <UI Dialog="ProgressDlg" Control="BannerLine" Width="370" />
+    <UI Dialog="ProgressDlg" Control="BottomLine" Width="370" />
+    <UI Dialog="VerifyReadyDlg" Control="BannerLine" Width="370" />
+    <UI Dialog="VerifyReadyDlg" Control="BottomLine" Width="370" />
+</WixLocalization>

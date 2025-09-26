@@ -1,4 +1,4 @@
-dir bin\x86\Setup
+dir bin\x86\Setup\en-US\
 pause
 
 set release=Chem4Word-Setup.3.2.23.Release.19.msi
@@ -6,11 +6,11 @@ set release=Chem4Word-Setup.3.2.23.Release.19.msi
 del setup.log
 del remove.log
 
-msiexec /i bin\x86\Setup\%release% /l*v setup.log
+msiexec /i bin\x86\Setup\en-US\%release% /l*v setup.log
 
 pause
 
-msiexec /uninstall bin\x86\Setup\%release% /l*v remove.log
+rem msiexec /uninstall bin\x86\Setup\%release% /l*v remove.log
 
 pause
 

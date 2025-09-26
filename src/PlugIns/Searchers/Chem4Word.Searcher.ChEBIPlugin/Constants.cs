@@ -11,7 +11,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
     {
         #region Fields
 
-        public static string DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/webservices/chebi/2.0/webservice";
+        public static string DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi";
 
         public static int DefaultDisplayOrder = 30;
         public static int DefaultMaximumSearchResults = 20;

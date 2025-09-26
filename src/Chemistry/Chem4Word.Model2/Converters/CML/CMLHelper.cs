@@ -10,7 +10,6 @@ using Chem4Word.Core.Helpers;
 using Chem4Word.Model2.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;

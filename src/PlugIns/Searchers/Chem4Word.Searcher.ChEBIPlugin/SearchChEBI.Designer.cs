@@ -58,7 +58,7 @@
             this.SearchFor.Name = "SearchFor";
             this.SearchFor.Size = new System.Drawing.Size(895, 23);
             this.SearchFor.TabIndex = 2;
-            this.SearchFor.TextChanged += new System.EventHandler(this.SearchFor_TextChanged);
+            this.SearchFor.TextChanged += new System.EventHandler(this.OnTextChanged_SearchFor);
             // 
             // SearchButton
             // 
@@ -71,7 +71,7 @@
             this.SearchButton.TabIndex = 3;
             this.SearchButton.Text = "Search";
             this.SearchButton.UseVisualStyleBackColor = true;
-            this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
+            this.SearchButton.Click += new System.EventHandler(this.OnClick_SearchButton);
             // 
             // ImportButton
             // 
@@ -84,7 +84,7 @@
             this.ImportButton.TabIndex = 12;
             this.ImportButton.Text = "Import";
             this.ImportButton.UseVisualStyleBackColor = true;
-            this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
+            this.ImportButton.Click += new System.EventHandler(this.OnClick_ImportButton);
             // 
             // splitContainer1
             // 
@@ -127,8 +127,8 @@
             this.ResultsListView.TabIndex = 0;
             this.ResultsListView.UseCompatibleStateImageBehavior = false;
             this.ResultsListView.View = System.Windows.Forms.View.Details;
-            this.ResultsListView.SelectedIndexChanged += new System.EventHandler(this.ResultsListView_SelectedIndexChanged);
-            this.ResultsListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ResultsListView_MouseDoubleClick);
+            this.ResultsListView.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged_ResultsListView);
+            this.ResultsListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick_ResultsListView);
             // 
             // IDHeader
             // 
@@ -164,7 +164,7 @@
             this.ShowMolfile.TabIndex = 14;
             this.ShowMolfile.Text = "MolFile";
             this.ShowMolfile.UseVisualStyleBackColor = true;
-            this.ShowMolfile.Click += new System.EventHandler(this.ShowMolfile_Click);
+            this.ShowMolfile.Click += new System.EventHandler(this.OnClick_ShowMolfile);
             // 
             // ErrorsAndWarnings
             // 
@@ -208,7 +208,7 @@
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "SearchChEBI";
             this.Text = "Search ChEBI public database";
-            this.Load += new System.EventHandler(this.SearchChEBI_Load);
+            this.Load += new System.EventHandler(this.OnLoad_SearchChEBI);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

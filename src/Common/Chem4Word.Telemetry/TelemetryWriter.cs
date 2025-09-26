@@ -8,6 +8,7 @@
 using Azure.Messaging.ServiceBus;
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Shared;
 using IChem4Word.Contracts;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Chem4Word.Shared;
 
 namespace Chem4Word.Telemetry
 {

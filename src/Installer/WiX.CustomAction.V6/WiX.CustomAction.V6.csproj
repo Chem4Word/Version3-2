@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+    <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Shared\OfficeHelper.cs" Link="OfficeHelper.cs" />
+    <Compile Include="..\..\Shared\RegistryWOW6432.cs" Link="RegistryWOW6432.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="CustomAction.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Dtf.CustomAction" Version="6.0.2" />
+    <PackageReference Include="WixToolset.Dtf.WindowsInstaller" Version="6.0.2" />
+  </ItemGroup>
+</Project>

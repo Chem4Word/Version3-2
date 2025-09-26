@@ -176,9 +176,9 @@ namespace Chem4Word
                             else
                             {
                                 var settings = new JsonSerializerSettings
-                                               {
-                                                   CheckAdditionalContent = false
-                                               };
+                                {
+                                    CheckAdditionalContent = false
+                                };
                                 var options = JsonConvert.DeserializeObject<Chem4WordOptions>(fileContents, settings);
                                 SetValuesFromCopy(options);
 

@@ -67,10 +67,8 @@ namespace Chem4Word
 
         public bool ChemistryAllowed;
         public string ChemistryProhibitedReason = "";
-        private string _lastContentControlAdded = "";
 
         private bool _chemistrySelected;
-        private int _rightClickEvents;
         private bool _markAsChemistryHandled;
 
         public bool OptionsReloadRequired = false;
@@ -1512,8 +1510,6 @@ namespace Chem4Word
                     LoadOptions();
                 }
 
-                _rightClickEvents++;
-
                 if (!_markAsChemistryHandled)
                 {
                     var targetWord = JsonConvert.DeserializeObject<TargetWord>(ctrl.Tag);
@@ -1635,7 +1631,6 @@ namespace Chem4Word
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             _markAsChemistryHandled = false;
-            _rightClickEvents = 0;
 
             var selectedWords = new List<TargetWord>();
 
@@ -2124,13 +2119,6 @@ namespace Chem4Word
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="document">The document that is being saved.</param>
-        /// <param name="saveAsUi">True if the Save As dialog box is displayed, whether to save a new document, in response to the Save command; or in response to the Save As command; or in response to the SaveAs or SaveAs2 method.</param>
-        /// <param name="cancel">False when the event occurs.
-        /// If the event procedure sets this argument to True, the document is not saved when the procedure is finished.</param>
         private void OnDocumentBeforeSave(Word.Document document, ref bool saveAsUi, ref bool cancel)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -2203,12 +2191,6 @@ namespace Chem4Word
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="document">The document that's being closed.</param>
-        /// <param name="cancel">False when the event occurs.
-        /// If the event procedure sets this argument to True, the document doesn't close when the procedure is finished.</param>
         private void OnDocumentBeforeClose(Word.Document document, ref bool cancel)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -2278,11 +2260,6 @@ namespace Chem4Word
 
         #region Window Events
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="selection">The text selected.
-        /// If no text is selected, the Sel parameter returns either nothing or the first character to the right of the insertion point.</param>
         private void OnWindowSelectionChange(Word.Selection selection)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -2882,11 +2859,6 @@ namespace Chem4Word
 
         #region Content Control Events
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="newContentControl"></param>
-        /// <param name="inUndoRedo"></param>
         private void OnContentControlAfterAdd(Word.ContentControl newContentControl, bool inUndoRedo)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
@@ -2902,56 +2874,55 @@ namespace Chem4Word
 
                 var ccId = newContentControl.ID;
                 var ccTag = newContentControl.Tag;
-                if (!inUndoRedo && !string.IsNullOrEmpty(ccTag))
+                var ccTitle = newContentControl.Title;
+
+                if (!inUndoRedo
+                    && !string.IsNullOrEmpty(ccTitle) && !string.IsNullOrEmpty(ccTag)
+                    && ccTitle.Equals(Constants.ContentControlTitle))
                 {
-                    if (!ccId.Equals(_lastContentControlAdded))
+                    // Check that tag looks like it might be a C4W Tag
+                    var regex = @"^[0-9a-fmn.:]+$";
+                    var match = Regex.Match(ccTag, regex, RegexOptions.IgnoreCase);
+                    if (match.Success)
                     {
-                        // Check that tag looks like it might be a C4W Tag
-                        var regex = @"^[0-9a-fmn.:]+$";
-                        var match = Regex.Match(ccTag, regex, RegexOptions.IgnoreCase);
-                        if (match.Success)
+                        var prefix = CustomXmlPartHelper.PrefixFromTag(ccTag);
+                        var guid = CustomXmlPartHelper.GuidFromTag(ccTag);
+
+                        var message = $"ContentControl {ccId} added; Looking for structure {ccTag}";
+                        Telemetry.Write(module, "Information", message);
+
+                        var cxml = CustomXmlPartHelper.GetCustomXmlPart(thisDocument, guid);
+                        if (cxml != null)
                         {
-                            var prefix = CustomXmlPartHelper.PrefixFromTag(ccTag);
-                            var guid = CustomXmlPartHelper.GuidFromTag(ccTag);
-
-                            var message = $"ContentControl {ccId} added; Looking for structure {ccTag}";
-                            Telemetry.Write(module, "Information", message);
-
-                            var cxml = CustomXmlPartHelper.GetCustomXmlPart(thisDocument, guid);
-                            if (cxml != null)
+                            Telemetry.Write(module, "Information", $"Found XmlPart for {ccTag} in this document.");
+                        }
+                        else
+                        {
+                            if (Globals.Chem4WordV3.Application.Documents.Count > 1)
                             {
-                                Telemetry.Write(module, "Information", $"Found XmlPart for {ccTag} in this document.");
-                            }
-                            else
-                            {
-                                if (Globals.Chem4WordV3.Application.Documents.Count > 1)
+                                cxml = CustomXmlPartHelper.FindCustomXmlPartInOtherDocuments(guid, thisDocument.Name);
+                                if (cxml != null)
                                 {
-                                    cxml = CustomXmlPartHelper.FindCustomXmlPartInOtherDocuments(guid, thisDocument.Name);
-                                    if (cxml != null)
+                                    Telemetry.Write(module, "Information", $"Found XmlPart for {ccTag} in other document, adding it into this.");
+
+                                    // Generate new molecule Guid and apply it
+                                    var newGuid = Guid.NewGuid().ToString("N");
+                                    if (string.IsNullOrEmpty(prefix))
                                     {
-                                        Telemetry.Write(module, "Information", $"Found XmlPart for {ccTag} in other document, adding it into this.");
-
-                                        // Generate new molecule Guid and apply it
-                                        var newGuid = Guid.NewGuid().ToString("N");
-                                        if (string.IsNullOrEmpty(prefix))
-                                        {
-                                            newContentControl.Tag = newGuid;
-                                        }
-                                        else
-                                        {
-                                            newContentControl.Tag = $"{prefix}:{newGuid}";
-                                        }
-
-                                        var cmlConverter = new CMLConverter();
-                                        var model = cmlConverter.Import(cxml.XML);
-                                        model.CustomXmlPartGuid = newGuid;
-                                        thisDocument.CustomXMLParts.Add(XmlHelper.AddHeader(cmlConverter.Export(model)));
+                                        newContentControl.Tag = newGuid;
                                     }
+                                    else
+                                    {
+                                        newContentControl.Tag = $"{prefix}:{newGuid}";
+                                    }
+
+                                    var cmlConverter = new CMLConverter();
+                                    var model = cmlConverter.Import(cxml.XML);
+                                    model.CustomXmlPartGuid = newGuid;
+                                    thisDocument.CustomXMLParts.Add(XmlHelper.AddHeader(cmlConverter.Export(model)));
                                 }
                             }
                         }
-
-                        _lastContentControlAdded = ccId;
                     }
                 }
             }

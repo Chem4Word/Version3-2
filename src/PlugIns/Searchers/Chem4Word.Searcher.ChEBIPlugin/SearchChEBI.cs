@@ -11,13 +11,17 @@ using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
-using Chem4Word.Searcher.ChEBIPlugin.ChEBI;
+using Chem4Word.Searcher.ChEBIPlugin.Models;
 using IChem4Word.Contracts;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
@@ -25,16 +29,21 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 {
     public partial class SearchChEBI : Form
     {
-        #region Fields
-
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
 
-        private const string EmptyCml = "<cml></cml>";
+        #region Fields
 
-        private Entity _allResults;
+        private Dictionary<string, string> _structureCache = new Dictionary<string, string>();
+        private string _guid = Guid.NewGuid().ToString("N");
+
         private Model _lastModel;
         private string _lastMolfile = string.Empty;
+
+        private HttpClient _client = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(15)
+        };
 
         #endregion Fields
 
@@ -60,21 +69,30 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         #region Methods
 
-        private void SearchFor_TextChanged(object sender, EventArgs e)
+        private void OnTextChanged_SearchFor(object sender, EventArgs e)
         {
             SearchButton.Enabled = TextHelper.IsValidSearchString(SearchFor.Text);
         }
 
-        private void EnableImport()
+        private void EnableButtons()
         {
-            bool state = ResultsListView.SelectedItems.Count > 0
-                         && display1.Chemistry != null
-                         && string.IsNullOrEmpty(ErrorsAndWarnings.Text);
-            ImportButton.Enabled = state;
-            if (ShowMolfile.Visible)
+            if (_lastModel != null)
             {
-                state = !string.IsNullOrEmpty(_lastMolfile);
-                ShowMolfile.Enabled = state;
+                bool state = ResultsListView.SelectedItems.Count > 0
+                             && display1.Chemistry != null
+                             && _lastModel.AllErrors.Count == 0
+                             && _lastModel.TotalAtomsCount > 0;
+                ImportButton.Enabled = state;
+
+                if (ShowMolfile.Visible)
+                {
+                    ShowMolfile.Enabled = true;
+                }
+            }
+            else
+            {
+                ImportButton.Enabled = false;
+                ShowMolfile.Enabled = false;
             }
         }
 
@@ -82,68 +100,43 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            ErrorsAndWarnings.Text = "";
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            _structureCache.Clear();
+
             using (new WaitCursor())
             {
-                display1.Chemistry = null;
-
-                ChebiWebServiceService ws = new ChebiWebServiceService();
-                getLiteEntityResponse results;
-
-                var securityProtocol = ServicePointManager.SecurityProtocol;
+                SecurityProtocolType securityProtocol = ServicePointManager.SecurityProtocol;
                 ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
-                ws.Url = UserOptions.ChEBIWebServiceUri;
-                ws.UserAgent = "Chem4Word";
-
-                results = ws.getLiteEntity(new getLiteEntity
-                {
-                    search = searchFor,
-                    maximumResults = UserOptions.MaximumResults,
-                    searchCategory = SearchCategory.ALL,
-                    stars = StarsCategory.ALL
-                });
 
                 try
                 {
-                    var allResults = results.@return;
-                    ResultsListView.Items.Clear();
-                    ResultsListView.Enabled = true;
-                    if (allResults.Length > 0)
-                    {
-                        foreach (LiteEntity res in allResults)
-                        {
-                            var li = new ListViewItem();
-                            li.Text = res.chebiId;
-                            li.Tag = res;
-                            ListViewItem.ListViewSubItem name =
-                                new ListViewItem.ListViewSubItem(li, res.chebiAsciiName);
-                            li.SubItems.Add(name);
+                    // https://www.ebi.ac.uk/chebi/backend/api/public/es_search/?term=benzene&page=1&size=10
+                    // DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi/"
+                    string query = $"{UserOptions.ChEBIWebService2Uri}/backend/api/public/es_search/?term={searchFor}&page=1&size={UserOptions.MaximumResults}";
 
-                            ListViewItem.ListViewSubItem score =
-                                new ListViewItem.ListViewSubItem(li, res.searchScore.ToString());
-                            li.SubItems.Add(score);
-                            ResultsListView.Items.Add(li);
-                        }
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, query);
+                    request.Headers.Add("User-Agent", "Chem4Word");
+                    request.Headers.Add("Cookie", $"JSESSIONID={_guid}");
 
-                        ResultsListView.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-                    }
-                    else
-                    {
-                        ErrorsAndWarnings.Text = "Sorry: No results found.";
-                    }
+                    HttpResponseMessage response = _client.SendAsync(request).Result;
+                    response.EnsureSuccessStatusCode();
+
+                    string body = response.Content.ReadAsStringAsync().Result;
+                    ProcessSearchResponse(body);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    if (ex.Message.Equals("The operation has timed out"))
+                    if (exception.Message.Equals("The operation has timed out"))
                     {
                         ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
                     }
                     else
                     {
-                        ErrorsAndWarnings.Text = ex.Message;
-                        Telemetry.Write(module, "Exception", ex.Message);
-                        Telemetry.Write(module, "Exception", ex.StackTrace);
+                        ErrorsAndWarnings.Text = exception.Message;
+                        Telemetry.Write(module, "Exception", exception.Message);
+                        Telemetry.Write(module, "Exception", exception.StackTrace);
                     }
                 }
                 finally
@@ -152,37 +145,100 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 }
             }
 
-            EnableImport();
+            stopwatch.Stop();
+            Telemetry.Write(module, "Information", $"Search for {searchFor} took {stopwatch.Elapsed}");
         }
 
-        private string GetChemStructure(LiteEntity le)
+        private void ProcessSearchResponse(string body)
         {
-            using (new WaitCursor())
+            ErrorsAndWarnings.Text = string.Empty;
+
+            SearchResult data = JsonConvert.DeserializeObject<SearchResult>(body);
+
+            if (data != null && data.Results.Any())
             {
-                var securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
+                ResultsListView.Items.Clear();
+                ResultsListView.Enabled = true;
+                foreach (Result result in data.Results
+                                              .OrderByDescending(r => r.Score)
+                                              .ToList())
+                {
+                    ListViewItem li = new ListViewItem
+                    {
+                        Text = result.Source.ChebiId,
+                        Tag = result
+                    };
 
-                ChebiWebServiceService ws = new ChebiWebServiceService();
-                getCompleteEntityResponse results;
+                    ListViewItem.ListViewSubItem name =
+                        new ListViewItem.ListViewSubItem(li, result.Source.Name);
+                    li.SubItems.Add(name);
 
-                ws.Url = UserOptions.ChEBIWebServiceUri;
-                ws.UserAgent = "Chem4Word";
+                    ListViewItem.ListViewSubItem score =
+                        new ListViewItem.ListViewSubItem(li, SafeDouble.AsString0(result.Score));
+                    li.SubItems.Add(score);
+                    ResultsListView.Items.Add(li);
+                }
 
-                getCompleteEntity gce = new getCompleteEntity();
-                gce.chebiId = le.chebiId;
-
-                results = ws.getCompleteEntity(gce);
-
-                _allResults = results.@return;
-
-                var chemStructure = _allResults?.ChemicalStructures?[0]?.structure;
-
-                ServicePointManager.SecurityProtocol = securityProtocol;
-                return chemStructure;
+                ResultsListView.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             }
         }
 
-        private void ImportButton_Click(object sender, EventArgs e)
+        private string GetStructureFromWeb(string chebiId)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            string result = string.Empty;
+
+            using (new WaitCursor())
+            {
+                SecurityProtocolType securityProtocol = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
+
+                try
+                {
+                    // DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi/"
+                    // https://www.ebi.ac.uk/chebi/saveStructure.do?sdf=true&chebiId=CHEBI:82274&imageId=0
+
+                    string query = $"{UserOptions.ChEBIWebService2Uri}/saveStructure.do?sdf=true&chebiId={chebiId}&imageId=0";
+
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, query);
+                    request.Headers.Add("User-Agent", "Chem4Word");
+                    request.Headers.Add("Cookie", $"JSESSIONID={_guid}");
+
+                    HttpResponseMessage response = _client.SendAsync(request).Result;
+                    response.EnsureSuccessStatusCode();
+
+                    result = response.Content.ReadAsStringAsync().Result;
+                }
+                catch (Exception exception)
+                {
+                    if (exception.Message.Equals("The operation has timed out"))
+                    {
+                        ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
+                    }
+                    else
+                    {
+                        ErrorsAndWarnings.Text = exception.Message;
+                        Telemetry.Write(module, "Exception", exception.Message);
+                        Telemetry.Write(module, "Exception", exception.StackTrace);
+                    }
+                }
+                finally
+                {
+                    ServicePointManager.SecurityProtocol = securityProtocol;
+                }
+            }
+
+            stopwatch.Stop();
+            Telemetry.Write(module, "Information", $"Get SDF for '{ChebiId}' took {stopwatch.Elapsed}");
+
+            return result;
+        }
+
+        private void OnClick_ImportButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -210,38 +266,12 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     double after = _lastModel.MeanBondLength;
                     Telemetry.Write(module, "Information", $"Structure rescaled from {before.ToString("#0.00")} to {after.ToString("#0.00")}");
                     _lastModel.Relabel(true);
-                    var expModel = _lastModel;
+                    Model expModel = _lastModel;
 
                     using (new WaitCursor())
                     {
                         if (expModel.Molecules.Values.Any())
                         {
-                            var mol = expModel.Molecules.Values.First();
-
-                            mol.Names.Clear();
-
-                            if (_allResults.IupacNames != null)
-                            {
-                                foreach (var di in _allResults.IupacNames)
-                                {
-                                    var cn = new TextualProperty();
-                                    cn.Value = di.data;
-                                    cn.FullType = "chebi:Iupac";
-                                    mol.Names.Add(cn);
-                                }
-                            }
-
-                            if (_allResults.Synonyms != null)
-                            {
-                                foreach (var di in _allResults.Synonyms)
-                                {
-                                    var cn = new TextualProperty();
-                                    cn.Value = di.data;
-                                    cn.FullType = "chebi:Synonym";
-                                    mol.Names.Add(cn);
-                                }
-                            }
-
                             Cml = conv.Export(expModel);
                         }
                     }
@@ -259,7 +289,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             return string.Join(Environment.NewLine, lines);
         }
 
-        private void ShowMolfile_Click(object sender, EventArgs e)
+        private void OnClick_ShowMolfile(object sender, EventArgs e)
         {
             if (_lastModel != null)
             {
@@ -269,15 +299,17 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
-        private void ResultsListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void OnMouseDoubleClick_ResultsListView(object sender, MouseEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
             try
             {
                 ErrorsAndWarnings.Text = "";
+
                 using (new WaitCursor())
                 {
-                    var itemUnderCursor = ResultsListView.HitTest(e.Location).Item;
+                    ListViewItem itemUnderCursor = ResultsListView.HitTest(e.Location).Item;
                     if (itemUnderCursor != null)
                     {
                         UpdateDisplay();
@@ -285,7 +317,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                         {
                             ResultsListView.SelectedItems.Clear();
                             itemUnderCursor.Selected = true;
-                            EnableImport();
+                            EnableButtons();
                             ImportStructure();
                             if (!string.IsNullOrEmpty(Cml))
                             {
@@ -302,13 +334,13 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
-        private void ResultsListView_SelectedIndexChanged(object sender, EventArgs e)
+        private void OnSelectedIndexChanged_ResultsListView(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             ErrorsAndWarnings.Text = "";
 
-            using (var cursor = new WaitCursor())
+            using (WaitCursor cursor = new WaitCursor())
             {
                 try
                 {
@@ -316,7 +348,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     {
                         UpdateDisplay();
 
-                        EnableImport();
+                        EnableButtons();
                     }
                 }
                 catch (Exception ex)
@@ -327,12 +359,12 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
-        private void SearchButton_Click(object sender, EventArgs e)
+        private void OnClick_SearchButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+                string searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
 
                 if (!string.IsNullOrEmpty(searchFor))
                 {
@@ -352,7 +384,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
-        private void SearchChEBI_Load(object sender, EventArgs e)
+        private void OnLoad_SearchChEBI(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -361,8 +393,8 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 {
                     Left = (int)TopLeft.X;
                     Top = (int)TopLeft.Y;
-                    var screen = Screen.FromControl(this);
-                    var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                    Screen screen = Screen.FromControl(this);
+                    Point sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
                     Left = (int)sensible.X;
                     Top = (int)sensible.Y;
                 }
@@ -375,7 +407,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 AcceptButton = SearchButton;
                 SearchButton.Enabled = false;
 
-                EnableImport();
+                EnableButtons();
 
 #if DEBUG
 #else
@@ -397,27 +429,45 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
             using (new WaitCursor())
             {
-                var tag = ResultsListView.SelectedItems[0]?.Tag;
-
-                if (tag is LiteEntity le && !string.IsNullOrEmpty(le.chebiId))
+                if (ResultsListView.SelectedItems[0]?.Tag is Result item)
                 {
-                    ChebiId = le.chebiId;
+                    ChebiId = item.Source.ChebiId;
 
-                    var chemStructure = GetChemStructure(le);
+                    if (!_structureCache.TryGetValue(ChebiId, out string chemStructure))
+                    {
+                        chemStructure = GetStructureFromWeb(item.Source.ChebiId);
+                        if (!string.IsNullOrEmpty(chemStructure))
+                        {
+                            _structureCache.Add(ChebiId, chemStructure);
+                        }
+                    }
+                    else
+                    {
+                        Telemetry.Write(module, "Information", $"Structure '{ChebiId}' found in cache");
+                    }
 
                     if (!string.IsNullOrEmpty(chemStructure))
                     {
                         _lastMolfile = ConvertToWindows(chemStructure);
-                        var sdConverter = new SdFileConverter();
+                        SdFileConverter sdConverter = new SdFileConverter();
                         _lastModel = sdConverter.Import(chemStructure);
+                    }
 
-                        if (_lastModel.AllWarnings.Count > 0 || _lastModel.AllErrors.Count > 0)
+                    if (_lastModel != null)
+                    {
+                        if (_lastModel.TotalAtomsCount == 0)
                         {
-                            Telemetry.Write(module, "Exception(Data)", chemStructure);
-                            var lines = new List<string>();
+                            display1.Chemistry = null;
+                            display1.Clear();
+                            ErrorsAndWarnings.Text = "No structure available.";
+                        }
+                        else if (_lastModel.AllWarnings.Count > 0 || _lastModel.AllErrors.Count > 0)
+                        {
+                            List<string> lines = new List<string>();
                             if (_lastModel.AllErrors.Count > 0)
                             {
                                 Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllErrors));
+                                Telemetry.Write(module, "Exception(Data)", chemStructure);
                                 lines.Add("Errors(s)");
                                 lines.AddRange(_lastModel.AllErrors);
                             }
@@ -430,7 +480,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                             ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
                         }
 
-                        var copy = _lastModel.Copy();
+                        Model copy = _lastModel.Copy();
                         copy.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
                         display1.Chemistry = copy;
                     }
@@ -442,8 +492,6 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                         display1.Clear();
                         ErrorsAndWarnings.Text = "No structure available.";
                     }
-
-                    EnableImport();
                 }
             }
         }
