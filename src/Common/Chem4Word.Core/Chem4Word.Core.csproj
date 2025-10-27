@@ -90,6 +90,7 @@
     <Compile Include="Helpers\DebugHelper.cs" />
     <Compile Include="Helpers\FileSystemHelper.cs" />
     <Compile Include="Helpers\GeometryTool.cs" />
+    <Compile Include="Helpers\HttpErrorStatusCodeException.cs" />
     <Compile Include="Helpers\PointHelper.cs" />
     <Compile Include="Helpers\ResourceHelper.cs" />
     <Compile Include="Helpers\SafeDate.cs" />

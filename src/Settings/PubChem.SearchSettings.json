@@ -1,0 +1,6 @@
+{
+    "baseUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/",
+    "searchUri": "eutils/esearch.fcgi?db=pccompound&term={{searchTerm}}&retmode=xml&relevanceorder=on&usehistory=y&retmax={{maxResults}}",
+    "nextUri": "eutils/esearch.fcgi?db=pccompound&term={{searchTerm}}&retmode=xml&relevanceorder=on&usehistory=y&retmax={{maxResults}}&WebEnv={{webEnv}}&RetStart={{resumeFrom}}",
+    "molfileUri": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{{compoundId}}/SDF"
+}

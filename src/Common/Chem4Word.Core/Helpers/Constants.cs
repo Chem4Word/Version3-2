@@ -9,6 +9,9 @@ namespace Chem4Word.Core.Helpers
 {
     public static class Constants
     {
+        // Set ClassStyle in Progress.cs
+        public const int CpNoCloseButton = 0x200;
+
         public const string Chem4WordVersion = "3.2";
         public const string Chem4WordVersionFiles = "files3-2";
         public const string ContentControlTitle = "Chemistry";
@@ -38,6 +41,9 @@ namespace Chem4Word.Core.Helpers
         public const string Chem4WordMessagesRegistryKey = @"SOFTWARE\Chem4Word V3\Messages";
         public const string Chem4WordExceptionsRegistryKey = @"SOFTWARE\Chem4Word V3\Exceptions";
         public const string Chem4WordAzureSettingsRegistryKey = @"SOFTWARE\Chem4Word V3\AzureSettings";
+        public const string Chem4WordChEBISettingsRegistryKey = @"SOFTWARE\Chem4Word V3\ChEBISettings";
+        public const string Chem4WordOPSINSettingsRegistryKey = @"SOFTWARE\Chem4Word V3\OPSINSettings";
+        public const string Chem4WordPubChemSettingsRegistryKey = @"SOFTWARE\Chem4Word V3\PubChemSettings";
 
         // Update Checks
         public const int MaximumVersionsBehind = 7;

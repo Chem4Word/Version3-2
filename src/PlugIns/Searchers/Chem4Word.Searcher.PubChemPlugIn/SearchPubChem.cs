@@ -100,14 +100,15 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+                var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+                string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
                 Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
                 ErrorsAndWarnings.Text = "";
                 display1.Chemistry = null;
                 display1.Clear();
 
-                ExecuteSearch(searchFor, 0);
+                ExecuteSearch(webSafe, 0);
             }
             catch (Exception ex)
             {
@@ -120,8 +121,9 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
-                ExecuteSearch(searchFor, -1);
+                var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+                string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
+                ExecuteSearch(webSafe, -1);
             }
             catch (Exception ex)
             {
@@ -134,8 +136,9 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
-                ExecuteSearch(searchFor, 1);
+                var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+                string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
+                ExecuteSearch(webSafe, 1);
             }
             catch (Exception ex)
             {
@@ -185,7 +188,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
         }
 
-        private void ExecuteSearch(string searchFor, int direction)
+        private void ExecuteSearch(string webSafe, int direction)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
@@ -196,7 +199,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             {
                 webCall = string.Format(CultureInfo.InvariantCulture,
                                         "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}",
-                                        UserOptions.PubChemWebServiceUri, searchFor, UserOptions.ResultsPerCall);
+                                        UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall);
             }
             else
             {
@@ -205,14 +208,14 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                     int startFrom = firstResult + numResults;
                     webCall = string.Format(CultureInfo.InvariantCulture,
                                             "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
-                                            UserOptions.PubChemWebServiceUri, searchFor, UserOptions.ResultsPerCall, webEnv, startFrom);
+                                            UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall, webEnv, startFrom);
                 }
                 else
                 {
                     int startFrom = firstResult - numResults;
                     webCall = string.Format(CultureInfo.InvariantCulture,
                                             "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
-                                            UserOptions.PubChemWebServiceUri, searchFor, UserOptions.ResultsPerCall, webEnv, startFrom);
+                                            UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall, webEnv, startFrom);
                 }
             }
 

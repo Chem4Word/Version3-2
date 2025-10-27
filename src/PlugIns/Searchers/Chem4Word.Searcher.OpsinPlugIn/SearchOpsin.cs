@@ -44,7 +44,9 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            var searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+            var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+            string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
+
             Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
             display1.Chemistry = null;
@@ -55,7 +57,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
             var securityProtocol = ServicePointManager.SecurityProtocol;
             ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
 
-            UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + searchFor);
+            UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + webSafe);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);
             request.Timeout = 30000;
             request.Accept = "chemical/x-cml";

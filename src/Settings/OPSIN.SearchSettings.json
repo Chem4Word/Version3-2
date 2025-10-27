@@ -1,0 +1,4 @@
+{
+    "baseUrl": "https://opsin.ch.cam.ac.uk/opsin/",
+    "searchUri": "{{searchTerm}}"
+}

@@ -1,0 +1,9 @@
+{
+    "Comment": "*** DO NOT STORE ANYWHERE WHICH ENDS UP IN GitHub ***",
+    "Chem4WordAzureSettings": true,
+    "ChemicalServicesUri": "https://chemicalservicesnet8.azurewebsites.net/api/",
+    "ServiceBusEndPoint": "Endpoint=sb://chem4wordtelemetry.servicebus.windows.net/",
+    "ServiceBusToken": "SharedAccessKeyName=TelemetrySender;SharedAccessKey=Leha0IgXaMQWu/sFDDXWG5aOIRJv4EXiZHFmH1qwFzc=",
+    "ServiceBusQueue": "telemetry",
+	"LibrariesUri": "https://chem4word-libraries.azurewebsites.net/api/"
+}

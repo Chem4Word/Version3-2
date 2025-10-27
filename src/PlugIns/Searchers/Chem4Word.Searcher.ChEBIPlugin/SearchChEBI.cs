@@ -103,6 +103,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
+            ResultsListView.Items.Clear();
             _structureCache.Clear();
 
             using (new WaitCursor())
@@ -112,9 +113,11 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
                 try
                 {
+                    string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
+
                     // https://www.ebi.ac.uk/chebi/backend/api/public/es_search/?term=benzene&page=1&size=10
                     // DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi/"
-                    string query = $"{UserOptions.ChEBIWebService2Uri}/backend/api/public/es_search/?term={searchFor}&page=1&size={UserOptions.MaximumResults}";
+                    string query = $"{UserOptions.ChEBIWebService2Uri}/backend/api/public/es_search/?term={webSafe}&page=1&size={UserOptions.MaximumResults}";
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, query);
                     request.Headers.Add("User-Agent", "Chem4Word");
@@ -126,18 +129,36 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     string body = response.Content.ReadAsStringAsync().Result;
                     ProcessSearchResponse(body);
                 }
+                catch (HttpErrorStatusCodeException requestException)
+                {
+                    string message = "";
+                    switch (requestException.ErrorStatusCode)
+                    {
+                        case HttpStatusCode.NotFound:
+                            message = $"Your search for '{searchFor}' did not find any matches";
+                            ErrorsAndWarnings.Text = message;
+                            Telemetry.Write(module, "Warning", message);
+                            break;
+
+                        case HttpStatusCode.GatewayTimeout:
+                        case HttpStatusCode.RequestTimeout:
+                            message = "Please try again later - the service has timed out";
+                            ErrorsAndWarnings.Text = message;
+                            Telemetry.Write(module, "Warning", message);
+                            break;
+
+                        default:
+                            message = requestException.Message;
+                            ErrorsAndWarnings.Text = message;
+                            Telemetry.Write(module, "Exception", message);
+                            break;
+                    }
+                }
                 catch (Exception exception)
                 {
-                    if (exception.Message.Equals("The operation has timed out"))
-                    {
-                        ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
-                    }
-                    else
-                    {
-                        ErrorsAndWarnings.Text = exception.Message;
-                        Telemetry.Write(module, "Exception", exception.Message);
-                        Telemetry.Write(module, "Exception", exception.StackTrace);
-                    }
+                    ErrorsAndWarnings.Text = exception.Message;
+                    Telemetry.Write(module, "Exception", exception.Message);
+                    Telemetry.Write(module, "Exception", exception.StackTrace);
                 }
                 finally
                 {
@@ -200,9 +221,8 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 try
                 {
                     // DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi/"
-                    // https://www.ebi.ac.uk/chebi/saveStructure.do?sdf=true&chebiId=CHEBI:82274&imageId=0
-
-                    string query = $"{UserOptions.ChEBIWebService2Uri}/saveStructure.do?sdf=true&chebiId={chebiId}&imageId=0";
+                    // https://www.ebi.ac.uk/chebi/backend/api/public/molfile/231449
+                    string query = $"{UserOptions.ChEBIWebService2Uri}/backend/api/public/molfile/{chebiId.Replace("CHEBI:", "")}";
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, query);
                     request.Headers.Add("User-Agent", "Chem4Word");
@@ -364,7 +384,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                string searchFor = TextHelper.StripControlCharacters(SearchFor.Text).Trim();
+                string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
 
                 if (!string.IsNullOrEmpty(searchFor))
                 {

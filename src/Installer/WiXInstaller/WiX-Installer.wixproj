@@ -1,6 +1,6 @@
 <Project Sdk="WixToolset.Sdk/6.0.0">
   <PropertyGroup>
-    <OutputName>Chem4Word-Setup.3.2.23.Release.19</OutputName>
+    <OutputName>Chem4Word-Setup.3.2.24.Release.20</OutputName>
     <Name>WiX-Installer</Name>
     <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
   </PropertyGroup>

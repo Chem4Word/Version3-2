@@ -1,239 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- This file must be uploaded to https://www.chem4word.co.uk/files3-2/ folder as Chem4Word-Versions.xml -->
 <ChangeLog>
-    <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
-    <Version>
-        <Number>3.2.23 Release 19</Number>
-        <IsBeta>false</IsBeta>
-        <Released>24-Sep-2025</Released>
-        <Changes>
-            <Change>Searching: Update ChEBI searcher</Change>
-            <Change>Setup: Fix WiX warnings</Change>
-            <Change>Setup: Detect if word is running</Change>
-            <Change>Setup: Detect if newer version is already installed</Change>
-            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
-            <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
-            <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
-        </Changes>
-        <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.23.Release.19.msi</Url>
-    </Version>
-    <Version>
-        <Number>3.2.22 Release 18</Number>
-        <IsBeta>false</IsBeta>
-        <Released>30-Apr-2025</Released>
-        <Changes>
-            <Change>System: Update WiX installer to latest</Change>
-            <Change>System: Add Chem4Word installer re-tries (max 3) if msi ExitCode is 1602 or 1603</Change>
-            <Change>BugFix: Bond Length is now set properly on sprout and copy/paste</Change>
-            <Change>BugFix: Prevent search for empty string</Change>
-            <Change>BugFix: Copy/Paste of 1D structure into new document - Pasted structure not editable.</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.21 Release 17</Number>
-        <IsBeta>false</IsBeta>
-        <Released>09-Oct-2024</Released>
-        <Changes>
-            <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-43485 [System.Text.Json])</Change>
-            <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-43483 [System.IO.Packaging])</Change>
-            <Change>BugFix: Ensure strings for doubles are converted using InvariantCulture</Change>
-            <Change>BugFix: 'System.NullReferenceException: Object reference not set to an instance of an object' sometimes seen after editing a structure to combine two molecules</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.20 Release 16</Number>
-        <IsBeta>false</IsBeta>
-        <Released>21-Aug-2024</Released>
-        <Changes>
-            <Change>BugFix: 'System.NullReferenceException: Object reference not set to an instance of an object' sometimes seen after editing a structure to combine two molecules</Change>
-            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.19 Release 15</Number>
-        <IsBeta>false</IsBeta>
-        <Released>07-Aug-2024</Released>
-        <Changes>
-            <Change>BugFix: Prevent html input in searchers</Change>
-            <Change>UX: Prohibit import of binary files</Change>
-            <Change>BugFix: User unable to hide Hydrogens in Renderer (seen in Word document)</Change>
-            <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-30105 [System.Text.Json])</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.18 Release 14</Number>
-        <IsBeta>false</IsBeta>
-        <Released>28-Mar-2024</Released>
-        <Changes>
-            <Change>Correct Facebook url in Help -> About</Change>
-            <Change>Add detection of Office 2024</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.17 Release 12</Number>
-        <IsBeta>false</IsBeta>
-        <Released>07-Feb-2024</Released>
-        <Changes>
-            <Change>BugFix: Restore missing delete button from library</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.16 Release 11</Number>
-        <IsBeta>false</IsBeta>
-        <Released>17-Jan-2024</Released>
-        <Changes>
-            <Change>I/O: Remove invalid bond(s) which have the same start and end atoms on import</Change>
-            <Change>ACME: Prevent creation of new invalid bond(s) which have the same start and end atoms</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.15 Release 10</Number>
-        <IsBeta>false</IsBeta>
-        <Released>22-Dec-2023</Released>
-        <Changes>
-            <Change>Internal: Updated NuGet packages</Change>
-            <Change>BugFix: Backup and replace invalid database file</Change>
-            <Change>BugFix: Correct sdf export of atom properties</Change>
-            <Change>BugFix: Handle V3.3 structure in library</Change>
-            <Change>Information: Add Anti-Virus false positive warning</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.12 Release 8</Number>
-        <IsBeta>false</IsBeta>
-        <Released>16-Aug-2023</Released>
-        <Changes>
-            <Change>Replace flawed implementation of Atom.BalancingVector with one that works correctly</Change>
-            <Change>Don't send empty molecules to property calculator</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.11 Release 7</Number>
-        <IsBeta>false</IsBeta>
-        <Released>31-May-2023</Released>
-        <Changes>
-            <Change>Performance: Send all molecules to Chemical Services Web Service in one call</Change>
-            <Change>Internal: Update NuGet packages to latest</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.10 Release 6</Number>
-        <IsBeta>false</IsBeta>
-        <Released>22-Mar-2023</Released>
-        <Changes>
-            <Change>Fix infinite loop and reduce form sizes to suit screen of 1366x768</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.9 Release 5</Number>
-        <IsBeta>false</IsBeta>
-        <Released>17-Mar-2023</Released>
-        <Changes>
-            <Change>BugFix: Chemistry is not editable after first save of document until document is closed then re-opened</Change>
-            <Change>BugFix: Reagent and Conditions buttons now work properly in ACME</Change>
-            <Change>BugFix: Prevent import of structures which have duplicate bonds</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.8 Release 4</Number>
-        <IsBeta>false</IsBeta>
-        <Released>15-Feb-2023</Released>
-        <Changes>
-            <Change>BugFix: Handle Null Pointer Exceptions</Change>
-            <Change>Internal: Replace use of Math.Power()</Change>
-            <Change>Internal: Add link to Knowledge base</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.7 Release 3</Number>
-        <IsBeta>false</IsBeta>
-        <Released>02-Feb-2023</Released>
-        <Changes>
-            <Change>Stability: Improved method to purge old V2 installations to increase system stability</Change>
-            <Change>Internal: Update NuGet packages</Change>
-            <Change>Internal: Fetch location of web services from our web site</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.6 Release 2</Number>
-        <IsBeta>false</IsBeta>
-        <Released>05-Dec-2022</Released>
-        <Changes>
-            <Change>Fix app.config files to remove references to System.Net.Http</Change>
-            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.5 Release 1</Number>
-        <IsBeta>false</IsBeta>
-        <Released>30-Nov-2022</Released>
-        <Changes>
-            <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
-            <Change>Internal: Fix inability to render structure with only a reaction</Change>
-            <Change>Internal: Correct some internal testing settings</Change>
-            <Change>Performance: Optimised collection access in Molecule for Atoms and Bonds</Change>
-            <Change>Security: Updated NuGet packages to latest versions</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.4 Beta 4</Number>
-        <IsBeta>true</IsBeta>
-        <Released>22-Aug-2022</Released>
-        <Changes>
-            <Change>System Info is not correct for Windows 11</Change>
-            <Change>Additional text encountered after finished reading JSON</Change>
-            <Change>Fix Null Pointer Exception in LoadNamesFromLibrary()</Change>
-            <Change>Add Retrosynthetic arrow https://github.com/Chem4Word/Version3-2/issues/26</Change>
-            <Change>Fix Null Pointer Exception in FormulaHelper()</Change>
-            <Change>Fix Null Pointer Exception in ChemistryHelper()</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.3 Beta 3</Number>
-        <IsBeta>true</IsBeta>
-        <Released>24-Mar-2022</Released>
-        <Changes>
-            <Change>Adds charge to concise formula https://github.com/Chem4Word/Version3-2/issues/38</Change>
-            <Change>Implement method of detecting and breaking crossing bond lines in renderer https://github.com/Chem4Word/Version3-2/issues/37</Change>
-            <Change>Fix error when switching between two documents during render process https://github.com/Chem4Word/Version3-2/issues/36</Change>
-            <Change>Partial fix for https://github.com/Chem4Word/Version3-2/issues/34 and https://github.com/Chem4Word/Version3-2/issues/35</Change>
-            <Change>Phantom minus sign no longer displayed in editor https://github.com/Chem4Word/Version3-2/issues/33</Change>
-            <Change>Fixed valence calculations https://github.com/Chem4Word/Version3-2/issues/30</Change>
-            <Change>Add extra characters to renderer (Script Small L and Plus-Minus Sign) https://github.com/Chem4Word/Version3-2/issues/29</Change>
-            <Change>Fix position of forms such that the bottom right should always be visible</Change>
-            <Change>Fix the label editor so that when 11th name is used name 1 is not also marked as used</Change>
-            <Change>Fix the navigator to work correctly if first occurrence of a chemistry object is a 1D label</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.2 Beta 2</Number>
-        <IsBeta>true</IsBeta>
-        <Released>03-Mar-2022</Released>
-        <Changes>
-            <Change>Now Detects Office 2021</Change>
-            <Change>Fix user manual path</Change>
-            <Change>Allow paste of multi line text into reaction reagents or conditions</Change>
-            <Change>Fix wandering lines in reaction reagents or conditions</Change>
-            <Change>Fix centering of atom labels</Change>
-            <Change>Fix unable to edit reaction only chemistry object</Change>
-            <Change>Draw mode now changes reaction type</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.1 Beta 1</Number>
-        <IsBeta>true</IsBeta>
-        <Released>28-Feb-2022</Released>
-        <Changes>
-            <Change>First public beta of Chem4Word 2022 (V3.2)</Change>
-        </Changes>
-    </Version>
-    <Version>
-        <Number>3.2.1 Alpha 0</Number>
-        <IsBeta>true</IsBeta>
-        <Released>21-Feb-2022</Released>
-        <Changes>
-            <Change>Private Alpha of Chem4Word 2022 (V3.2)</Change>
-        </Changes>
-    </Version>
-    <EndOfLife>31-Dec-2345</EndOfLife>
+  <Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>
+  <Version>
+    <Number>3.2.24 Release 20</Number>
+    <IsBeta>false</IsBeta>
+    <Released>27-Oct-2025</Released>
+    <Changes>
+      <Change>Searching: Update ChEBI searcher again</Change>
+      <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
+      <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
+      <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>
+    </Changes>
+    <Url>https://www.chem4word.co.uk/files3-2/Chem4Word-Setup.3.2.24.Release.20.msi</Url>
+  </Version>
+  <Version>
+    <Number>3.2.23 Release 19</Number>
+    <IsBeta>false</IsBeta>
+    <Released>24-Sep-2025</Released>
+    <Changes>
+      <Change>Searching: Update ChEBI searcher</Change>
+      <Change>Setup: Fix WiX warnings</Change>
+      <Change>Setup: Detect if word is running</Change>
+      <Change>Setup: Detect if newer version is already installed</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.22 Release 18</Number>
+    <IsBeta>false</IsBeta>
+    <Released>30-Apr-2025</Released>
+    <Changes>
+      <Change>System: Update WiX installer to latest</Change>
+      <Change>System: Add Chem4Word installer re-tries (max 3) if msi ExitCode is 1602 or 1603</Change>
+      <Change>BugFix: Bond Length is now set properly on sprout and copy/paste</Change>
+      <Change>BugFix: Prevent search for empty string</Change>
+      <Change>BugFix: Copy/Paste of 1D structure into new document - Pasted structure not editable.</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.21 Release 17</Number>
+    <IsBeta>false</IsBeta>
+    <Released>09-Oct-2024</Released>
+    <Changes>
+      <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-43485 [System.Text.Json])</Change>
+      <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-43483 [System.IO.Packaging])</Change>
+      <Change>BugFix: Ensure strings for doubles are converted using InvariantCulture</Change>
+      <Change>BugFix: 'System.NullReferenceException: Object reference not set to an instance of an object' sometimes seen after editing a structure to combine two molecules</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.20 Release 16</Number>
+    <IsBeta>false</IsBeta>
+    <Released>21-Aug-2024</Released>
+    <Changes>
+      <Change>BugFix: 'System.NullReferenceException: Object reference not set to an instance of an object' sometimes seen after editing a structure to combine two molecules</Change>
+      <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.19 Release 15</Number>
+    <IsBeta>false</IsBeta>
+    <Released>07-Aug-2024</Released>
+    <Changes>
+      <Change>BugFix: Prevent html input in searchers</Change>
+      <Change>UX: Prohibit import of binary files</Change>
+      <Change>BugFix: User unable to hide Hydrogens in Renderer (seen in Word document)</Change>
+      <Change>Security: Update NuGet packages (Microsoft Security Advisory CVE-2024-30105 [System.Text.Json])</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.18 Release 14</Number>
+    <IsBeta>false</IsBeta>
+    <Released>28-Mar-2024</Released>
+    <Changes>
+      <Change>Correct Facebook url in Help -> About</Change>
+      <Change>Add detection of Office 2024</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.17 Release 12</Number>
+    <IsBeta>false</IsBeta>
+    <Released>07-Feb-2024</Released>
+    <Changes>
+      <Change>BugFix: Restore missing delete button from library</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.16 Release 11</Number>
+    <IsBeta>false</IsBeta>
+    <Released>17-Jan-2024</Released>
+    <Changes>
+      <Change>I/O: Remove invalid bond(s) which have the same start and end atoms on import</Change>
+      <Change>ACME: Prevent creation of new invalid bond(s) which have the same start and end atoms</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.15 Release 10</Number>
+    <IsBeta>false</IsBeta>
+    <Released>22-Dec-2023</Released>
+    <Changes>
+      <Change>Internal: Updated NuGet packages</Change>
+      <Change>BugFix: Backup and replace invalid database file</Change>
+      <Change>BugFix: Correct sdf export of atom properties</Change>
+      <Change>BugFix: Handle V3.3 structure in library</Change>
+      <Change>Information: Add Anti-Virus false positive warning</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.12 Release 8</Number>
+    <IsBeta>false</IsBeta>
+    <Released>16-Aug-2023</Released>
+    <Changes>
+      <Change>Replace flawed implementation of Atom.BalancingVector with one that works correctly</Change>
+      <Change>Don't send empty molecules to property calculator</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.11 Release 7</Number>
+    <IsBeta>false</IsBeta>
+    <Released>31-May-2023</Released>
+    <Changes>
+      <Change>Performance: Send all molecules to Chemical Services Web Service in one call</Change>
+      <Change>Internal: Update NuGet packages to latest</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.10 Release 6</Number>
+    <IsBeta>false</IsBeta>
+    <Released>22-Mar-2023</Released>
+    <Changes>
+      <Change>Fix infinite loop and reduce form sizes to suit screen of 1366x768</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.9 Release 5</Number>
+    <IsBeta>false</IsBeta>
+    <Released>17-Mar-2023</Released>
+    <Changes>
+      <Change>BugFix: Chemistry is not editable after first save of document until document is closed then re-opened</Change>
+      <Change>BugFix: Reagent and Conditions buttons now work properly in ACME</Change>
+      <Change>BugFix: Prevent import of structures which have duplicate bonds</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.8 Release 4</Number>
+    <IsBeta>false</IsBeta>
+    <Released>15-Feb-2023</Released>
+    <Changes>
+      <Change>BugFix: Handle Null Pointer Exceptions</Change>
+      <Change>Internal: Replace use of Math.Power()</Change>
+      <Change>Internal: Add link to Knowledge base</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.7 Release 3</Number>
+    <IsBeta>false</IsBeta>
+    <Released>02-Feb-2023</Released>
+    <Changes>
+      <Change>Stability: Improved method to purge old V2 installations to increase system stability</Change>
+      <Change>Internal: Update NuGet packages</Change>
+      <Change>Internal: Fetch location of web services from our web site</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.6 Release 2</Number>
+    <IsBeta>false</IsBeta>
+    <Released>05-Dec-2022</Released>
+    <Changes>
+      <Change>Fix app.config files to remove references to System.Net.Http</Change>
+      <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.5 Release 1</Number>
+    <IsBeta>false</IsBeta>
+    <Released>30-Nov-2022</Released>
+    <Changes>
+      <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
+      <Change>Internal: Fix inability to render structure with only a reaction</Change>
+      <Change>Internal: Correct some internal testing settings</Change>
+      <Change>Performance: Optimised collection access in Molecule for Atoms and Bonds</Change>
+      <Change>Security: Updated NuGet packages to latest versions</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.4 Beta 4</Number>
+    <IsBeta>true</IsBeta>
+    <Released>22-Aug-2022</Released>
+    <Changes>
+      <Change>System Info is not correct for Windows 11</Change>
+      <Change>Additional text encountered after finished reading JSON</Change>
+      <Change>Fix Null Pointer Exception in LoadNamesFromLibrary()</Change>
+      <Change>Add Retrosynthetic arrow https://github.com/Chem4Word/Version3-2/issues/26</Change>
+      <Change>Fix Null Pointer Exception in FormulaHelper()</Change>
+      <Change>Fix Null Pointer Exception in ChemistryHelper()</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.3 Beta 3</Number>
+    <IsBeta>true</IsBeta>
+    <Released>24-Mar-2022</Released>
+    <Changes>
+      <Change>Adds charge to concise formula https://github.com/Chem4Word/Version3-2/issues/38</Change>
+      <Change>Implement method of detecting and breaking crossing bond lines in renderer https://github.com/Chem4Word/Version3-2/issues/37</Change>
+      <Change>Fix error when switching between two documents during render process https://github.com/Chem4Word/Version3-2/issues/36</Change>
+      <Change>Partial fix for https://github.com/Chem4Word/Version3-2/issues/34 and https://github.com/Chem4Word/Version3-2/issues/35</Change>
+      <Change>Phantom minus sign no longer displayed in editor https://github.com/Chem4Word/Version3-2/issues/33</Change>
+      <Change>Fixed valence calculations https://github.com/Chem4Word/Version3-2/issues/30</Change>
+      <Change>Add extra characters to renderer (Script Small L and Plus-Minus Sign) https://github.com/Chem4Word/Version3-2/issues/29</Change>
+      <Change>Fix position of forms such that the bottom right should always be visible</Change>
+      <Change>Fix the label editor so that when 11th name is used name 1 is not also marked as used</Change>
+      <Change>Fix the navigator to work correctly if first occurrence of a chemistry object is a 1D label</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.2 Beta 2</Number>
+    <IsBeta>true</IsBeta>
+    <Released>03-Mar-2022</Released>
+    <Changes>
+      <Change>Now Detects Office 2021</Change>
+      <Change>Fix user manual path</Change>
+      <Change>Allow paste of multi line text into reaction reagents or conditions</Change>
+      <Change>Fix wandering lines in reaction reagents or conditions</Change>
+      <Change>Fix centering of atom labels</Change>
+      <Change>Fix unable to edit reaction only chemistry object</Change>
+      <Change>Draw mode now changes reaction type</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.1 Beta 1</Number>
+    <IsBeta>true</IsBeta>
+    <Released>28-Feb-2022</Released>
+    <Changes>
+      <Change>First public beta of Chem4Word 2022 (V3.2)</Change>
+    </Changes>
+  </Version>
+  <Version>
+    <Number>3.2.1 Alpha 0</Number>
+    <IsBeta>true</IsBeta>
+    <Released>21-Feb-2022</Released>
+    <Changes>
+      <Change>Private Alpha of Chem4Word 2022 (V3.2)</Change>
+    </Changes>
+  </Version>
+  <EndOfLife>31-Dec-2345</EndOfLife>
 </ChangeLog>

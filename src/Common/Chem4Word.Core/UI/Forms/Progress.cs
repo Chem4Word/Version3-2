@@ -12,8 +12,6 @@ namespace Chem4Word.Core.UI.Forms
 {
     public partial class Progress : Form
     {
-        private const int CP_NOCLOSE_BUTTON = 0x200;
-
         public System.Windows.Point TopLeft { get; set; }
 
         public int Value
@@ -98,7 +96,7 @@ namespace Chem4Word.Core.UI.Forms
                 CreateParams myCp = base.CreateParams;
 #if DEBUG
 #else
-                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+                myCp.ClassStyle |= Constants.CpNoCloseButton;
 #endif
                 return myCp;
             }
