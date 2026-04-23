@@ -1,11 +1,12 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
+//  Copyright (c) 2026, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Core.Helpers;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -464,7 +465,7 @@ namespace Chem4Word.Telemetry
 
         private void GetWin32OperatingSystemData()
         {
-            var fields = new List<string> { "ProductType", "Caption", "Version", "BuildNumber", "OperatingSystemSKU" };
+            var fields = new List<string> { "ProductType", "Caption", "Version", "OperatingSystemSKU" };
 
             var sysObjects = GetWmiObjects(@"root\CIMV2", "Win32_OperatingSystem", fields);
 
@@ -523,6 +524,29 @@ namespace Chem4Word.Telemetry
                             catch
                             {
                                 _osVersion = "?";
+                            }
+
+
+                            // Append UBR from registry
+                            try
+                            {
+                                string revision = "";
+
+                                RegistryKey rk = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion", false);
+                                if (rk != null)
+                                {
+                                    object ubr = rk.GetValue("UBR");
+                                    if (ubr != null)
+                                    {
+                                        revision = ubr.ToString();
+                                    }
+                                }
+
+                                _osVersion = $"{_osVersion}.{revision}";
+                            }
+                            catch
+                            {
+                                // Do Nothing
                             }
                             break;
 

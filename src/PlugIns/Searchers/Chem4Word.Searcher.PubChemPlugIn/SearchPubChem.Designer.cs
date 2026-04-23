@@ -52,9 +52,10 @@
             // 
             this.elementHost1.BackColor = System.Drawing.Color.White;
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.elementHost1.Location = new System.Drawing.Point(0, 0);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(390, 428);
+            this.elementHost1.Size = new System.Drawing.Size(388, 423);
             this.elementHost1.TabIndex = 0;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.display1;
@@ -62,24 +63,25 @@
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchButton.Enabled = false;
-            this.SearchButton.Location = new System.Drawing.Point(789, 13);
+            this.SearchButton.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.SearchButton.Location = new System.Drawing.Point(784, 13);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(87, 29);
             this.SearchButton.TabIndex = 1;
             this.SearchButton.Text = "Search";
             this.SearchButton.UseVisualStyleBackColor = true;
-            this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
+            this.SearchButton.Click += new System.EventHandler(this.OnClick_SearchButton);
             // 
             // SearchFor
             // 
             this.SearchFor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchFor.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.SearchFor.Location = new System.Drawing.Point(13, 15);
             this.SearchFor.Name = "SearchFor";
-            this.SearchFor.Size = new System.Drawing.Size(770, 23);
+            this.SearchFor.Size = new System.Drawing.Size(765, 25);
             this.SearchFor.TabIndex = 0;
-            this.SearchFor.TextChanged += new System.EventHandler(this.SearchFor_TextChanged);
+            this.SearchFor.TextChanged += new System.EventHandler(this.OnTextChanged_SearchFor);
             // 
             // Results
             // 
@@ -90,18 +92,19 @@
             this.columnHeader2,
             this.columnHeader3});
             this.Results.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Results.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.Results.FullRowSelect = true;
             this.Results.GridLines = true;
             this.Results.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.Results.HideSelection = false;
             this.Results.Location = new System.Drawing.Point(0, 0);
             this.Results.Name = "Results";
-            this.Results.Size = new System.Drawing.Size(467, 428);
+            this.Results.Size = new System.Drawing.Size(464, 423);
             this.Results.TabIndex = 3;
             this.Results.UseCompatibleStateImageBehavior = false;
             this.Results.View = System.Windows.Forms.View.Details;
-            this.Results.SelectedIndexChanged += new System.EventHandler(this.Results_SelectedIndexChanged);
-            this.Results.DoubleClick += new System.EventHandler(this.Results_DoubleClick);
+            this.Results.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged_Results);
+            this.Results.DoubleClick += new System.EventHandler(this.OnDoubleClick_Results);
             // 
             // columnHeader1
             // 
@@ -115,47 +118,50 @@
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Fomula";
+            this.columnHeader3.Text = "Formula";
             this.columnHeader3.Width = 100;
             // 
             // ImportButton
             // 
             this.ImportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ImportButton.Location = new System.Drawing.Point(790, 525);
+            this.ImportButton.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.ImportButton.Location = new System.Drawing.Point(785, 520);
             this.ImportButton.Name = "ImportButton";
             this.ImportButton.Size = new System.Drawing.Size(87, 29);
             this.ImportButton.TabIndex = 4;
             this.ImportButton.Text = "Import";
             this.ImportButton.UseVisualStyleBackColor = true;
-            this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
+            this.ImportButton.Click += new System.EventHandler(this.OnClick_ImportButton);
             // 
             // PreviousButton
             // 
             this.PreviousButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.PreviousButton.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.PreviousButton.Image = global::Chem4Word.Searcher.PubChemPlugIn.Properties.Resources.ArrowLeft;
             this.PreviousButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.PreviousButton.Location = new System.Drawing.Point(12, 525);
+            this.PreviousButton.Location = new System.Drawing.Point(12, 520);
             this.PreviousButton.Name = "PreviousButton";
             this.PreviousButton.Size = new System.Drawing.Size(75, 29);
             this.PreviousButton.TabIndex = 5;
             this.PreviousButton.Text = "Prev";
             this.PreviousButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.PreviousButton.UseVisualStyleBackColor = true;
-            this.PreviousButton.Click += new System.EventHandler(this.PreviousButton_Click);
+            this.PreviousButton.Click += new System.EventHandler(this.OnClick_PreviousButton);
             // 
             // NextButton
             // 
             this.NextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.NextButton.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.NextButton.Image = global::Chem4Word.Searcher.PubChemPlugIn.Properties.Resources.ArrowRight;
             this.NextButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.NextButton.Location = new System.Drawing.Point(13, 490);
+            this.NextButton.Location = new System.Drawing.Point(13, 485);
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(74, 29);
             this.NextButton.TabIndex = 6;
             this.NextButton.Text = "Next";
             this.NextButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NextButton.UseVisualStyleBackColor = true;
-            this.NextButton.Click += new System.EventHandler(this.NextButton_Click);
+            this.NextButton.Click += new System.EventHandler(this.OnClick_NextButton);
             // 
             // splitContainer1
             // 
@@ -176,20 +182,20 @@
             // 
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer1.Panel2.Controls.Add(this.elementHost1);
-            this.splitContainer1.Size = new System.Drawing.Size(865, 430);
-            this.splitContainer1.SplitterDistance = 469;
+            this.splitContainer1.Size = new System.Drawing.Size(860, 425);
+            this.splitContainer1.SplitterDistance = 466;
             this.splitContainer1.TabIndex = 7;
             // 
             // ErrorsAndWarnings
             // 
             this.ErrorsAndWarnings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ErrorsAndWarnings.Location = new System.Drawing.Point(93, 490);
+            this.ErrorsAndWarnings.Location = new System.Drawing.Point(93, 485);
             this.ErrorsAndWarnings.Multiline = true;
             this.ErrorsAndWarnings.Name = "ErrorsAndWarnings";
             this.ErrorsAndWarnings.ReadOnly = true;
             this.ErrorsAndWarnings.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ErrorsAndWarnings.Size = new System.Drawing.Size(690, 64);
+            this.ErrorsAndWarnings.Size = new System.Drawing.Size(685, 64);
             this.ErrorsAndWarnings.TabIndex = 8;
             this.ErrorsAndWarnings.WordWrap = false;
             // 
@@ -197,7 +203,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(889, 566);
+            this.ClientSize = new System.Drawing.Size(884, 561);
             this.Controls.Add(this.ErrorsAndWarnings);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.NextButton);
@@ -209,8 +215,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SearchPubChem";
             this.Text = "Search PubChem public database";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SearchPubChem_FormClosing);
-            this.Load += new System.EventHandler(this.SearchPubChem_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing_SearchPubChem);
+            this.Load += new System.EventHandler(this.OnLoad_SearchPubChem);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

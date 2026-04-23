@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
+    <PropertyGroup>
+        <AcceptEula>wix7</AcceptEula>
+    </PropertyGroup>
+
+    <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
@@ -14,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WixToolset.Dtf.CustomAction" Version="6.0.2" />
-    <PackageReference Include="WixToolset.Dtf.WindowsInstaller" Version="6.0.2" />
+    <PackageReference Include="WixToolset.Dtf.CustomAction" Version="7.0.0" />
+    <PackageReference Include="WixToolset.Dtf.WindowsInstaller" Version="7.0.0" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ using IChem4Word.Contracts;
 using System;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace Chem4Word.Searcher.ExamplePlugIn
@@ -36,7 +37,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
             InitializeComponent();
         }
 
-        private void Settings_Load(object sender, EventArgs e)
+        private void OnLoad_Settings(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -48,7 +49,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
                     Left = (int)TopLeft.X;
                     Top = (int)TopLeft.Y;
                     var screen = Screen.FromControl(this);
-                    var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                    var sensible = PointHelper.SensibleTopLeft(new Point(Left, Top), screen, Width, Height);
                     Left = (int)sensible.X;
                     Top = (int)sensible.Y;
                 }
@@ -61,12 +62,12 @@ namespace Chem4Word.Searcher.ExamplePlugIn
             }
         }
 
-        private void chkProperty1_CheckedChanged(object sender, EventArgs e)
+        private void OnCheckedChanged_Property1(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                SearcherOptions.Property1 = chkProperty1.Checked;
+                SearcherOptions.Property1 = Property1.Checked;
                 _dirty = true;
             }
             catch (Exception ex)
@@ -75,12 +76,12 @@ namespace Chem4Word.Searcher.ExamplePlugIn
             }
         }
 
-        private void chkProperty2_CheckedChanged(object sender, EventArgs e)
+        private void OnCheckedChanged_Property2(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                SearcherOptions.Property2 = chkProperty2.Checked;
+                SearcherOptions.Property2 = Property2.Checked;
                 _dirty = true;
             }
             catch (Exception ex)
@@ -89,7 +90,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
             }
         }
 
-        private void btnSetDefaults_Click(object sender, EventArgs e)
+        private void OnClick_SetDefaults(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -108,7 +109,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
             }
         }
 
-        private void btnOk_Click(object sender, EventArgs e)
+        private void OnClick_Ok(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -126,11 +127,11 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void RestoreControls()
         {
-            chkProperty2.Checked = SearcherOptions.Property1;
-            chkProperty1.Checked = SearcherOptions.Property2;
+            Property2.Checked = SearcherOptions.Property1;
+            Property1.Checked = SearcherOptions.Property2;
         }
 
-        private void Settings_FormClosing(object sender, FormClosingEventArgs e)
+        private void OnFormClosing_Settings(object sender, FormClosingEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try

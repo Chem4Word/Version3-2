@@ -1,6 +1,6 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <!-- For automatic upgrade to work only first three parts of version number are used -->
-  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 21" Manufacturer="Chem4Word" Version="3.2.25.9435" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
+  <Package Name="Chemistry Add-In for Microsoft Word 2022 Release 21" Manufacturer="Chem4Word" Version="3.2.25.9609" UpgradeCode="865226e7-d29d-49aa-a390-dda49979b102" Language="1033" InstallerVersion="200">
     <MajorUpgrade DowngradeErrorMessage="A newer version of Chem4Word is already installed." />
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
     <!-- EULA Must be edited in WordPad NOT Word -->
@@ -247,9 +247,6 @@
       <Component Id="EntityFramework.SqlServer">
         <File Id="EntityFramework.SqlServer.dll" Source="$(var.Chem4Word.V3.TargetDir)EntityFramework.SqlServer.dll" />
       </Component>
-      <Component Id="System.Data.Common">
-        <File Id="System.Data.Common.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Data.Common.dll" />
-      </Component>
       <Component Id="System.Data.SQLite">
         <File Id="System.Data.SQLite.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Data.SQLite.dll" />
       </Component>
@@ -282,14 +279,8 @@
       <Component Id="Microsoft.Bcl.AsyncInterfaces">
         <File Id="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" />
       </Component>
-      <Component Id="Microsoft.Win32.Primitives">
-        <File Id="Microsoft.Win32.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Win32.Primitives.dll" />
-      </Component>
       <Component Id="Microsoft.Xaml.Behaviors">
         <File Id="Microsoft.Xaml.Behaviors.dll" Source="$(var.Chem4Word.V3.TargetDir)Microsoft.Xaml.Behaviors.dll" />
-      </Component>
-      <Component Id="netstandard">
-        <File Id="netstandard.dll" Source="$(var.Chem4Word.V3.TargetDir)netstandard.dll" />
       </Component>
       <Component Id="Newtonsoft.Json">
         <File Id="Newtonsoft.Json.dll" Source="$(var.Chem4Word.V3.TargetDir)Newtonsoft.Json.dll" />
@@ -297,134 +288,17 @@
       <Component Id="Ookii.Dialogs.WinForms">
         <File Id="Ookii.Dialogs.WinForms.dll" Source="$(var.Chem4Word.V3.TargetDir)Ookii.Dialogs.WinForms.dll" />
       </Component>
-      <Component Id="System.AppContext">
-        <File Id="System.AppContext.dll" Source="$(var.Chem4Word.V3.TargetDir)System.AppContext.dll" />
-      </Component>
       <Component Id="System.Buffers">
         <File Id="System.Buffers.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Buffers.dll" />
       </Component>
       <Component Id="System.ClientModel">
         <File Id="System.ClientModel.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ClientModel.dll" />
       </Component>
-      <Component Id="System.Collections.Concurrent">
-        <File Id="System.Collections.Concurrent.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Collections.Concurrent.dll" />
-      </Component>
-      <Component Id="System.Collections">
-        <File Id="System.Collections.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Collections.dll" />
-      </Component>
-      <Component Id="System.Collections.NonGeneric">
-        <File Id="System.Collections.NonGeneric.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Collections.NonGeneric.dll" />
-      </Component>
-      <Component Id="System.Collections.Specialized">
-        <File Id="System.Collections.Specialized.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Collections.Specialized.dll" />
-      </Component>
-      <Component Id="System.ComponentModel">
-        <File Id="System.ComponentModel.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ComponentModel.dll" />
-      </Component>
-      <Component Id="System.ComponentModel.EventBasedAsync">
-        <File Id="System.ComponentModel.EventBasedAsync.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ComponentModel.EventBasedAsync.dll" />
-      </Component>
-      <Component Id="System.ComponentModel.Primitives">
-        <File Id="System.ComponentModel.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ComponentModel.Primitives.dll" />
-      </Component>
-      <Component Id="System.ComponentModel.TypeConverter">
-        <File Id="System.ComponentModel.TypeConverter.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ComponentModel.TypeConverter.dll" />
-      </Component>
-      <Component Id="System.Console">
-        <File Id="System.Console.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Console.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.Contracts">
-        <File Id="System.Diagnostics.Contracts.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.Contracts.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.Debug">
-        <File Id="System.Diagnostics.Debug.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.Debug.dll" />
-      </Component>
       <Component Id="System.Diagnostics.DiagnosticSource">
         <File Id="System.Diagnostics.DiagnosticSource.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.DiagnosticSource.dll" />
       </Component>
-      <Component Id="System.Diagnostics.FileVersionInfo">
-        <File Id="System.Diagnostics.FileVersionInfo.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.FileVersionInfo.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.Process">
-        <File Id="System.Diagnostics.Process.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.Process.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.StackTrace">
-        <File Id="System.Diagnostics.StackTrace.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.StackTrace.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.TextWriterTraceListener">
-        <File Id="System.Diagnostics.TextWriterTraceListener.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.TextWriterTraceListener.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.Tools">
-        <File Id="System.Diagnostics.Tools.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.Tools.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.TraceSource">
-        <File Id="System.Diagnostics.TraceSource.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.TraceSource.dll" />
-      </Component>
-      <Component Id="System.Diagnostics.Tracing">
-        <File Id="System.Diagnostics.Tracing.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Diagnostics.Tracing.dll" />
-      </Component>
-      <Component Id="System.Drawing.Primitives">
-        <File Id="System.Drawing.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Drawing.Primitives.dll" />
-      </Component>
-      <Component Id="System.Dynamic.Runtime">
-        <File Id="System.Dynamic.Runtime.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Dynamic.Runtime.dll" />
-      </Component>
-      <Component Id="System.Globalization.Calendars">
-        <File Id="System.Globalization.Calendars.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Globalization.Calendars.dll" />
-      </Component>
-      <Component Id="System.Globalization">
-        <File Id="System.Globalization.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Globalization.dll" />
-      </Component>
-      <Component Id="System.Globalization.Extensions">
-        <File Id="System.Globalization.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Globalization.Extensions.dll" />
-      </Component>
-      <Component Id="System.IO.Compression">
-        <File Id="System.IO.Compression.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.Compression.dll" />
-      </Component>
-      <Component Id="System.IO.Compression.ZipFile">
-        <File Id="System.IO.Compression.ZipFile.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.Compression.ZipFile.dll" />
-      </Component>
-      <Component Id="System.IO">
-        <File Id="System.IO.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.dll" />
-      </Component>
-      <Component Id="System.IO.FileSystem">
-        <File Id="System.IO.FileSystem.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.FileSystem.dll" />
-      </Component>
-      <Component Id="System.IO.FileSystem.DriveInfo">
-        <File Id="System.IO.FileSystem.DriveInfo.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.FileSystem.DriveInfo.dll" />
-      </Component>
-      <Component Id="System.IO.FileSystem.Primitives">
-        <File Id="System.IO.FileSystem.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.FileSystem.Primitives.dll" />
-      </Component>
-      <Component Id="System.IO.FileSystem.Watcher">
-        <File Id="System.IO.FileSystem.Watcher.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.FileSystem.Watcher.dll" />
-      </Component>
-      <Component Id="System.IO.IsolatedStorage">
-        <File Id="System.IO.IsolatedStorage.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.IsolatedStorage.dll" />
-      </Component>
-      <Component Id="System.IO.MemoryMappedFiles">
-        <File Id="System.IO.MemoryMappedFiles.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.MemoryMappedFiles.dll" />
-      </Component>
       <Component Id="System.IO.Packaging">
         <File Id="System.IO.Packaging.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.Packaging.dll" />
-      </Component>
-      <Component Id="System.IO.Pipes">
-        <File Id="System.IO.Pipes.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.Pipes.dll" />
-      </Component>
-      <Component Id="System.IO.UnmanagedMemoryStream">
-        <File Id="System.IO.UnmanagedMemoryStream.dll" Source="$(var.Chem4Word.V3.TargetDir)System.IO.UnmanagedMemoryStream.dll" />
-      </Component>
-      <Component Id="System.Linq">
-        <File Id="System.Linq.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Linq.dll" />
-      </Component>
-      <Component Id="System.Linq.Expressions">
-        <File Id="System.Linq.Expressions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Linq.Expressions.dll" />
-      </Component>
-      <Component Id="System.Linq.Parallel">
-        <File Id="System.Linq.Parallel.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Linq.Parallel.dll" />
-      </Component>
-      <Component Id="System.Linq.Queryable">
-        <File Id="System.Linq.Queryable.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Linq.Queryable.dll" />
       </Component>
       <Component Id="System.Memory.Data">
         <File Id="System.Memory.Data.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Memory.Data.dll" />
@@ -432,131 +306,14 @@
       <Component Id="System.Memory">
         <File Id="System.Memory.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Memory.dll" />
       </Component>
-      <Component Id="System.Net.Http">
-        <File Id="System.Net.Http.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.Http.dll" />
-      </Component>
-      <Component Id="System.Net.NameResolution">
-        <File Id="System.Net.NameResolution.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.NameResolution.dll" />
-      </Component>
-      <Component Id="System.Net.NetworkInformation">
-        <File Id="System.Net.NetworkInformation.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.NetworkInformation.dll" />
-      </Component>
-      <Component Id="System.Net.Ping">
-        <File Id="System.Net.Ping.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.Ping.dll" />
-      </Component>
-      <Component Id="System.Net.Primitives">
-        <File Id="System.Net.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.Primitives.dll" />
-      </Component>
-      <Component Id="System.Net.Requests">
-        <File Id="System.Net.Requests.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.Requests.dll" />
-      </Component>
-      <Component Id="System.Net.Security">
-        <File Id="System.Net.Security.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.Security.dll" />
-      </Component>
-      <Component Id="System.Net.Sockets">
-        <File Id="System.Net.Sockets.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.Sockets.dll" />
-      </Component>
-      <Component Id="System.Net.WebHeaderCollection">
-        <File Id="System.Net.WebHeaderCollection.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.WebHeaderCollection.dll" />
-      </Component>
-      <Component Id="System.Net.WebSockets.Client">
-        <File Id="System.Net.WebSockets.Client.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.WebSockets.Client.dll" />
-      </Component>
-      <Component Id="System.Net.WebSockets">
-        <File Id="System.Net.WebSockets.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Net.WebSockets.dll" />
-      </Component>
       <Component Id="System.Numerics.Vectors">
         <File Id="System.Numerics.Vectors.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Numerics.Vectors.dll" />
-      </Component>
-      <Component Id="System.ObjectModel">
-        <File Id="System.ObjectModel.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ObjectModel.dll" />
-      </Component>
-      <Component Id="System.Reflection">
-        <File Id="System.Reflection.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Reflection.dll" />
-      </Component>
-      <Component Id="System.Reflection.Extensions">
-        <File Id="System.Reflection.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Reflection.Extensions.dll" />
-      </Component>
-      <Component Id="System.Reflection.Primitives">
-        <File Id="System.Reflection.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Reflection.Primitives.dll" />
       </Component>
       <Component Id="System.Resources.Extensions">
         <File Id="System.Resources.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Resources.Extensions.dll" />
       </Component>
-      <Component Id="System.Resources.Reader">
-        <File Id="System.Resources.Reader.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Resources.Reader.dll" />
-      </Component>
-      <Component Id="System.Resources.ResourceManager">
-        <File Id="System.Resources.ResourceManager.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Resources.ResourceManager.dll" />
-      </Component>
-      <Component Id="System.Resources.Writer">
-        <File Id="System.Resources.Writer.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Resources.Writer.dll" />
-      </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
         <File Id="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" />
-      </Component>
-      <Component Id="System.Runtime.CompilerServices.VisualC">
-        <File Id="System.Runtime.CompilerServices.VisualC.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.CompilerServices.VisualC.dll" />
-      </Component>
-      <Component Id="System.Runtime">
-        <File Id="System.Runtime.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.dll" />
-      </Component>
-      <Component Id="System.Runtime.Extensions">
-        <File Id="System.Runtime.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Extensions.dll" />
-      </Component>
-      <Component Id="System.Runtime.Handles">
-        <File Id="System.Runtime.Handles.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Handles.dll" />
-      </Component>
-      <Component Id="System.Runtime.InteropServices">
-        <File Id="System.Runtime.InteropServices.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.InteropServices.dll" />
-      </Component>
-      <Component Id="System.Runtime.InteropServices.RuntimeInformation">
-        <File Id="System.Runtime.InteropServices.RuntimeInformation.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.InteropServices.RuntimeInformation.dll" />
-      </Component>
-      <Component Id="System.Runtime.Numerics">
-        <File Id="System.Runtime.Numerics.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Numerics.dll" />
-      </Component>
-      <Component Id="System.Runtime.Serialization.Formatters">
-        <File Id="System.Runtime.Serialization.Formatters.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Serialization.Formatters.dll" />
-      </Component>
-      <Component Id="System.Runtime.Serialization.Json">
-        <File Id="System.Runtime.Serialization.Json.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Serialization.Json.dll" />
-      </Component>
-      <Component Id="System.Runtime.Serialization.Primitives">
-        <File Id="System.Runtime.Serialization.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Serialization.Primitives.dll" />
-      </Component>
-      <Component Id="System.Runtime.Serialization.Xml">
-        <File Id="System.Runtime.Serialization.Xml.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Runtime.Serialization.Xml.dll" />
-      </Component>
-      <Component Id="System.Security.Claims">
-        <File Id="System.Security.Claims.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Claims.dll" />
-      </Component>
-      <Component Id="System.Security.Cryptography.Algorithms">
-        <File Id="System.Security.Cryptography.Algorithms.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Cryptography.Algorithms.dll" />
-      </Component>
-      <Component Id="System.Security.Cryptography.Csp">
-        <File Id="System.Security.Cryptography.Csp.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Cryptography.Csp.dll" />
-      </Component>
-      <Component Id="System.Security.Cryptography.Encoding">
-        <File Id="System.Security.Cryptography.Encoding.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Cryptography.Encoding.dll" />
-      </Component>
-      <Component Id="System.Security.Cryptography.Primitives">
-        <File Id="System.Security.Cryptography.Primitives.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Cryptography.Primitives.dll" />
-      </Component>
-      <Component Id="System.Security.Cryptography.X509Certificates">
-        <File Id="System.Security.Cryptography.X509Certificates.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Cryptography.X509Certificates.dll" />
-      </Component>
-      <Component Id="System.Security.Principal">
-        <File Id="System.Security.Principal.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.Principal.dll" />
-      </Component>
-      <Component Id="System.Security.SecureString">
-        <File Id="System.Security.SecureString.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Security.SecureString.dll" />
-      </Component>
-      <Component Id="System.Text.Encoding">
-        <File Id="System.Text.Encoding.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Text.Encoding.dll" />
-      </Component>
-      <Component Id="System.Text.Encoding.Extensions">
-        <File Id="System.Text.Encoding.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Text.Encoding.Extensions.dll" />
       </Component>
       <Component Id="System.Text.Encodings.Web">
         <File Id="System.Text.Encodings.Web.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Text.Encodings.Web.dll" />
@@ -564,53 +321,11 @@
       <Component Id="System.Text.Json">
         <File Id="System.Text.Json.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Text.Json.dll" />
       </Component>
-      <Component Id="System.Text.RegularExpressions">
-        <File Id="System.Text.RegularExpressions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Text.RegularExpressions.dll" />
-      </Component>
-      <Component Id="System.Threading">
-        <File Id="System.Threading.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.dll" />
-      </Component>
-      <Component Id="System.Threading.Overlapped">
-        <File Id="System.Threading.Overlapped.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.Overlapped.dll" />
-      </Component>
-      <Component Id="System.Threading.Tasks">
-        <File Id="System.Threading.Tasks.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.Tasks.dll" />
-      </Component>
       <Component Id="System.Threading.Tasks.Extensions">
         <File Id="System.Threading.Tasks.Extensions.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.Tasks.Extensions.dll" />
       </Component>
-      <Component Id="System.Threading.Tasks.Parallel">
-        <File Id="System.Threading.Tasks.Parallel.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.Tasks.Parallel.dll" />
-      </Component>
-      <Component Id="System.Threading.Thread">
-        <File Id="System.Threading.Thread.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.Thread.dll" />
-      </Component>
-      <Component Id="System.Threading.ThreadPool">
-        <File Id="System.Threading.ThreadPool.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.ThreadPool.dll" />
-      </Component>
-      <Component Id="System.Threading.Timer">
-        <File Id="System.Threading.Timer.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Threading.Timer.dll" />
-      </Component>
       <Component Id="System.ValueTuple">
         <File Id="System.ValueTuple.dll" Source="$(var.Chem4Word.V3.TargetDir)System.ValueTuple.dll" />
-      </Component>
-      <Component Id="System.Xml.ReaderWriter">
-        <File Id="System.Xml.ReaderWriter.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Xml.ReaderWriter.dll" />
-      </Component>
-      <Component Id="System.Xml.XDocument">
-        <File Id="System.Xml.XDocument.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Xml.XDocument.dll" />
-      </Component>
-      <Component Id="System.Xml.XmlDocument">
-        <File Id="System.Xml.XmlDocument.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Xml.XmlDocument.dll" />
-      </Component>
-      <Component Id="System.Xml.XmlSerializer">
-        <File Id="System.Xml.XmlSerializer.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Xml.XmlSerializer.dll" />
-      </Component>
-      <Component Id="System.Xml.XPath">
-        <File Id="System.Xml.XPath.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Xml.XPath.dll" />
-      </Component>
-      <Component Id="System.Xml.XPath.XDocument">
-        <File Id="System.Xml.XPath.XDocument.dll" Source="$(var.Chem4Word.V3.TargetDir)System.Xml.XPath.XDocument.dll" />
       </Component>
     </ComponentGroup>
   </Fragment>

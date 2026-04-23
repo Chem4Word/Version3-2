@@ -43,15 +43,15 @@
             // 
             // DisplayOrder
             // 
-            this.DisplayOrder.Location = new System.Drawing.Point(144, 13);
-            this.DisplayOrder.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.DisplayOrder.Location = new System.Drawing.Point(165, 16);
+            this.DisplayOrder.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.DisplayOrder.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.DisplayOrder.Name = "DisplayOrder";
-            this.DisplayOrder.Size = new System.Drawing.Size(71, 23);
+            this.DisplayOrder.Size = new System.Drawing.Size(81, 27);
             this.DisplayOrder.TabIndex = 42;
             this.DisplayOrder.Value = new decimal(new int[] {
             30,
@@ -63,10 +63,10 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 15);
-            this.label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label2.Location = new System.Drawing.Point(15, 19);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(84, 16);
+            this.label2.Size = new System.Drawing.Size(100, 20);
             this.label2.TabIndex = 41;
             this.label2.Text = "Display Order";
             // 
@@ -77,15 +77,15 @@
             0,
             0,
             0});
-            this.ResultsPerCall.Location = new System.Drawing.Point(144, 77);
-            this.ResultsPerCall.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.ResultsPerCall.Location = new System.Drawing.Point(165, 96);
+            this.ResultsPerCall.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.ResultsPerCall.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
             this.ResultsPerCall.Name = "ResultsPerCall";
-            this.ResultsPerCall.Size = new System.Drawing.Size(71, 23);
+            this.ResultsPerCall.Size = new System.Drawing.Size(81, 27);
             this.ResultsPerCall.TabIndex = 40;
             this.ResultsPerCall.Value = new decimal(new int[] {
             20,
@@ -97,20 +97,20 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 79);
-            this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label1.Location = new System.Drawing.Point(16, 99);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(107, 16);
+            this.label1.Size = new System.Drawing.Size(125, 20);
             this.label1.TabIndex = 39;
             this.label1.Text = "Maximum Results";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 48);
-            this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label3.Location = new System.Drawing.Point(14, 60);
+            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(95, 16);
+            this.label3.Size = new System.Drawing.Size(109, 20);
             this.label3.TabIndex = 36;
             this.label3.Text = "WebService Url";
             // 
@@ -118,21 +118,22 @@
             // 
             this.ChebiWsUri.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ChebiWsUri.Location = new System.Drawing.Point(144, 45);
-            this.ChebiWsUri.Margin = new System.Windows.Forms.Padding(5);
+            this.ChebiWsUri.Location = new System.Drawing.Point(165, 56);
+            this.ChebiWsUri.Margin = new System.Windows.Forms.Padding(6);
             this.ChebiWsUri.Name = "ChebiWsUri";
-            this.ChebiWsUri.Size = new System.Drawing.Size(370, 23);
+            this.ChebiWsUri.Size = new System.Drawing.Size(422, 27);
             this.ChebiWsUri.TabIndex = 35;
-            this.ChebiWsUri.Text = "https://www.ebi.ac.uk/chebi/";
+            this.ChebiWsUri.Text = "https://www.ebi.ac.uk/chebi";
             this.ChebiWsUri.TextChanged += new System.EventHandler(this.OnTextChanged_ChebiWsUri);
             // 
             // SetDefaults
             // 
             this.SetDefaults.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SetDefaults.Location = new System.Drawing.Point(297, 110);
-            this.SetDefaults.Margin = new System.Windows.Forms.Padding(6);
+            this.SetDefaults.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.SetDefaults.Location = new System.Drawing.Point(413, 156);
+            this.SetDefaults.Margin = new System.Windows.Forms.Padding(7);
             this.SetDefaults.Name = "SetDefaults";
-            this.SetDefaults.Size = new System.Drawing.Size(103, 34);
+            this.SetDefaults.Size = new System.Drawing.Size(80, 27);
             this.SetDefaults.TabIndex = 34;
             this.SetDefaults.Text = "Defaults";
             this.SetDefaults.UseVisualStyleBackColor = true;
@@ -141,10 +142,11 @@
             // Ok
             // 
             this.Ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Ok.Location = new System.Drawing.Point(412, 110);
-            this.Ok.Margin = new System.Windows.Forms.Padding(6);
+            this.Ok.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.Ok.Location = new System.Drawing.Point(507, 156);
+            this.Ok.Margin = new System.Windows.Forms.Padding(7);
             this.Ok.Name = "Ok";
-            this.Ok.Size = new System.Drawing.Size(103, 34);
+            this.Ok.Size = new System.Drawing.Size(80, 27);
             this.Ok.TabIndex = 33;
             this.Ok.Text = "OK";
             this.Ok.UseVisualStyleBackColor = true;
@@ -152,9 +154,9 @@
             // 
             // ChEBISettings
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(528, 159);
+            this.ClientSize = new System.Drawing.Size(603, 199);
             this.Controls.Add(this.DisplayOrder);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.ResultsPerCall);
@@ -163,9 +165,9 @@
             this.Controls.Add(this.ChebiWsUri);
             this.Controls.Add(this.SetDefaults);
             this.Controls.Add(this.Ok);
-            this.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.Name = "ChEBISettings";
             this.Text = "ChEBI Search - Settings";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing_Settings);

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
+//  Copyright (c) 2026, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -15,10 +15,12 @@ namespace Chem4Word.Core.UI.Forms
     {
         public string Message { get; set; }
         public System.Windows.Point TopLeft { get; set; }
+        private Screen _screen;
 
-        public MolFileViewer(System.Windows.Point topLeft, string text)
+        public MolFileViewer(System.Windows.Point topLeft, Screen screen, string text)
         {
             InitializeComponent();
+            _screen = screen;
 
             TopLeft = topLeft;
             Message = text;
@@ -30,8 +32,7 @@ namespace Chem4Word.Core.UI.Forms
             {
                 Left = (int)TopLeft.X;
                 Top = (int)TopLeft.Y;
-                var screen = Screen.FromControl(this);
-                var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                var sensible = PointHelper.SensibleTopLeft(TopLeft, _screen, Width, Height);
                 Left = (int)sensible.X;
                 Top = (int)sensible.Y;
             }

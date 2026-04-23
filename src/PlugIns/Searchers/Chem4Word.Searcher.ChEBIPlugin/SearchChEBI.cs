@@ -1,10 +1,11 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
@@ -17,9 +18,9 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
@@ -32,18 +33,17 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
 
+        private const string SearchForTemplate = "{0}/backend/api/public/es_search/?term={1}&page=1&size={2}";
+        private const string GetMolfileTemplate = "{0}/backend/api/public/molfile/{1}";
+        private const int ResultsToFetch = 20;
+
         #region Fields
 
-        private Dictionary<string, string> _structureCache = new Dictionary<string, string>();
-        private string _guid = Guid.NewGuid().ToString("N");
+        private readonly Dictionary<string, string> _structureCache = new Dictionary<string, string>();
+        private readonly string _guid = Guid.NewGuid().ToString("N");
 
         private Model _lastModel;
         private string _lastMolfile = string.Empty;
-
-        private HttpClient _client = new HttpClient
-        {
-            Timeout = TimeSpan.FromSeconds(15)
-        };
 
         #endregion Fields
 
@@ -96,6 +96,16 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
+        private static bool MolFileIsValid(string molFile)
+        {
+            string file = molFile.ToUpper();
+
+            int idx1 = file.IndexOf("V2000");
+            int idx2 = file.IndexOf("M  END");
+
+            return idx2 > idx1;
+        }
+
         private void ExecuteSearch(string searchFor)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
@@ -108,50 +118,27 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
             using (new WaitCursor())
             {
-                SecurityProtocolType securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
                 try
                 {
                     string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
 
-                    // https://www.ebi.ac.uk/chebi/backend/api/public/es_search/?term=benzene&page=1&size=10
-                    // DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi/"
-                    string query = $"{UserOptions.ChEBIWebService2Uri}/backend/api/public/es_search/?term={webSafe}&page=1&size={UserOptions.MaximumResults}";
+                    string api = string.Format(CultureInfo.InvariantCulture, SearchForTemplate,
+                                               UserOptions.ChEBIWebService2Uri, webSafe, ResultsToFetch);
 
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, query);
-                    request.Headers.Add("User-Agent", "Chem4Word");
-                    request.Headers.Add("Cookie", $"JSESSIONID={_guid}");
+                    Dictionary<string, string> headers = new Dictionary<string, string>
+                                                         {
+                                                             { "Cookie", $"JSESSIONID={_guid}" }
+                                                         };
 
-                    HttpResponseMessage response = _client.SendAsync(request).Result;
-                    response.EnsureSuccessStatusCode();
-
-                    string body = response.Content.ReadAsStringAsync().Result;
-                    ProcessSearchResponse(body);
-                }
-                catch (HttpErrorStatusCodeException requestException)
-                {
-                    string message = "";
-                    switch (requestException.ErrorStatusCode)
+                    ApiResult apiResult = HttpHelper.InvokeGet(api, headers);
+                    if (apiResult.StatusCode == HttpStatusCode.OK)
                     {
-                        case HttpStatusCode.NotFound:
-                            message = $"Your search for '{searchFor}' did not find any matches";
-                            ErrorsAndWarnings.Text = message;
-                            Telemetry.Write(module, "Warning", message);
-                            break;
-
-                        case HttpStatusCode.GatewayTimeout:
-                        case HttpStatusCode.RequestTimeout:
-                            message = "Please try again later - the service has timed out";
-                            ErrorsAndWarnings.Text = message;
-                            Telemetry.Write(module, "Warning", message);
-                            break;
-
-                        default:
-                            message = requestException.Message;
-                            ErrorsAndWarnings.Text = message;
-                            Telemetry.Write(module, "Exception", message);
-                            break;
+                        ProcessSearchResponse(apiResult.Content);
+                    }
+                    else
+                    {
+                        ChEbiSearchResult data = ProcessSearchResponse(apiResult.Content);
+                        Telemetry.Write(module, "Exception", $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode} - {apiResult.Message}");
                     }
                 }
                 catch (Exception exception)
@@ -160,51 +147,63 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     Telemetry.Write(module, "Exception", exception.Message);
                     Telemetry.Write(module, "Exception", exception.StackTrace);
                 }
-                finally
-                {
-                    ServicePointManager.SecurityProtocol = securityProtocol;
-                }
             }
 
             stopwatch.Stop();
             Telemetry.Write(module, "Information", $"Search for {searchFor} took {stopwatch.Elapsed}");
         }
 
-        private void ProcessSearchResponse(string body)
+        private ChEbiSearchResult ProcessSearchResponse(string body)
         {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+
             ErrorsAndWarnings.Text = string.Empty;
 
-            SearchResult data = JsonConvert.DeserializeObject<SearchResult>(body);
-
-            if (data != null && data.Results.Any())
+            ChEbiSearchResult data = JsonConvert.DeserializeObject<ChEbiSearchResult>(body);
+            if (data != null)
             {
-                ResultsListView.Items.Clear();
-                ResultsListView.Enabled = true;
-                foreach (Result result in data.Results
-                                              .OrderByDescending(r => r.Score)
-                                              .ToList())
+                if (data.Results.Any())
                 {
-                    ListViewItem li = new ListViewItem
+                    ResultsListView.Items.Clear();
+                    ResultsListView.Enabled = true;
+
+                    List<ChEbiResult> sortedResults = data.Results
+                                                          .OrderByDescending(r => r.Score)
+                                                          .ToList();
+
+                    foreach (ChEbiResult result in sortedResults)
                     {
-                        Text = result.Source.ChebiId,
-                        Tag = result
-                    };
+                        ListViewItem li = new ListViewItem
+                        {
+                            Text = result.Source.ChebiId,
+                            Tag = result
+                        };
 
-                    ListViewItem.ListViewSubItem name =
-                        new ListViewItem.ListViewSubItem(li, result.Source.Name);
-                    li.SubItems.Add(name);
+                        ListViewItem.ListViewSubItem name =
+                            new ListViewItem.ListViewSubItem(li, result.Source.Name);
+                        li.SubItems.Add(name);
 
-                    ListViewItem.ListViewSubItem score =
-                        new ListViewItem.ListViewSubItem(li, SafeDouble.AsString0(result.Score));
-                    li.SubItems.Add(score);
-                    ResultsListView.Items.Add(li);
+                        ListViewItem.ListViewSubItem score =
+                            new ListViewItem.ListViewSubItem(li, SafeDouble.AsString0(result.Score));
+                        li.SubItems.Add(score);
+
+                        ResultsListView.Items.Add(li);
+                    }
+
+                    ResultsListView.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
                 }
 
-                ResultsListView.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+                if (!string.IsNullOrEmpty(data.Detail))
+                {
+                    ErrorsAndWarnings.Text = data.Detail;
+                    Telemetry.Write(module, "Exception", $"{data.Detail}");
+                }
             }
+
+            return data;
         }
 
-        private string GetStructureFromWeb(string chebiId)
+        private string FetchStructure(string chebiId)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
@@ -215,23 +214,25 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
             using (new WaitCursor())
             {
-                SecurityProtocolType securityProtocol = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
                 try
                 {
-                    // DefaultChEBIWebServiceUri = "https://www.ebi.ac.uk/chebi/"
-                    // https://www.ebi.ac.uk/chebi/backend/api/public/molfile/231449
-                    string query = $"{UserOptions.ChEBIWebService2Uri}/backend/api/public/molfile/{chebiId.Replace("CHEBI:", "")}";
+                    Telemetry.Write(module, "Information", $"Fetching structure for '{chebiId}'");
 
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, query);
-                    request.Headers.Add("User-Agent", "Chem4Word");
-                    request.Headers.Add("Cookie", $"JSESSIONID={_guid}");
+                    string api = string.Format(CultureInfo.InvariantCulture, GetMolfileTemplate,
+                                               UserOptions.ChEBIWebService2Uri, chebiId.Replace("CHEBI:", ""));
 
-                    HttpResponseMessage response = _client.SendAsync(request).Result;
-                    response.EnsureSuccessStatusCode();
-
-                    result = response.Content.ReadAsStringAsync().Result;
+                    ApiResult apiResult = HttpHelper.InvokeGet(api);
+                    if (apiResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        if (MolFileIsValid(apiResult.Content))
+                        {
+                            result = apiResult.Content;
+                        }
+                    }
+                    else
+                    {
+                        Telemetry.Write(module, "Exception", $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode} - {apiResult.Message}");
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -245,10 +246,6 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                         Telemetry.Write(module, "Exception", exception.Message);
                         Telemetry.Write(module, "Exception", exception.StackTrace);
                     }
-                }
-                finally
-                {
-                    ServicePointManager.SecurityProtocol = securityProtocol;
                 }
             }
 
@@ -313,8 +310,10 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         {
             if (_lastModel != null)
             {
-                MolFileViewer tv = new MolFileViewer(new System.Windows.Point(TopLeft.X + Core.Helpers.Constants.TopLeftOffset, TopLeft.Y + Core.Helpers.Constants.TopLeftOffset), _lastMolfile);
-                tv.ShowDialog();
+                Screen screen = Screen.FromControl(ShowMolfile);
+                MolFileViewer viewer = new MolFileViewer(new Point(TopLeft.X + Core.Helpers.Constants.TopLeftOffset, TopLeft.Y + Core.Helpers.Constants.TopLeftOffset), screen, _lastMolfile);
+                viewer.ShowDialog(this);
+
                 ResultsListView.Focus();
             }
         }
@@ -359,6 +358,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             ErrorsAndWarnings.Text = "";
+            display1.Clear();
 
             using (WaitCursor cursor = new WaitCursor())
             {
@@ -414,7 +414,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     Left = (int)TopLeft.X;
                     Top = (int)TopLeft.Y;
                     Screen screen = Screen.FromControl(this);
-                    Point sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                    Point sensible = PointHelper.SensibleTopLeft(new Point(Left, Top), screen, Width, Height);
                     Left = (int)sensible.X;
                     Top = (int)sensible.Y;
                 }
@@ -446,16 +446,17 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
             ErrorsAndWarnings.Text = "";
+            display1.Clear();
 
             using (new WaitCursor())
             {
-                if (ResultsListView.SelectedItems[0]?.Tag is Result item)
+                if (ResultsListView.SelectedItems[0]?.Tag is ChEbiResult item)
                 {
                     ChebiId = item.Source.ChebiId;
 
                     if (!_structureCache.TryGetValue(ChebiId, out string chemStructure))
                     {
-                        chemStructure = GetStructureFromWeb(item.Source.ChebiId);
+                        chemStructure = FetchStructure(item.Source.ChebiId);
                         if (!string.IsNullOrEmpty(chemStructure))
                         {
                             _structureCache.Add(ChebiId, chemStructure);
@@ -463,7 +464,10 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     }
                     else
                     {
-                        Telemetry.Write(module, "Information", $"Structure '{ChebiId}' found in cache");
+                        if (Debugger.IsAttached)
+                        {
+                            Telemetry.Write(module, "Information", $"Structure '{ChebiId}' found in cache");
+                        }
                     }
 
                     if (!string.IsNullOrEmpty(chemStructure))
@@ -471,46 +475,51 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                         _lastMolfile = ConvertToWindows(chemStructure);
                         SdFileConverter sdConverter = new SdFileConverter();
                         _lastModel = sdConverter.Import(chemStructure);
-                    }
 
-                    if (_lastModel != null)
-                    {
-                        if (_lastModel.TotalAtomsCount == 0)
+                        if (_lastModel != null)
                         {
-                            display1.Chemistry = null;
+                            if (_lastModel.TotalAtomsCount == 0)
+                            {
+                                _lastMolfile = string.Empty;
+                                display1.Clear();
+                                ErrorsAndWarnings.Text = $"Structure for {ChebiId} has no atoms.";
+                            }
+                            else if (_lastModel.AllWarnings.Count > 0 || _lastModel.AllErrors.Count > 0)
+                            {
+                                List<string> lines = new List<string>();
+                                if (_lastModel.AllErrors.Count > 0)
+                                {
+                                    Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllErrors));
+                                    Telemetry.Write(module, "Exception(Data)", chemStructure);
+                                    lines.Add("Errors(s)");
+                                    lines.AddRange(_lastModel.AllErrors);
+                                }
+                                if (_lastModel.AllWarnings.Count > 0)
+                                {
+                                    Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllWarnings));
+                                    lines.Add("Warnings(s)");
+                                    lines.AddRange(_lastModel.AllWarnings);
+                                }
+                                ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
+                            }
+
+                            Model copy = _lastModel.Copy();
+                            copy.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
+                            display1.Chemistry = copy;
+                        }
+                        else
+                        {
+                            _lastMolfile = string.Empty;
                             display1.Clear();
-                            ErrorsAndWarnings.Text = "No structure available.";
+                            ErrorsAndWarnings.Text = $"No structure available for {ChebiId}.";
                         }
-                        else if (_lastModel.AllWarnings.Count > 0 || _lastModel.AllErrors.Count > 0)
-                        {
-                            List<string> lines = new List<string>();
-                            if (_lastModel.AllErrors.Count > 0)
-                            {
-                                Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllErrors));
-                                Telemetry.Write(module, "Exception(Data)", chemStructure);
-                                lines.Add("Errors(s)");
-                                lines.AddRange(_lastModel.AllErrors);
-                            }
-                            if (_lastModel.AllWarnings.Count > 0)
-                            {
-                                Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllWarnings));
-                                lines.Add("Warnings(s)");
-                                lines.AddRange(_lastModel.AllWarnings);
-                            }
-                            ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
-                        }
-
-                        Model copy = _lastModel.Copy();
-                        copy.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
-                        display1.Chemistry = copy;
                     }
                     else
                     {
                         _lastModel = null;
                         _lastMolfile = string.Empty;
-                        display1.Chemistry = null;
                         display1.Clear();
-                        ErrorsAndWarnings.Text = "No structure available.";
+                        ErrorsAndWarnings.Text = $"No structure available for {ChebiId}.";
                     }
                 }
             }

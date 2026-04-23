@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
+//  Copyright (c) 2026, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -23,10 +23,10 @@ namespace WiX.CustomAction.V6
     {
         private const string OfficeKey = @"Microsoft\Office";
         private const string WordAddinsKey = @"Word\Addins\Chem4Word V3";
-        private const string ProductShortName = "Chem4Word 2025";
+        private const string ProductShortName = "Chem4Word 2026";
         private const string ProductInstallFolder = "Chem4Word V3";
         private const string ProgramDataFolder = "Chem4Word.V3";
-        private const string ProductLongName = "Chemistry Add-In for Word (Chem4Word) 2025";
+        private const string ProductLongName = "Chemistry Add-In for Word (Chem4Word) 2026";
         private const string ManifestFile = "Chem4Word.V3.vsto";
 
         [CustomAction]
@@ -113,7 +113,7 @@ namespace WiX.CustomAction.V6
                     key = key = Registry.CurrentUser.CreateSubKey(actionsKey);
                 }
 
-                var versionNumber = "3.2.25.9435";
+                var versionNumber = "3.2.25.9609";
 
                 var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
                 key.SetValue(timestamp, $"[-] V{versionNumber} - Installed");

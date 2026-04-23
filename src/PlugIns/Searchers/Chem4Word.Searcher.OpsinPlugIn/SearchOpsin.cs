@@ -1,17 +1,21 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
+using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI;
 using Chem4Word.Model2.Converters.CML;
 using IChem4Word.Contracts;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
@@ -22,7 +26,9 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        public System.Windows.Point TopLeft { get; set; }
+        private const string BaseTemplate = "{0}{1}";
+
+        public Point TopLeft { get; set; }
         public IChem4WordTelemetry Telemetry { get; set; }
         public string SettingsPath { get; set; }
 
@@ -35,99 +41,37 @@ namespace Chem4Word.Searcher.OpsinPlugIn
             InitializeComponent();
         }
 
-        private void SearchFor_TextChanged(object sender, EventArgs e)
+        private void OnTextChanged_SearchFor(object sender, EventArgs e)
         {
             SearchButton.Enabled = TextHelper.IsValidSearchString(SearchFor.Text);
         }
 
-        private void SearchButton_Click(object sender, EventArgs e)
+        private void OnClick_SearchButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+            string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
             string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
 
             Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
-            display1.Chemistry = null;
             display1.Clear();
-
-            Cursor = Cursors.WaitCursor;
-
-            var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
-            UriBuilder builder = new UriBuilder(UserOptions.OpsinWebServiceUri + webSafe);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);
-            request.Timeout = 30000;
-            request.Accept = "chemical/x-cml";
-            request.UserAgent = "Chem4Word";
-
-            HttpWebResponse response;
-            try
-            {
-                response = (HttpWebResponse)request.GetResponse();
-                if (response.StatusCode.Equals(HttpStatusCode.OK))
-                {
-                    ProcessResponse(response);
-                }
-                else
-                {
-                    Telemetry.Write(module, "Warning", $"Status code {response.StatusCode} was returned by the server");
-                    ShowFailureMessage($"An unexpected status code {response.StatusCode} was returned by the server");
-                }
-            }
-            catch (WebException ex)
-            {
-                HttpWebResponse webResponse = (HttpWebResponse)ex.Response;
-                switch (webResponse.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                        ShowFailureMessage($"No valid representation of the name '{searchFor}' has been found");
-                        break;
-
-                    case HttpStatusCode.RequestTimeout:
-                        ShowFailureMessage("Please try again later - the service has timed out");
-                        break;
-
-                    default:
-                        Telemetry.Write(module, "Warning", $"Status code: {webResponse.StatusCode}  was returned by the server");
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Telemetry.Write(module, "Exception", ex.Message);
-                Telemetry.Write(module, "Exception", ex.StackTrace);
-                ShowFailureMessage($"An unexpected error has occurred: {ex.Message}");
-            }
-            finally
-            {
-                ServicePointManager.SecurityProtocol = securityProtocol;
-                Cursor = Cursors.Default;
-            }
-        }
-
-        private void ShowFailureMessage(string message)
-        {
-            LabelInfo.Text = message;
-            display1.Chemistry = "";
-            ImportButton.Enabled = false;
-        }
-
-        private void ProcessResponse(HttpWebResponse response)
-        {
             LabelInfo.Text = "";
-            // read data via the response stream
-            using (Stream resStream = response.GetResponseStream())
-            {
-                if (resStream != null)
-                {
-                    StreamReader sr = new StreamReader(resStream);
-                    string temp = sr.ReadToEnd();
 
+            using (new WaitCursor())
+            {
+                string webCall = string.Format(CultureInfo.InvariantCulture, BaseTemplate, UserOptions.WebServiceUri, webSafe);
+
+                Dictionary<string, string> headers = new Dictionary<string, string>
+                                                     {
+                                                         { "Accept", "chemical/x-cml" }
+                                                     };
+
+                ApiResult apiResult = HttpHelper.InvokeGet(webCall, headers);
+                if (apiResult.StatusCode == HttpStatusCode.OK)
+                {
                     CMLConverter cmlConverter = new CMLConverter();
-                    var model = cmlConverter.Import(temp);
+                    Model2.Model model = cmlConverter.Import(apiResult.Content);
                     if (model.MeanBondLength < Core.Helpers.Constants.MinimumBondLength - Core.Helpers.Constants.BondLengthTolerance
                         || model.MeanBondLength > Core.Helpers.Constants.MaximumBondLength + Core.Helpers.Constants.BondLengthTolerance)
                     {
@@ -139,23 +83,39 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                     display1.Chemistry = Cml;
                     ImportButton.Enabled = true;
                 }
+                else
+                {
+                    Telemetry.Write(module, "Warning", $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode}");
+                    LabelInfo.Text = $"No match for '{searchFor}' found";
+                    ImportButton.Enabled = false;
+                }
             }
         }
 
-        private void ImportButton_Click(object sender, EventArgs e)
+        private string ConvertToWindows(string message)
+        {
+            char etx = (char)3;
+            string temp = message.Replace("\r\n", $"{etx}");
+            temp = temp.Replace("\n", $"{etx}");
+            temp = temp.Replace("\r", $"{etx}");
+            string[] lines = temp.Split(etx);
+            return string.Join(Environment.NewLine, lines);
+        }
+
+        private void OnClick_ImportButton(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
             Hide();
         }
 
-        private void SearchOpsin_Load(object sender, EventArgs e)
+        private void OnLoad_SearchOpsin(object sender, EventArgs e)
         {
             if (!PointHelper.PointIsEmpty(TopLeft))
             {
                 Left = (int)TopLeft.X;
                 Top = (int)TopLeft.Y;
-                var screen = Screen.FromControl(this);
-                var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                Screen screen = Screen.FromControl(this);
+                Point sensible = PointHelper.SensibleTopLeft(new Point(Left, Top), screen, Width, Height);
                 Left = (int)sensible.X;
                 Top = (int)sensible.Y;
             }

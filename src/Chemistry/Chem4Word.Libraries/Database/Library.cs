@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
+//  Copyright (c) 2026, The .NET Foundation.
 //  This software is released under the Apache License, Version 2.0.
 //  The license and further copyright text can be found in the file LICENSE.md
 //  at the root directory of the distribution.
@@ -59,6 +59,37 @@ namespace Chem4Word.Libraries.Database
 
                 if (File.Exists(libraryTarget))
                 {
+                    try
+                    {
+                        // CoPilot suggested fix for occasional error, with tweak to ensure path only set once.
+                        //  "Unable to find an entry point named 'SI3eae3b91c35710f2' in DLL 'SQLite.Interop.dll'."
+
+                        string executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                        bool is64 = Environment.Is64BitProcess;
+                        string source = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, is64 ? "x64" : "x86", "SQLite.Interop.dll");
+                        if (executingPath != null)
+                        {
+                            string dest = Path.Combine(executingPath, "SQLite.Interop.dll");
+
+                            if (!File.Exists(dest))
+                            {
+                                File.Copy(source, dest, overwrite: true);
+                            }
+
+                            string path = Environment.GetEnvironmentVariable("PATH");
+                            if (path != null && !path.Contains(executingPath))
+                            {
+                                _telemetry.Write(module, "Information", $"Adding {executingPath} to path");
+                                Environment.SetEnvironmentVariable("PATH", executingPath + ";" + path);
+                            }
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        _telemetry.Write(module, "Exception", $"{exception.Message}");
+                        _telemetry.Write(module, "Exception(Data)", $"{exception.StackTrace}");
+                    }
+
                     try
                     {
                         // Source https://www.connectionstrings.com/sqlite/

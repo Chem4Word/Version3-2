@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ using IChem4Word.Contracts;
 using System;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace Chem4Word.Searcher.ChEBIPlugin
@@ -168,7 +169,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     Left = (int)TopLeft.X;
                     Top = (int)TopLeft.Y;
                     var screen = Screen.FromControl(this);
-                    var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                    var sensible = PointHelper.SensibleTopLeft(new Point(Left, Top), screen, Width, Height);
                     Left = (int)sensible.X;
                     Top = (int)sensible.Y;
                 }

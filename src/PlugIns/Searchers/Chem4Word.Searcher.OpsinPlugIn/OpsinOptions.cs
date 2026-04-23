@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
 
         [JsonProperty]
-        public string OpsinWebServiceUri { get; set; }
+        public string WebServiceUri { get; set; }
 
         [JsonProperty]
         public int DisplayOrder { get; set; }
@@ -72,7 +72,6 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                     {
                         try
                         {
-                            Debug.WriteLine($"Reading Options from {optionsFile}");
                             string contents = File.ReadAllText(optionsFile);
                             var options = JsonConvert.DeserializeObject<SearcherOptions>(contents);
                             SetValuesFromCopy(options);
@@ -125,7 +124,6 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         {
             try
             {
-                Debug.WriteLine($"Saving Opsin Options to {optionsFile}");
                 string contents = JsonConvert.SerializeObject(this, Formatting.Indented);
                 File.WriteAllText(optionsFile, contents);
             }
@@ -138,7 +136,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void SetValuesFromCopy(SearcherOptions options)
         {
-            OpsinWebServiceUri = options.OpsinWebServiceUri;
+            WebServiceUri = options.WebServiceUri;
             DisplayOrder = options.DisplayOrder;
         }
 
@@ -156,7 +154,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         public void RestoreDefaults()
         {
-            OpsinWebServiceUri = Constants.DefaultOpsinWebServiceUri;
+            WebServiceUri = Constants.DefaultOpsinWebServiceUri;
             DisplayOrder = Constants.DefaultDisplayOrder;
         }
     }

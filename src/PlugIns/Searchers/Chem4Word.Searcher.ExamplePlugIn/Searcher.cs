@@ -1,11 +1,12 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Core.UI.Forms;
+using Chem4Word.Searcher.ExamplePlugIn.Properties;
 using IChem4Word.Contracts;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,11 @@ namespace Chem4Word.Searcher.ExamplePlugIn
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        public int DisplayOrder => -1; // Don't Show
+        public int DisplayOrder => -1; // if less than zero don't show
         public string ShortName => "Example";
         public string Name => "Example Search PlugIn";
         public string Description => "Does nothing ...";
+        public Image Image => Resources.Search;
 
         public bool HasSettings => true;
         public Point TopLeft { get; set; }
@@ -90,11 +92,6 @@ namespace Chem4Word.Searcher.ExamplePlugIn
             }
 
             return dr;
-        }
-
-        public Image Image
-        {
-            get { return null; }
         }
     }
 }

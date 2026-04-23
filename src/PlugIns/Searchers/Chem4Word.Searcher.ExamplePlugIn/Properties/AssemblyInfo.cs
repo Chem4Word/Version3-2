@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Chem4Word")]
 [assembly: AssemblyProduct("Chem4Word.Searcher.ExamplePlugIn")]
-[assembly: AssemblyCopyright("© Chem4Word 2025. All rights reserved.")]
+[assembly: AssemblyCopyright("© Chem4Word 2026. All rights reserved.")]
 [assembly: AssemblyTrademark("Chem4Word")]
 [assembly: AssemblyCulture("")]
 
@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9cd3871b-9a42-497b-9004-77c42c856889")]
+[assembly: Guid("7a0d9626-9681-4e81-a74c-12cf7ee54d3b")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,5 +35,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.25.9435")]
-[assembly: AssemblyFileVersion("3.2.25.9435")]
+[assembly: AssemblyVersion("3.2.25.9609")]
+[assembly: AssemblyFileVersion("3.2.25.9609")]

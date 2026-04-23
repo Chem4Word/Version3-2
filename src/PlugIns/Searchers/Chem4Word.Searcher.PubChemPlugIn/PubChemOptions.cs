@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -78,7 +78,6 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                     {
                         try
                         {
-                            Debug.WriteLine($"Reading Options from {optionsFile}");
                             string contents = File.ReadAllText(optionsFile);
                             var options = JsonConvert.DeserializeObject<PubChemOptions>(contents);
                             SetValuesFromCopy(options);
@@ -131,7 +130,6 @@ namespace Chem4Word.Searcher.PubChemPlugIn
         {
             try
             {
-                Debug.WriteLine($"Saving PubChem Options to {optionsFile}");
                 string contents = JsonConvert.SerializeObject(this, Formatting.Indented);
                 File.WriteAllText(optionsFile, contents);
             }

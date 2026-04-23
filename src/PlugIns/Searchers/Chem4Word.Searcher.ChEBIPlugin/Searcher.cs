@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -113,18 +113,15 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                         UserOptions = _searcherOptions
                     };
 
-                    using (new WaitCursor(Cursors.Default))
+                    DialogResult dr = searcher.ShowDialog();
+                    if (dr == DialogResult.OK)
                     {
-                        DialogResult dr = searcher.ShowDialog();
-                        if (dr == DialogResult.OK)
-                        {
-                            Properties = new Dictionary<string, string>();
-                            Telemetry.Write(module, "Information", $"Importing Id {searcher.ChebiId}");
-                            Cml = searcher.Cml;
-                        }
-
-                        return dr;
+                        Properties = new Dictionary<string, string>();
+                        Telemetry.Write(module, "Information", $"Importing Id {searcher.ChebiId}");
+                        Cml = searcher.Cml;
                     }
+
+                    return dr;
                 }
             }
             catch (Exception ex)

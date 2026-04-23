@@ -1,12 +1,13 @@
 ﻿// ---------------------------------------------------------------------------
-//  Copyright (c) 2025, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  Copyright (c) 2026, The .NET Foundation.
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
+using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
@@ -16,11 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml.Linq;
@@ -33,7 +34,12 @@ namespace Chem4Word.Searcher.PubChemPlugIn
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
 
-        public System.Windows.Point TopLeft { get; set; }
+        private const string SearchForTemplate = "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}";
+        private const string FindMoreTemplate = "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}";
+        private const string GetDetailsTemplate = "{0}entrez/eutils/esummary.fcgi?db=pccompound&id={1}&retmode=xml";
+        private const string FetchStructureTemplate = "{0}rest/pug/compound/cid/{1}/record/SDF";
+
+        public Point TopLeft { get; set; }
         public IChem4WordTelemetry Telemetry { get; set; }
         public string SettingsPath { get; set; }
         public string PubChemId { get; set; }
@@ -42,21 +48,24 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         public PubChemOptions UserOptions { get; set; }
 
-        private int resultsCount;
-        private string webEnv;
-        private int lastResult;
-        private int firstResult;
-        private const int numResults = 20;
+        private List<string> _ids = new List<string>();
 
-        private string lastSelected = string.Empty;
-        private string lastMolfile = string.Empty;
+        private int _resultsCount;
+        private string _webEnv;
+        private int _lastResult;
+        private int _firstResult;
+        //private const int _numResults = 20;
+
+        private Dictionary<string, string> _structureCache = new Dictionary<string, string>();
+
+        private string _lastMolfile = string.Empty;
 
         public SearchPubChem()
         {
             InitializeComponent();
         }
 
-        private void SearchPubChem_Load(object sender, EventArgs e)
+        private void OnLoad_SearchPubChem(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -65,8 +74,8 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                 {
                     Left = (int)TopLeft.X;
                     Top = (int)TopLeft.Y;
-                    var screen = Screen.FromControl(this);
-                    var sensible = PointHelper.SensibleTopLeft(TopLeft, screen, Width, Height);
+                    Screen screen = Screen.FromControl(this);
+                    Point sensible = PointHelper.SensibleTopLeft(new Point(Left, Top), screen, Width, Height);
                     Left = (int)sensible.X;
                     Top = (int)sensible.Y;
                 }
@@ -90,63 +99,57 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
         }
 
-        private void SearchFor_TextChanged(object sender, EventArgs e)
+        private void OnTextChanged_SearchFor(object sender, EventArgs e)
         {
             SearchButton.Enabled = TextHelper.IsValidSearchString(SearchFor.Text);
         }
 
-        private void SearchButton_Click(object sender, EventArgs e)
+        private void OnClick_SearchButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
-                string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
-                Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
 
-                ErrorsAndWarnings.Text = "";
-                display1.Chemistry = null;
-                display1.Clear();
+            string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+            string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
 
-                ExecuteSearch(webSafe, 0);
-            }
-            catch (Exception ex)
-            {
-                new ReportError(Telemetry, TopLeft, module, ex).ShowDialog();
-            }
+            Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
+
+            ErrorsAndWarnings.Text = "";
+            display1.Clear();
+            Results.Items.Clear();
+
+            _structureCache.Clear();
+            ExecuteSearch(webSafe, 0);
         }
 
-        private void PreviousButton_Click(object sender, EventArgs e)
+        private void OnClick_PreviousButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
-                string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
-                ExecuteSearch(webSafe, -1);
-            }
-            catch (Exception ex)
-            {
-                new ReportError(Telemetry, TopLeft, module, ex).ShowDialog();
-            }
+
+            string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+            string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
+
+            ErrorsAndWarnings.Text = "";
+            display1.Clear();
+            Results.Items.Clear();
+
+            ExecuteSearch(webSafe, -1);
         }
 
-        private void NextButton_Click(object sender, EventArgs e)
+        private void OnClick_NextButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            try
-            {
-                var searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
-                string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
-                ExecuteSearch(webSafe, 1);
-            }
-            catch (Exception ex)
-            {
-                new ReportError(Telemetry, TopLeft, module, ex).ShowDialog();
-            }
+
+            string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
+            string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
+
+            ErrorsAndWarnings.Text = "";
+            display1.Clear();
+            Results.Items.Clear();
+
+            ExecuteSearch(webSafe, 1);
         }
 
-        private void ImportButton_Click(object sender, EventArgs e)
+        private void OnClick_ImportButton(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -160,12 +163,39 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
         }
 
-        private void Results_SelectedIndexChanged(object sender, EventArgs e)
+        private void OnSelectedIndexChanged_Results(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                lastSelected = FetchStructure();
+                ListView.SelectedListViewItemCollection selected = Results.SelectedItems;
+                if (selected.Count > 0)
+                {
+                    ListViewItem item = selected[0];
+                    string pubChemId = item.Text;
+                    PubChemId = pubChemId;
+
+                    if (!_structureCache.TryGetValue(pubChemId, out string sdFile))
+                    {
+                        sdFile = FetchStructure(pubChemId);
+                        if (!string.IsNullOrEmpty(sdFile))
+                        {
+                            _structureCache.Add(pubChemId, sdFile);
+                        }
+                    }
+                    else
+                    {
+                        if (Debugger.IsAttached)
+                        {
+                            Telemetry.Write(module, "Information", $"Structure '{pubChemId}' found in cache");
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(sdFile))
+                    {
+                        DisplayStructure(sdFile);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -173,12 +203,12 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             }
         }
 
-        private void Results_DoubleClick(object sender, EventArgs e)
+        private void OnDoubleClick_Results(object sender, EventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                Debug.WriteLine("Results_DoubleClick");
+                Debug.WriteLine("OnDoubleClick_Results");
                 DialogResult = DialogResult.OK;
                 Hide();
             }
@@ -192,334 +222,324 @@ namespace Chem4Word.Searcher.PubChemPlugIn
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            Cursor = Cursors.WaitCursor;
-
-            string webCall;
-            if (direction == 0)
+            using (new WaitCursor())
             {
-                webCall = string.Format(CultureInfo.InvariantCulture,
-                                        "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}",
-                                        UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall);
+                try
+                {
+                    string webCall = string.Empty;
+                    int startFrom;
+
+                    switch (direction)
+                    {
+                        case 0:
+                            webCall = string.Format(CultureInfo.InvariantCulture, SearchForTemplate,
+                                                    UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall);
+                            break;
+
+                        case 1:
+                            startFrom = _firstResult + UserOptions.ResultsPerCall;
+                            webCall = string.Format(CultureInfo.InvariantCulture, FindMoreTemplate,
+                                                    UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall,
+                                                    _webEnv, startFrom);
+                            break;
+
+                        case -1:
+                            startFrom = _firstResult - UserOptions.ResultsPerCall;
+                            webCall = string.Format(CultureInfo.InvariantCulture, FindMoreTemplate,
+                                                    UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall,
+                                                    _webEnv, startFrom);
+                            break;
+                    }
+
+                    ApiResult apiResult = HttpHelper.InvokeGet(webCall);
+                    if (apiResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        if (ParseResponseBody(apiResult.Content))
+                        {
+                            EnableButtons();
+                            FillListView();
+                        }
+                    }
+                    else
+                    {
+                        Telemetry.Write(module, "Exception", $"{apiResult.StatusCode} - {apiResult.Message}");
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Telemetry.Write(module, "Exception", exception.Message);
+                    Telemetry.Write(module, "Exception", exception.StackTrace);
+                }
+            }
+        }
+
+        private void EnableButtons()
+        {
+            if (_lastResult > UserOptions.ResultsPerCall)
+            {
+                PreviousButton.Enabled = true;
             }
             else
             {
-                if (direction == 1)
-                {
-                    int startFrom = firstResult + numResults;
-                    webCall = string.Format(CultureInfo.InvariantCulture,
-                                            "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
-                                            UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall, webEnv, startFrom);
-                }
-                else
-                {
-                    int startFrom = firstResult - numResults;
-                    webCall = string.Format(CultureInfo.InvariantCulture,
-                                            "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}",
-                                            UserOptions.PubChemWebServiceUri, webSafe, UserOptions.ResultsPerCall, webEnv, startFrom);
-                }
+                PreviousButton.Enabled = false;
             }
 
-            var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
-            var request = (HttpWebRequest)WebRequest.Create(webCall);
-
-            request.Timeout = 30000;
-            request.UserAgent = "Chem4Word";
-
-            HttpWebResponse httpWebResponse;
-            try
+            if (_lastResult < _resultsCount)
             {
-                httpWebResponse = (HttpWebResponse)request.GetResponse();
-                if (HttpStatusCode.OK.Equals(httpWebResponse.StatusCode))
+                NextButton.Enabled = true;
+            }
+            else
+            {
+                NextButton.Enabled = false;
+            }
+        }
+
+        private void FillListView()
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            Results.Items.Clear();
+            Refresh();
+
+            if (_ids.Any())
+            {
+                // Set form title
+                Text = $"Search PubChem - Showing {_firstResult + 1} to {_lastResult} [of {_resultsCount}]";
+
+                GetData(string.Join(",", _ids));
+            }
+            else
+            {
+                ErrorsAndWarnings.Text = "Sorry, no results were found.";
+            }
+        }
+
+        private bool ParseResponseBody(string responseBody)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            bool result = true;
+            if (!string.IsNullOrEmpty(responseBody))
+            {
+                XDocument xDocument = XDocument.Parse(responseBody);
+
+                // Get the count of results
+                _resultsCount = GetInt(GetElement(xDocument, "Count"));
+
+                // Current position
+                _firstResult = GetInt(GetElement(xDocument, "RetStart"));
+                int fetched = GetInt(GetElement(xDocument, "RetMax"));
+                _lastResult = _firstResult + fetched;
+
+                // WebEnv for history
+                _webEnv = GetElement(xDocument, "WebEnv");
+
+                List<string> errors = GetErrors(xDocument);
+                List<string> warnings = GetWarnings(xDocument);
+
+                if (errors.Any())
                 {
-                    using (var responseStream = httpWebResponse.GetResponseStream())
+                    result = false;
+                    foreach (string error in errors)
                     {
-                        var responseBody = new StreamReader(responseStream).ReadToEnd();
-                        try
-                        {
-                            var resultDocument = XDocument.Parse(responseBody);
-                            // Get the count of results
-                            resultsCount = int.Parse(resultDocument.XPathSelectElement("//Count").Value);
-                            // Current position
-                            firstResult = int.Parse(resultDocument.XPathSelectElement("//RetStart").Value);
-                            int fetched = int.Parse(resultDocument.XPathSelectElement("//RetMax").Value);
-                            lastResult = firstResult + fetched;
-                            // WebEnv for history
-                            webEnv = resultDocument.XPathSelectElement("//WebEnv").Value;
-
-                            // Set flags for More/Prev buttons
-
-                            if (lastResult > numResults)
-                            {
-                                PreviousButton.Enabled = true;
-                            }
-                            else
-                            {
-                                PreviousButton.Enabled = false;
-                            }
-
-                            if (lastResult < resultsCount)
-                            {
-                                NextButton.Enabled = true;
-                            }
-                            else
-                            {
-                                NextButton.Enabled = false;
-                            }
-
-                            var ids = resultDocument.XPathSelectElements("//Id");
-                            var count = ids.Count();
-                            Results.Items.Clear();
-
-                            if (count > 0)
-                            {
-                                // Set form title
-                                Text = $"Search PubChem - Showing {firstResult + 1} to {lastResult} [of {resultsCount}]";
-                                Refresh();
-
-                                var sb = new StringBuilder();
-                                for (var i = 0; i < count; i++)
-                                {
-                                    var id = ids.ElementAt(i);
-                                    if (i > 0)
-                                    {
-                                        sb.Append(",");
-                                    }
-                                    sb.Append(id.Value);
-                                }
-                                GetData(sb.ToString());
-                            }
-                            else
-                            {
-                                // Set error box
-                                ErrorsAndWarnings.Text = "Sorry, no results were found.";
-                            }
-                        }
-                        catch (Exception innerException)
-                        {
-                            Telemetry.Write(module, "Exception", innerException.Message);
-                            Telemetry.Write(module, "Exception", innerException.StackTrace);
-                            Telemetry.Write(module, "Exception(Data)", responseBody);
-                        }
+                        Telemetry.Write(module, "Exception", error);
                     }
                 }
-                else
+
+                if (warnings.Any())
                 {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"Status code {httpWebResponse.StatusCode} was returned by the server");
-                    Telemetry.Write(module, "Warning", sb.ToString());
-                    UserInteractions.AlertUser(sb.ToString());
+                    foreach (string warning in warnings)
+                    {
+                        Telemetry.Write(module, "Warning", warning);
+                    }
                 }
+
+                List<string> showToUser = errors;
+                showToUser.AddRange(warnings);
+                ErrorsAndWarnings.Text = string.Join(Environment.NewLine, showToUser);
+
+                _ids = GetIds(xDocument);
             }
-            catch (Exception outerException)
-            {
-                if (outerException.Message.Equals("The operation has timed out"))
-                {
-                    ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
-                }
-                else
-                {
-                    ErrorsAndWarnings.Text = outerException.Message;
-                    Telemetry.Write(module, "Exception", outerException.Message);
-                    Telemetry.Write(module, "Exception", outerException.StackTrace);
-                }
-            }
-            finally
-            {
-                ServicePointManager.SecurityProtocol = securityProtocol;
-                Cursor = Cursors.Default;
-            }
+
+            return result;
+        }
+
+        private string GetElement(XDocument xDocument, string elementName)
+        {
+            XElement element = xDocument.XPathSelectElement($"//{elementName}");
+            return element != null
+                ? element.Value
+                : string.Empty;
+        }
+
+        private List<string> GetElements(XDocument xDocument, string xpath)
+        {
+            return xDocument
+                   .Descendants(xpath)
+                   .Elements()
+                   .Select(e => $"{e.Name.LocalName}: {e.Value}")
+                   .ToList();
+        }
+
+        private List<string> GetErrors(XDocument xDocument)
+        {
+            return GetElements(xDocument, "ErrorList");
+        }
+
+        private List<string> GetWarnings(XDocument xDocument)
+        {
+            return GetElements(xDocument, "WarningList");
+        }
+
+        private int GetInt(string value)
+        {
+            int.TryParse(value, out int result);
+
+            return result;
         }
 
         private void GetData(string idlist)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            var request = (HttpWebRequest)
-                WebRequest.Create(
-                    string.Format(CultureInfo.InvariantCulture,
-                        "{0}entrez/eutils/esummary.fcgi?db=pccompound&id={1}&retmode=xml",
-                        UserOptions.PubChemWebServiceUri, idlist));
+            string webCall = string.Format(CultureInfo.InvariantCulture, GetDetailsTemplate,
+                                           UserOptions.PubChemWebServiceUri, idlist);
 
-            request.Timeout = 30000;
-            request.UserAgent = "Chem4Word";
-
-            var securityProtocol = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
-
-            HttpWebResponse response;
-            try
+            ApiResult apiResult = HttpHelper.InvokeGet(webCall);
+            if (apiResult.StatusCode == HttpStatusCode.OK)
             {
-                response = (HttpWebResponse)request.GetResponse();
-                if (HttpStatusCode.OK.Equals(response.StatusCode))
+                XDocument xDocument = XDocument.Parse(apiResult.Content);
+                if (xDocument != null)
                 {
-                    Results.Enabled = true;
-
-                    // we will read data via the response stream
-                    using (var resStream = response.GetResponseStream())
+                    IEnumerable<XElement> compounds = xDocument.XPathSelectElements("//DocSum");
+                    if (compounds.Any())
                     {
-                        var resultDocument = XDocument.Load(new StreamReader(resStream));
-                        var compounds = resultDocument.XPathSelectElements("//DocSum");
-                        if (compounds.Any())
+                        foreach (XElement compound in compounds)
                         {
-                            foreach (var compound in compounds)
-                            {
-                                var id = compound.XPathSelectElement("./Id");
-                                var name = compound.XPathSelectElement("./Item[@Name='IUPACName']");
-                                //var smiles = compound.XPathSelectElement("./Item[@Name='CanonicalSmile']")
-                                var formula = compound.XPathSelectElement("./Item[@Name='MolecularFormula']");
-                                ListViewItem lvi = new ListViewItem(id.Value);
+                            XElement id = compound.XPathSelectElement("./Id");
+                            XElement name = compound.XPathSelectElement("./Item[@Name='IUPACName']");
+                            XElement formula = compound.XPathSelectElement("./Item[@Name='MolecularFormula']");
+                            ListViewItem lvi = new ListViewItem(id.Value);
 
-                                lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, name.Value));
-                                //lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, smiles.ToString()))
-                                lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, formula.Value));
+                            lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, name.Value));
+                            lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, formula.Value));
 
-                                Results.Items.Add(lvi);
-                                // Add to a list view ...
-                            }
+                            Results.Items.Add(lvi);
+                            // Add to a list view ...
                         }
-                        else
-                        {
-                            Debug.WriteLine("Something went wrong");
-                        }
+
+                        Results.Enabled = true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Something went wrong");
+                        Debugger.Break();
                     }
                 }
                 else
                 {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"Bad request. Status code: {response.StatusCode}");
-                    UserInteractions.AlertUser(sb.ToString());
+                    Telemetry.Write(module, "Exception", $"Error parsing {apiResult.Content}");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                if (ex.Message.Equals("The operation has timed out"))
-                {
-                    ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
-                }
-                else
-                {
-                    ErrorsAndWarnings.Text = ex.Message;
-                    Telemetry.Write(module, "Exception", ex.Message);
-                    Telemetry.Write(module, "Exception", ex.StackTrace);
-                }
-            }
-            finally
-            {
-                ServicePointManager.SecurityProtocol = securityProtocol;
+                Telemetry.Write(module, "Exception", $"{apiResult.StatusCode} - {apiResult.Message}");
             }
         }
 
-        private string FetchStructure()
+        private List<string> GetIds(XDocument xDocument)
+        {
+            List<string> lisOfIds = new List<string>();
+            IEnumerable<XElement> ids = xDocument.XPathSelectElements("//Id");
+            foreach (XElement id in ids)
+            {
+                lisOfIds.Add(id.Value);
+            }
+            return lisOfIds;
+        }
+
+        private void DisplayStructure(string sdFile)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            string result = lastSelected;
-            ImportButton.Enabled = false;
+            SdFileConverter sdFileConverter = new SdFileConverter();
+            Model model = sdFileConverter.Import(sdFile);
 
-            ListView.SelectedListViewItemCollection selected = Results.SelectedItems;
-            if (selected.Count > 0)
+            CMLConverter cmlConverter = new CMLConverter();
+            Cml = cmlConverter.Export(model);
+
+            model.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
+            display1.Chemistry = model;
+
+            if (model.AllWarnings.Count > 0 || model.AllErrors.Count > 0)
             {
-                ListViewItem item = selected[0];
-                string pubchemId = item.Text;
-                PubChemId = pubchemId;
-
-                if (!pubchemId.Equals(lastSelected))
+                Telemetry.Write(module, "Exception(Data)", _lastMolfile);
+                List<string> lines = new List<string>();
+                if (model.AllErrors.Count > 0)
                 {
-                    Cursor = Cursors.WaitCursor;
+                    Telemetry.Write(module, "Exception(Data)",
+                                    string.Join(Environment.NewLine, model.AllErrors));
+                    lines.Add("Errors(s)");
+                    lines.AddRange(model.AllErrors);
+                }
 
-                    // https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/241/record/SDF
+                if (model.AllWarnings.Count > 0)
+                {
+                    Telemetry.Write(module, "Warning",
+                                    string.Join(Environment.NewLine, model.AllWarnings));
+                    lines.Add("Warnings(s)");
+                    lines.AddRange(model.AllWarnings);
+                }
 
-                    var securityProtocol = ServicePointManager.SecurityProtocol;
-                    ServicePointManager.SecurityProtocol = securityProtocol | SecurityProtocolType.Tls12;
+                ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
+            }
+            else
+            {
+                ImportButton.Enabled = true;
+            }
+        }
 
-                    try
+        private string FetchStructure(string pubChemId)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            string result = string.Empty;
+
+            using (new WaitCursor())
+            {
+                try
+                {
+                    Telemetry.Write(module, "Information", $"Fetching structure for '{pubChemId}'");
+
+                    string webCall = string.Format(CultureInfo.InvariantCulture, FetchStructureTemplate,
+                                                   UserOptions.PubChemRestApiUri, pubChemId);
+
+                    ApiResult apiResult = HttpHelper.InvokeGet(webCall);
+                    if (apiResult.StatusCode == HttpStatusCode.OK)
                     {
-                        var request = (HttpWebRequest)WebRequest.Create(
-                            string.Format(CultureInfo.InvariantCulture, "{0}rest/pug/compound/cid/{1}/record/SDF",
-                                UserOptions.PubChemRestApiUri, pubchemId));
-
-                        request.Timeout = 30000;
-                        request.UserAgent = "Chem4Word";
-
-                        HttpWebResponse response;
-
-                        response = (HttpWebResponse)request.GetResponse();
-                        if (HttpStatusCode.OK.Equals(response.StatusCode))
+                        if (MolFileIsValid(apiResult.Content))
                         {
-                            // we will read data via the response stream
-                            using (var resStream = response.GetResponseStream())
-                            {
-                                lastMolfile = new StreamReader(resStream).ReadToEnd();
-                                SdFileConverter sdFileConverter = new SdFileConverter();
-                                Model model = sdFileConverter.Import(lastMolfile);
-                                CMLConverter cmlConverter = new CMLConverter();
-                                Cml = cmlConverter.Export(model);
-
-                                model.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
-                                this.display1.Chemistry = model;
-
-                                if (model.AllWarnings.Count > 0 || model.AllErrors.Count > 0)
-                                {
-                                    Telemetry.Write(module, "Exception(Data)", lastMolfile);
-                                    List<string> lines = new List<string>();
-                                    if (model.AllErrors.Count > 0)
-                                    {
-                                        Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllErrors));
-                                        lines.Add("Errors(s)");
-                                        lines.AddRange(model.AllErrors);
-                                    }
-                                    if (model.AllWarnings.Count > 0)
-                                    {
-                                        Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllWarnings));
-                                        lines.Add("Warnings(s)");
-                                        lines.AddRange(model.AllWarnings);
-                                    }
-                                    ErrorsAndWarnings.Text = string.Join(Environment.NewLine, lines);
-                                }
-                                else
-                                {
-                                    ImportButton.Enabled = true;
-                                }
-                            }
-                            result = pubchemId;
-                        }
-                        else
-                        {
-                            result = string.Empty;
-                            lastMolfile = string.Empty;
-
-                            StringBuilder sb = new StringBuilder();
-                            sb.AppendLine($"Bad request. Status code: {response.StatusCode}");
-                            UserInteractions.AlertUser(sb.ToString());
+                            result = apiResult.Content;
                         }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        if (ex.Message.Equals("The operation has timed out"))
-                        {
-                            ErrorsAndWarnings.Text = "Please try again later - the service has timed out";
-                        }
-                        else
-                        {
-                            ErrorsAndWarnings.Text = ex.Message;
-                            Telemetry.Write(module, "Exception", ex.Message);
-                            Telemetry.Write(module, "Exception", ex.StackTrace);
-                        }
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine($"Bad request. Status code: {apiResult.StatusCode}");
+                        UserInteractions.AlertUser(sb.ToString());
                     }
-                    finally
-                    {
-                        ServicePointManager.SecurityProtocol = securityProtocol;
-                        Cursor = Cursors.Default;
-                    }
+                }
+                catch (Exception exception)
+                {
+                    Telemetry.Write(module, "Exception", exception.Message);
+                    Telemetry.Write(module, "Exception", exception.StackTrace);
                 }
             }
 
             return result;
         }
 
-        private void SearchPubChem_FormClosing(object sender, FormClosingEventArgs e)
+        private void OnFormClosing_SearchPubChem(object sender, FormClosingEventArgs e)
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
@@ -533,6 +553,16 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             {
                 new ReportError(Telemetry, TopLeft, module, ex).ShowDialog();
             }
+        }
+
+        private static bool MolFileIsValid(string molFile)
+        {
+            string file = molFile.ToUpper();
+
+            int idx1 = file.IndexOf("V2000");
+            int idx2 = file.IndexOf("M  END");
+
+            return idx2 > idx1;
         }
     }
 }
