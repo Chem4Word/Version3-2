@@ -128,7 +128,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chem4Word.WebServices", "Ch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf.UI.Sandbox", "TestHarness\Wpf.UI.Sandbox\Wpf.UI.Sandbox.csproj", "{66114688-4B34-4B67-B14D-49F961683CBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiX.CustomAction.V6", "Installer\WiX.CustomAction.V6\WiX.CustomAction.V6.csproj", "{2774F1D9-031E-BF3C-9742-9188C3A8A871}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiX.CustomAction.V7", "Installer\WiX.CustomAction\WiX.CustomAction.V7.csproj", "{2774F1D9-031E-BF3C-9742-9188C3A8A871}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Package-Scanner", "Tools\Package-Scanner\Package-Scanner.csproj", "{2E53283B-16D4-4242-97C5-B12AC39B482C}"
 EndProject

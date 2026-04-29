@@ -17,7 +17,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using WixToolset.Dtf.WindowsInstaller;
 
-namespace WiX.CustomAction.V6
+namespace WiX.CustomAction.V7
 {
     public class CustomActions
     {
@@ -113,7 +113,7 @@ namespace WiX.CustomAction.V6
                     key = key = Registry.CurrentUser.CreateSubKey(actionsKey);
                 }
 
-                var versionNumber = "3.2.25.9609";
+                var versionNumber = "3.2.26.9617";
 
                 var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
                 key.SetValue(timestamp, $"[-] V{versionNumber} - Installed");

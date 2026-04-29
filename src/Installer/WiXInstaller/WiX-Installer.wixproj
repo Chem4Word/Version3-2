@@ -1,14 +1,15 @@
-﻿<Project Sdk="WixToolset.Sdk/6.0.0">
+<Project Sdk="WixToolset.Sdk/7.0.0">
   <PropertyGroup>
-    <OutputName>Chem4Word-Setup.3.2.25.Release.21</OutputName>
+    <AcceptEula>wix7</AcceptEula>
+    <OutputName>Chem4Word-Setup.3.2.26.Release.22</OutputName>
     <Name>WiX-Installer</Name>
     <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
     <EnableFramework45>true</EnableFramework45>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="6.0.2" />
-    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="7.0.0" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="7.0.0" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Chem4Word.ico" />
