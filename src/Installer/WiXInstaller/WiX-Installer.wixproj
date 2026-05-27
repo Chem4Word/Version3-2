@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AcceptEula>wix7</AcceptEula>
     <EnableFramework45>true</EnableFramework45>
-    <OutputName>Chem4Word-Setup.3.2.26.Release.22</OutputName>
+    <OutputName>Chem4Word-Setup.3.2.27.Release.23</OutputName>
     <Name>WiX-Installer</Name>
     <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
   </PropertyGroup>
