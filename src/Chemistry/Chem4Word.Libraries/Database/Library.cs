@@ -10,6 +10,7 @@ using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Converters.MDL;
+using Chem4Word.WebServices;
 using IChem4Word.Contracts;
 using Ionic.Zip;
 using Newtonsoft.Json;
@@ -38,6 +39,141 @@ namespace Chem4Word.Libraries.Database
 
         private readonly List<Patch> _patches;
 
+        public static bool SetSqlitePath(IChem4WordTelemetry telemetry)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            bool result = false;
+
+            try
+            {
+                // CoPilot suggested fix for occasional error, with tweak to ensure path only set once.
+                //  "Unable to find an entry point named 'SI3eae3b91c35710f2' in DLL 'SQLite.Interop.dll'."
+
+                string executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                bool is64 = Environment.Is64BitProcess;
+                string source = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, is64 ? "x64" : "x86", "SQLite.Interop.dll");
+                if (executingPath != null)
+                {
+                    string dest = Path.Combine(executingPath, "SQLite.Interop.dll");
+
+                    if (!File.Exists(dest))
+                    {
+                        File.Copy(source, dest, overwrite: true);
+                    }
+
+                    string path = Environment.GetEnvironmentVariable("PATH");
+                    if (path != null && !path.Contains(executingPath))
+                    {
+                        if (Debugger.IsAttached)
+                        {
+                            telemetry.Write(module, "Information", $"Adding {executingPath} to path");
+                        }
+                        Environment.SetEnvironmentVariable("PATH", executingPath + ";" + path);
+                    }
+
+                    result = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                telemetry.Write(module, "Exception", $"{exception.Message}");
+                telemetry.Write(module, "Exception(Data)", $"{exception.StackTrace}");
+            }
+
+            return result;
+        }
+
+        public static bool CanOpenLibrary(IChem4WordTelemetry telemetry, LibraryOptions options)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            bool result = false;
+
+            if (options != null)
+            {
+                string libraryTarget = Path.Combine(options.ProgramDataPath, Constants.LibraryFileName);
+
+                if (File.Exists(libraryTarget))
+                {
+                    try
+                    {
+                        // Source https://www.connectionstrings.com/sqlite/
+                        SQLiteConnection conn = new SQLiteConnection($"Data Source={libraryTarget};Synchronous=Full");
+                        conn.Open();
+
+                        // If we get here, the file we tried to open is a valid SQLite database
+                        conn.Close();
+
+                        result = true;
+                    }
+                    catch (Exception exception)
+                    {
+                        string[] message = exception.Message.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        string unique = string.Join(Environment.NewLine, message.Distinct().ToArray());
+                        telemetry.Write(module, "Exception", unique);
+
+                        string backup = Path.Combine(options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
+                        telemetry.Write(module, "Information", "Backing up bad database file");
+                        File.Copy(libraryTarget, backup);
+                        File.Delete(libraryTarget);
+                    }
+
+                    if (!result)
+                    {
+                        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+                        StringBuilder builder = new StringBuilder();
+                        foreach (Assembly assembly in assemblies)
+                        {
+                            if (!assembly.GlobalAssemblyCache || assembly.FullName.ToLower().Contains("sqlite"))
+                            {
+                                string[] assemblyParts = assembly.FullName.Split(',');
+                                string location = GdprHelper.ReplaceDl3Path(assembly.Location);
+                                string value = $"{assemblyParts[0].Trim()}, {assemblyParts[1].Trim()} [{location}]";
+                                builder.AppendLine(GdprHelper.ReplaceUserName(value));
+                            }
+                        }
+
+                        telemetry.Write(module, "Exception(Data)", builder.ToString().Trim());
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static bool CreateSeedDatabase(IChem4WordTelemetry telemetry, LibraryOptions options)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            bool result = false;
+
+            if (options != null)
+            {
+                string libraryTarget = Path.Combine(options.ProgramDataPath, Constants.LibraryFileName);
+
+                // Create seed database if required
+                if (!File.Exists(libraryTarget))
+                {
+                    telemetry.Write(module, "Information", "Copying initial Library database");
+                    Stream stream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "EssentialOils.zip");
+                    if (stream != null)
+                    {
+                        using (ZipFile zip = ZipFile.Read(stream))
+                        {
+                            // Note: The original filename in EssentialOils.zip is Library.db
+                            zip.ExtractAll(options.ProgramDataPath, ExtractExistingFileAction.OverwriteSilently);
+                        }
+                    }
+                }
+
+                result = true;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Library Constructor
         /// </summary>
@@ -52,82 +188,11 @@ namespace Chem4Word.Libraries.Database
 
             if (options != null)
             {
-                string libraryTarget = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
-
                 _sdFileConverter = new SdFileConverter();
                 _cmlConverter = new CMLConverter();
 
-                if (File.Exists(libraryTarget))
-                {
-                    try
-                    {
-                        // CoPilot suggested fix for occasional error, with tweak to ensure path only set once.
-                        //  "Unable to find an entry point named 'SI3eae3b91c35710f2' in DLL 'SQLite.Interop.dll'."
-
-                        string executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        bool is64 = Environment.Is64BitProcess;
-                        string source = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, is64 ? "x64" : "x86", "SQLite.Interop.dll");
-                        if (executingPath != null)
-                        {
-                            string dest = Path.Combine(executingPath, "SQLite.Interop.dll");
-
-                            if (!File.Exists(dest))
-                            {
-                                File.Copy(source, dest, overwrite: true);
-                            }
-
-                            string path = Environment.GetEnvironmentVariable("PATH");
-                            if (path != null && !path.Contains(executingPath))
-                            {
-                                _telemetry.Write(module, "Information", $"Adding {executingPath} to path");
-                                Environment.SetEnvironmentVariable("PATH", executingPath + ";" + path);
-                            }
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        _telemetry.Write(module, "Exception", $"{exception.Message}");
-                        _telemetry.Write(module, "Exception(Data)", $"{exception.StackTrace}");
-                    }
-
-                    try
-                    {
-                        // Source https://www.connectionstrings.com/sqlite/
-                        var conn = new SQLiteConnection($"Data Source={libraryTarget};Synchronous=Full");
-                        conn.Open();
-
-                        // If we get here, the file we tried to open is a valid SQLite database
-                        conn.Close();
-                    }
-                    catch (Exception exception)
-                    {
-                        var message = exception.Message.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        var unique = string.Join(Environment.NewLine, message.Distinct().ToArray());
-                        _telemetry.Write(module, "Exception", $"Exception {unique}");
-                        var backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
-                        _telemetry.Write(module, "Information", "Backing up bad database file");
-                        File.Copy(libraryTarget, backup);
-                        File.Delete(libraryTarget);
-                    }
-                }
-
-                // Create seed database if required
-                if (!File.Exists(libraryTarget))
-                {
-                    _telemetry.Write(module, "Information", "Copying initial Library database");
-                    Stream stream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "EssentialOils.zip");
-                    if (stream != null)
-                    {
-                        using (ZipFile zip = ZipFile.Read(stream))
-                        {
-                            // Note: The original filename in EssentialOils.zip is Library.db
-                            zip.ExtractAll(_options.ProgramDataPath, ExtractExistingFileAction.OverwriteSilently);
-                        }
-                    }
-                }
-
                 // Read patches from resource
-                var resource = ResourceHelper.GetStringResource(Assembly.GetExecutingAssembly(), "Patches.json");
+                string resource = ResourceHelper.GetStringResource(Assembly.GetExecutingAssembly(), "Patches.json");
                 _patches = JsonConvert.DeserializeObject<List<Patch>>(resource);
 
                 Patch(_patches.Max(p => p.Version));
@@ -138,7 +203,7 @@ namespace Chem4Word.Libraries.Database
         {
             string path = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
             // Source https://www.connectionstrings.com/sqlite/
-            var conn = new SQLiteConnection($"Data Source={path};Synchronous=Full");
+            SQLiteConnection conn = new SQLiteConnection($"Data Source={path};Synchronous=Full");
 
             return conn.OpenAndReturn();
         }
@@ -149,7 +214,7 @@ namespace Chem4Word.Libraries.Database
             {
                 bool patchTableExists = false;
 
-                var currentVersion = Version.Parse("0.0.0");
+                Version currentVersion = Version.Parse("0.0.0");
 
                 using (SQLiteDataReader tables = GetListOfTablesAndViews(conn))
                 {
@@ -159,7 +224,7 @@ namespace Chem4Word.Libraries.Database
                         {
                             if (tables["Name"] is string name)
                             {
-                                var type = tables["Type"] as string;
+                                string type = tables["Type"] as string;
                                 Debug.WriteLine($"Found {type} '{name}'");
 
                                 if (name.Equals("Patches"))
@@ -182,10 +247,10 @@ namespace Chem4Word.Libraries.Database
                             {
                                 if (patches["Version"] is string version)
                                 {
-                                    var applied = patches["Applied"] as string;
+                                    string applied = patches["Applied"] as string;
                                     Debug.WriteLine($"Patch {version} was applied on {applied}");
 
-                                    var thisVersion = Version.Parse(version);
+                                    Version thisVersion = Version.Parse(version);
                                     if (thisVersion > currentVersion)
                                     {
                                         currentVersion = thisVersion;
@@ -199,8 +264,8 @@ namespace Chem4Word.Libraries.Database
                 if (currentVersion < targetVersion)
                 {
                     // Backup before patching
-                    var database = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
-                    var backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
+                    string database = Path.Combine(_options.ProgramDataPath, Constants.LibraryFileName);
+                    string backup = Path.Combine(_options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
                     File.Copy(database, backup);
 
                     if (!ApplyPatches(conn, currentVersion))
@@ -221,11 +286,11 @@ namespace Chem4Word.Libraries.Database
 
             try
             {
-                var sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 sb.AppendLine("SELECT Version, Applied");
                 sb.AppendLine("FROM Patches");
 
-                var command = new SQLiteCommand(sb.ToString(), conn);
+                SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
                 result = command.ExecuteReader();
             }
             catch (Exception ex)
@@ -244,12 +309,12 @@ namespace Chem4Word.Libraries.Database
 
             try
             {
-                var sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 sb.AppendLine("SELECT t.Name, t.Type");
                 sb.AppendLine("FROM sqlite_master t");
                 sb.AppendLine("WHERE t.Type IN ('table','view')");
 
-                var command = new SQLiteCommand(sb.ToString(), conn);
+                SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
                 result = command.ExecuteReader();
             }
             catch (Exception ex)
@@ -275,7 +340,7 @@ namespace Chem4Word.Libraries.Database
                         foreach (string script in patch.Scripts)
                         {
                             _telemetry.Write(module, "Information", $"Applying {patch.Version} patch '{script}' to database");
-                            var command = new SQLiteCommand(script, conn);
+                            SQLiteCommand command = new SQLiteCommand(script, conn);
                             command.ExecuteNonQuery();
                         }
                         AddPatchRecord(conn, patch.Version);
@@ -297,18 +362,18 @@ namespace Chem4Word.Libraries.Database
 
             try
             {
-                var versionString = version.ToString(3);
+                string versionString = version.ToString(3);
 
-                var sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
 
                 sb.AppendLine("INSERT INTO Patches");
                 sb.AppendLine(" (Version, Applied)");
                 sb.AppendLine("VALUES");
                 sb.AppendLine(" (@version, @applied)");
 
-                var command = new SQLiteCommand(sb.ToString(), conn);
+                SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
                 command.Parameters.Add("@version", DbType.String, versionString.Length).Value = versionString;
-                var applied = SafeDate.ToShortDate(DateTime.Today);
+                string applied = SafeDate.ToShortDate(DateTime.Today);
                 command.Parameters.Add("@applied", DbType.String, applied.Length).Value = applied;
 
                 command.ExecuteNonQuery();
@@ -326,9 +391,9 @@ namespace Chem4Word.Libraries.Database
         public Dictionary<string, int> GetLibraryNames()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            var allNames = new Dictionary<string, int>();
+            Dictionary<string, int> allNames = new Dictionary<string, int>();
 
-            var sw = new Stopwatch();
+            Stopwatch sw = new Stopwatch();
             sw.Start();
 
             try
@@ -341,7 +406,7 @@ namespace Chem4Word.Libraries.Database
                         {
                             while (names.Read())
                             {
-                                var name = names["Name"] as string;
+                                string name = names["Name"] as string;
                                 // Exclude any names less than three characters
                                 if (!string.IsNullOrEmpty(name) && name.Length > 3)
                                 {
@@ -358,7 +423,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -376,7 +441,7 @@ namespace Chem4Word.Libraries.Database
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT DISTINCT Name, ChemistryId");
             sb.AppendLine("FROM ChemicalNames");
             sb.AppendLine("WHERE NOT (Namespace = 'chem4word' AND Tag = 'cev_freq')");
@@ -386,7 +451,7 @@ namespace Chem4Word.Libraries.Database
             sb.AppendLine("SELECT DISTINCT Name, Id");
             sb.AppendLine("FROM Gallery");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
 
             return command.ExecuteReader();
         }
@@ -412,15 +477,15 @@ namespace Chem4Word.Libraries.Database
 
         private void DeleteAllChemistry(SQLiteConnection conn)
         {
-            var command1 = new SQLiteCommand("DELETE FROM Gallery", conn);
-            var command2 = new SQLiteCommand("DELETE FROM ChemicalNames", conn);
-            var command3 = new SQLiteCommand("DELETE FROM TaggedChemistry", conn);
-            var command4 = new SQLiteCommand("DELETE FROM Tags", conn);
+            SQLiteCommand command1 = new SQLiteCommand("DELETE FROM Gallery", conn);
+            SQLiteCommand command2 = new SQLiteCommand("DELETE FROM ChemicalNames", conn);
+            SQLiteCommand command3 = new SQLiteCommand("DELETE FROM TaggedChemistry", conn);
+            SQLiteCommand command4 = new SQLiteCommand("DELETE FROM Tags", conn);
 
-            var command5 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Gallery'", conn);
-            var command6 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Tags'", conn);
+            SQLiteCommand command5 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Gallery'", conn);
+            SQLiteCommand command6 = new SQLiteCommand("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Tags'", conn);
 
-            var command7 = new SQLiteCommand("VACUUM", conn);
+            SQLiteCommand command7 = new SQLiteCommand("VACUUM", conn);
 
             using (SQLiteTransaction tr = conn.BeginTransaction())
             {
@@ -443,13 +508,13 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         public SQLiteTransaction StartTransaction()
         {
-            var conn = LibraryConnection();
+            SQLiteConnection conn = LibraryConnection();
             return conn.BeginTransaction();
         }
 
         public void EndTransaction(SQLiteTransaction transaction, bool rollback)
         {
-            var conn = transaction.Connection;
+            SQLiteConnection conn = transaction.Connection;
             if (rollback)
             {
                 transaction.Rollback();
@@ -492,7 +557,7 @@ namespace Chem4Word.Libraries.Database
 
                 if (model != null)
                 {
-                    var outcome = model.EnsureBondLength(_options.PreferredBondLength, _options.SetBondLengthOnImport);
+                    string outcome = model.EnsureBondLength(_options.PreferredBondLength, _options.SetBondLengthOnImport);
                     if (_options.RemoveExplicitHydrogensOnImport)
                     {
                         model.RemoveExplicitHydrogens();
@@ -508,17 +573,17 @@ namespace Chem4Word.Libraries.Database
                     {
                         if (calculateProperties)
                         {
-                            var pc = new WebServices.PropertyCalculator(_telemetry, _options.ParentTopLeft, _options.Chem4WordVersion);
+                            PropertyCalculator pc = new WebServices.PropertyCalculator(_telemetry, _options.ParentTopLeft, _options.Chem4WordVersion);
                             pc.CalculateProperties(model);
                         }
 
                         model.CustomXmlPartGuid = "";
 
                         string chemicalName = model.ConciseFormula;
-                        var mol = model.Molecules.Values.First();
+                        Molecule mol = model.Molecules.Values.First();
                         if (mol.Names.Count > 0)
                         {
-                            foreach (var name in mol.Names)
+                            foreach (TextualProperty name in mol.Names)
                             {
                                 long temp;
                                 if (!long.TryParse(name.Value, out temp))
@@ -529,10 +594,10 @@ namespace Chem4Word.Libraries.Database
                             }
                         }
 
-                        var conn = transaction.Connection;
+                        SQLiteConnection conn = transaction.Connection;
 
-                        var id = AddChemistry(conn, model, chemicalName, model.ConciseFormula);
-                        foreach (var name in mol.Names)
+                        long id = AddChemistry(conn, model, chemicalName, model.ConciseFormula);
+                        foreach (TextualProperty name in mol.Names)
                         {
                             AddChemicalName(conn, id, name.Value, name.FullType);
                         }
@@ -543,7 +608,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -571,7 +636,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -582,12 +647,12 @@ namespace Chem4Word.Libraries.Database
         {
             Byte[] blob = Encoding.UTF8.GetBytes(xml);
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("UPDATE GALLERY");
             sb.AppendLine("SET Name = @name, Chemistry = @blob, Formula = @formula");
             sb.AppendLine("WHERE ID = @id");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
             command.Parameters.Add("@id", DbType.Int64).Value = id;
             command.Parameters.Add("@blob", DbType.Binary, blob.Length).Value = blob;
             command.Parameters.Add("@name", DbType.String, name?.Length ?? 0).Value = name ?? "";
@@ -616,7 +681,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -625,7 +690,7 @@ namespace Chem4Word.Libraries.Database
 
         private void DeleteChemistry(SQLiteConnection conn, long chemistryId)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
             using (SQLiteTransaction tr = conn.BeginTransaction())
             {
@@ -636,7 +701,7 @@ namespace Chem4Word.Libraries.Database
                 sb.AppendLine("DELETE FROM Gallery");
                 sb.AppendLine("WHERE ID = @id");
 
-                var command = new SQLiteCommand(sb.ToString(), conn);
+                SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
                 command.Parameters.Add("@id", DbType.Int64, 20).Value = chemistryId;
                 command.ExecuteNonQuery();
 
@@ -646,22 +711,22 @@ namespace Chem4Word.Libraries.Database
 
         private static void DeleteNames(SQLiteConnection conn, long chemistryId)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("DELETE FROM ChemicalNames");
             sb.AppendLine("WHERE ChemistryId = @id");
 
-            var nameCommand = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand nameCommand = new SQLiteCommand(sb.ToString(), conn);
             nameCommand.Parameters.Add("@id", DbType.Int64, 20).Value = chemistryId;
             nameCommand.ExecuteNonQuery();
         }
 
         private static void DeleteTags(SQLiteConnection conn, long chemistryId)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("DELETE FROM TaggedChemistry");
             sb.AppendLine("WHERE ChemistryId = @id");
 
-            var tagCommand = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand tagCommand = new SQLiteCommand(sb.ToString(), conn);
             tagCommand.Parameters.Add("@id", DbType.Int64, 20).Value = chemistryId;
             tagCommand.ExecuteNonQuery();
         }
@@ -694,7 +759,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -707,12 +772,12 @@ namespace Chem4Word.Libraries.Database
 
         private SQLiteDataReader GetChemistryById(SQLiteConnection conn, long id)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT Id, Chemistry, Name, Formula");
             sb.AppendLine("FROM Gallery");
             sb.AppendLine("WHERE ID = @id");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
             command.Parameters.Add("@id", DbType.Int64).Value = id;
 
             return command.ExecuteReader();
@@ -738,7 +803,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -759,9 +824,9 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         private long AddChemistry(SQLiteConnection conn, Model model, string chemistryName, string formula)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
-            var blob = Encoding.UTF8.GetBytes(_cmlConverter.Export(model, true));
+            byte[] blob = Encoding.UTF8.GetBytes(_cmlConverter.Export(model, true));
             //var blob = Encoding.UTF8.GetBytes(_sdFileConverter.Export(model))
 
             sb.AppendLine("INSERT INTO Gallery");
@@ -769,7 +834,7 @@ namespace Chem4Word.Libraries.Database
             sb.AppendLine("VALUES");
             sb.AppendLine(" (@blob, @name, @formula)");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
             command.Parameters.Add("@blob", DbType.Binary, blob.Length).Value = blob;
             command.Parameters.Add("@name", DbType.String, chemistryName.Length).Value = chemistryName;
             command.Parameters.Add("@formula", DbType.String, formula.Length).Value = formula;
@@ -777,22 +842,22 @@ namespace Chem4Word.Libraries.Database
             command.ExecuteNonQuery();
 
             string sql = "SELECT last_insert_rowid()";
-            var cmd = new SQLiteCommand(sql, conn);
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
 
             return (Int64)cmd.ExecuteScalar();
         }
 
         private void AddChemicalName(SQLiteConnection conn, long id, string name, string dictRef)
         {
-            var refs = dictRef.Split(':');
+            string[] refs = dictRef.Split(':');
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("DELETE FROM ChemicalNames");
             sb.AppendLine("WHERE ChemistryID = @chemID");
             sb.AppendLine(" AND Namespace = @namespace");
             sb.AppendLine(" AND Tag = @tag");
 
-            var deleteCommand = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand deleteCommand = new SQLiteCommand(sb.ToString(), conn);
             deleteCommand.Parameters.Add("@namespace", DbType.String, refs[0].Length).Value = refs[0];
             deleteCommand.Parameters.Add("@tag", DbType.String, refs[1].Length).Value = refs[1];
             deleteCommand.Parameters.Add("@chemID", DbType.Int32).Value = id;
@@ -803,7 +868,7 @@ namespace Chem4Word.Libraries.Database
             sb.AppendLine("VALUES");
             sb.AppendLine("(@chemID, @name, @namespace, @tag)");
 
-            var insertCommand = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand insertCommand = new SQLiteCommand(sb.ToString(), conn);
             insertCommand.Parameters.Add("@name", DbType.String, name.Length).Value = name;
             insertCommand.Parameters.Add("@namespace", DbType.String, refs[0].Length).Value = refs[0];
             insertCommand.Parameters.Add("@tag", DbType.String, refs[1].Length).Value = refs[1];
@@ -820,16 +885,16 @@ namespace Chem4Word.Libraries.Database
         public List<ChemistryDataObject> GetAllChemistry()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            var results = new List<ChemistryDataObject>();
+            List<ChemistryDataObject> results = new List<ChemistryDataObject>();
 
             try
             {
-                var sw = new Stopwatch();
+                Stopwatch sw = new Stopwatch();
                 sw.Start();
 
                 using (SQLiteConnection conn = LibraryConnection())
                 {
-                    var allTaggedItems = GetAllChemistryTags(conn);
+                    List<ChemistryTagDataObject> allTaggedItems = GetAllChemistryTags(conn);
 
                     using (SQLiteDataReader chemistry = GetAllChemistry(conn))
                     {
@@ -837,8 +902,8 @@ namespace Chem4Word.Libraries.Database
                         {
                             while (chemistry.Read())
                             {
-                                var id = (long)chemistry["Id"];
-                                var dto = new ChemistryDataObject
+                                long id = (long)chemistry["Id"];
+                                ChemistryDataObject dto = new ChemistryDataObject
                                 {
                                     Id = id,
                                     Cml = CmlFromBytes((byte[])chemistry["Chemistry"]),
@@ -858,7 +923,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -871,15 +936,15 @@ namespace Chem4Word.Libraries.Database
 
         private List<ChemistryTagDataObject> GetAllChemistryTags(SQLiteConnection conn)
         {
-            var result = new List<ChemistryTagDataObject>();
+            List<ChemistryTagDataObject> result = new List<ChemistryTagDataObject>();
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT c.ChemistryId, c.Sequence, t.Tag, t.Id");
             sb.AppendLine("FROM TaggedChemistry c");
             sb.AppendLine("JOIN Tags t ON c.TagId = t.Id");
             sb.AppendLine("ORDER BY c.ChemistryId, c.Sequence");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
 
             using (SQLiteDataReader reader = command.ExecuteReader())
             {
@@ -887,7 +952,7 @@ namespace Chem4Word.Libraries.Database
                 {
                     while (reader.Read())
                     {
-                        var dto = new ChemistryTagDataObject();
+                        ChemistryTagDataObject dto = new ChemistryTagDataObject();
                         dto.Text = reader["Tag"] as string;
                         dto.Sequence = (long)reader["Sequence"];
                         dto.TagId = (long)reader["Id"];
@@ -903,13 +968,13 @@ namespace Chem4Word.Libraries.Database
         private SQLiteDataReader GetAllChemistry(SQLiteConnection conn)
         {
             SQLiteDataReader result = null;
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
             sb.AppendLine("SELECT Id, Chemistry, Name, Formula");
             sb.AppendLine("FROM Gallery");
             sb.AppendLine("ORDER BY Name");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
             result = command.ExecuteReader();
 
             return result;
@@ -918,11 +983,11 @@ namespace Chem4Word.Libraries.Database
         public List<LibraryTagDataObject> GetAllTags()
         {
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            var results = new List<LibraryTagDataObject>();
+            List<LibraryTagDataObject> results = new List<LibraryTagDataObject>();
 
             try
             {
-                var sw = new Stopwatch();
+                Stopwatch sw = new Stopwatch();
                 sw.Start();
 
                 using (SQLiteConnection conn = LibraryConnection())
@@ -935,7 +1000,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }
@@ -948,14 +1013,14 @@ namespace Chem4Word.Libraries.Database
 
         private List<LibraryTagDataObject> GetAllTags(SQLiteConnection conn)
         {
-            var result = new List<LibraryTagDataObject>();
+            List<LibraryTagDataObject> result = new List<LibraryTagDataObject>();
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT t.Tag, t.Id AS TagId, (SELECT COUNT(1) FROM TaggedChemistry tc WHERE tc.TagId = t.Id) as Frequency");
             sb.AppendLine("FROM Tags t");
             sb.AppendLine("ORDER BY Frequency DESC");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
 
             using (SQLiteDataReader reader = command.ExecuteReader())
             {
@@ -963,7 +1028,7 @@ namespace Chem4Word.Libraries.Database
                 {
                     while (reader.Read())
                     {
-                        var dto = new LibraryTagDataObject();
+                        LibraryTagDataObject dto = new LibraryTagDataObject();
                         dto.Text = reader["Tag"] as string;
                         dto.Id = (long)reader["TagId"];
                         dto.Frequency = (long)reader["Frequency"];
@@ -977,7 +1042,7 @@ namespace Chem4Word.Libraries.Database
 
         private string CmlFromBytes(byte[] byteArray)
         {
-            var data = Encoding.UTF8.GetString(byteArray);
+            string data = Encoding.UTF8.GetString(byteArray);
 
             if (data.StartsWith("<"))
             {
@@ -1006,12 +1071,12 @@ namespace Chem4Word.Libraries.Database
         {
             long result = -1;
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT Id");
             sb.AppendLine("FROM Tags");
             sb.AppendLine("WHERE Tag = @tag");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
             command.Parameters.Add("@tag", DbType.String, tag.Length).Value = tag;
 
             using (SQLiteDataReader reader = command.ExecuteReader())
@@ -1030,18 +1095,18 @@ namespace Chem4Word.Libraries.Database
 
         private long AddTag(SQLiteConnection conn, string tag)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("INSERT INTO Tags");
             sb.AppendLine(" (Tag)");
             sb.AppendLine("VALUES");
             sb.AppendLine(" (@tag)");
 
-            var command = new SQLiteCommand(sb.ToString(), conn);
+            SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
             command.Parameters.Add("@tag", DbType.String, tag.Length).Value = tag;
             command.ExecuteNonQuery();
 
             string sql = "SELECT last_insert_rowid()";
-            var cmd = new SQLiteCommand(sql, conn);
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
 
             return (Int64)cmd.ExecuteScalar();
         }
@@ -1051,13 +1116,13 @@ namespace Chem4Word.Libraries.Database
             string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
             try
             {
-                var sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 sb.AppendLine("INSERT INTO TaggedChemistry");
                 sb.AppendLine(" (ChemistryId, TagId, Sequence)");
                 sb.AppendLine("VALUES");
                 sb.AppendLine(" (@id, @tagId, @sequence)");
 
-                var command = new SQLiteCommand(sb.ToString(), conn);
+                SQLiteCommand command = new SQLiteCommand(sb.ToString(), conn);
 
                 using (SQLiteTransaction tr = conn.BeginTransaction())
                 {
@@ -1066,7 +1131,7 @@ namespace Chem4Word.Libraries.Database
                     int sequence = 0;
                     foreach (string tag in tags)
                     {
-                        var tagId = GetTag(conn, tag);
+                        long tagId = GetTag(conn, tag);
                         if (tagId == -1)
                         {
                             tagId = AddTag(conn, tag);
@@ -1086,7 +1151,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                using (var form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
+                using (ReportError form = new ReportError(_telemetry, _options.ParentTopLeft, module, ex))
                 {
                     form.ShowDialog();
                 }

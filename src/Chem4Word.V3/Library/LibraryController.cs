@@ -52,20 +52,23 @@ namespace Chem4Word.Library
                 _initializing = true;
                 ChemistryItems.Clear();
 
-                var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
-                List<ChemistryDataObject> dto = lib.GetAllChemistry();
-
-                foreach (var chemistryDto in dto)
+                if (Globals.Chem4WordV3.LibraryIsValid)
                 {
-                    var obj = new ChemistryObject
-                    {
-                        Id = chemistryDto.Id,
-                        Cml = chemistryDto.Cml,
-                        Formula = chemistryDto.Formula,
-                        Name = chemistryDto.Name
-                    };
+                    var lib = new Libraries.Database.Library(_telemetry, _libraryOptions);
+                    List<ChemistryDataObject> dto = lib.GetAllChemistry();
 
-                    ChemistryItems.Add(obj);
+                    foreach (var chemistryDto in dto)
+                    {
+                        var obj = new ChemistryObject
+                                  {
+                                      Id = chemistryDto.Id,
+                                      Cml = chemistryDto.Cml,
+                                      Formula = chemistryDto.Formula,
+                                      Name = chemistryDto.Name
+                                  };
+
+                        ChemistryItems.Add(obj);
+                    }
                 }
 
                 _initializing = false;

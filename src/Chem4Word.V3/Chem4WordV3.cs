@@ -76,6 +76,7 @@ namespace Chem4Word
         private ConfigWatcher _configWatcher;
 
         public bool LibraryState;
+        public bool LibraryIsValid;
 
         private Thread _slowOperationsThread;
         public List<string> StartUpTimings = new List<string>();
@@ -346,18 +347,18 @@ namespace Chem4Word
 
             try
             {
+                Helper = new SystemHelper(StartUpTimings);
+                AddInInfo = new C4wAddInInfo();
+
+                LoadOptions();
+                SetButtonStates(ButtonState.NoDocument);
+
+                CheckLibraryState(LibraryOptions);
+
                 _timer = new System.Timers.Timer(1000);
                 _timer.Elapsed += OnTimerElapsed;
                 _timer.AutoReset = true;
                 _timer.Enabled = true;
-
-                Helper = new SystemHelper(StartUpTimings);
-
-                SetButtonStates(ButtonState.NoDocument);
-
-                LoadOptions();
-
-                AddInInfo = new C4wAddInInfo();
 
                 UpdateHelper.ReadSavedValues();
                 UpdateHelper.ReadThisVersion(Assembly.GetExecutingAssembly());
@@ -526,6 +527,23 @@ namespace Chem4Word
             }
         }
 
+        public void CheckLibraryState(LibraryOptions options)
+        {
+            LibraryIsValid = Libraries.Database.Library.SetSqlitePath(Telemetry);
+
+            if (LibraryIsValid)
+            {
+                bool result = Libraries.Database.Library.CanOpenLibrary(Telemetry, options);
+
+                if (!result)
+                {
+                    result = Libraries.Database.Library.CreateSeedDatabase(Telemetry, options);
+                }
+
+                LibraryIsValid = result;
+            }
+        }
+
         public void LoadNamesFromLibrary()
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
@@ -538,8 +556,11 @@ namespace Chem4Word
 
                 if (LibraryOptions != null)
                 {
-                    var lib = new Libraries.Database.Library(Telemetry, LibraryOptions);
-                    LibraryNames = lib.GetLibraryNames();
+                    if (LibraryIsValid)
+                    {
+                        var lib = new Libraries.Database.Library(Telemetry, LibraryOptions);
+                        LibraryNames = lib.GetLibraryNames();
+                    }
                 }
                 else
                 {
@@ -1244,9 +1265,9 @@ namespace Chem4Word
                             Ribbon.ExportToFile.Enabled = true;
                             Ribbon.ShowAsMenu.Enabled = true;
                             Ribbon.ShowNavigator.Enabled = true;
-                            Ribbon.ShowLibrary.Enabled = true;
+                            Ribbon.ShowLibrary.Enabled = LibraryIsValid;
                             Ribbon.WebSearchMenu.Enabled = false;
-                            Ribbon.SaveToLibrary.Enabled = true;
+                            Ribbon.SaveToLibrary.Enabled = LibraryIsValid;
                             Ribbon.ArrangeMolecules.Enabled = true;
                             Ribbon.ButtonsDisabled.Enabled = false;
                             break;
@@ -1260,7 +1281,7 @@ namespace Chem4Word
                             Ribbon.ExportToFile.Enabled = false;
                             Ribbon.ShowAsMenu.Enabled = false;
                             Ribbon.ShowNavigator.Enabled = true;
-                            Ribbon.ShowLibrary.Enabled = true;
+                            Ribbon.ShowLibrary.Enabled = LibraryIsValid;
                             Ribbon.WebSearchMenu.Enabled = plugInsLoaded && Searchers.Count > 0;
                             Ribbon.SaveToLibrary.Enabled = false;
                             Ribbon.ArrangeMolecules.Enabled = false;

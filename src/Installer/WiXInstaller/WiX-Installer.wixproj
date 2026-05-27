@@ -1,10 +1,10 @@
 <Project Sdk="WixToolset.Sdk/7.0.0">
   <PropertyGroup>
     <AcceptEula>wix7</AcceptEula>
+    <EnableFramework45>true</EnableFramework45>
     <OutputName>Chem4Word-Setup.3.2.26.Release.22</OutputName>
     <Name>WiX-Installer</Name>
     <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
-    <EnableFramework45>true</EnableFramework45>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Util.wixext" Version="7.0.0" />
@@ -16,6 +16,8 @@
     <Content Include="EULA.rtf" />
     <Content Include="Test.cmd" />
     <Content Include="Testing\Insert Test Messages.reg" />
+    <Content Include="WixUIBanner.bmp" />
+    <Content Include="WixUIDialog.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Chem4Word.V3\Chem4Word.V3.csproj">

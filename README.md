@@ -52,14 +52,14 @@ Azure Devops Build must be set to use VS2022 build agent
 |Newtonsoft.Json|13.0.4|MIT|15|
 |NuGet.Frameworks|7.3.1|Apache 2.0|1|
 |Ookii.Dialogs.WinForms|4.0.0|Public Domain|1|
-|Stub.System.Data.SQLite.Core.NetFramework|1.0.117.0|Public Domain|2|
+|Stub.System.Data.SQLite.Core.NetFramework|1.0.119.0|Public Domain|2|
 |System.Buffers|4.6.1|MIT|4|
 |System.ClientModel|1.10.0|MIT|2|
 |System.Collections.Immutable|10.0.7|MIT|3|
-|System.Data.SQLite.Core|1.0.117.0|Public Domain|2|
-|System.Data.SQLite.EF6|1.0.117.0|Public Domain|2|
-|System.Data.SQLite.Linq|1.0.117.0|Public Domain|2|
-|System.Data.SQLite|1.0.117.0|Public Domain|2|
+|System.Data.SQLite.Core|1.0.119.0|Public Domain|2|
+|System.Data.SQLite.EF6|1.0.119.0|Public Domain|2|
+|System.Data.SQLite.Linq|1.0.119.0|Public Domain|2|
+|System.Data.SQLite|1.0.119.0|Public Domain|2|
 |System.Diagnostics.DiagnosticSource|10.0.7|Public Domain|2|
 |System.Formats.Asn1|10.0.5|MIT|2|
 |System.Formats.Nrbf|10.0.5|MIT|1|

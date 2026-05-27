@@ -26,9 +26,11 @@ namespace Chem4Word.Telemetry
     public class SystemHelper
     {
         private static string CryptoRoot = @"SOFTWARE\Microsoft\Cryptography";
+        private static string SqmRoot = @"SOFTWARE\Microsoft\SQMClient";
         private string DotNetVersionKey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
 
         public string MachineId { get; set; }
+        public string DeviceId { get; set; }
 
         public int ProcessId { get; set; }
 
@@ -127,13 +129,14 @@ namespace Chem4Word.Telemetry
 
                 WordVersion = -1;
 
-                #region Get Machine Guid
+                #region Get MachineId and DeviceId
 
                 MachineId = GetMachineId();
+                DeviceId = GetDeviceId();
 
                 ProcessId = Process.GetCurrentProcess().Id;
 
-                #endregion Get Machine Guid
+                #endregion Get MachineId and DeviceId
 
                 #region Get OS Version
 
@@ -347,12 +350,36 @@ namespace Chem4Word.Telemetry
             }
         }
 
+        public static string GetDeviceId()
+        {
+            string result = "";
+            try
+            {
+                // Need special routine here as MachineGuid does not exist in the wow6432 path
+                // MachineId REG_SZ "{89E8086F-BD16-45BA-93DA-E1774A658BED}"
+                string temp = RegistryWOW6432.GetRegKey64(RegHive.HKEY_LOCAL_MACHINE, SqmRoot, "MachineId");
+                if (!string.IsNullOrEmpty(temp))
+                {
+                    temp = temp.Replace("{", "").Replace("}", "");
+                    result = temp.ToLower();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                result = "Exception " + ex.Message;
+            }
+
+            return result;
+        }
+
         public static string GetMachineId()
         {
             string result = "";
             try
             {
                 // Need special routine here as MachineGuid does not exist in the wow6432 path
+                // MachineGuid REG_SZ "455a2ce0-56a5-4ed6-8bbc-4b6f8b2fe140"
                 result = RegistryWOW6432.GetRegKey64(RegHive.HKEY_LOCAL_MACHINE, CryptoRoot, "MachineGuid");
             }
             catch (Exception ex)

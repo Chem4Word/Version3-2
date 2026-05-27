@@ -347,7 +347,14 @@ namespace Chem4Word.Telemetry
                 WritePrivate("StartUp", "Information", $"{_wmiHelper.OSCaption} {bits} [{_wmiHelper.OSVersion}] {culture}");
             }
 
-            WritePrivate("StartUp", "Information", $"UUID: {_wmiHelper.Uuid}");
+            if (string.IsNullOrEmpty(_helper.DeviceId))
+            {
+                WritePrivate("StartUp", "Information", $"UUID: {_wmiHelper.Uuid}");
+            }
+            else
+            {
+                WritePrivate("StartUp", "Information", $"IDS: {_wmiHelper.Uuid}|{_helper.DeviceId}");
+            }
 #if DEBUG
             WritePrivate("StartUp", "Information", $"User: {_helper.UserName}");
 #endif

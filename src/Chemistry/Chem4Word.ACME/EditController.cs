@@ -2301,7 +2301,7 @@ namespace Chem4Word.ACME
             }
         }
 
-        private string ListPlacements(List<NewAtomPlacement> newAtomPlacements)
+        private string ListRingPlacements(List<NewAtomPlacement> newAtomPlacements)
         {
             var lines = new List<string>();
 
@@ -2342,73 +2342,75 @@ namespace Chem4Word.ACME
             {
                 var count = newAtomPlacements == null ? "{null}" : $"{newAtomPlacements.Count}";
                 WriteTelemetry(module, "Debug", $"Atoms: {count}; Unsaturated: {unsaturated}; StartAt: {startAt}");
-                WriteTelemetry(module, "Debug", ListPlacements(newAtomPlacements));
-
-                UndoManager.BeginUndoBlock();
-
-                //work around the ring adding atoms
-                for (int i = 1; i <= newAtomPlacements.Count; i++)
+                if (VerifyRingPlacements(newAtomPlacements))
                 {
-                    int currIndex = i % newAtomPlacements.Count;
-                    NewAtomPlacement currentPlacement = newAtomPlacements[currIndex];
-                    NewAtomPlacement previousPlacement = newAtomPlacements[i - 1];
+                    UndoManager.BeginUndoBlock();
 
-                    Atom previousAtom = previousPlacement.ExistingAtom;
-                    Atom currentAtom = currentPlacement.ExistingAtom;
-
-                    if (currentAtom == null)
+                    //work around the ring adding atoms
+                    for (int i = 1; i <= newAtomPlacements.Count; i++)
                     {
-                        Atom insertedAtom = AddAtomChain(previousAtom, currentPlacement.Position, ClockDirections.Nothing, Globals.PeriodicTable.C,
-                                                  OrderSingle, BondStereo.None);
-                        if (insertedAtom == null)
+                        int currIndex = i % newAtomPlacements.Count;
+                        NewAtomPlacement currentPlacement = newAtomPlacements[currIndex];
+                        NewAtomPlacement previousPlacement = newAtomPlacements[i - 1];
+
+                        Atom previousAtom = previousPlacement.ExistingAtom;
+                        Atom currentAtom = currentPlacement.ExistingAtom;
+
+                        if (currentAtom == null)
                         {
-                            WriteTelemetry(module, "Warning", "Inserted Atom is null");
-                            WriteTelemetry(module, "StackTrace", Environment.StackTrace);
-                            Debugger.Break();
+                            Atom insertedAtom = AddAtomChain(previousAtom, currentPlacement.Position, ClockDirections.Nothing, Globals.PeriodicTable.C,
+                                                      OrderSingle, BondStereo.None);
+                            if (insertedAtom == null)
+                            {
+                                WriteTelemetry(module, "Warning", "Inserted Atom is null");
+                                WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                                Debugger.Break();
+                            }
+
+                            currentPlacement.ExistingAtom = insertedAtom;
                         }
-
-                        currentPlacement.ExistingAtom = insertedAtom;
+                        else if (previousAtom != null && previousAtom.BondBetween(currentAtom) == null)
+                        {
+                            AddNewBond(previousAtom, currentAtom, previousAtom.Parent, OrderSingle, BondStereo.None);
+                        }
                     }
-                    else if (previousAtom != null && previousAtom.BondBetween(currentAtom) == null)
+
+                    //join up the ring if there is no last bond
+                    Atom firstAtom = newAtomPlacements[0].ExistingAtom;
+                    Atom nextAtom = newAtomPlacements[1].ExistingAtom;
+                    if (firstAtom.BondBetween(nextAtom) == null)
                     {
-                        AddNewBond(previousAtom, currentAtom, previousAtom.Parent, OrderSingle, BondStereo.None);
+                        AddNewBond(firstAtom, nextAtom, firstAtom.Parent, OrderSingle, BondStereo.None);
+                    }
+                    //set the alternating single and double bonds if unsaturated
+                    if (unsaturated)
+                    {
+                        MakeRingUnsaturated(newAtomPlacements);
+                    }
+
+                    firstAtom.Parent.RebuildRings();
+                    Action undo = () =>
+                    {
+                        firstAtom.Parent.Refresh();
+                        firstAtom.Parent.UpdateVisual();
+                        ClearSelection();
+                    };
+                    Action redo = () =>
+                    {
+                        firstAtom.Parent.Refresh();
+                        firstAtom.Parent.UpdateVisual();
+                    };
+
+                    UndoManager.RecordAction(undo, redo);
+                    UndoManager.EndUndoBlock();
+
+                    //just refresh the atoms to be on the safe side
+                    foreach (var atomPlacement in newAtomPlacements)
+                    {
+                        atomPlacement.ExistingAtom.UpdateVisual();
                     }
                 }
 
-                //join up the ring if there is no last bond
-                Atom firstAtom = newAtomPlacements[0].ExistingAtom;
-                Atom nextAtom = newAtomPlacements[1].ExistingAtom;
-                if (firstAtom.BondBetween(nextAtom) == null)
-                {
-                    AddNewBond(firstAtom, nextAtom, firstAtom.Parent, OrderSingle, BondStereo.None);
-                }
-                //set the alternating single and double bonds if unsaturated
-                if (unsaturated)
-                {
-                    MakeRingUnsaturated(newAtomPlacements);
-                }
-
-                firstAtom.Parent.RebuildRings();
-                Action undo = () =>
-                {
-                    firstAtom.Parent.Refresh();
-                    firstAtom.Parent.UpdateVisual();
-                    ClearSelection();
-                };
-                Action redo = () =>
-                {
-                    firstAtom.Parent.Refresh();
-                    firstAtom.Parent.UpdateVisual();
-                };
-
-                UndoManager.RecordAction(undo, redo);
-                UndoManager.EndUndoBlock();
-
-                //just refresh the atoms to be on the safe side
-                foreach (var atomPlacement in newAtomPlacements)
-                {
-                    atomPlacement.ExistingAtom.UpdateVisual();
-                }
 
                 //local function
                 void MakeRingUnsaturated(List<NewAtomPlacement> list)
@@ -2447,7 +2449,7 @@ namespace Chem4Word.ACME
             CheckModelIntegrity(module);
         }
 
-        private string ListPoints(List<Point> placements)
+        private string ListChainPoints(List<Point> placements)
         {
             var lines = new List<string>();
 
@@ -2473,7 +2475,7 @@ namespace Chem4Word.ACME
                 var atomInfo = startAtom == null ? "{null}" : $"{startAtom.SymbolText} @ {PointHelper.AsString(startAtom.Position)}";
                 var count = placements == null ? "{null}" : $"{placements.Count}";
                 WriteTelemetry(module, "Debug", $"Atoms: {count}; StartAtom: {atomInfo}");
-                WriteTelemetry(module, "Debug", ListPoints(placements));
+                WriteTelemetry(module, "Debug", ListChainPoints(placements));
 
                 UndoManager.BeginUndoBlock();
                 Atom lastAtom = startAtom;
@@ -5387,6 +5389,34 @@ namespace Chem4Word.ACME
             {
                 WriteTelemetryException(module, exception);
             }
+        }
+
+        public bool VerifyRingPlacements(List<NewAtomPlacement> placements)
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+
+            WriteTelemetry(module, "Debug", ListRingPlacements(placements));
+
+            bool result = true;
+
+            if (placements[0].ExistingAtom != null)
+            {
+                Guid start = placements[0].ExistingAtom.Parent.InternalId;
+
+                for (int i = 1; i < placements.Count; i++)
+                {
+                    NewAtomPlacement placement = placements[i];
+
+                    if (placement.ExistingAtom != null && placement.ExistingAtom.Parent.InternalId != start)
+                    {
+                        WriteTelemetry(module, "Warning", "Can't create new ring because at least one new atom would have a different parent molecule!");
+                        result = false;
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
 
         #endregion Methods

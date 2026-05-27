@@ -17,8 +17,46 @@ public static XNamespace conventions = "http://www.xml-cml.org/convention/";
 public static XNamespace c4w = "http://www.chem4word.com/cml";
 
 ```
+
+### Custom attributes and elements
+Root of Cml
+
+<c4w:customXmlPartGuid>
+  This stores the unique identifier of the structure
+
+<c4w:showColouredAtoms>
+<c4w:showMoleculeGrouping>
+<c4w:explicitC> - Can also apply to sub molecules or atoms
+<c4w:explicitH> - Can also apply to sub molecules or atoms
+  These are the top level rendering options
+
+<c4w:annotation>
+  This is for textual annotations
+
+### Atom attributes
+c4w:explicit
+  This is legacy attribute and is replaced with c4w:explicitC
+c4w:hydrogenPlacement
+c4W:groupPlacement
+
+### Bond Attributes
+c4w:placement
+
+### Molecule Attributes
+c4w:showBrackets
+
+## Reaction Elements
+See below for detailed explanation of reaction specific tags and attributes at root level
+<c4w:reagents>
+<c4w:conditions>
+c4w:textRef
+<c4w:molRef>
+c4w:head
+c4w:tail
+
 ### Usage
 We will default where possible to established namespaces to handle reaction specific elements. As XML tags can be arbitrarily nested regardless of namespace, it makes sense to use existing standards where possible:
+
 ## Reaction Elements
 We will use the existing CML-React vocabulary to describe reactions. This is standard within the CML namespace:
 ```xml

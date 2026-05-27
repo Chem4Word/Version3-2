@@ -1533,21 +1533,24 @@ namespace Chem4Word
                                 model = new CMLConverter().Import(cml);
                                 if (model.TotalAtomsCount > 0)
                                 {
-                                    if (Globals.Chem4WordV3.LibraryNames == null)
+                                    if (Globals.Chem4WordV3.LibraryIsValid)
                                     {
+                                        if (Globals.Chem4WordV3.LibraryNames == null)
+                                        {
+                                            Globals.Chem4WordV3.LoadNamesFromLibrary();
+                                        }
+
+                                        var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
+                                        var transaction = lib.StartTransaction();
+                                        var done = lib.ImportCml(cml, transaction);
+                                        lib.EndTransaction(transaction, !done);
+
+                                        // Re- Read the Library Names
                                         Globals.Chem4WordV3.LoadNamesFromLibrary();
+
+                                        UserInteractions.InformUser($"Structure '{model.ConciseFormula}' added into Library");
+                                        Globals.Chem4WordV3.Telemetry?.Write(module, "Information", $"Structure '{model.ConciseFormula}' added into Library");
                                     }
-
-                                    var lib = new Libraries.Database.Library(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.LibraryOptions);
-                                    var transaction = lib.StartTransaction();
-                                    var done = lib.ImportCml(cml, transaction);
-                                    lib.EndTransaction(transaction, !done);
-
-                                    // Re- Read the Library Names
-                                    Globals.Chem4WordV3.LoadNamesFromLibrary();
-
-                                    UserInteractions.InformUser($"Structure '{model.ConciseFormula}' added into Library");
-                                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Structure '{model.ConciseFormula}' added into Library");
                                 }
                                 else
                                 {
@@ -1705,70 +1708,73 @@ namespace Chem4Word
                 RegistryHelper.StoreMessage(module, "Triggered");
             }
 
-            if (Globals.Chem4WordV3.LibraryNames == null)
+            if (Globals.Chem4WordV3.LibraryIsValid)
             {
-                Globals.Chem4WordV3.LoadNamesFromLibrary();
-            }
-            try
-            {
-                // See https://msdn.microsoft.com/en-us/library/bb608590.aspx
-                var app = Globals.Chem4WordV3.Application;
-                using (new WaitCursor())
+                if (Globals.Chem4WordV3.LibraryNames == null)
                 {
-                    if (Globals.Chem4WordV3.EventsEnabled)
+                    Globals.Chem4WordV3.LoadNamesFromLibrary();
+                }
+                try
+                {
+                    // See https://msdn.microsoft.com/en-us/library/bb608590.aspx
+                    var app = Globals.Chem4WordV3.Application;
+                    using (new WaitCursor())
                     {
-                        if (app.Documents.Count > 0)
+                        if (Globals.Chem4WordV3.EventsEnabled)
                         {
-                            CustomTaskPane custTaskPane = null;
-                            foreach (var taskPane in Globals.Chem4WordV3.CustomTaskPanes)
+                            if (app.Documents.Count > 0)
                             {
-                                if (app.ActiveWindow == taskPane.Window && taskPane.Title == Constants.LibraryTaskPaneTitle)
+                                CustomTaskPane custTaskPane = null;
+                                foreach (var taskPane in Globals.Chem4WordV3.CustomTaskPanes)
                                 {
-                                    custTaskPane = taskPane;
+                                    if (app.ActiveWindow == taskPane.Window && taskPane.Title == Constants.LibraryTaskPaneTitle)
+                                    {
+                                        custTaskPane = taskPane;
+                                    }
                                 }
-                            }
 
-                            Globals.Chem4WordV3.LibraryState = ShowLibrary.Checked;
-                            ShowLibrary.Label = ShowLibrary.Checked ? "Close" : "Open";
+                                Globals.Chem4WordV3.LibraryState = ShowLibrary.Checked;
+                                ShowLibrary.Label = ShowLibrary.Checked ? "Close" : "Open";
 
-                            if (ShowLibrary.Checked)
-                            {
-                                if (custTaskPane == null)
+                                if (ShowLibrary.Checked)
                                 {
-                                    custTaskPane =
-                                        Globals.Chem4WordV3.CustomTaskPanes.Add(new LibraryHost(),
-                                            Constants.LibraryTaskPaneTitle, app.ActiveWindow);
+                                    if (custTaskPane == null)
+                                    {
+                                        custTaskPane =
+                                            Globals.Chem4WordV3.CustomTaskPanes.Add(new LibraryHost(),
+                                                Constants.LibraryTaskPaneTitle, app.ActiveWindow);
 
-                                    // Opposite side to Navigator's default placement
-                                    custTaskPane.DockPosition = MsoCTPDockPosition.msoCTPDockPositionLeft;
+                                        // Opposite side to Navigator's default placement
+                                        custTaskPane.DockPosition = MsoCTPDockPosition.msoCTPDockPositionLeft;
 
-                                    custTaskPane.Width = Globals.Chem4WordV3.WordWidth / 4;
-                                    custTaskPane.VisibleChanged += OnVisibleChanged_LibraryPane;
-                                    (custTaskPane.Control as LibraryHost)?.Refresh();
+                                        custTaskPane.Width = Globals.Chem4WordV3.WordWidth / 4;
+                                        custTaskPane.VisibleChanged += OnVisibleChanged_LibraryPane;
+                                        (custTaskPane.Control as LibraryHost)?.Refresh();
+                                    }
+                                    custTaskPane.Visible = true;
+                                    Globals.Chem4WordV3.EvaluateChemistryAllowed();
                                 }
-                                custTaskPane.Visible = true;
-                                Globals.Chem4WordV3.EvaluateChemistryAllowed();
+                                else
+                                {
+                                    if (custTaskPane != null)
+                                    {
+                                        custTaskPane.Visible = false;
+                                    }
+                                }
                             }
                             else
                             {
-                                if (custTaskPane != null)
-                                {
-                                    custTaskPane.Visible = false;
-                                }
+                                ShowLibrary.Checked = false;
                             }
-                        }
-                        else
-                        {
-                            ShowLibrary.Checked = false;
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
+                catch (Exception ex)
                 {
-                    form.ShowDialog();
+                    using (var form = new ReportError(Globals.Chem4WordV3.Telemetry, Globals.Chem4WordV3.WordTopLeft, module, ex))
+                    {
+                        form.ShowDialog();
+                    }
                 }
             }
 

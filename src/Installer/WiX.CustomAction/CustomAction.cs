@@ -113,7 +113,7 @@ namespace WiX.CustomAction.V7
                     key = key = Registry.CurrentUser.CreateSubKey(actionsKey);
                 }
 
-                var versionNumber = "3.2.26.9617";
+                var versionNumber = "3.2.26.9643";
 
                 var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
                 key.SetValue(timestamp, $"[-] V{versionNumber} - Installed");

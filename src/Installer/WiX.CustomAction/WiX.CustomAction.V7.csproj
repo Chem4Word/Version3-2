@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AcceptEula>wix7</AcceptEula>
-    </PropertyGroup>
-
-    <PropertyGroup>
+    <AcceptEula>wix7</AcceptEula>
     <TargetFramework>net452</TargetFramework>
     <Configurations>Debug;Release;Setup;Vso-Ci</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\Shared\OfficeHelper.cs" Link="OfficeHelper.cs" />
     <Compile Include="..\..\Shared\RegistryWOW6432.cs" Link="RegistryWOW6432.cs" />
