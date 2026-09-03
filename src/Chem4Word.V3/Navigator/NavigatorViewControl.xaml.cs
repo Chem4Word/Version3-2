@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ using Chem4Word.ACME;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.Core.UI.Wpf;
 using Chem4Word.Helpers;
+using IChem4Word.Contracts;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Linq;
@@ -51,14 +52,14 @@ namespace Chem4Word.Navigator
 
         private void OnItemButtonClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
                 if (Globals.Chem4WordV3.EventsEnabled
                     && e.OriginalSource is WpfEventArgs source)
                 {
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Action", $"Source: {source.Button} Data: {source.OutputValue}");
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, $"Source: {source.Button} Data: {source.OutputValue}");
 
                     var parts = source.OutputValue.Split('=');
                     var item = parts[1];
@@ -211,7 +212,7 @@ namespace Chem4Word.Navigator
 
         private void HandleScrollSpeed(object sender, MouseWheelEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -237,8 +238,8 @@ namespace Chem4Word.Navigator
             }
             catch (Exception ex)
             {
-                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.Message);
-                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.StackTrace);
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.Message);
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.StackTrace);
             }
         }
     }

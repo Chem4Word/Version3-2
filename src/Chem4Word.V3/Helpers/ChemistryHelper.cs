@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
 using Chem4Word.Model2.Enums;
 using Chem4Word.Model2.Helpers;
+using IChem4Word.Contracts;
 using Microsoft.Office.Core;
 using System;
 using System.Collections.Generic;
@@ -84,7 +85,7 @@ namespace Chem4Word.Helpers
                         cc = document.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, ref _missing);
                         Insert2D(document, cc.ID, tempfileName, guid);
 
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl inserted at position {cc.Range.Start}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"ContentControl inserted at position {cc.Range.Start}");
 
                         if (isCopy)
                         {
@@ -138,7 +139,7 @@ namespace Chem4Word.Helpers
 
             SetRichText(document, cc.ID, text, isFormula);
 
-            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl inserted at position {cc.Range.Start}");
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"ContentControl inserted at position {cc.Range.Start}");
 
             wordSettings.RestoreSettings(app);
 
@@ -231,7 +232,7 @@ namespace Chem4Word.Helpers
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Inserting 2D structure in ContentControl {ccId} Tag {guid}");
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"Inserting 2D structure in ContentControl {ccId} Tag {guid}");
 
             var application = Globals.Chem4WordV3.Application;
 
@@ -258,7 +259,7 @@ namespace Chem4Word.Helpers
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Updating 2D structure in ContentControl {ccId} Tag {guid}");
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"Updating 2D structure in ContentControl {ccId} Tag {guid}");
 
             var cc = GetContentControl(document, ccId);
             if (cc != null)
@@ -294,11 +295,11 @@ namespace Chem4Word.Helpers
                 cc.Tag = guid;
                 cc.Title = Constants.ContentControlTitle;
                 cc.LockContents = true;
-                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl updated at position {cc.Range.Start}");
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"ContentControl updated at position {cc.Range.Start}");
             }
             else
             {
-                Globals.Chem4WordV3.Telemetry.Write(module, "Warning", $"Unable to find ContentControl with Id of {ccId}");
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Warning, $"Unable to find ContentControl with Id of {ccId}");
             }
         }
 
@@ -306,7 +307,7 @@ namespace Chem4Word.Helpers
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Inserting 1D label in ContentControl {ccId} Tag {tag}");
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"Inserting 1D label in ContentControl {ccId} Tag {tag}");
 
             var cc = GetContentControl(document, ccId);
             if (cc != null)
@@ -316,7 +317,7 @@ namespace Chem4Word.Helpers
 
                 SetRichText(document, cc.ID, text, isFormula);
 
-                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl updated at position {cc.Range.Start}");
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"ContentControl updated at position {cc.Range.Start}");
 
                 wordSettings.RestoreSettings(app);
 
@@ -330,7 +331,7 @@ namespace Chem4Word.Helpers
         {
             var module = $"{Product}.{Class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Updating 1D label in ContentControl {ccId} Tag {tag}");
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"Updating 1D label in ContentControl {ccId} Tag {tag}");
 
             var cc = GetContentControl(document, ccId);
             if (cc != null)
@@ -343,7 +344,7 @@ namespace Chem4Word.Helpers
 
                 SetRichText(document, cc.ID, text, isFormula);
 
-                Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"ContentControl updated at position {cc.Range.Start}");
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"ContentControl updated at position {cc.Range.Start}");
 
                 wordSettings.RestoreSettings(app);
 

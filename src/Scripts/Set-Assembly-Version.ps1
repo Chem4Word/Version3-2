@@ -19,7 +19,7 @@ function Help {
 	"Sets the AssemblyVersion and AssemblyFileVersion of AssemblyInfo.cs files`n"
 	".\SetAssemblyVersion.ps1 [VersionNumber] -path [SearchPath] -released [Released] -name [Name]`n"
 	"   [VersionNumber]     The version number to set, for example: 1.2.3"
-	"   [Released]          The release date, for example: 01-Jan-2025"
+	"   [Released]          The release date, for example: 01-Jan-2026"
 	"   [Name]              The name, for example: Beta 2"
 	"   [SearchPath]        The path to search for AssemblyInfo files.`n"
 }
@@ -27,8 +27,6 @@ function Help {
 function Update-SourceVersion
 {
 	Param ([string]$Version)
-	#$NewVersion = 'AssemblyVersion("' + $Version + '")';
-	#$NewFileVersion = 'AssemblyFileVersion("' + $Version + '")';
 
 	foreach ($o in $input) 
 	{
@@ -59,10 +57,10 @@ function Update-SourceVersion
 
 function Update-AllAssemblyInfoFiles ($version)
 {
-   #Write-Host "Searching '$path'"
-   foreach ($file in "AssemblyInfo.cs", "AssemblyInfo.vb" ) 
+   foreach ($file in "AssemblyInfo.cs" ) 
    {
-		get-childitem $path -recurse |? {$_.Name -eq $file} | Update-SourceVersion $version ;
+       Get-ChildItem $path -recurse |? {$_.Name -eq $file} | Update-SourceVersion $version;
+       Get-ChildItem "..\..\..\Secure-Libraries\V3.3\Chem4Word.Driver.Closed" -recurse |? {$_.Name -eq $file} | Update-SourceVersion $version;
    }
 }
 
@@ -127,7 +125,7 @@ CD "$($pwd)"
 # ---------------------------------------------------------- #
 
 # Update Assembly Info files
-Write-Host "Searching for files in $($pwd)\$($path)" -ForegroundColor Green
+Write-Host "Searching for files ..." -ForegroundColor Green
 Update-AllAssemblyInfoFiles "$($version).$($delta.Days)"
 
 $number = "$($version) $($name)"
@@ -152,9 +150,12 @@ Write-Host " Updating 'Product.wxs'" -ForegroundColor Yellow
 $wixFile = "$($pwd)\..\Installer\WiXInstaller\Product.wxs"
 Write-Host "$($wixFile)" -ForegroundColor Green
 
-$xml = [xml](Get-Content $wixFile)
+$xml = New-Object System.Xml.XmlDocument
+$xml.PreserveWhitespace = $true
+$xml.Load($wixFile)
+
 $xml.Wix.Package.Version = "$($version).$($delta.Days)"
-$xml.Wix.Package.Name = "Chemistry Add-In for Microsoft Word 2022 $($name)"
+$xml.Wix.Package.Name = "Chemistry Add-In for Microsoft Word 2026 $($name)"
 $xml.Save($wixFile)
 
 # ---------------------------------------------------------- #
@@ -164,7 +165,10 @@ Write-Host " Updating 'Wix-Installer.wixproj'" -ForegroundColor Yellow
 $wixProj = "$($pwd)\..\Installer\WiXInstaller\Wix-Installer.wixproj"
 Write-Host "$($wixProj)" -ForegroundColor Green
 
-$xml = [xml](Get-Content $wixProj)
+$xml = New-Object System.Xml.XmlDocument
+$xml.PreserveWhitespace = $true
+$xml.Load( $wixProj)
+
 $dottedname = $name.Replace(" ", ".")
 $xml.Project.PropertyGroup.OutputName = "Chem4Word-Setup.$($version).$($dottedname)"
 $xml.Save($wixProj)
@@ -209,6 +213,30 @@ $replaceWith = 'string DefaultMsiFile = "https://www.chem4word.co.uk/files3-2/Ch
 (Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
 
 # ---------------------------------------------------------- #
+
+# Update app.manifests
+Write-Host " Updating 'app.manifest' files" -ForegroundColor Yellow
+
+$files = Get-ChildItem -Path "$($pwd)\.." -Filter "app.manifest" -Recurse
+
+$findPattern = 'assemblyIdentity version=".*"'
+
+foreach ($file in $files) {
+    Write-Host "$($file.FullName)" -ForegroundColor Green
+
+    if ($file.FullName -match 'Setup') {
+        $type = 'Setup'
+    }
+    elseif ($file.FullName -match 'Update') {
+        $type = 'Updater'
+    }
+
+    $replaceWith = 'assemblyIdentity version="' + "$($version).$($delta.Days)" + '" name="Chem4Word ' + "$($type)" + '"'
+
+    (Get-Content $file.Fullname) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file.FullName
+}
+
+# ---------------------------------------------------------- #
  
 # Update TelemetryWriter.cs
 Write-Host " Updating 'TelemetryWriter.cs'" -ForegroundColor Yellow
@@ -216,8 +244,8 @@ Write-Host " Updating 'TelemetryWriter.cs'" -ForegroundColor Yellow
 $file = "$($pwd)\..\Common\Chem4Word.Telemetry\TelemetryWriter.cs"
 Write-Host "$($file)" -ForegroundColor Green
 
-$findPattern = 'var versionNumber = .*'
-$replaceWith = 'var versionNumber = "' + "$($version)" + '.666";';
+$findPattern = 'string versionNumber = .*'
+$replaceWith = 'string versionNumber = "' + "$($version)" + '.666";'
 
 (Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
 
@@ -229,8 +257,8 @@ Write-Host " Updating 'CustomAction.cs'" -ForegroundColor Yellow
 $file = "$($pwd)\..\Installer\WiX.CustomAction\CustomAction.cs"
 Write-Host "$($file)" -ForegroundColor Green
 
-$findPattern = 'var versionNumber = .*'
-$replaceWith = 'var versionNumber = "' + "$($version)" + "." + "$($delta.Days)"  + '";';
+$findPattern = 'string versionNumber = .*'
+$replaceWith = 'string versionNumber = "' + "$($version)" + "." + "$($delta.Days)"  + '";';
 
 (Get-Content $file) | ForEach-Object { $_ -replace $findPattern, $replaceWith } | Set-Content $file
 

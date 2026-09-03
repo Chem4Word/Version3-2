@@ -1,0 +1,19 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <!-- SQLite x86 -->
+    <Fragment>
+        <ComponentGroup Id="SQLite.x86" Directory="SQLITEX86">
+            <Component Id="SQLite.Interop.x86">
+                <File Id="SQLite.Interop.x86.dll" Source="$(var.Chem4Word.V3.TargetDir)\x86\SQLite.Interop.dll" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+
+    <!-- SQLite x64 -->
+    <Fragment>
+        <ComponentGroup Id="SQLite.x64" Directory="SQLITEX64">
+            <Component Id="SQLite.Interop.x64">
+                <File Id="SQLite.Interop.x64.dll" Source="$(var.Chem4Word.V3.TargetDir)\x64\SQLite.Interop.dll" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

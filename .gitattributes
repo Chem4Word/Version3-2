@@ -23,6 +23,7 @@
 *.cmd text eol=crlf
 *.msc text eol=crlf
 *.md text eol=crlf
+*.reg text eol=crlf
 
 # Denote all file types that are truly binary and should not be modified.
 *.png binary

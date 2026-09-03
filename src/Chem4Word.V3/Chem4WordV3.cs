@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ using Chem4Word.Shared;
 using Chem4Word.Telemetry;
 using IChem4Word.Contracts;
 using Microsoft.Office.Core;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -205,7 +206,7 @@ namespace Chem4Word
 
         private void C4WAddIn_Startup(object sender, EventArgs e)
         {
-            var module = $"{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -236,7 +237,7 @@ namespace Chem4Word
 
                     if (!WordIsActivated)
                     {
-                        UserInteractions.AlertUser("Microsoft Word is not activated!\nChem4Word uses features of Word which are only available if it is activated.");
+                        UserInteractions.AlertUser("Microsoft Word is not activated!\n\nChem4Word uses features of Word which are only available if it is activated.");
                     }
                 }
                 else
@@ -257,9 +258,67 @@ namespace Chem4Word
             }
         }
 
+        private bool IfVebView2IsInstalled()
+        {
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+
+            bool found = false;
+
+            try
+            {
+                string[] hklmPaths =
+                {
+                    @"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+                    @"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+                };
+
+                foreach (string keyPath in hklmPaths)
+                {
+                    using (RegistryKey key = Registry.LocalMachine.OpenSubKey(keyPath))
+                    {
+                        string version = key?.GetValue("pv") as string;
+
+                        if (!string.IsNullOrWhiteSpace(version))
+                        {
+                            found = true;
+                            RegistryHelper.StoreMessage(module, $"Found WebView2 {version} in {key.Name}");
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    string[] hkcuPaths =
+                    {
+                        @"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+                    };
+
+                    foreach (string keyPath in hkcuPaths)
+                    {
+                        using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyPath))
+                        {
+                            string version = key?.GetValue("pv") as string;
+
+                            if (!string.IsNullOrWhiteSpace(version))
+                            {
+                                found = true;
+                                RegistryHelper.StoreMessage(module, $"Found WebView2 {version} in {key.Name}");
+                            }
+                        }
+                    }
+                }
+
+                return found;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void CheckIfWordIsActivated()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -276,7 +335,7 @@ namespace Chem4Word
 
         private void C4WAddIn_Shutdown(object sender, EventArgs e)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             Debug.WriteLine("Starting Shutdown ...");
             var stopwatch = new Stopwatch();
@@ -330,6 +389,14 @@ namespace Chem4Word
                 message = $"{module} took {SafeDouble.AsString0(sw.ElapsedMilliseconds)}ms";
                 Debug.WriteLine(message);
                 StartUpTimings.Add(message);
+
+                if (!IfVebView2IsInstalled())
+                {
+                    if (UserInteractions.AskUserYesNo("Microsoft Edge WebView2 is not installed.\n\nDo you want to download it from Microsoft?") == DialogResult.Yes)
+                    {
+                        Process.Start("https://developer.microsoft.com/en-gb/microsoft-edge/webview2/consumer");
+                    }
+                }
             }
             catch // (ThreadAbortException threadAbortException)
             {
@@ -463,8 +530,11 @@ namespace Chem4Word
 
                 CollectAndSendMsiLogs();
 
-                // Early check for updates but with longer that normal period
-                UpdateHelper.CheckForUpdates(30);
+                if (AddInInfo != null)
+                {
+                    // Early check for updates but with longer that normal period
+                    UpdateHelper.CheckForUpdates(30);
+                }
             }
         }
 
@@ -493,7 +563,7 @@ namespace Chem4Word
                     {
                         var fileBytes = File.ReadAllBytes(zipFile);
                         Globals.Chem4WordV3.Telemetry.SendZipFile(fileBytes, $"{fileName}.zip");
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"{fileName}.zip uploaded");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"{fileName}.zip uploaded");
 
                         Thread.Sleep(25);
                         File.Delete(zipFile);
@@ -505,8 +575,8 @@ namespace Chem4Word
                 {
                     if (Telemetry != null)
                     {
-                        Telemetry.Write(module, "Exception", exception.Message);
-                        Telemetry.Write(module, "Exception", exception.StackTrace);
+                        Telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                        Telemetry.Write(module, LoggingLevel.Exception, exception.StackTrace);
                     }
                     else
                     {
@@ -571,8 +641,8 @@ namespace Chem4Word
             {
                 if (Telemetry != null)
                 {
-                    Telemetry.Write(module, "Exception", exception.Message);
-                    Telemetry.Write(module, "Exception", exception.StackTrace);
+                    Telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                    Telemetry.Write(module, LoggingLevel.Exception, exception.StackTrace);
                 }
                 else
                 {
@@ -585,7 +655,7 @@ namespace Chem4Word
 
         public void LoadOptions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -705,7 +775,7 @@ namespace Chem4Word
 
         private void PerformShutDownActions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -759,7 +829,7 @@ namespace Chem4Word
 
         private void LoadPlugins()
         {
-            var module = $"{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -796,7 +866,7 @@ namespace Chem4Word
 
         private void LoadPlugIns(bool mustBeSigned)
         {
-            var module = $"{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{MethodBase.GetCurrentMethod()?.Name}()";
             // http://www.codeproject.com/Articles/453778/Loading-Assemblies-from-Anywhere-into-a-New-AppDom
             var message = $"{module} started at {SafeDate.ToLongDate(DateTime.UtcNow)}";
             StartUpTimings.Add(message);
@@ -806,7 +876,7 @@ namespace Chem4Word
             sw.Start();
 
             var plugInPath = Path.Combine(AddInInfo.DeploymentPath, "PlugIns");
-            //Telemetry.Write(module, "Debug", $"Looking for Plug-Ins in folder {plugInPath}");
+            //Telemetry.Write(module, LoggingLevel.Debug,$"Looking for Plug-Ins in folder {plugInPath}");
 
             string[] files = null;
             var filesFound = 0;
@@ -997,7 +1067,7 @@ namespace Chem4Word
 
         public IChem4WordEditor GetEditorPlugIn(string name)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             IChem4WordEditor plugin = null;
 
@@ -1019,7 +1089,7 @@ namespace Chem4Word
 
             if (plugin == null)
             {
-                Telemetry.Write(module, "Warning", $"Could not find editor plug in [{name}]");
+                Telemetry.Write(module, LoggingLevel.Warning, $"Could not find editor plug in [{name}]");
                 Debug.WriteLine($"Could not find editor plug in [{name}]");
                 Debugger.Break();
             }
@@ -1029,7 +1099,7 @@ namespace Chem4Word
 
         public IChem4WordRenderer GetRendererPlugIn(string name)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             IChem4WordRenderer plugin = null;
 
@@ -1051,7 +1121,7 @@ namespace Chem4Word
 
             if (plugin == null)
             {
-                Telemetry.Write(module, "Warning", $"Could not find renderer plug in [{name}]");
+                Telemetry.Write(module, LoggingLevel.Warning, $"Could not find renderer plug in [{name}]");
                 Debug.WriteLine($"Could not find renderer plug in [{name}]");
                 Debugger.Break();
             }
@@ -1061,7 +1131,7 @@ namespace Chem4Word
 
         public IChem4WordSearcher GetSearcherPlugIn(string name)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             IChem4WordSearcher plugin = null;
 
@@ -1083,7 +1153,7 @@ namespace Chem4Word
 
             if (plugin == null)
             {
-                Telemetry.Write(module, "Warning", $"Could not find searcher plug in [{name}]");
+                Telemetry.Write(module, LoggingLevel.Warning, $"Could not find searcher plug in [{name}]");
                 Debug.WriteLine($"Could not find searcher plug in [{name}]");
                 Debugger.Break();
             }
@@ -1094,7 +1164,7 @@ namespace Chem4Word
         [HandleProcessCorruptedStateExceptions]
         public void EnableContentControlEvents()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -1162,7 +1232,7 @@ namespace Chem4Word
         [HandleProcessCorruptedStateExceptions]
         public void DisableContentControlEvents()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -1394,7 +1464,7 @@ namespace Chem4Word
 
         public void SelectChemistry(Word.Selection sel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             EventsEnabled = false;
 
@@ -1486,7 +1556,7 @@ namespace Chem4Word
 
         private void OnWindowBeforeRightClick(Word.Selection selection, ref bool cancel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (!IsEndOfLife && VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -1522,7 +1592,7 @@ namespace Chem4Word
 
         private void OnCommandBarButtonClick(CommandBarButton ctrl, ref bool cancelDefault)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -1601,12 +1671,12 @@ namespace Chem4Word
                             var tag = $"{tagPrefix}:{model.CustomXmlPartGuid}";
                             contentControl = ChemistryHelper.Insert1DChemistry(doc, targetWord.ChemicalName, false, tag);
 
-                            Telemetry.Write(module, "Information", $"Inserted 1D version of {targetWord.ChemicalName} from library");
+                            Telemetry.Write(module, LoggingLevel.Information, $"Inserted 1D version of {targetWord.ChemicalName} from library");
                         }
                         catch (Exception e)
                         {
-                            Telemetry.Write(module, "Exception", e.Message);
-                            Telemetry.Write(module, "Exception", e.StackTrace);
+                            Telemetry.Write(module, LoggingLevel.Exception, e.Message);
+                            Telemetry.Write(module, LoggingLevel.Exception, e.StackTrace);
                         }
                         finally
                         {
@@ -1649,7 +1719,7 @@ namespace Chem4Word
 
         private void HandleRightClick(Word.Selection selection)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             _markAsChemistryHandled = false;
 
@@ -1713,9 +1783,9 @@ namespace Chem4Word
                                 }
                                 catch (Exception e)
                                 {
-                                    Telemetry.Write(module, "Exception", $"Handled; Sentences[{i}] of {sentenceCount} not found");
-                                    Telemetry.Write(module, "Exception", e.Message);
-                                    Telemetry.Write(module, "Exception", e.ToString());
+                                    Telemetry.Write(module, LoggingLevel.Exception, $"Handled; Sentences[{i}] of {sentenceCount} not found");
+                                    Telemetry.Write(module, LoggingLevel.Exception, e.Message);
+                                    Telemetry.Write(module, LoggingLevel.Exception, e.ToString());
                                 }
                             }
                         }
@@ -1734,17 +1804,17 @@ namespace Chem4Word
 
                     default:
                         // Keep exception hidden from end user.
-                        Telemetry.Write(module, "Exception", $"ErrorCode: {comCode}");
-                        Telemetry.Write(module, "Exception", cex.Message);
-                        Telemetry.Write(module, "Exception", cex.ToString());
+                        Telemetry.Write(module, LoggingLevel.Exception, $"ErrorCode: {comCode}");
+                        Telemetry.Write(module, LoggingLevel.Exception, cex.Message);
+                        Telemetry.Write(module, LoggingLevel.Exception, cex.ToString());
                         break;
                 }
             }
             catch (Exception ex)
             {
                 // Keep exception hidden from end user.
-                Telemetry.Write(module, "Exception", ex.Message);
-                Telemetry.Write(module, "Exception", ex.ToString());
+                Telemetry.Write(module, LoggingLevel.Exception, ex.Message);
+                Telemetry.Write(module, LoggingLevel.Exception, ex.ToString());
             }
 
             ClearChemistryContextMenus();
@@ -1760,7 +1830,7 @@ namespace Chem4Word
         [HandleProcessCorruptedStateExceptions]
         private void AddChemistryMenuPopup(List<TargetWord> selectedWords)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -1810,7 +1880,7 @@ namespace Chem4Word
         [HandleProcessCorruptedStateExceptions]
         private void ClearChemistryContextMenus()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -1855,7 +1925,7 @@ namespace Chem4Word
 
         private void OnNewDocument(Word.Document document)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -1906,7 +1976,7 @@ namespace Chem4Word
 
         private void OnDocumentChange()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -1952,7 +2022,7 @@ namespace Chem4Word
                                     break;
 
                                 case DialogResult.No:
-                                    Telemetry.Write(module, "Information", "User chose not to upgrade");
+                                    Telemetry.Write(module, LoggingLevel.Information, "User chose not to upgrade");
                                     break;
 
                                 case DialogResult.Cancel:
@@ -2107,7 +2177,7 @@ namespace Chem4Word
 
         private void OnDocumentOpen(Word.Document document)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -2142,7 +2212,7 @@ namespace Chem4Word
 
         private void OnDocumentBeforeSave(Word.Document document, ref bool saveAsUi, ref bool cancel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -2178,16 +2248,16 @@ namespace Chem4Word
                     switch (comCode)
                     {
                         case "0xE0041804":
-                            Telemetry.Write(module, "Exception", $"ErrorCode: {comCode}");
-                            Telemetry.Write(module, "Exception", $"Handled {cex.Message}");
-                            Telemetry.Write(module, "Exception", cex.ToString());
+                            Telemetry.Write(module, LoggingLevel.Exception, $"ErrorCode: {comCode}");
+                            Telemetry.Write(module, LoggingLevel.Exception, $"Handled {cex.Message}");
+                            Telemetry.Write(module, LoggingLevel.Exception, cex.ToString());
                             break;
 
                         default:
                             // Keep exception hidden from end user.
-                            Telemetry.Write(module, "Exception", $"ErrorCode: {comCode}");
-                            Telemetry.Write(module, "Exception", cex.Message);
-                            Telemetry.Write(module, "Exception", cex.ToString());
+                            Telemetry.Write(module, LoggingLevel.Exception, $"ErrorCode: {comCode}");
+                            Telemetry.Write(module, LoggingLevel.Exception, cex.Message);
+                            Telemetry.Write(module, LoggingLevel.Exception, cex.ToString());
                             break;
                     }
                 }
@@ -2214,7 +2284,7 @@ namespace Chem4Word
 
         private void OnDocumentBeforeClose(Word.Document document, ref bool cancel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -2283,7 +2353,7 @@ namespace Chem4Word
 
         private void OnWindowSelectionChange(Word.Selection selection)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -2344,7 +2414,7 @@ namespace Chem4Word
 
         public void EvaluateChemistryAllowed(bool inRightClick = false)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var betaValue = Globals.Chem4WordV3.ThisVersion.Root?.Element("IsBeta")?.Value;
             var isBeta = betaValue != null && bool.Parse(betaValue);
@@ -2615,9 +2685,9 @@ namespace Chem4Word
                             if (Telemetry != null)
                             {
                                 // Keep exception hidden from end user.
-                                Telemetry.Write(module, "Exception", $"ErrorCode: {comCode}");
-                                Telemetry.Write(module, "Exception", cex.Message);
-                                Telemetry.Write(module, "Exception", cex.ToString());
+                                Telemetry.Write(module, LoggingLevel.Exception, $"ErrorCode: {comCode}");
+                                Telemetry.Write(module, LoggingLevel.Exception, cex.Message);
+                                Telemetry.Write(module, LoggingLevel.Exception, cex.ToString());
                             }
                             else
                             {
@@ -2631,8 +2701,8 @@ namespace Chem4Word
                     if (Telemetry != null)
                     {
                         // Keep exception hidden from end user.
-                        Telemetry.Write(module, "Exception", ex.Message);
-                        Telemetry.Write(module, "Exception", ex.ToString());
+                        Telemetry.Write(module, LoggingLevel.Exception, ex.Message);
+                        Telemetry.Write(module, LoggingLevel.Exception, ex.ToString());
                     }
                     else
                     {
@@ -2807,7 +2877,7 @@ namespace Chem4Word
         /// If the event procedure sets this argument to True, the default double-click action does not occur when the procedure is finished.</param>
         private void OnWindowBeforeDoubleClick(Word.Selection selection, ref bool cancel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -2843,7 +2913,7 @@ namespace Chem4Word
         /// <param name="window"></param>
         private void OnWindowActivate(Word.Document document, Word.Window window)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (VersionsBehind < Constants.MaximumVersionsBehind)
             {
@@ -2882,7 +2952,7 @@ namespace Chem4Word
 
         private void OnContentControlAfterAdd(Word.ContentControl newContentControl, bool inUndoRedo)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -2910,12 +2980,12 @@ namespace Chem4Word
                         var guid = CustomXmlPartHelper.GuidFromTag(ccTag);
 
                         var message = $"ContentControl {ccId} added; Looking for structure {ccTag}";
-                        Telemetry.Write(module, "Information", message);
+                        Telemetry.Write(module, LoggingLevel.Information, message);
 
                         var cxml = CustomXmlPartHelper.GetCustomXmlPart(thisDocument, guid);
                         if (cxml != null)
                         {
-                            Telemetry.Write(module, "Information", $"Found XmlPart for {ccTag} in this document.");
+                            Telemetry.Write(module, LoggingLevel.Information, $"Found XmlPart for {ccTag} in this document.");
                         }
                         else
                         {
@@ -2924,7 +2994,7 @@ namespace Chem4Word
                                 cxml = CustomXmlPartHelper.FindCustomXmlPartInOtherDocuments(guid, thisDocument.Name);
                                 if (cxml != null)
                                 {
-                                    Telemetry.Write(module, "Information", $"Found XmlPart for {ccTag} in other document, adding it into this.");
+                                    Telemetry.Write(module, LoggingLevel.Information, $"Found XmlPart for {ccTag} in other document, adding it into this.");
 
                                     // Generate new molecule Guid and apply it
                                     var newGuid = Guid.NewGuid().ToString("N");
@@ -2971,7 +3041,7 @@ namespace Chem4Word
         /// <param name="cancel"></param>
         private void OnContentControlBeforeDelete(Word.ContentControl contentControl, bool cancel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -3004,7 +3074,7 @@ namespace Chem4Word
         /// <param name="cancel"></param>
         private void OnContentControlOnExit(Word.ContentControl contentControl, ref bool cancel)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -3036,7 +3106,7 @@ namespace Chem4Word
         /// <param name="contentControl"></param>
         private void OnContentControlOnEnter(Word.ContentControl contentControl)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {

@@ -40,6 +40,7 @@
             this.WordInstalled = new Chem4WordSetup.TaskIndicator();
             this.AddInInstalled = new Chem4WordSetup.TaskIndicator();
             this.VstoInstalled = new Chem4WordSetup.TaskIndicator();
+            this.WebView2Installed = new Chem4WordSetup.TaskIndicator();
             this.SuspendLayout();
             // 
             // Action
@@ -64,7 +65,7 @@
             // Information
             // 
             this.Information.BackColor = System.Drawing.Color.Transparent;
-            this.Information.Location = new System.Drawing.Point(175, 213);
+            this.Information.Location = new System.Drawing.Point(175, 215);
             this.Information.Name = "Information";
             this.Information.Size = new System.Drawing.Size(306, 52);
             this.Information.TabIndex = 5;
@@ -86,7 +87,7 @@
             this.WordRunning.Description = "Microsoft Word is running";
             this.WordRunning.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WordRunning.Indicator = global::Chem4WordSetup.Properties.Resources.Question;
-            this.WordRunning.Location = new System.Drawing.Point(178, 90);
+            this.WordRunning.Location = new System.Drawing.Point(178, 72);
             this.WordRunning.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.WordRunning.Name = "WordRunning";
             this.WordRunning.Size = new System.Drawing.Size(306, 34);
@@ -95,10 +96,10 @@
             // WindowsInstalled
             // 
             this.WindowsInstalled.BackColor = System.Drawing.Color.Transparent;
-            this.WindowsInstalled.Description = "Windows 7 or newer";
+            this.WindowsInstalled.Description = "Windows 10 or newer";
             this.WindowsInstalled.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WindowsInstalled.Indicator = global::Chem4WordSetup.Properties.Resources.Question;
-            this.WindowsInstalled.Location = new System.Drawing.Point(178, 6);
+            this.WindowsInstalled.Location = new System.Drawing.Point(178, 5);
             this.WindowsInstalled.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.WindowsInstalled.Name = "WindowsInstalled";
             this.WindowsInstalled.Size = new System.Drawing.Size(306, 34);
@@ -110,10 +111,10 @@
             this.WordInstalled.Description = "Microsoft Word 2000 or newer";
             this.WordInstalled.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WordInstalled.Indicator = global::Chem4WordSetup.Properties.Resources.Question;
-            this.WordInstalled.Location = new System.Drawing.Point(178, 48);
+            this.WordInstalled.Location = new System.Drawing.Point(178, 39);
             this.WordInstalled.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.WordInstalled.Name = "WordInstalled";
-            this.WordInstalled.Size = new System.Drawing.Size(306, 34);
+            this.WordInstalled.Size = new System.Drawing.Size(306, 33);
             this.WordInstalled.TabIndex = 6;
             // 
             // AddInInstalled
@@ -134,11 +135,23 @@
             this.VstoInstalled.Description = "Visual Studio Tools for Office Runtime";
             this.VstoInstalled.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.VstoInstalled.Indicator = global::Chem4WordSetup.Properties.Resources.Question;
-            this.VstoInstalled.Location = new System.Drawing.Point(178, 132);
+            this.VstoInstalled.Location = new System.Drawing.Point(178, 106);
             this.VstoInstalled.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.VstoInstalled.Name = "VstoInstalled";
             this.VstoInstalled.Size = new System.Drawing.Size(306, 34);
             this.VstoInstalled.TabIndex = 2;
+            // 
+            // WebView2Installed
+            // 
+            this.WebView2Installed.BackColor = System.Drawing.Color.Transparent;
+            this.WebView2Installed.Description = "Edge WebView2 Runtime";
+            this.WebView2Installed.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.WebView2Installed.Indicator = global::Chem4WordSetup.Properties.Resources.Question;
+            this.WebView2Installed.Location = new System.Drawing.Point(178, 140);
+            this.WebView2Installed.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.WebView2Installed.Name = "WebView2Installed";
+            this.WebView2Installed.Size = new System.Drawing.Size(306, 34);
+            this.WebView2Installed.TabIndex = 9;
             // 
             // Setup
             // 
@@ -147,6 +160,7 @@
             this.BackgroundImage = global::Chem4WordSetup.Properties.Resources.WixUIDialog;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(491, 312);
+            this.Controls.Add(this.WebView2Installed);
             this.Controls.Add(this.WordRunning);
             this.Controls.Add(this.WindowsInstalled);
             this.Controls.Add(this.WordInstalled);
@@ -181,5 +195,6 @@
         private TaskIndicator WindowsInstalled;
         private TaskIndicator WordRunning;
         private System.Windows.Forms.Timer timer2;
+        private TaskIndicator WebView2Installed;
     }
 }

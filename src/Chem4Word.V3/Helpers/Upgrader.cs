@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Model2;
 using Chem4Word.Model2.Converters.CML;
+using IChem4Word.Contracts;
 using Microsoft.Office.Core;
 using System;
 using System.Collections;
@@ -36,7 +37,7 @@ namespace Chem4Word.Helpers
 
         public static DialogResult UpgradeIsRequired(Word.Document document)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             DialogResult result = DialogResult.Cancel;
 
@@ -55,7 +56,7 @@ namespace Chem4Word.Helpers
                 result = UserInteractions.AskUserYesNo(sb.ToString());
                 if (Globals.Chem4WordV3.Telemetry != null)
                 {
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Detected {count} legacy chemistry ContentControl(s)");
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"Detected {count} legacy chemistry ContentControl(s)");
                 }
                 else
                 {
@@ -123,7 +124,7 @@ namespace Chem4Word.Helpers
 
         public static int LegacyChemistryCount(Word.Document document)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             int count = 0;
 
@@ -139,8 +140,8 @@ namespace Chem4Word.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"{ex.Message}");
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"{ex.StackTrace}");
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"{ex.Message}");
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"{ex.StackTrace}");
                 }
             }
 
@@ -149,7 +150,7 @@ namespace Chem4Word.Helpers
 
         public static void DoUpgrade(Word.Document document)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             int sel = Globals.Chem4WordV3.Application.Selection.Range.Start;
             Globals.Chem4WordV3.DisableContentControlEvents();
@@ -266,7 +267,7 @@ namespace Chem4Word.Helpers
             {
                 if (Globals.Chem4WordV3.Telemetry != null)
                 {
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Information", $"Upgraded {upgradedCCs} Chemistry Objects for {upgradedXml} Structures");
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Information, $"Upgraded {upgradedCCs} Chemistry Objects for {upgradedXml} Structures");
                 }
                 else
                 {
@@ -278,7 +279,7 @@ namespace Chem4Word.Helpers
 
         private static void EraseChemistryZones(Word.Document doc)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             foreach (CustomXMLPart xmlPart in doc.CustomXMLParts)
             {
@@ -292,7 +293,7 @@ namespace Chem4Word.Helpers
 
         private static string GetDepictionValue(string cml, string xPath)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string result = null;
 
@@ -325,7 +326,7 @@ namespace Chem4Word.Helpers
 
         private static List<UpgradeTarget> CollectData(Word.Document document)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             List<UpgradeTarget> targets = new List<UpgradeTarget>();
 

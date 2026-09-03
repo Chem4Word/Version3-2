@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ namespace Chem4Word.Shared
             int hKey, string lpValueName,
             int lpReserved,
             ref uint lpType,
-            System.Text.StringBuilder lpData,
+            StringBuilder lpData,
             ref uint lpcbData);
 
         #endregion Read 64bit Reg from 32bit app

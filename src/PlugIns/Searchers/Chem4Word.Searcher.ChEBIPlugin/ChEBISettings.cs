@@ -21,7 +21,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
     {
         #region Fields
 
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private bool _dirty;
 
@@ -41,7 +41,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         public ChEBIOptions SearcherOptions { get; set; }
         public string SettingsPath { get; set; }
         public IChem4WordTelemetry Telemetry { get; set; }
-        public System.Windows.Point TopLeft { get; set; }
+        public Point TopLeft { get; set; }
 
         #endregion Properties
 
@@ -56,8 +56,8 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnClick_Ok(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 SearcherOptions.Save();
@@ -71,10 +71,10 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             }
         }
 
-        private void OnClick_SetDefaults(object sender, System.EventArgs e)
+        private void OnClick_SetDefaults(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 DialogResult dr = UserInteractions.AskUserOkCancel("Restore default settings");
@@ -93,8 +93,8 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnValueChanged_DisplayOrder(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", $"Triggered; New value: {DisplayOrder.Value}");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, $"Triggered; New value: {DisplayOrder.Value}");
             try
             {
                 SearcherOptions.DisplayOrder = (int)DisplayOrder.Value;
@@ -108,8 +108,8 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnValueChanged_ResultsPerCall(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", $"Triggered; New value: {ResultsPerCall.Value}");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, $"Triggered; New value: {ResultsPerCall.Value}");
             try
             {
                 SearcherOptions.MaximumResults = (int)ResultsPerCall.Value;
@@ -123,7 +123,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnFormClosing_Settings(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (_dirty)
@@ -159,10 +159,10 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnLoad_Settings(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
 
                 if (!PointHelper.PointIsEmpty(TopLeft))
                 {
@@ -184,7 +184,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnTextChanged_ChebiWsUri(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 SearcherOptions.ChEBIWebService2Uri = ChebiWsUri.Text;

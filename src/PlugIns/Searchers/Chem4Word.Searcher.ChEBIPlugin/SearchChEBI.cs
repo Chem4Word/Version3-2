@@ -5,7 +5,6 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
@@ -30,7 +29,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 {
     public partial class SearchChEBI : Form
     {
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
 
         private const string SearchForTemplate = "{0}/backend/api/public/es_search/?term={1}&page=1&size={2}";
@@ -62,7 +61,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         public string ChebiId { get; set; }
         public string SettingsPath { get; set; }
         public IChem4WordTelemetry Telemetry { get; set; }
-        public System.Windows.Point TopLeft { get; set; }
+        public Point TopLeft { get; set; }
         public ChEBIOptions UserOptions { get; set; }
 
         #endregion Properties
@@ -133,24 +132,40 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     ApiResult apiResult = HttpHelper.InvokeGet(api, headers);
                     if (apiResult.StatusCode == HttpStatusCode.OK)
                     {
-                        ProcessSearchResponse(apiResult.Content);
+                        if (apiResult.Content.ToLower().Contains("<!doctype html"))
+                        {
+                            Telemetry.Write(module, LoggingLevel.Warning, "Showing user html result of web call");
+                            Telemetry.Write(module, LoggingLevel.WarningData, apiResult.Content);
+
+                            Screen screen = Screen.FromControl(SearchButton);
+                            HtmlViewer viewer = new HtmlViewer(new Point(TopLeft.X + Constants.TopLeftOffset, TopLeft.Y + Constants.TopLeftOffset), screen, "EXTERNAL OPSIN Search Error", apiResult.Content);
+                            viewer.ShowDialog(this);
+                        }
+                        else
+                        {
+                            ProcessSearchResponse(apiResult.Content);
+                        }
                     }
                     else
                     {
+                        if (!string.IsNullOrEmpty(apiResult.Content))
+                        {
+                            Telemetry.Write(module, LoggingLevel.SearchFailureData, apiResult.Content.Trim());
+                        }
                         ChEbiSearchResult data = ProcessSearchResponse(apiResult.Content);
-                        Telemetry.Write(module, "Exception", $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode} - {apiResult.Message}");
+                        Telemetry.Write(module, LoggingLevel.SearchFailure, $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode} - {apiResult.Message}");
                     }
                 }
                 catch (Exception exception)
                 {
                     ErrorsAndWarnings.Text = exception.Message;
-                    Telemetry.Write(module, "Exception", exception.Message);
-                    Telemetry.Write(module, "Exception", exception.StackTrace);
+                    Telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                    Telemetry.Write(module, LoggingLevel.StackTrace, exception.StackTrace);
                 }
             }
 
             stopwatch.Stop();
-            Telemetry.Write(module, "Information", $"Search for {searchFor} took {stopwatch.Elapsed}");
+            Telemetry.Write(module, LoggingLevel.Timing, $"Search for {searchFor} took {stopwatch.Elapsed}");
         }
 
         private ChEbiSearchResult ProcessSearchResponse(string body)
@@ -196,7 +211,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                 if (!string.IsNullOrEmpty(data.Detail))
                 {
                     ErrorsAndWarnings.Text = data.Detail;
-                    Telemetry.Write(module, "Exception", $"{data.Detail}");
+                    Telemetry.Write(module, LoggingLevel.SearchFailure, $"{data.Detail.Trim()}");
                 }
             }
 
@@ -216,7 +231,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
             {
                 try
                 {
-                    Telemetry.Write(module, "Information", $"Fetching structure for '{chebiId}'");
+                    Telemetry.Write(module, LoggingLevel.Search, $"Fetching structure for '{chebiId}'");
 
                     string api = string.Format(CultureInfo.InvariantCulture, GetMolfileTemplate,
                                                UserOptions.ChEBIWebService2Uri, chebiId.Replace("CHEBI:", ""));
@@ -231,7 +246,11 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     }
                     else
                     {
-                        Telemetry.Write(module, "Exception", $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode} - {apiResult.Message}");
+                        if (!string.IsNullOrEmpty(apiResult.Content))
+                        {
+                            Telemetry.Write(module, LoggingLevel.SearchFailureData, apiResult.Content.Trim());
+                        }
+                        Telemetry.Write(module, LoggingLevel.SearchFailure, $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode} - {apiResult.Message}");
                     }
                 }
                 catch (Exception exception)
@@ -243,21 +262,21 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     else
                     {
                         ErrorsAndWarnings.Text = exception.Message;
-                        Telemetry.Write(module, "Exception", exception.Message);
-                        Telemetry.Write(module, "Exception", exception.StackTrace);
+                        Telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                        Telemetry.Write(module, LoggingLevel.StackTrace, exception.StackTrace);
                     }
                 }
             }
 
             stopwatch.Stop();
-            Telemetry.Write(module, "Information", $"Get SDF for '{ChebiId}' took {stopwatch.Elapsed}");
+            Telemetry.Write(module, LoggingLevel.Timing, $"Get SDF for '{ChebiId}' took {stopwatch.Elapsed}");
 
             return result;
         }
 
         private void OnClick_ImportButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 ImportStructure();
@@ -270,7 +289,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void ImportStructure()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (_lastModel != null)
             {
@@ -281,8 +300,10 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     double before = _lastModel.MeanBondLength;
                     _lastModel.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
                     double after = _lastModel.MeanBondLength;
-                    Telemetry.Write(module, "Information", $"Structure rescaled from {before.ToString("#0.00")} to {after.ToString("#0.00")}");
+
+                    Telemetry.Write(module, LoggingLevel.Information, $"Structure rescaled from {before.ToString("#0.00")} to {after.ToString("#0.00")}");
                     _lastModel.Relabel(true);
+
                     Model expModel = _lastModel;
 
                     using (new WaitCursor())
@@ -320,7 +341,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnMouseDoubleClick_ResultsListView(object sender, MouseEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -355,7 +376,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnSelectedIndexChanged_ResultsListView(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             ErrorsAndWarnings.Text = "";
             display1.Clear();
@@ -381,14 +402,14 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnClick_SearchButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
 
                 if (!string.IsNullOrEmpty(searchFor))
                 {
-                    Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
+                    Telemetry.Write(module, LoggingLevel.Search, $"User searched for '{searchFor}'");
 
                     _lastModel = null;
                     _lastMolfile = string.Empty;
@@ -406,7 +427,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void OnLoad_SearchChEBI(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!PointHelper.PointIsEmpty(TopLeft))
@@ -443,7 +464,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         private void UpdateDisplay()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             ErrorsAndWarnings.Text = "";
             display1.Clear();
@@ -466,7 +487,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     {
                         if (Debugger.IsAttached)
                         {
-                            Telemetry.Write(module, "Information", $"Structure '{ChebiId}' found in cache");
+                            Telemetry.Write(module, LoggingLevel.Information, $"Structure '{ChebiId}' found in cache");
                         }
                     }
 
@@ -489,14 +510,14 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                                 List<string> lines = new List<string>();
                                 if (_lastModel.AllErrors.Count > 0)
                                 {
-                                    Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllErrors));
-                                    Telemetry.Write(module, "Exception(Data)", chemStructure);
+                                    Telemetry.Write(module, LoggingLevel.ExceptionData, string.Join(Environment.NewLine, _lastModel.AllErrors));
+                                    Telemetry.Write(module, LoggingLevel.ExceptionMol, chemStructure);
                                     lines.Add("Errors(s)");
                                     lines.AddRange(_lastModel.AllErrors);
                                 }
                                 if (_lastModel.AllWarnings.Count > 0)
                                 {
-                                    Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, _lastModel.AllWarnings));
+                                    Telemetry.Write(module, LoggingLevel.WarningData, string.Join(Environment.NewLine, _lastModel.AllWarnings));
                                     lines.Add("Warnings(s)");
                                     lines.AddRange(_lastModel.AllWarnings);
                                 }

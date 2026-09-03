@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ namespace Chem4Word.UI
 
         private void ImportErrors_Load(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!PointHelper.PointIsEmpty(TopLeft))
@@ -66,21 +66,21 @@ namespace Chem4Word.UI
 
         private void Continue_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             _dialogResult = DialogResult.OK;
             DialogResult = DialogResult.OK;
         }
 
         private void Abort_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             _dialogResult = DialogResult.Cancel;
             DialogResult = DialogResult.Cancel;
         }
 
         private void ImportErrors_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             if (_dialogResult == DialogResult.Abort)
             {
                 if (Model.AllErrors.Count > 0)

@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ namespace Chem4Word.Shared
         // Source https://stackoverflow.com/questions/10667012/getting-downloads-folder-in-c
         // Full version available at https://www.codeproject.com/Articles/878605/Getting-all-Special-Folders-in-NET
 
-        private static string[] _knownFolderGuids =
+        private static readonly string[] _knownFolderGuids =
         {
             "{56784854-C6CB-462B-8169-88E350ACB882}", // Contacts
             "{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}", // Desktop

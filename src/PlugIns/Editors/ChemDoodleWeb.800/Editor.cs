@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -51,10 +51,10 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         public bool ChangeSettings(Point topLeft)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
                 _editorOptions = new Cdw800Options(SettingsPath);
 
                 Cdw800Settings settings = new Cdw800Settings();
@@ -81,12 +81,12 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         public DialogResult Edit()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             DialogResult result = DialogResult.Cancel;
 
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
                 _editorOptions = new Cdw800Options(SettingsPath);
 
                 EditorHost host = new EditorHost(Cml);

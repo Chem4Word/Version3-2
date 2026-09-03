@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
 using Chem4Word.Core.UI.Forms;
 using Chem4Word.UI;
+using IChem4Word.Contracts;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
@@ -29,14 +30,14 @@ namespace Chem4Word.Helpers
 
         public static int CheckForUpdates(int frequency)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             Debug.WriteLine($"{module} days: {frequency}");
             try
             {
                 bool doCheck = true;
 
-                if (!string.IsNullOrEmpty(Globals.Chem4WordV3.AddInInfo.DeploymentPath))
+                if (Globals.Chem4WordV3.AddInInfo != null)
                 {
                     #region CheckForUpdate
 
@@ -56,7 +57,7 @@ namespace Chem4Word.Helpers
 
                     if (doCheck)
                     {
-                        Globals.Chem4WordV3.Telemetry.Write(module, "AutomaticUpdate", $"Last check {delta.TotalDays:0} day(s) ago; Check frequency {frequency} days.");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.AutomaticUpdate, $"Last check {delta.TotalDays:0} day(s) ago; Check frequency {frequency} days.");
                         Debug.WriteLine("Saving date last checked in Registry as Today");
                         RegistryKey registryKey = Registry.CurrentUser.CreateSubKey(Constants.Chem4WordRegistryKey);
                         registryKey?.SetValue(Constants.RegistryValueNameLastCheck, DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
@@ -82,12 +83,12 @@ namespace Chem4Word.Helpers
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.Message);
-                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.StackTrace);
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.Message);
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.InnerException.Message);
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.InnerException.StackTrace);
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.InnerException.Message);
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.InnerException.StackTrace);
                 }
             }
 
@@ -98,7 +99,7 @@ namespace Chem4Word.Helpers
 
         public static void ReadSavedValues()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -207,12 +208,12 @@ namespace Chem4Word.Helpers
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.Message);
-                Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.StackTrace);
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.Message);
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.InnerException.Message);
-                    Globals.Chem4WordV3.Telemetry.Write(module, "Exception", ex.InnerException.StackTrace);
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.InnerException.Message);
+                    Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, ex.InnerException.StackTrace);
                 }
             }
         }
@@ -227,7 +228,7 @@ namespace Chem4Word.Helpers
 
         public static bool FetchUpdateInfo()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool updateRequired = false;
 
@@ -294,7 +295,7 @@ namespace Chem4Word.Helpers
             }
             else
             {
-                Globals.Chem4WordV3.Telemetry.Write(module, "Error", "Failed to parse resource 'Data.This-Version.xml'");
+                Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Error, "Failed to parse resource 'Data.This-Version.xml'");
             }
 
             return updateRequired;
@@ -302,7 +303,7 @@ namespace Chem4Word.Helpers
 
         public static void ShowUpdateForm()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             using (var au = new AutomaticUpdate(Globals.Chem4WordV3.Telemetry)
             {
@@ -317,7 +318,7 @@ namespace Chem4Word.Helpers
 
         private static string GetVersionsXmlFile()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string primaryDomain = Constants.OurDomains.FirstOrDefault();
             string versionsFileMarker = "<Id>f3c4f4db-2fff-46db-b14a-feb8e09f7742</Id>";
@@ -338,7 +339,7 @@ namespace Chem4Word.Helpers
 
                     try
                     {
-                        Globals.Chem4WordV3.Telemetry.Write(module, "AutomaticUpdate", $"Looking for Chem4Word-Versions.xml at {domain}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.AutomaticUpdate, $"Looking for Chem4Word-Versions.xml at {domain}");
 
                         client.DefaultRequestHeaders.Add("user-agent", "Chem4Word VersionChecker");
                         client.BaseAddress = new Uri(domain);
@@ -353,29 +354,29 @@ namespace Chem4Word.Helpers
                         }
                         else
                         {
-                            Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"Chem4Word-Versions.xml at {domain} is corrupt");
-                            Globals.Chem4WordV3.Telemetry.Write(module, "Exception(Data)", result);
+                            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"Chem4Word-Versions.xml at {domain} is corrupt");
+                            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.ExceptionData, result);
                         }
                     }
                     catch (ArgumentNullException nex)
                     {
                         exceptionMessage = GetExceptionMessages(nex);
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"ArgumentNullException: [{domain}] - {exceptionMessage}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"ArgumentNullException: [{domain}] - {exceptionMessage}");
                     }
                     catch (HttpRequestException hex)
                     {
                         exceptionMessage = GetExceptionMessages(hex);
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"HttpRequestException: [{domain}] - {exceptionMessage}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"HttpRequestException: [{domain}] - {exceptionMessage}");
                     }
                     catch (WebException wex)
                     {
                         exceptionMessage = GetExceptionMessages(wex);
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"WebException: [{domain}] - {exceptionMessage}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"WebException: [{domain}] - {exceptionMessage}");
                     }
                     catch (Exception ex)
                     {
                         exceptionMessage = GetExceptionMessages(ex);
-                        Globals.Chem4WordV3.Telemetry.Write(module, "Exception", $"Exception: [{domain}] - {exceptionMessage}");
+                        Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Exception, $"Exception: [{domain}] - {exceptionMessage}");
                     }
 
                     if (foundOurXmlFile)
@@ -403,7 +404,7 @@ namespace Chem4Word.Helpers
 
         public static void ClearSettings()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {

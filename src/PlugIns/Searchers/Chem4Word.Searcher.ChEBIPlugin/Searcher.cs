@@ -22,7 +22,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
     {
         #region Fields
 
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
         private ChEBIOptions _searcherOptions = new ChEBIOptions();
 
@@ -67,10 +67,10 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         public bool ChangeSettings(Point topLeft)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
                 _searcherOptions = new ChEBIOptions(SettingsPath);
 
                 ChEBISettings settings = new ChEBISettings();
@@ -98,7 +98,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
 
         public DialogResult Search()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 _searcherOptions = new ChEBIOptions(SettingsPath);
@@ -117,7 +117,7 @@ namespace Chem4Word.Searcher.ChEBIPlugin
                     if (dr == DialogResult.OK)
                     {
                         Properties = new Dictionary<string, string>();
-                        Telemetry.Write(module, "Information", $"Importing Id {searcher.ChebiId}");
+                        Telemetry.Write(module, LoggingLevel.Information, $"Importing Id {searcher.ChebiId}");
                         Cml = searcher.Cml;
                     }
 

@@ -48,6 +48,15 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.4191.47, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\lib\net462\Microsoft.Web.WebView2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.4191.47, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\lib\net462\Microsoft.Web.WebView2.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.4191.47, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\lib\net462\Microsoft.Web.WebView2.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -88,6 +97,7 @@
     <Compile Include="Helpers\CohenSutherland.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\DebugHelper.cs" />
+    <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\FileSystemHelper.cs" />
     <Compile Include="Helpers\GdprHelper.cs" />
     <Compile Include="Helpers\GeometryTool.cs" />
@@ -113,6 +123,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\Win32.cs" />
+    <Compile Include="UI\Forms\HtmlViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\HtmlViewer.Designer.cs">
+      <DependentUpon>HtmlViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\ReportError.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,6 +156,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\HtmlViewer.resx">
+      <DependentUpon>HtmlViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\ReportError.resx">
       <DependentUpon>ReportError.cs</DependentUpon>
     </EmbeddedResource>
@@ -163,6 +182,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\build\Microsoft.Web.WebView2.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Web.WebView2.1.0.4191.47\build\Microsoft.Web.WebView2.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -1,0 +1,27 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <!-- Standard Plug Ins -->
+    <Fragment>
+        <ComponentGroup Id="PlugIns" Directory="PLUGINSFOLDER">
+            <Component Id="Chem4Word.Editor.ACME">
+                <File Id="Chem4Word.Editor.ACME.dll" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Editor.ACME.dll" />
+                <File Id="Chem4Word.Editor.ACME.pdb" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Editor.ACME.pdb" />
+            </Component>
+            <Component Id="Chem4Word.Renderer.OoXmlV4">
+                <File Id="Chem4Word.Renderer.OoXmlV4.dll" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Renderer.OoXmlV4.dll" />
+                <File Id="Chem4Word.Renderer.OoXmlV4.pdb" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Renderer.OoXmlV4.pdb" />
+            </Component>
+            <Component Id="Chem4Word.Searcher.ChEBIPlugin">
+                <File Id="Chem4Word.Searcher.ChEBIPlugin.dll" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Searcher.ChEBIPlugin.dll" />
+                <File Id="Chem4Word.Searcher.ChEBIPlugin.pdb" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Searcher.ChEBIPlugin.pdb" />
+            </Component>
+            <Component Id="Chem4Word.Searcher.OpsinPlugIn">
+                <File Id="Chem4Word.Searcher.OpsinPlugIn.dll" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Searcher.OpsinPlugIn.dll" />
+                <File Id="Chem4Word.Searcher.OpsinPlugIn.pdb" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Searcher.OpsinPlugIn.pdb" />
+            </Component>
+            <Component Id="Chem4Word.Searcher.PubChemPlugIn">
+                <File Id="Chem4Word.Searcher.PubChemPlugIn.dll" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Searcher.PubChemPlugIn.dll" />
+                <File Id="Chem4Word.Searcher.PubChemPlugIn.pdb" Source="$(var.Chem4Word.V3.TargetDir)\PlugIns\Chem4Word.Searcher.PubChemPlugIn.pdb" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

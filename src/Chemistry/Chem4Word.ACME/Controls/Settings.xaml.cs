@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ namespace Chem4Word.ACME.Controls
 
         private void Save_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             // Copy current model values to options before saving
             AcmeOptions.BondLength = (int)SettingsModel.CurrentBondLength;
@@ -134,7 +134,7 @@ namespace Chem4Word.ACME.Controls
             AcmeOptions.Save();
             if (AcmeOptions.Errors.Any())
             {
-                Telemetry.Write(module, "Exception", string.Join(Environment.NewLine, AcmeOptions.Errors));
+                Telemetry.Write(module, LoggingLevel.Exception, string.Join(Environment.NewLine, AcmeOptions.Errors));
                 AcmeOptions.Errors = new List<string>();
             }
             AcmeOptions.Dirty = false;

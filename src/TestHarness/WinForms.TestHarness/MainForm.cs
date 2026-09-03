@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ using Chem4Word.Searcher.PubChemPlugIn;
 using Chem4Word.Shared;
 using Chem4Word.Telemetry;
 using Chem4Word.WebServices;
+using IChem4Word.Contracts;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,7 @@ namespace WinForms.TestHarness
 
         private void LoadStructure_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Model model = null;
@@ -138,7 +139,7 @@ namespace WinForms.TestHarness
                     {
                         if (model.AllWarnings.Count > 0)
                         {
-                            _telemetry.Write(module, "Warnings", string.Join(Environment.NewLine, model.AllWarnings));
+                            _telemetry.Write(module, LoggingLevel.Warning, string.Join(Environment.NewLine, model.AllWarnings));
                             MessageBox.Show(string.Join(Environment.NewLine, model.AllWarnings), "Model has warnings!");
                         }
 
@@ -168,8 +169,8 @@ namespace WinForms.TestHarness
                             stopwatch.Stop();
                             elapsed2 = stopwatch.Elapsed;
 
-                            _telemetry.Write(module, "Information", $"File: '{filename}'; Original bond length {originalBondLength:#,##0.00}");
-                            _telemetry.Write(module, "Timing", $"Import took {elapsed1}; Export took {elapsed2}");
+                            _telemetry.Write(module, LoggingLevel.Information, $"File: '{filename}'; Original bond length {originalBondLength:#,##0.00}");
+                            _telemetry.Write(module, LoggingLevel.Timing, $"Import took {elapsed1}; Export took {elapsed2}");
                             ShowChemistry(filename, model);
                         }
                         else
@@ -177,7 +178,7 @@ namespace WinForms.TestHarness
                             var errors = model.GeneralErrors;
                             errors.AddRange(model.AllErrors);
 
-                            _telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, errors));
+                            _telemetry.Write(module, LoggingLevel.ExceptionData, string.Join(Environment.NewLine, errors));
                             MessageBox.Show(string.Join(Environment.NewLine, errors), "Model has Errors!");
                         }
                     }
@@ -185,8 +186,8 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
@@ -211,7 +212,7 @@ namespace WinForms.TestHarness
 
         private void ShowCarbons_CheckedChanged(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (Display.Chemistry is Model model)
@@ -225,15 +226,15 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
 
         private void RemoveAtom_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (Display.Chemistry is Model model)
@@ -265,15 +266,15 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
 
         private void RandomElement_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (Display.Chemistry is Model model)
@@ -316,8 +317,8 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
@@ -327,31 +328,31 @@ namespace WinForms.TestHarness
         private void EditLabels_Click(object sender, EventArgs e)
         {
 #if !DEBUG
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
 #endif
 
-            if (!string.IsNullOrEmpty(_lastCml))
-            {
-                using (EditorHost editorHost = new EditorHost(_lastCml, "LABELS"))
+                if (!string.IsNullOrEmpty(_lastCml))
                 {
-                    editorHost.ShowDialog(this);
-                    if (editorHost.DialogResult == DialogResult.OK)
+                    using (EditorHost editorHost = new EditorHost(_lastCml, "LABELS"))
                     {
-                        HandleChangedCml(editorHost.OutputValue, "Labels Editor result");
+                        editorHost.ShowDialog(this);
+                        if (editorHost.DialogResult == DialogResult.OK)
+                        {
+                            HandleChangedCml(editorHost.OutputValue, "Labels Editor result");
+                        }
                     }
+                    TopMost = true;
+                    TopMost = false;
+                    Activate();
                 }
-                TopMost = true;
-                TopMost = false;
-                Activate();
-            }
 #if !DEBUG
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
 #endif
@@ -360,30 +361,30 @@ namespace WinForms.TestHarness
         private void EditWithAcme_Click(object sender, EventArgs e)
         {
 #if !DEBUG
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
 #endif
-            if (!string.IsNullOrEmpty(_lastCml))
-            {
-                using (EditorHost editorHost = new EditorHost(_lastCml, "ACME"))
+                if (!string.IsNullOrEmpty(_lastCml))
                 {
-                    editorHost.ShowDialog(this);
-                    if (editorHost.DialogResult == DialogResult.OK)
+                    using (EditorHost editorHost = new EditorHost(_lastCml, "ACME"))
                     {
-                        HandleChangedCml(editorHost.OutputValue, "ACME result");
+                        editorHost.ShowDialog(this);
+                        if (editorHost.DialogResult == DialogResult.OK)
+                        {
+                            HandleChangedCml(editorHost.OutputValue, "ACME result");
+                        }
                     }
+                    TopMost = true;
+                    TopMost = false;
+                    Activate();
                 }
-                TopMost = true;
-                TopMost = false;
-                Activate();
-            }
 #if !DEBUG
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
 #endif
@@ -472,7 +473,7 @@ namespace WinForms.TestHarness
 
         private void Undo_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Model m = _undoStack.Pop();
@@ -494,15 +495,15 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
 
         private void Redo_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Model m = _redoStack.Pop();
@@ -524,8 +525,8 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
@@ -555,7 +556,7 @@ namespace WinForms.TestHarness
 
         private void EditCml_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -576,15 +577,15 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
 
         private void ShowCml_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!string.IsNullOrEmpty(_lastCml))
@@ -597,15 +598,15 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
 
         private void SaveStructure_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 CMLConverter cmlConverter = new CMLConverter();
@@ -624,7 +625,7 @@ namespace WinForms.TestHarness
                     if (dr == DialogResult.OK)
                     {
                         FileInfo fi = new FileInfo(sfd.FileName);
-                        _telemetry.Write(module, "Information", $"Exporting to '{fi.Name}'");
+                        _telemetry.Write(module, LoggingLevel.Information, $"Exporting to '{fi.Name}'");
                         string fileType = Path.GetExtension(sfd.FileName).ToLower();
                         switch (fileType)
                         {
@@ -640,7 +641,7 @@ namespace WinForms.TestHarness
                                 // Set bond length to 1.54 angstroms (Å)
                                 m.ScaleToAverageBondLength(1.54);
                                 double after = m.MeanBondLength;
-                                _telemetry.Write(module, "Information", $"Structure rescaled from {before.ToString("#0.00")} to {after.ToString("#0.00")}");
+                                _telemetry.Write(module, LoggingLevel.Information, $"Structure rescaled from {before.ToString("#0.00")} to {after.ToString("#0.00")}");
                                 SdFileConverter converter = new SdFileConverter();
                                 File.WriteAllText(sfd.FileName, converter.Export(m));
                                 break;
@@ -655,8 +656,8 @@ namespace WinForms.TestHarness
             }
             catch (Exception exception)
             {
-                _telemetry.Write(module, "Exception", $"Exception: {exception.Message}");
-                _telemetry.Write(module, "Exception(Data)", $"Exception: {exception}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception: {exception.Message}");
+                _telemetry.Write(module, LoggingLevel.ExceptionData, $"Exception: {exception}");
                 MessageBox.Show(exception.StackTrace, exception.Message);
             }
         }
@@ -761,7 +762,7 @@ namespace WinForms.TestHarness
 
         private void LayoutUsingCheblClean()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var cc = new CMLConverter();
             var model = cc.Import(_lastCml);
@@ -817,16 +818,16 @@ namespace WinForms.TestHarness
                         }
                         catch (Exception innerException)
                         {
-                            _telemetry.Write(module, "Exception", innerException.Message);
-                            _telemetry.Write(module, "Exception", innerException.ToString());
+                            _telemetry.Write(module, LoggingLevel.Exception, innerException.Message);
+                            _telemetry.Write(module, LoggingLevel.Exception, innerException.ToString());
                             Debug.WriteLine(innerException.Message);
                         }
                     }
                 }
                 catch (Exception exception)
                 {
-                    _telemetry.Write(module, "Exception", exception.Message);
-                    _telemetry.Write(module, "Exception", exception.ToString());
+                    _telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                    _telemetry.Write(module, LoggingLevel.Exception, exception.ToString());
                     Debug.WriteLine(exception.Message);
                 }
             }

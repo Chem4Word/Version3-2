@@ -20,9 +20,9 @@ namespace Chem4Word.Searcher.OpsinPlugIn
     public partial class Settings : Form
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
-        public System.Windows.Point TopLeft { get; set; }
+        public Point TopLeft { get; set; }
 
         public IChem4WordTelemetry Telemetry { get; set; }
 
@@ -39,10 +39,10 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnLoad_Settings(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
 
                 if (!PointHelper.PointIsEmpty(TopLeft))
                 {
@@ -64,8 +64,8 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnClick_SetDefaults(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 DialogResult dr = UserInteractions.AskUserOkCancel("Restore default settings");
@@ -84,8 +84,8 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnClick_Ok(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 SearcherOptions.Save();
@@ -119,7 +119,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnFormClosing_Settings(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (_dirty)
@@ -155,7 +155,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnTextChanged_OpsinWsUri(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 SearcherOptions.WebServiceUri = OpsinWsUri.Text;
@@ -169,8 +169,8 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnValueChanged_DisplayOrder(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", $"Triggered; New value: {DisplayOrder.Value}");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, $"Triggered; New value: {DisplayOrder.Value}");
             try
             {
                 SearcherOptions.DisplayOrder = (int)DisplayOrder.Value;

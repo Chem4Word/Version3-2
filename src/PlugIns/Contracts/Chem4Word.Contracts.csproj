@@ -66,6 +66,7 @@
     <Compile Include="IChem4WordRenderer.cs" />
     <Compile Include="IChem4WordSearcher.cs" />
     <Compile Include="IChem4WordTelemetry.cs" />
+    <Compile Include="LoggingLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

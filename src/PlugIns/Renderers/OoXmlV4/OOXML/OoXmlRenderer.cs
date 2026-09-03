@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -64,10 +64,10 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         public OoXmlRenderer(Model model, OoXmlV4Options options, IChem4WordTelemetry telemetry, Point topLeft)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             _telemetry = telemetry;
-            _telemetry.Write(module, "Verbose", "Called");
+            _telemetry.Write(module, LoggingLevel.Verbose, "Called");
 
             _options = options;
             _topLeft = topLeft;
@@ -81,8 +81,8 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         public Run GenerateRun()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            _telemetry.Write(module, "Verbose", "Called");
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            _telemetry.Write(module, LoggingLevel.Verbose, "Called");
 
             var swr = new Stopwatch();
             swr.Start();
@@ -392,7 +392,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 DrawShape(extents, A.ShapeTypeValues.Ellipse, true, spot.Colour);
             }
 
-            _telemetry.Write(module, "Timing", $"Rendering {_chemistryModel.TotalMoleculesCount} molecules with {_chemistryModel.TotalAtomsCount} atoms and {_chemistryModel.TotalBondsCount} bonds took {SafeDouble.AsString0(swr.ElapsedMilliseconds)} ms; Average Bond Length: {SafeDouble.AsString(_chemistryModel.MeanBondLength)}");
+            _telemetry.Write(module, LoggingLevel.Timing, $"Rendering {_chemistryModel.TotalMoleculesCount} molecules with {_chemistryModel.TotalAtomsCount} atoms and {_chemistryModel.TotalBondsCount} bonds took {SafeDouble.AsString0(swr.ElapsedMilliseconds)} ms; Average Bond Length: {SafeDouble.AsString(_chemistryModel.MeanBondLength)}");
 
             ShutDownProgress(progress);
 

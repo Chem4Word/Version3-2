@@ -1,14 +1,9 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
-
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Markup;
-using System.Windows.Media.Animation;
 
 // Code from http://www.wpfmentor.com/2009/01/how-to-debug-triggers-using-trigger.html
 //           https://stackoverflow.com/questions/32275445/in-wpf-how-to-debug-triggers
@@ -27,6 +22,11 @@ using System.Windows.Media.Animation;
 // </Trigger>
 //
 // As this works on anything that inherits from TriggerBase, it will also work on <MultiTrigger>.
+
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Markup;
+using System.Windows.Media.Animation;
 
 namespace Chem4Word.ACME.Utils
 {

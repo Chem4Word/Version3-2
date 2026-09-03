@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -70,10 +70,7 @@ namespace Chem4Word.Renderer.OoXmlV4.Entities
             _groupBracketsExtents = extents;
         }
 
-        public override string ToString()
-        {
-            return $"{Path}, {AtomExtents}";
-        }
+        public override string ToString() => $"{Path}, {AtomExtents}";
 
         public void SetInternalCharacterExtents(Rect extents)
         {

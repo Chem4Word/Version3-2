@@ -12,5 +12,9 @@ namespace Chem4Word.Searcher.OpsinPlugIn
         public static string DefaultOpsinWebServiceUri = "https://www.ebi.ac.uk/opsin/ws/";
 
         public static int DefaultDisplayOrder = 50;
+
+        public const double TopLeftOffset = 24;
+
+        public const double StandardBondLength = 20;
     }
 }

@@ -1,11 +1,12 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Core.Helpers;
+using IChem4Word.Contracts;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -65,60 +66,60 @@ namespace Chem4Word.Helpers
 
         public static void SendSetupActions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordSetupRegistryKey, true);
             if (registryKey != null)
             {
-                SendValues(module, "Setup", registryKey);
+                SendValues(module, LoggingLevel.Setup, registryKey);
             }
         }
 
         public static void SendUpdateActions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordUpdateRegistryKey, true);
             if (registryKey != null)
             {
-                SendValues(module, "Update", registryKey);
+                SendValues(module, LoggingLevel.Update, registryKey);
             }
         }
 
         public static void SendMsiActions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordMsiActionsRegistryKey, true);
             if (registryKey != null)
             {
-                SendValues(module, "Setup", registryKey);
+                SendValues(module, LoggingLevel.Setup, registryKey);
             }
         }
 
         public static void SendMessages()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordMessagesRegistryKey, true);
             if (registryKey != null)
             {
-                SendValues(module, "Information", registryKey);
+                SendValues(module, LoggingLevel.Information, registryKey);
             }
         }
 
         public static void SendExceptions()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var registryKey = Registry.CurrentUser.OpenSubKey(Constants.Chem4WordExceptionsRegistryKey, true);
             if (registryKey != null)
             {
-                SendValues(module, "Exception", registryKey);
+                SendValues(module, LoggingLevel.Exception, registryKey);
             }
         }
 
-        private static void SendValues(string module, string level, RegistryKey registryKey)
+        private static void SendValues(string module, LoggingLevel level, RegistryKey registryKey)
         {
             var keys = registryKey.GetValueNames();
             var values = new List<RegistryMessage>();
@@ -166,7 +167,7 @@ namespace Chem4Word.Helpers
             }
         }
 
-        private static void SendData(string module, string level, List<RegistryMessage> messages, ref int depth)
+        private static void SendData(string module, LoggingLevel level, List<RegistryMessage> messages, ref int depth)
         {
             if (messages.Any())
             {

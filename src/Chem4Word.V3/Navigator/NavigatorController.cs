@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ namespace Chem4Word.Navigator
         /// </summary>
         private void LoadModel()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -108,7 +108,7 @@ namespace Chem4Word.Navigator
         /// <param name="OldPart">The custom XML part that gets deleted</param>
         private void OnPartBeforeDelete(CustomXMLPart OldPart)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var oldPart = NavigatorItems.FirstOrDefault(ni
@@ -131,7 +131,7 @@ namespace Chem4Word.Navigator
         /// <param name="NewPart"></param>
         private void OnPartAfterLoad(CustomXMLPart NewPart)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var converter = new CMLConverter();

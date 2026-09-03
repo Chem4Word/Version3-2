@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 //
@@ -41,14 +41,14 @@ namespace Chem4Word.UI
 
         public AutomaticUpdate(IChem4WordTelemetry telemetry)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 _telemetry = telemetry;
 
                 InitializeComponent();
 
-                _telemetry.Write(module, "AutomaticUpdate", "Shown");
+                _telemetry.Write(module, LoggingLevel.AutomaticUpdate, "Shown");
             }
             catch (Exception ex)
             {
@@ -61,8 +61,8 @@ namespace Chem4Word.UI
 
         private void OnReleasesPageLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            _telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            _telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -77,8 +77,8 @@ namespace Chem4Word.UI
 
         private void OnRichTextBoxLinkClicked(object sender, LinkClickedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            _telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            _telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -95,12 +95,12 @@ namespace Chem4Word.UI
 
         private void AutomaticUpdate_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_closedByCode && e.CloseReason == CloseReason.UserClosing)
                 {
-                    _telemetry.Write(module, "AutomaticUpdate", "User Dismissed Form");
+                    _telemetry.Write(module, LoggingLevel.AutomaticUpdate, "User Dismissed Form");
                 }
             }
             catch (Exception ex)
@@ -111,8 +111,8 @@ namespace Chem4Word.UI
 
         private void OnUpdateNowClick(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            _telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            _telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -133,7 +133,7 @@ namespace Chem4Word.UI
                 if (File.Exists(destination)
                     && new FileInfo(destination).Length > 0)
                 {
-                    _telemetry.Write(module, "AutomaticUpdate", "Starting updater to download " + _downloadUrl);
+                    _telemetry.Write(module, LoggingLevel.AutomaticUpdate, "Starting updater to download " + _downloadUrl);
 
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.WorkingDirectory = downloadPath;
@@ -146,7 +146,7 @@ namespace Chem4Word.UI
                 }
                 else
                 {
-                    _telemetry.Write(module, "AutomaticUpdate", $"Copy of 'Chem4WordUpdater.exe' to {downloadPath} failed.");
+                    _telemetry.Write(module, LoggingLevel.AutomaticUpdate, $"Copy of 'Chem4WordUpdater.exe' to {downloadPath} failed.");
                     MessageBox.Show($"Copy of 'Chem4WordUpdater.exe' to {downloadPath} failed. Please download {_downloadUrl} manually and install it.");
                 }
 
@@ -155,7 +155,7 @@ namespace Chem4Word.UI
                 //}
                 //else
                 //{
-                //    _telemetry.Write(module, "AutomaticUpdate", $"Folder '{downloadPath}' not found.");
+                //    _telemetry.Write(module, LoggingLevel.AutomaticUpdate, $"Folder '{downloadPath}' not found.");
                 //    MessageBox.Show($"Folder '{downloadPath}' not found. Please download {_downloadUrl} manually and install it.");
                 //}
             }
@@ -167,12 +167,12 @@ namespace Chem4Word.UI
 
         private void OnUpdateLaterClick(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            _telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            _telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
-                _telemetry.Write(module, "AutomaticUpdate", "User Defered Update");
+                _telemetry.Write(module, LoggingLevel.AutomaticUpdate, "User Defered Update");
                 DialogResult = DialogResult.Cancel;
             }
             catch (Exception ex)
@@ -183,7 +183,7 @@ namespace Chem4Word.UI
 
         private void AutomaticUpdate_Load(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 using (new WaitCursor())
@@ -202,7 +202,7 @@ namespace Chem4Word.UI
                     DateTime currentReleaseDate = SafeDate.Parse(CurrentVersion.Root.Element("Released").Value);
 
                     lblInfo.Text = "Your current version of Chem4Word is " + currentVersionNumber + "; Released " + SafeDate.ToShortDate(currentReleaseDate);
-                    _telemetry.Write(module, "AutomaticUpdate", lblInfo.Text);
+                    _telemetry.Write(module, LoggingLevel.AutomaticUpdate, lblInfo.Text);
 
                     var versions = NewVersions.XPathSelectElements("//Version");
                     foreach (var version in versions)

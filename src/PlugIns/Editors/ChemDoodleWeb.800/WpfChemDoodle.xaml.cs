@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -66,14 +66,14 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         public WpfChemDoodle()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             _loading = true;
             InitializeComponent();
         }
 
         private void WpfChemDoodle_OnLoaded(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -99,7 +99,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 // Allow extra 500ms for document to load
@@ -135,7 +135,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
                     _sw.Stop();
 
-                    Telemetry.Write(module, "Timing", $"ChemDoodle Web ready in {SafeDouble.Duration(_sw.ElapsedMilliseconds)}ms");
+                    Telemetry.Write(module, LoggingLevel.Timing, $"ChemDoodle Web ready in {SafeDouble.Duration(_sw.ElapsedMilliseconds)}ms");
 
                     _loading = false;
                 }
@@ -149,7 +149,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void AddHydrogens_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -165,7 +165,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void RemoveHydrogens_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -181,7 +181,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void ShowHydrogens_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -199,7 +199,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void ShowColour_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -217,7 +217,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void FlipStructures_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -233,7 +233,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void MirrorStructures_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -249,7 +249,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void ShowCarbons_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -267,7 +267,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void BondLength_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -301,7 +301,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void IncreaseButton_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -326,7 +326,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void DecreaseButton_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -351,7 +351,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void Ok_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -389,7 +389,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void Cancel_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -407,7 +407,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void SwitchToMulti_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -434,7 +434,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void SwitchToSingle_OnClick(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_loading)
@@ -481,7 +481,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void LoadCdw()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (!string.IsNullOrEmpty(SettingsPath))
             {
@@ -504,16 +504,16 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
                 }
                 File.WriteAllText(Path.Combine(SettingsPath, "Editor.html"), htmlfile);
 
-                Telemetry.Write(module, "Timing", $"Writing resources to disk took {SafeDouble.Duration(sw.ElapsedMilliseconds)}ms");
+                Telemetry.Write(module, LoggingLevel.Timing, $"Writing resources to disk took {SafeDouble.Duration(sw.ElapsedMilliseconds)}ms");
 
-                Telemetry.Write(module, "Information", "Starting browser");
+                Telemetry.Write(module, LoggingLevel.Information, "Starting browser");
                 WebBrowser.Navigate(Path.Combine(SettingsPath, "Editor.html"));
             }
         }
 
         private void SetupControls()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             ShowHydrogens.IsChecked = UserOptions.ShowHydrogens;
             ShowColour.IsChecked = UserOptions.ColouredAtoms;
@@ -545,7 +545,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void DeployCdw800()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             if (!string.IsNullOrEmpty(SettingsPath))
             {
@@ -558,14 +558,14 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
                 if (File.Exists(otherVersion))
                 {
-                    Telemetry.Write(module, "Information", "Deleting CDW 702 resources from disk");
+                    Telemetry.Write(module, LoggingLevel.Information, "Deleting CDW 702 resources from disk");
                     File.Delete(otherVersion);
                     DelTree(Path.Combine(SettingsPath, "ChemDoodleWeb"));
                 }
 
                 if (File.Exists(refreshFile))
                 {
-                    Telemetry.Write(module, "Information", "Refreshing CDW 800 resources");
+                    Telemetry.Write(module, LoggingLevel.Information, "Refreshing CDW 800 resources");
                     File.Delete(refreshFile);
                     File.Delete(markerFile);
                     DelTree(Path.Combine(SettingsPath, "ChemDoodleWeb"));
@@ -573,7 +573,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
                 if (!File.Exists(markerFile))
                 {
-                    Telemetry.Write(module, "Information", "Writing CDW 800 resources to disk");
+                    Telemetry.Write(module, LoggingLevel.Information, "Writing CDW 800 resources to disk");
 
                     File.WriteAllText(markerFile, "Delete this file to refresh ChemDoodle Web");
 
@@ -594,7 +594,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
                 sw.Stop();
 
-                Telemetry.Write(module, "Timing", $"Writing resources to disk took {SafeDouble.Duration(sw.ElapsedMilliseconds)}ms");
+                Telemetry.Write(module, LoggingLevel.Timing, $"Writing resources to disk took {SafeDouble.Duration(sw.ElapsedMilliseconds)}ms");
             }
         }
 
@@ -618,14 +618,14 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void SetBondLength(int value)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             ExecuteJavaScript("ReScale", value);
             BondLength.Text = $"{value}";
         }
 
         private object ExecuteJavaScript(string functionName, params object[] args)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             object result = null;
 
@@ -638,9 +638,9 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
             }
             catch (Exception ex)
             {
-                Telemetry.Write(module, "Exception", $"Calling JavaScript function {functionName}");
-                Telemetry.Write(module, "Exception", ex.Message);
-                Telemetry.Write(module, "Exception", ex.StackTrace);
+                Telemetry.Write(module, LoggingLevel.Exception, $"Calling JavaScript function {functionName}");
+                Telemetry.Write(module, LoggingLevel.Exception, ex.Message);
+                Telemetry.Write(module, LoggingLevel.Exception, ex.StackTrace);
 
                 _javaScriptErrorCount++;
 

@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -84,22 +84,22 @@ namespace Chem4Word.Core.UI.Forms
             {
                 if (!string.IsNullOrEmpty(_exceptionMessage))
                 {
-                    _telemetry.Write(_operation, "Exception", _exceptionMessage);
+                    _telemetry.Write(_operation, LoggingLevel.Exception, _exceptionMessage);
                 }
                 if (!string.IsNullOrEmpty(_callStack))
                 {
-                    _telemetry.Write(_operation, "Exception", _callStack);
+                    _telemetry.Write(_operation, LoggingLevel.Exception, _callStack);
                 }
 
                 if (DialogResult == DialogResult.OK)
                 {
                     if (!string.IsNullOrEmpty(UserEmailAddress.Text))
                     {
-                        _telemetry.Write(_operation, "Exception(Data)", UserEmailAddress.Text);
+                        _telemetry.Write(_operation, LoggingLevel.ExceptionData, UserEmailAddress.Text);
                     }
                     if (!string.IsNullOrEmpty(UserComments.Text))
                     {
-                        _telemetry.Write(_operation, "Exception(Data)", UserComments.Text);
+                        _telemetry.Write(_operation, LoggingLevel.ExceptionData, UserComments.Text);
                     }
                 }
             }
@@ -108,7 +108,7 @@ namespace Chem4Word.Core.UI.Forms
         private void KBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
-            _telemetry.Write(module, "Action", "Triggered");
+            _telemetry.Write(module, LoggingLevel.Action, "Triggered");
             Process.Start("https://www.chem4word.co.uk/knowledge-base/");
         }
     }

@@ -20,9 +20,9 @@ namespace Chem4Word.Searcher.ExamplePlugIn
     public partial class ExampleSettings : Form
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
-        public System.Windows.Point TopLeft { get; set; }
+        public Point TopLeft { get; set; }
 
         public IChem4WordTelemetry Telemetry { get; set; }
 
@@ -39,10 +39,10 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void OnLoad_Settings(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
 
                 if (!PointHelper.PointIsEmpty(TopLeft))
                 {
@@ -64,7 +64,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void OnCheckedChanged_Property1(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 SearcherOptions.Property1 = Property1.Checked;
@@ -78,7 +78,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void OnCheckedChanged_Property2(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 SearcherOptions.Property2 = Property2.Checked;
@@ -92,7 +92,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void OnClick_SetDefaults(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 DialogResult dr = UserInteractions.AskUserOkCancel("Restore default settings");
@@ -111,7 +111,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void OnClick_Ok(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 SearcherOptions.Save();
@@ -133,7 +133,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         private void OnFormClosing_Settings(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (_dirty)

@@ -20,7 +20,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
     public class Searcher : IChem4WordSearcher
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
         public int DisplayOrder => -1; // if less than zero don't show
         public string ShortName => "Example";
@@ -45,10 +45,10 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         public bool ChangeSettings(Point topLeft)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
                 _searcherOptions = new ExampleOptions(SettingsPath);
 
                 ExampleSettings settings = new ExampleSettings();
@@ -75,7 +75,7 @@ namespace Chem4Word.Searcher.ExamplePlugIn
 
         public DialogResult Search()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             DialogResult dr = DialogResult.Cancel;
 
             try

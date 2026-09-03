@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ namespace Chem4Word.WebServices
 
         public ChemicalServicesResult GetChemicalServicesResult(string molfile)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             DateTime started = DateTime.UtcNow;
 
@@ -86,20 +86,20 @@ namespace Chem4Word.WebServices
                                 }
                                 catch (Exception e3)
                                 {
-                                    Telemetry.Write(module, "Exception", e3.Message);
-                                    Telemetry.Write(module, "Exception(Data)", jsonContent);
+                                    Telemetry.Write(module, LoggingLevel.Exception, e3.Message);
+                                    Telemetry.Write(module, LoggingLevel.ExceptionData, jsonContent);
                                 }
 
                                 if (data != null)
                                 {
                                     if (data.Messages.Any())
                                     {
-                                        Telemetry.Write(module, "Timing", string.Join(Environment.NewLine, data.Messages));
+                                        Telemetry.Write(module, LoggingLevel.Timing, string.Join(Environment.NewLine, data.Messages));
                                     }
 
                                     if (data.Errors.Any())
                                     {
-                                        Telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, data.Errors));
+                                        Telemetry.Write(module, LoggingLevel.ExceptionData, string.Join(Environment.NewLine, data.Errors));
                                     }
                                 }
                             }
@@ -107,15 +107,15 @@ namespace Chem4Word.WebServices
                     }
                     catch (Exception e2)
                     {
-                        Telemetry.Write(module, "Exception", e2.Message);
-                        Telemetry.Write(module, "Exception", e2.ToString());
+                        Telemetry.Write(module, LoggingLevel.Exception, e2.Message);
+                        Telemetry.Write(module, LoggingLevel.Exception, e2.ToString());
                     }
                 }
             }
             catch (Exception e1)
             {
-                Telemetry.Write(module, "Exception", e1.Message);
-                Telemetry.Write(module, "Exception", e1.ToString());
+                Telemetry.Write(module, LoggingLevel.Exception, e1.Message);
+                Telemetry.Write(module, LoggingLevel.Exception, e1.ToString());
             }
             finally
             {
@@ -125,7 +125,7 @@ namespace Chem4Word.WebServices
             DateTime ended = DateTime.UtcNow;
             TimeSpan duration = ended - started;
 
-            Telemetry.Write(module, "Timing", $"Calling Azure http Function Took {SafeDouble.Duration(duration.TotalMilliseconds)}ms");
+            Telemetry.Write(module, LoggingLevel.Timing, $"Calling Azure http Function Took {SafeDouble.Duration(duration.TotalMilliseconds)}ms");
 
             return data;
         }

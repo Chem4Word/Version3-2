@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
         /// <returns></returns>
         public static string CreateFromCml(string cml, string guid, OoXmlV4Options options, IChem4WordTelemetry telemetry, Point topLeft)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var cc = new CMLConverter();
             var model = cc.Import(cml);
@@ -46,12 +46,12 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
             {
                 if (model.AllErrors.Count > 0)
                 {
-                    telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllErrors));
+                    telemetry.Write(module, LoggingLevel.ExceptionData, string.Join(Environment.NewLine, model.AllErrors));
                 }
 
                 if (model.AllWarnings.Count > 0)
                 {
-                    telemetry.Write(module, "Exception(Data)", string.Join(Environment.NewLine, model.AllWarnings));
+                    telemetry.Write(module, LoggingLevel.ExceptionData, string.Join(Environment.NewLine, model.AllWarnings));
                 }
             }
 

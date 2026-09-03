@@ -32,7 +32,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
     public partial class SearchPubChem : Form
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
         private const string SearchForTemplate = "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}";
         private const string FindMoreTemplate = "{0}entrez/eutils/esearch.fcgi?db=pccompound&term={1}&retmode=xml&relevanceorder=on&usehistory=y&retmax={2}&WebEnv={3}&RetStart={4}";
@@ -67,7 +67,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnLoad_SearchPubChem(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!PointHelper.PointIsEmpty(TopLeft))
@@ -106,12 +106,12 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnClick_SearchButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
             string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
 
-            Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
+            Telemetry.Write(module, LoggingLevel.Search, $"User searched for '{searchFor}'");
 
             ErrorsAndWarnings.Text = "";
             display1.Clear();
@@ -123,7 +123,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnClick_PreviousButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
             string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
@@ -137,7 +137,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnClick_NextButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
             string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
@@ -151,7 +151,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnClick_ImportButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 DialogResult = DialogResult.OK;
@@ -165,7 +165,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnSelectedIndexChanged_Results(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 ListView.SelectedListViewItemCollection selected = Results.SelectedItems;
@@ -177,17 +177,23 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
                     if (!_structureCache.TryGetValue(pubChemId, out string sdFile))
                     {
+                        Stopwatch stopwatch = new Stopwatch();
+                        stopwatch.Start();
+
                         sdFile = FetchStructure(pubChemId);
                         if (!string.IsNullOrEmpty(sdFile))
                         {
                             _structureCache.Add(pubChemId, sdFile);
                         }
+
+                        stopwatch.Stop();
+                        Telemetry.Write(module, LoggingLevel.Information, $"Fetching structure for '{pubChemId}' took {stopwatch.Elapsed}");
                     }
                     else
                     {
                         if (Debugger.IsAttached)
                         {
-                            Telemetry.Write(module, "Information", $"Structure '{pubChemId}' found in cache");
+                            Telemetry.Write(module, LoggingLevel.Information, $"Structure '{pubChemId}' found in cache");
                         }
                     }
 
@@ -205,7 +211,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnDoubleClick_Results(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Debug.WriteLine("OnDoubleClick_Results");
@@ -220,14 +226,17 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void ExecuteSearch(string webSafe, int direction)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             using (new WaitCursor())
             {
                 try
                 {
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
                     string webCall = string.Empty;
-                    int startFrom;
+                    int startFrom = 0;
 
                     switch (direction)
                     {
@@ -254,21 +263,38 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                     ApiResult apiResult = HttpHelper.InvokeGet(webCall);
                     if (apiResult.StatusCode == HttpStatusCode.OK)
                     {
-                        if (ParseResponseBody(apiResult.Content))
+                        if (apiResult.Content.ToLower().Contains("<!doctype html"))
                         {
-                            EnableButtons();
-                            FillListView();
+                            Telemetry.Write(module, LoggingLevel.Warning, "Showing user html result of web call");
+                            Telemetry.Write(module, LoggingLevel.WarningData, apiResult.Content.Trim());
+
+                            Screen screen = Screen.FromControl(SearchButton);
+                            HtmlViewer viewer = new HtmlViewer(new Point(TopLeft.X + Constants.TopLeftOffset, TopLeft.Y + Constants.TopLeftOffset), screen, "EXTERNAL PubChem Search Error", apiResult.Content);
+                            viewer.ShowDialog(this);
+                        }
+                        else
+                        {
+                            if (ParseResponseBody(apiResult.Content))
+                            {
+                                Telemetry.Write(module, LoggingLevel.Search, $"Showing {_firstResult + 1} to {_lastResult} [of {_resultsCount}]");
+                                EnableButtons();
+                                FillListView();
+                            }
                         }
                     }
                     else
                     {
-                        Telemetry.Write(module, "Exception", $"{apiResult.StatusCode} - {apiResult.Message}");
+                        if (!string.IsNullOrEmpty(apiResult.Content))
+                        {
+                            Telemetry.Write(module, LoggingLevel.SearchFailureData, apiResult.Content.Trim());
+                        }
+                        Telemetry.Write(module, LoggingLevel.SearchFailure, $"{apiResult.StatusCode} - {apiResult.Message}");
                     }
                 }
                 catch (Exception exception)
                 {
-                    Telemetry.Write(module, "Exception", exception.Message);
-                    Telemetry.Write(module, "Exception", exception.StackTrace);
+                    Telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                    Telemetry.Write(module, LoggingLevel.StackTrace, exception.StackTrace);
                 }
             }
         }
@@ -296,7 +322,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void FillListView()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             Results.Items.Clear();
             Refresh();
@@ -305,7 +331,6 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             {
                 // Set form title
                 Text = $"Search PubChem - Showing {_firstResult + 1} to {_lastResult} [of {_resultsCount}]";
-
                 GetData(string.Join(",", _ids));
             }
             else
@@ -316,7 +341,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private bool ParseResponseBody(string responseBody)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool result = true;
             if (!string.IsNullOrEmpty(responseBody))
@@ -342,7 +367,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                     result = false;
                     foreach (string error in errors)
                     {
-                        Telemetry.Write(module, "Exception", error);
+                        Telemetry.Write(module, LoggingLevel.SearchFailure, error);
                     }
                 }
 
@@ -350,7 +375,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                 {
                     foreach (string warning in warnings)
                     {
-                        Telemetry.Write(module, "Warning", warning);
+                        Telemetry.Write(module, LoggingLevel.SearchFailure, warning);
                     }
                 }
 
@@ -400,7 +425,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void GetData(string idlist)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string webCall = string.Format(CultureInfo.InvariantCulture, GetDetailsTemplate,
                                            UserOptions.PubChemWebServiceUri, idlist);
@@ -408,42 +433,54 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             ApiResult apiResult = HttpHelper.InvokeGet(webCall);
             if (apiResult.StatusCode == HttpStatusCode.OK)
             {
-                XDocument xDocument = XDocument.Parse(apiResult.Content);
-                if (xDocument != null)
+                if (apiResult.Content.ToLower().Contains("<!doctype html"))
                 {
-                    IEnumerable<XElement> compounds = xDocument.XPathSelectElements("//DocSum");
-                    if (compounds.Any())
-                    {
-                        foreach (XElement compound in compounds)
-                        {
-                            XElement id = compound.XPathSelectElement("./Id");
-                            XElement name = compound.XPathSelectElement("./Item[@Name='IUPACName']");
-                            XElement formula = compound.XPathSelectElement("./Item[@Name='MolecularFormula']");
-                            ListViewItem lvi = new ListViewItem(id.Value);
+                    Telemetry.Write(module, LoggingLevel.Warning, "Showing user html result of web call");
+                    Telemetry.Write(module, LoggingLevel.WarningData, apiResult.Content.Trim());
 
-                            lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, name.Value));
-                            lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, formula.Value));
-
-                            Results.Items.Add(lvi);
-                            // Add to a list view ...
-                        }
-
-                        Results.Enabled = true;
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Something went wrong");
-                        Debugger.Break();
-                    }
+                    Screen screen = Screen.FromControl(SearchButton);
+                    HtmlViewer viewer = new HtmlViewer(new Point(TopLeft.X + Constants.TopLeftOffset, TopLeft.Y + Constants.TopLeftOffset), screen, "EXTERNAL PubChem Search Error", apiResult.Content);
+                    viewer.ShowDialog(this);
                 }
                 else
                 {
-                    Telemetry.Write(module, "Exception", $"Error parsing {apiResult.Content}");
+                    XDocument xDocument = XDocument.Parse(apiResult.Content);
+                    if (xDocument != null)
+                    {
+                        IEnumerable<XElement> compounds = xDocument.XPathSelectElements("//DocSum").ToList();
+                        if (compounds.Any())
+                        {
+                            foreach (XElement compound in compounds)
+                            {
+                                XElement id = compound.XPathSelectElement("./Id");
+                                XElement name = compound.XPathSelectElement("./Item[@Name='IUPACName']");
+                                XElement formula = compound.XPathSelectElement("./Item[@Name='MolecularFormula']");
+
+                                ListViewItem lvi = new ListViewItem(id?.Value);
+                                lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, name?.Value));
+                                lvi.SubItems.Add(new ListViewItem.ListViewSubItem(lvi, formula?.Value));
+
+                                Results.Items.Add(lvi);
+                                // Add to a list view ...
+                            }
+
+                            Results.Enabled = true;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Something went wrong");
+                            Debugger.Break();
+                        }
+                    }
                 }
             }
             else
             {
-                Telemetry.Write(module, "Exception", $"{apiResult.StatusCode} - {apiResult.Message}");
+                if (!string.IsNullOrEmpty(apiResult.Content))
+                {
+                    Telemetry.Write(module, LoggingLevel.ExceptionData, apiResult.Content.Trim());
+                }
+                Telemetry.Write(module, LoggingLevel.Exception, $"{apiResult.StatusCode} - {apiResult.Message}");
             }
         }
 
@@ -460,7 +497,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void DisplayStructure(string sdFile)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             SdFileConverter sdFileConverter = new SdFileConverter();
             Model model = sdFileConverter.Import(sdFile);
@@ -473,20 +510,18 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
             if (model.AllWarnings.Count > 0 || model.AllErrors.Count > 0)
             {
-                Telemetry.Write(module, "Exception(Data)", _lastMolfile);
+                Telemetry.Write(module, LoggingLevel.ExceptionMol, _lastMolfile);
                 List<string> lines = new List<string>();
                 if (model.AllErrors.Count > 0)
                 {
-                    Telemetry.Write(module, "Exception(Data)",
-                                    string.Join(Environment.NewLine, model.AllErrors));
+                    Telemetry.Write(module, LoggingLevel.ExceptionData, string.Join(Environment.NewLine, model.AllErrors));
                     lines.Add("Errors(s)");
                     lines.AddRange(model.AllErrors);
                 }
 
                 if (model.AllWarnings.Count > 0)
                 {
-                    Telemetry.Write(module, "Warning",
-                                    string.Join(Environment.NewLine, model.AllWarnings));
+                    Telemetry.Write(module, LoggingLevel.WarningData, string.Join(Environment.NewLine, model.AllWarnings));
                     lines.Add("Warnings(s)");
                     lines.AddRange(model.AllWarnings);
                 }
@@ -501,7 +536,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private string FetchStructure(string pubChemId)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string result = string.Empty;
 
@@ -509,7 +544,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
             {
                 try
                 {
-                    Telemetry.Write(module, "Information", $"Fetching structure for '{pubChemId}'");
+                    Telemetry.Write(module, LoggingLevel.Search, $"Fetching structure for '{pubChemId}'");
 
                     string webCall = string.Format(CultureInfo.InvariantCulture, FetchStructureTemplate,
                                                    UserOptions.PubChemRestApiUri, pubChemId);
@@ -524,6 +559,10 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                     }
                     else
                     {
+                        if (!string.IsNullOrEmpty(apiResult.Content))
+                        {
+                            Telemetry.Write(module, LoggingLevel.ExceptionData, apiResult.Content.Trim());
+                        }
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine($"Bad request. Status code: {apiResult.StatusCode}");
                         UserInteractions.AlertUser(sb.ToString());
@@ -531,8 +570,8 @@ namespace Chem4Word.Searcher.PubChemPlugIn
                 }
                 catch (Exception exception)
                 {
-                    Telemetry.Write(module, "Exception", exception.Message);
-                    Telemetry.Write(module, "Exception", exception.StackTrace);
+                    Telemetry.Write(module, LoggingLevel.Exception, exception.Message);
+                    Telemetry.Write(module, LoggingLevel.StackTrace, exception.StackTrace);
                 }
             }
 
@@ -541,7 +580,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         private void OnFormClosing_SearchPubChem(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (DialogResult != DialogResult.OK)

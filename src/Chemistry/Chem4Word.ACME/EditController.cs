@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -338,7 +338,7 @@ namespace Chem4Word.ACME
         //sets all selected reactions to the currently applied type
         public void SetReactionType(ReactionType value, Reaction parentReaction = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 List<Reaction> reactions;
@@ -351,7 +351,7 @@ namespace Chem4Word.ACME
                     reactions = new List<Reaction> { parentReaction };
                 }
                 var affectedReactions = reactions.Count;
-                WriteTelemetry(module, "Debug", $"Type: {SelectedReactionType}; Affected Reactions {affectedReactions}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Type: {SelectedReactionType}; Affected Reactions {affectedReactions}");
 
                 if (reactions.Any())
                 {
@@ -832,12 +832,12 @@ namespace Chem4Word.ACME
 
         public void SetElement(ElementBase value, List<Atom> selAtoms)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var affectedAtoms = selAtoms == null ? "{null}" : selAtoms.Count.ToString();
                 var countString = selAtoms == null ? "{null}" : $"{selAtoms.Count}";
-                WriteTelemetry(module, "Debug", $"Atoms: {countString}; Symbol: {value?.Symbol ?? "{null}"}; Affected Atoms {affectedAtoms}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Atoms: {countString}; Symbol: {value?.Symbol ?? "{null}"}; Affected Atoms {affectedAtoms}");
 
                 if (selAtoms != null && selAtoms.Any())
                 {
@@ -890,8 +890,8 @@ namespace Chem4Word.ACME
 
         public void SetExplicitHPlacement(Atom selAtom, CompassPoints? newPlacement)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            WriteTelemetry(module, "Debug", $"{selAtom}; Placement {newPlacement}");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            WriteTelemetry(module, LoggingLevel.Debug, $"{selAtom}; Placement {newPlacement}");
             var oldPlacement = selAtom.ImplicitHPlacement;
 
             Action undo = () =>
@@ -922,7 +922,7 @@ namespace Chem4Word.ACME
 
         private void SetBondOption()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (_selectedBondOptionId != null)
@@ -930,7 +930,7 @@ namespace Chem4Word.ACME
                     var bondOption = _bondOptions[_selectedBondOptionId.Value];
                     var stereoValue = bondOption.Stereo.HasValue ? bondOption.Stereo.Value.ToString() : "{null}";
                     var affectedBonds = SelectedItems.OfType<Bond>().Count();
-                    WriteTelemetry(module, "Debug", $"Order: {bondOption.Order}; Stereo: {stereoValue}; Affected Bonds: {affectedBonds}");
+                    WriteTelemetry(module, LoggingLevel.Debug, $"Order: {bondOption.Order}; Stereo: {stereoValue}; Affected Bonds: {affectedBonds}");
 
                     if (SelectedItems.OfType<Bond>().Any())
                     {
@@ -962,8 +962,8 @@ namespace Chem4Word.ACME
                 }
                 else
                 {
-                    WriteTelemetry(module, "Warning", "_selectedBondOptionId is {null}");
-                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    WriteTelemetry(module, LoggingLevel.Warning, "_selectedBondOptionId is {null}");
+                    WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                     Debugger.Break();
                 }
             }
@@ -977,10 +977,10 @@ namespace Chem4Word.ACME
 
         public void IncreaseBondOrder(Bond existingBond)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 var stereo = existingBond.Stereo;
                 var order = existingBond.Order;
@@ -1079,12 +1079,12 @@ namespace Chem4Word.ACME
 
         public void TransformAtoms(Transform operation, List<Atom> atoms)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var countString = atoms == null ? "{null}" : $"{atoms.Count}";
                 var transform = string.Join(";", DecodeTransform(operation));
-                WriteTelemetry(module, "Debug", $"Atoms: {countString} Transform: {transform}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Atoms: {countString} Transform: {transform}");
 
                 if (atoms.Any())
                 {
@@ -1144,7 +1144,7 @@ namespace Chem4Word.ACME
 
         public void TransformObjects(Transform operation, List<BaseObject> objectsToTransform)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             var molecules = objectsToTransform.OfType<Molecule>().ToList();
             var reactions = objectsToTransform.OfType<Reaction>().ToList();
             var annotations = objectsToTransform.OfType<Annotation>().ToList();
@@ -1169,12 +1169,12 @@ namespace Chem4Word.ACME
 
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
-                                      WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
+                                      WriteTelemetry(module, LoggingLevel.Debug, $"Molecules: {countMolString} Transform: {transform}");
                                       Transform(moleculesToTransform[i], (Transform)inverse);
                                   }
 
-                                  WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
-                                  WriteTelemetry(module, "Debug", $"Annotations: {countAnnotationString} Transform: {transform}");
+                                  WriteTelemetry(module, LoggingLevel.Debug, $"Reactions: {countReactString} Transform: {transform}");
+                                  WriteTelemetry(module, LoggingLevel.Debug, $"Annotations: {countAnnotationString} Transform: {transform}");
 
                                   foreach (Reaction reaction in reactions)
                                   {
@@ -1212,12 +1212,12 @@ namespace Chem4Word.ACME
                                   ClearSelection();
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
-                                      WriteTelemetry(module, "Debug", $"Molecules: {countMolString} Transform: {transform}");
+                                      WriteTelemetry(module, LoggingLevel.Debug, $"Molecules: {countMolString} Transform: {transform}");
                                       Transform(moleculesToTransform[i], operation);
                                   }
 
-                                  WriteTelemetry(module, "Debug", $"Reactions: {countReactString} Transform: {transform}");
-                                  WriteTelemetry(module, "Debug", $"Annotations: {countAnnotationString} Transform: {transform}");
+                                  WriteTelemetry(module, LoggingLevel.Debug, $"Reactions: {countReactString} Transform: {transform}");
+                                  WriteTelemetry(module, LoggingLevel.Debug, $"Annotations: {countAnnotationString} Transform: {transform}");
 
                                   foreach (Reaction reaction in reactions)
                                   {
@@ -1282,7 +1282,7 @@ namespace Chem4Word.ACME
 
         public void MultiTransformMolecules(List<Transform> operation, List<Molecule> molecules)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var countString = molecules == null ? "{null}" : $"{molecules.Count}";
@@ -1299,7 +1299,7 @@ namespace Chem4Word.ACME
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
-                                      WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
+                                      WriteTelemetry(module, LoggingLevel.Debug, $"Molecules: {countString} Transform: {transform}");
                                       var inverse = operation[i].Inverse;
                                       Transform(moleculesToTransform[i], (Transform)inverse);
                                   }
@@ -1319,7 +1319,7 @@ namespace Chem4Word.ACME
                                   for (int i = 0; i < moleculesToTransform.Count(); i++)
                                   {
                                       var transform = string.Join(";", DecodeTransform(operation[i]));
-                                      WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
+                                      WriteTelemetry(module, LoggingLevel.Debug, $"Molecules: {countString} Transform: {transform}");
                                       Transform(moleculesToTransform[i], operation[i]);
                                   }
                                   SuppressEditorRedraw(false);
@@ -1346,12 +1346,12 @@ namespace Chem4Word.ACME
 
         public void TransformMoleculeList(Transform operation, List<Molecule> molecules)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var countString = molecules == null ? "{null}" : $"{molecules.Count}";
                 var transform = string.Join(";", DecodeTransform(operation));
-                WriteTelemetry(module, "Debug", $"Molecules: {countString} Transform: {transform}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Molecules: {countString} Transform: {transform}");
 
                 var inverse = operation.Inverse;
                 if (inverse != null)
@@ -1418,10 +1418,10 @@ namespace Chem4Word.ACME
 
         public void SwapBondDirection(Bond bond)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 var startAtom = bond.StartAtom;
                 var endAtom = bond.EndAtom;
@@ -1455,12 +1455,12 @@ namespace Chem4Word.ACME
 
         public void SetBondAttributes(Bond bond, string newOrder = null, BondStereo? newStereo = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var orderParameter = newOrder ?? CurrentBondOrder;
                 var stereoParameter = newStereo ?? CurrentStereo;
-                WriteTelemetry(module, "Debug", $"Order: {orderParameter}; Stereo: {stereoParameter}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Order: {orderParameter}; Stereo: {stereoParameter}");
 
                 var order = bond.Order;
                 var stereo = bond.Stereo;
@@ -1562,14 +1562,14 @@ namespace Chem4Word.ACME
                 }
 
                 var orderInfo = order ?? CurrentBondOrder;
-                WriteTelemetry(module, "Debug", $"StartAtom: {startAtomInfo}; EndAtom: {endAtomInfo}; BondOrder; {orderInfo}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"StartAtom: {startAtomInfo}; EndAtom: {endAtomInfo}; BondOrder; {orderInfo}");
 
                 // Bond can be created if both atoms are children of the molecule passed in
                 var canAdd = a.Parent == mol && b.Parent == mol;
                 if (!canAdd)
                 {
-                    WriteTelemetry(module, "Warning", $"Not adding bond to molecule because atoms don't have same parent molecule{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
-                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    WriteTelemetry(module, LoggingLevel.Warning, $"Not adding bond to molecule because atoms don't have same parent molecule{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                     Debugger.Break();
                 }
 
@@ -1577,8 +1577,8 @@ namespace Chem4Word.ACME
                 canAdd = a.InternalId != b.InternalId;
                 if (!canAdd)
                 {
-                    WriteTelemetry(module, "Warning", $"Not adding bond to molecule because StartAtom == EndAtom{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
-                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    WriteTelemetry(module, LoggingLevel.Warning, $"Not adding bond to molecule because StartAtom == EndAtom{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                     Debugger.Break();
                 }
 
@@ -1664,8 +1664,8 @@ namespace Chem4Word.ACME
                 }
                 else
                 {
-                    WriteTelemetry(module, "Warning", $"Molecule: {mol.Path}{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
-                    WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                    WriteTelemetry(module, LoggingLevel.Warning, $"Molecule: {mol.Path}{Environment.NewLine}StartAtom: {a.Path} EndAtom: {b.Path}");
+                    WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                     Debugger.Break();
                 }
             }
@@ -1690,12 +1690,12 @@ namespace Chem4Word.ACME
         public Atom AddAtomChain(Atom lastAtom, Point newAtomPos, ClockDirections dir, ElementBase elem = null,
                                  string bondOrder = null, BondStereo? stereo = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var atomInfo = lastAtom == null ? "{null}" : $"{lastAtom.Element.Symbol} @ {PointHelper.AsString(lastAtom.Position)}";
                 var eleInfo = elem == null ? $"{_selectedElement.Symbol}" : $"{elem.Symbol}";
-                WriteTelemetry(module, "Debug", $"LastAtom: {atomInfo}; NewAtom: {eleInfo} @ {PointHelper.AsString(newAtomPos)}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"LastAtom: {atomInfo}; NewAtom: {eleInfo} @ {PointHelper.AsString(newAtomPos)}");
 
                 //create the new atom based on the current selection
                 Atom newAtom = new Atom { Element = elem ?? _selectedElement, Position = newAtomPos };
@@ -1806,10 +1806,10 @@ namespace Chem4Word.ACME
         /// <param name="reaction">New reaction to add.</param>
         public void AddReaction(Reaction reaction)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Adding a reaction");
+                WriteTelemetry(module, LoggingLevel.Debug, "Adding a reaction");
 
                 Action redo = () =>
                 {
@@ -1842,10 +1842,10 @@ namespace Chem4Word.ACME
 
         public void SetAverageBondLength(double newLength)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Length {newLength / ScaleFactorForXaml}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Length {newLength / ScaleFactorForXaml}");
 
                 var currentLength = Model.MeanBondLength;
                 var currentSelection = Math.Round(currentLength / ScaleFactorForXaml / 5.0) * 5 * ScaleFactorForXaml;
@@ -1897,10 +1897,10 @@ namespace Chem4Word.ACME
 
         public void CopySelection()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 CMLConverter converter = new CMLConverter();
                 Model tempModel = new Model();
@@ -2021,10 +2021,10 @@ namespace Chem4Word.ACME
 
         public void CutSelection()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 UndoManager.BeginUndoBlock();
                 CopySelection();
@@ -2100,7 +2100,7 @@ namespace Chem4Word.ACME
 
         public void RemoveAllAdorners()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -2126,7 +2126,7 @@ namespace Chem4Word.ACME
 
         public void UpdateAtomBondAdorners()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (MultiAdorner != null)
@@ -2337,11 +2337,11 @@ namespace Chem4Word.ACME
         /// <param name="startAt"></param>
         public void DrawRing(List<NewAtomPlacement> newAtomPlacements, bool unsaturated, int startAt = 0)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var count = newAtomPlacements == null ? "{null}" : $"{newAtomPlacements.Count}";
-                WriteTelemetry(module, "Debug", $"Atoms: {count}; Unsaturated: {unsaturated}; StartAt: {startAt}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Atoms: {count}; Unsaturated: {unsaturated}; StartAt: {startAt}");
                 if (VerifyRingPlacements(newAtomPlacements))
                 {
                     UndoManager.BeginUndoBlock();
@@ -2362,8 +2362,8 @@ namespace Chem4Word.ACME
                                                       OrderSingle, BondStereo.None);
                             if (insertedAtom == null)
                             {
-                                WriteTelemetry(module, "Warning", "Inserted Atom is null");
-                                WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                                WriteTelemetry(module, LoggingLevel.Warning, "Inserted Atom is null");
+                                WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                                 Debugger.Break();
                             }
 
@@ -2410,7 +2410,6 @@ namespace Chem4Word.ACME
                         atomPlacement.ExistingAtom.UpdateVisual();
                     }
                 }
-
 
                 //local function
                 void MakeRingUnsaturated(List<NewAtomPlacement> list)
@@ -2469,13 +2468,13 @@ namespace Chem4Word.ACME
 
         public void DrawChain(List<Point> placements, Atom startAtom = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var atomInfo = startAtom == null ? "{null}" : $"{startAtom.SymbolText} @ {PointHelper.AsString(startAtom.Position)}";
                 var count = placements == null ? "{null}" : $"{placements.Count}";
-                WriteTelemetry(module, "Debug", $"Atoms: {count}; StartAtom: {atomInfo}");
-                WriteTelemetry(module, "Debug", ListChainPoints(placements));
+                WriteTelemetry(module, LoggingLevel.Debug, $"Atoms: {count}; StartAtom: {atomInfo}");
+                WriteTelemetry(module, LoggingLevel.Debug, ListChainPoints(placements));
 
                 UndoManager.BeginUndoBlock();
                 Atom lastAtom = startAtom;
@@ -2485,8 +2484,8 @@ namespace Chem4Word.ACME
                                             stereo: BondStereo.None);
                     if (lastAtom == null)
                     {
-                        WriteTelemetry(module, "Warning", "lastAtom is null");
-                        WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                        WriteTelemetry(module, LoggingLevel.Warning, "lastAtom is null");
+                        WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                         Debugger.Break();
                     }
                 }
@@ -2497,8 +2496,8 @@ namespace Chem4Word.ACME
                                             stereo: BondStereo.None);
                     if (lastAtom == null)
                     {
-                        WriteTelemetry(module, "Warning", "lastAtom is null");
-                        WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                        WriteTelemetry(module, LoggingLevel.Warning, "lastAtom is null");
+                        WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                         Debugger.Break();
                     }
                     if (placement != placements.Last())
@@ -2528,10 +2527,10 @@ namespace Chem4Word.ACME
 
         private void DeleteMolecules(IEnumerable<Molecule> mols)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 UndoManager.BeginUndoBlock();
 
@@ -2550,10 +2549,10 @@ namespace Chem4Word.ACME
 
         public void DeleteMolecule(Molecule mol)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 Action redo = () =>
                               {
@@ -2584,12 +2583,12 @@ namespace Chem4Word.ACME
 
         public void AddHydrogens()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var newBondLength = CurrentBondLength * ScaleFactorForXaml;
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 List<Atom> targetAtoms = new List<Atom>();
                 var mols = SelectedItems.OfType<Molecule>().ToList();
@@ -2771,10 +2770,10 @@ namespace Chem4Word.ACME
 
         public void RemoveHydrogens()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 HydrogenTargets targets;
                 var molecules = SelectedItems.OfType<Molecule>().ToList();
@@ -2940,10 +2939,10 @@ namespace Chem4Word.ACME
 
         public void FlipMolecule(Molecule selMolecule, bool flipVertically, bool flipStereo)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 int scaleX = 1;
                 int scaleY = 1;
@@ -3056,7 +3055,7 @@ namespace Chem4Word.ACME
 
         public void AddObjectListToSelection(List<BaseObject> thingsToAdd)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -3213,7 +3212,7 @@ namespace Chem4Word.ACME
 
         public void ClearSelection()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 _selectedItems.Clear();
@@ -3226,7 +3225,7 @@ namespace Chem4Word.ACME
 
         public void RemoveFromSelection(object thingToRemove)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -3240,7 +3239,7 @@ namespace Chem4Word.ACME
 
         private void RemoveFromSelection(List<object> thingsToRemove)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 // grab all the molecules that contain selected objects
@@ -3303,7 +3302,7 @@ namespace Chem4Word.ACME
 
         public void JoinMolecules(Atom a, Atom b, string currentOrder, BondStereo currentStereo)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var startAtomInfo = "{null}";
@@ -3333,7 +3332,7 @@ namespace Chem4Word.ACME
                 }
 
                 var orderInfo = currentOrder ?? CurrentBondOrder;
-                WriteTelemetry(module, "Debug", $"StartAtom: {startAtomInfo}; EndAtom: {endAtomInfo}; BondOrder; {orderInfo}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"StartAtom: {startAtomInfo}; EndAtom: {endAtomInfo}; BondOrder; {orderInfo}");
 
                 Molecule molA = a.Parent;
                 Molecule molB = b.Parent;
@@ -3386,11 +3385,11 @@ namespace Chem4Word.ACME
 
         public void DeleteAtoms(IEnumerable<Atom> atoms)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var countString = atoms == null ? "{null}" : $"{atoms.Count()}";
-                WriteTelemetry(module, "Debug", $"Atoms: {countString}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Atoms: {countString}");
 
                 var atomList = atoms.ToArray();
                 //Add all the selected atoms to a set A
@@ -3435,13 +3434,13 @@ namespace Chem4Word.ACME
         ///
         public void DeleteAtomsAndBonds(IEnumerable<Atom> atomlist = null, IEnumerable<Bond> bondList = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var count1 = atomlist == null ? "{null}" : $"{atomlist.Count()}";
                 var count2 = bondList == null ? "{null}" : $"{bondList.Count()}";
 
-                WriteTelemetry(module, "Debug", $"Atoms: {count1}; Bonds: {count2}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Atoms: {count1}; Bonds: {count2}");
 
                 HashSet<Atom> deleteAtoms = new HashSet<Atom>();
                 HashSet<Bond> deleteBonds = new HashSet<Bond>();
@@ -3758,11 +3757,11 @@ namespace Chem4Word.ACME
 
         public void DeleteBonds(IEnumerable<Bond> bonds)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var countString = bonds == null ? "{null}" : $"{bonds.Count()}";
-                WriteTelemetry(module, "Debug", $"Bonds {countString}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Bonds {countString}");
 
                 DeleteAtomsAndBonds(bondList: bonds);
             }
@@ -3778,10 +3777,10 @@ namespace Chem4Word.ACME
 
         public void UpdateAtom(Atom atom, AtomPropertiesModel model)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 ElementBase elementBaseBefore = atom.Element;
                 int? chargeBefore = atom.FormalCharge;
@@ -3861,10 +3860,10 @@ namespace Chem4Word.ACME
 
         public void UpdateMolecule(Molecule target, Molecule source)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 bool? showBefore = target.ShowMoleculeBrackets;
                 bool? showAfter = source.ShowMoleculeBrackets;
@@ -3935,10 +3934,10 @@ namespace Chem4Word.ACME
 
         public void UpdateBond(Bond bond, BondPropertiesModel model)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 double bondOrderBefore = bond.OrderValue.Value;
                 BondStereo stereoBefore = bond.Stereo;
@@ -4125,10 +4124,10 @@ namespace Chem4Word.ACME
 
         public void PasteCML(string pastedCml)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 CMLConverter cc = new CMLConverter();
                 Model buffer = cc.Import(pastedCml);
@@ -4142,10 +4141,10 @@ namespace Chem4Word.ACME
 
         public void PasteModel(Model buffer, bool fromCML = false)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
                 // Match to current model's settings
                 buffer.Relabel(true);
                 // above should be buffer.StripLabels(true)
@@ -4232,10 +4231,10 @@ namespace Chem4Word.ACME
 
         public void DeleteSelection()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 var atoms = SelectedItems.OfType<Atom>().ToList();
                 var bonds = SelectedItems.OfType<Bond>().ToList();
@@ -4274,10 +4273,10 @@ namespace Chem4Word.ACME
 
         public void DeleteAnnotations(IEnumerable<Annotation> annotations)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
                 {
                     UndoManager.BeginUndoBlock();
                     foreach (Annotation a in annotations)
@@ -4310,10 +4309,10 @@ namespace Chem4Word.ACME
 
         internal void DeleteReactions(IEnumerable<Reaction> reactions)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
                 {
                     UndoManager.BeginUndoBlock();
                     foreach (Reaction r in reactions)
@@ -4349,10 +4348,10 @@ namespace Chem4Word.ACME
         /// <param name="selection">Active selection within the editor</param>
         public void UnGroup(IEnumerable<object> selection)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 List<Molecule> selGroups;
                 //grab just the grouped molecules first
@@ -4369,7 +4368,7 @@ namespace Chem4Word.ACME
 
         private void UnGroup(List<Molecule> selGroups)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 //keep track of parent child relationships for later
@@ -4450,7 +4449,7 @@ namespace Chem4Word.ACME
         /// <param name="selection">Observable collection of ChemistryBase objects</param>
         public void Group(IEnumerable<object> selection)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 //grab just the molecules (to be grouped)
@@ -4470,10 +4469,10 @@ namespace Chem4Word.ACME
         /// <param name="children">List of child molecules</param>
         private void Group(List<Molecule> children)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Called");
+                WriteTelemetry(module, LoggingLevel.Debug, "Called");
 
                 Molecule parent = new Molecule();
                 Action redo = () =>
@@ -4535,7 +4534,7 @@ namespace Chem4Word.ACME
         /// </summary>
         public void SelectAll()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 ClearSelection();
@@ -4562,7 +4561,7 @@ namespace Chem4Word.ACME
             }
         }
 
-        private void WriteTelemetry(string source, string level, string message)
+        private void WriteTelemetry(string source, LoggingLevel level, string message)
         {
             Telemetry?.Write(source, level, message);
         }
@@ -4571,8 +4570,8 @@ namespace Chem4Word.ACME
         {
             if (Telemetry != null)
             {
-                Telemetry.Write(source, "Exception", exception.Message);
-                Telemetry.Write(source, "Exception", exception.StackTrace);
+                Telemetry.Write(source, LoggingLevel.Exception, exception.Message);
+                Telemetry.Write(source, LoggingLevel.Exception, exception.StackTrace);
             }
             else
             {
@@ -4588,14 +4587,14 @@ namespace Chem4Word.ACME
             var integrity = Model.CheckIntegrity();
             if (integrity.Count > 0)
             {
-                Telemetry?.Write(module, "Integrity", string.Join(Environment.NewLine, integrity));
+                Telemetry?.Write(module, LoggingLevel.Integrity, string.Join(Environment.NewLine, integrity));
             }
 #endif
         }
 
         public void RotateHydrogen(Atom parentAtom)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 var oldPlacement = parentAtom.ImplicitHPlacement;
@@ -4627,10 +4626,10 @@ namespace Chem4Word.ACME
 
         public void AlignMiddles(List<BaseObject> objects)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Aligning middles of {objects.Count} objects");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Aligning middles of {objects.Count} objects");
 
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
@@ -4682,7 +4681,7 @@ namespace Chem4Word.ACME
 
         public void AlignReactionMiddles(List<Reaction> reactions, double middle)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Dictionary<Reaction, (Point start, Point end)> originalPos = new Dictionary<Reaction, (Point, Point)>();
@@ -4705,7 +4704,7 @@ namespace Chem4Word.ACME
                         }
                         else
                         {
-                            WriteTelemetry(module, "Warning", $"Can't align middles of reaction {r.Id}");
+                            WriteTelemetry(module, LoggingLevel.Warning, $"Can't align middles of reaction {r.Id}");
                         }
                     }
                     AddObjectListToSelection(reactions.Cast<BaseObject>().ToList());
@@ -4734,7 +4733,7 @@ namespace Chem4Word.ACME
 
         public void AlignReactionCentres(List<Reaction> reacts, double centre)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Dictionary<Reaction, (Point start, Point end)> originalPos = new Dictionary<Reaction, (Point, Point)>();
@@ -4755,7 +4754,7 @@ namespace Chem4Word.ACME
                         }
                         else
                         {
-                            WriteTelemetry(module, "Warning", $"Can't align centres of reaction {r.Id}");
+                            WriteTelemetry(module, LoggingLevel.Warning, $"Can't align centres of reaction {r.Id}");
                         }
                     }
                     AddObjectListToSelection(reacts.Cast<BaseObject>().ToList());
@@ -4782,10 +4781,10 @@ namespace Chem4Word.ACME
 
         public void AlignTops(List<BaseObject> objects)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Aligning tops of {objects.Count} objects");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Aligning tops of {objects.Count} objects");
 
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
@@ -4827,7 +4826,7 @@ namespace Chem4Word.ACME
 
         public void AlignAnnotations(List<Annotation> annotationsToAlign, List<Transform> shifts)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 Action redo = () =>
@@ -4858,10 +4857,10 @@ namespace Chem4Word.ACME
 
         public void AlignBottoms(List<BaseObject> objects)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Aligning bottoms of {objects.Count} objects");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Aligning bottoms of {objects.Count} objects");
 
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
@@ -4903,10 +4902,10 @@ namespace Chem4Word.ACME
 
         public void AlignCentres(List<BaseObject> objects)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Aligning centres of {objects.Count} objects");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Aligning centres of {objects.Count} objects");
 
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
@@ -4959,10 +4958,10 @@ namespace Chem4Word.ACME
 
         public void AlignLefts(List<BaseObject> objects)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Aligning lefts of {objects.Count} objects");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Aligning lefts of {objects.Count} objects");
 
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
@@ -5004,10 +5003,10 @@ namespace Chem4Word.ACME
 
         public void AlignRights(List<BaseObject> objects)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Aligning rights of {objects.Count} objects");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Aligning rights of {objects.Count} objects");
 
                 List<Transform> shifts = new List<Transform>();
                 List<Transform> annShifts = new List<Transform>();
@@ -5050,7 +5049,7 @@ namespace Chem4Word.ACME
         // aligns a set of molecules given a set of adjusting transforms
         private void AlignMolecules(List<Molecule> molsToAlign, List<Transform> adjustments)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             //first check to see whether or not we have an equal number of adjustments and molecules
             if (molsToAlign.Count == adjustments.Count)
@@ -5062,8 +5061,8 @@ namespace Chem4Word.ACME
             }
             else
             {
-                WriteTelemetry(module, "Warning", "Number of adjustments and molecules are not equal");
-                WriteTelemetry(module, "StackTrace", Environment.StackTrace);
+                WriteTelemetry(module, LoggingLevel.Warning, "Number of adjustments and molecules are not equal");
+                WriteTelemetry(module, LoggingLevel.StackTrace, Environment.StackTrace);
                 Debugger.Break();
             }
         }
@@ -5071,7 +5070,7 @@ namespace Chem4Word.ACME
         //edits the current reagent block
         public void EditReagents()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 CreateBlockEditor(SelectedItems[0] as Reaction, editingReagents: true);
@@ -5201,7 +5200,7 @@ namespace Chem4Word.ACME
         //edits the current conditions block
         public void EditConditions()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 CreateBlockEditor(SelectedItems[0] as Reaction, editingReagents: false);
@@ -5219,10 +5218,10 @@ namespace Chem4Word.ACME
         /// <param name="symbolText">Text to display</param>
         public void AddFloatingSymbol(Point pos, string symbolText)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", $"Adding floating symbol '{symbolText}'");
+                WriteTelemetry(module, LoggingLevel.Debug, $"Adding floating symbol '{symbolText}'");
                 AddAnnotation(pos, symbolText, false);
             }
             catch (Exception exception)
@@ -5233,11 +5232,11 @@ namespace Chem4Word.ACME
 
         private void AddAnnotation(Point pos, string text, bool isEditable = true)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
-                WriteTelemetry(module, "Debug", "Adding Annotation");
+                WriteTelemetry(module, LoggingLevel.Debug, "Adding Annotation");
 
                 var newSymbol = new Annotation();
                 newSymbol.Position = pos;
@@ -5284,10 +5283,10 @@ namespace Chem4Word.ACME
         ///
         public void AssignReactionRoles()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Assign reaction roles");
+                WriteTelemetry(module, LoggingLevel.Debug, "Assign reaction roles");
 
                 var selectedReaction = SelectedItems.OfType<Reaction>().ToList()[0];
 
@@ -5346,10 +5345,10 @@ namespace Chem4Word.ACME
 
         public void ClearReactionRoles()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                WriteTelemetry(module, "Debug", "Clearing reaction roles");
+                WriteTelemetry(module, LoggingLevel.Debug, "Clearing reaction roles");
 
                 var selectedReaction = SelectedItems.OfType<Reaction>().ToList()[0];
 
@@ -5393,9 +5392,9 @@ namespace Chem4Word.ACME
 
         public bool VerifyRingPlacements(List<NewAtomPlacement> placements)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
-            WriteTelemetry(module, "Debug", ListRingPlacements(placements));
+            WriteTelemetry(module, LoggingLevel.Debug, ListRingPlacements(placements));
 
             bool result = true;
 
@@ -5409,7 +5408,7 @@ namespace Chem4Word.ACME
 
                     if (placement.ExistingAtom != null && placement.ExistingAtom.Parent.InternalId != start)
                     {
-                        WriteTelemetry(module, "Warning", "Can't create new ring because at least one new atom would have a different parent molecule!");
+                        WriteTelemetry(module, LoggingLevel.Warning, "Can't create new ring because at least one new atom would have a different parent molecule!");
                         result = false;
                         break;
                     }

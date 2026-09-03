@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32014.148
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12120.119 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4427174-46F5-4058-8934-4CEAFDBAF60D}"
 	ProjectSection(SolutionItems) = preProject
@@ -133,6 +133,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Package-Scanner", "Tools\Package-Scanner\Package-Scanner.csproj", "{2E53283B-16D4-4242-97C5-B12AC39B482C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyScanner", "Installer\AssemblyScanner\AssemblyScanner.csproj", "{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -710,6 +712,30 @@ Global
 		{2E53283B-16D4-4242-97C5-B12AC39B482C}.Vso-Ci|x64.Build.0 = Vso-Ci|Any CPU
 		{2E53283B-16D4-4242-97C5-B12AC39B482C}.Vso-Ci|x86.ActiveCfg = Vso-Ci|Any CPU
 		{2E53283B-16D4-4242-97C5-B12AC39B482C}.Vso-Ci|x86.Build.0 = Vso-Ci|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Debug|x64.Build.0 = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Debug|x86.Build.0 = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Release|x64.ActiveCfg = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Release|x64.Build.0 = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Release|x86.ActiveCfg = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Release|x86.Build.0 = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Setup|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Setup|Any CPU.Build.0 = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Setup|x64.ActiveCfg = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Setup|x64.Build.0 = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Setup|x86.ActiveCfg = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Setup|x86.Build.0 = Debug|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Vso-Ci|Any CPU.ActiveCfg = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Vso-Ci|Any CPU.Build.0 = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Vso-Ci|x64.ActiveCfg = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Vso-Ci|x64.Build.0 = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Vso-Ci|x86.ActiveCfg = Release|Any CPU
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657}.Vso-Ci|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -742,6 +768,7 @@ Global
 		{66114688-4B34-4B67-B14D-49F961683CBB} = {2E9CE94F-9664-44CB-90B5-D1E0253E528C}
 		{2774F1D9-031E-BF3C-9742-9188C3A8A871} = {738340DC-D00E-4A6F-A715-552CA5C5C6C6}
 		{2E53283B-16D4-4242-97C5-B12AC39B482C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9D71EBF3-4776-4BB6-80F8-89BDC5D0E657} = {738340DC-D00E-4A6F-A715-552CA5C5C6C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4E59A5EC-4690-42FA-8DBE-E152256F1D44}

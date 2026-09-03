@@ -5,12 +5,11 @@
   <Version>
     <Number>3.2.27 Release 23</Number>
     <IsBeta>false</IsBeta>
-    <Released>30-Sep-2026</Released>
+    <Released>07-Sep-2026</Released>
     <Changes>
-      <Change>...</Change>
-      <Change>...</Change>
-      <Change>...</Change>
-      <Change>...</Change>
+      <Change>BugFix: Check that WebView2 is installed. [MS WebView2 download: https://developer.microsoft.com/en-gb/microsoft-edge/webview2/consumer]</Change>
+      <Change>BugFix: Prevent potential Check for Updates loop in start up</Change>
+      <Change>Internal: Improvements in Searching</Change>
       <Change>Please note any previous beta versions V3.2.4 and below will cease to allow insertion or editing of chemistry</Change>
       <Change>If you like our product, please consider buying us a coffee at https://www.buymeacoffee.com/chem4word</Change>
       <Change>Please download Chem4Word-Setup.exe via https://www.chem4word.co.uk/download/ if you encounter any difficulties updating</Change>

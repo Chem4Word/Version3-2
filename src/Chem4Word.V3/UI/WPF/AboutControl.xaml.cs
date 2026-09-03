@@ -1,11 +1,12 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
 using Chem4Word.Core.UI.Forms;
+using IChem4Word.Contracts;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -35,7 +36,7 @@ namespace Chem4Word.UI.WPF
 
         private void AboutControl_Loaded(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (AutoClose)
@@ -60,8 +61,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_ChemDoodle(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -78,8 +79,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_MainWebsite(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -96,8 +97,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_Facebook(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -114,8 +115,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_Cambridge(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -132,8 +133,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_Sponsor(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -150,8 +151,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_SourceCode(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {
@@ -168,8 +169,8 @@ namespace Chem4Word.UI.WPF
 
         private void OnClick_YouTube(object sender, RoutedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Globals.Chem4WordV3.Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Globals.Chem4WordV3.Telemetry.Write(module, LoggingLevel.Action, "Triggered");
 
             try
             {

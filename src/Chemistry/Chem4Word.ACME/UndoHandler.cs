@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -131,7 +131,7 @@ namespace Chem4Word.ACME
             return result;
         }
 
-        private void WriteTelemetry(string source, string level, string message)
+        private void WriteTelemetry(string source, LoggingLevel level, string message)
         {
             if (_telemetry != null)
             {
@@ -143,8 +143,8 @@ namespace Chem4Word.ACME
         {
             if (_telemetry != null)
             {
-                _telemetry.Write(source, "Exception", exception.Message);
-                _telemetry.Write(source, "Exception", exception.StackTrace);
+                _telemetry.Write(source, LoggingLevel.Exception, exception.Message);
+                _telemetry.Write(source, LoggingLevel.Exception, exception.StackTrace);
             }
             else
             {
@@ -154,7 +154,7 @@ namespace Chem4Word.ACME
 
         public void BeginUndoBlock()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 //push a buffer record onto the stack
@@ -172,7 +172,7 @@ namespace Chem4Word.ACME
 
         public void RecordAction(Action undoAction, Action redoAction, [CallerMemberName] string desc = null)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 //performing a new action should clear the redo
@@ -200,14 +200,14 @@ namespace Chem4Word.ACME
         /// </summary>
         public void EndUndoBlock()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 _transactionLevel--;
 
                 if (_transactionLevel < 0)
                 {
-                    _telemetry.Write(module, "Exception", "Attempted to unwind empty undo stack.");
+                    _telemetry.Write(module, LoggingLevel.Exception, "Attempted to unwind empty undo stack.");
                     return;
                 }
 
@@ -236,7 +236,7 @@ namespace Chem4Word.ACME
 
         public void Undo()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 UndoActions();
@@ -251,11 +251,11 @@ namespace Chem4Word.ACME
 
         private void UndoActions()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             //the very first record on the undo stack should be a buffer record
             var br = _undoStack.Pop();
-            WriteTelemetry(module, "Debug", $"{br.Level} - {br.Description}");
+            WriteTelemetry(module, LoggingLevel.Debug, $"{br.Level} - {br.Description}");
 
             if (!br.Equals(_endBracket))
             {
@@ -267,7 +267,7 @@ namespace Chem4Word.ACME
             while (true)
             {
                 br = _undoStack.Pop();
-                WriteTelemetry(module, "Debug", $"{br.Level} - {br.Description}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"{br.Level} - {br.Description}");
                 _redoStack.Push(br);
                 if (br.Equals(_startBracket))
                 {
@@ -280,14 +280,14 @@ namespace Chem4Word.ACME
             var integrity = _editController.Model.CheckIntegrity();
             if (integrity.Count > 0)
             {
-                WriteTelemetry(module, "Integrity", string.Join(Environment.NewLine, integrity));
+                WriteTelemetry(module, LoggingLevel.Integrity, string.Join(Environment.NewLine, integrity));
             }
 #endif
         }
 
         public void Redo()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 RedoActions();
@@ -302,11 +302,11 @@ namespace Chem4Word.ACME
 
         private void RedoActions()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             //the very first record on the redo stack should be a buffer record
             var br = _redoStack.Pop();
-            WriteTelemetry(module, "Debug", $"{br.Level} - {br.Description}");
+            WriteTelemetry(module, LoggingLevel.Debug, $"{br.Level} - {br.Description}");
 
             if (!br.Equals(_startBracket))
             {
@@ -318,7 +318,7 @@ namespace Chem4Word.ACME
             while (true)
             {
                 br = _redoStack.Pop();
-                WriteTelemetry(module, "Debug", $"{br.Level} - {br.Description}");
+                WriteTelemetry(module, LoggingLevel.Debug, $"{br.Level} - {br.Description}");
 
                 _undoStack.Push(br);
                 if (br.Equals(_endBracket))
@@ -332,7 +332,7 @@ namespace Chem4Word.ACME
             var integrity = _editController.Model.CheckIntegrity();
             if (integrity.Count > 0)
             {
-                WriteTelemetry(module, "Integrity", string.Join(Environment.NewLine, integrity));
+                WriteTelemetry(module, LoggingLevel.Integrity, string.Join(Environment.NewLine, integrity));
             }
 #endif
         }

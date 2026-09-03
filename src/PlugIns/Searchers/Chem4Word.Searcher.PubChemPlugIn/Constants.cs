@@ -14,5 +14,7 @@ namespace Chem4Word.Searcher.PubChemPlugIn
 
         public static int DefaultSearchResultsPerCall = 20;
         public static int DefaultDisplayOrder = 10;
+
+        public const double TopLeftOffset = 24;
     }
 }

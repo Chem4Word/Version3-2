@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -128,7 +128,7 @@ namespace Chem4Word.Editor.ACME
 
         private void Save_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             CMLConverter cc = new CMLConverter();
             DialogResult = DialogResult.Cancel;
@@ -139,21 +139,21 @@ namespace Chem4Word.Editor.ACME
                 DialogResult = DialogResult.OK;
                 OutputValue = cc.Export(editor.EditedModel);
             }
-            Telemetry.Write(module, "Verbose", $"Result: {DialogResult}");
+            Telemetry.Write(module, LoggingLevel.Verbose, $"Result: {DialogResult}");
             Hide();
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             DialogResult = DialogResult.Cancel;
-            Telemetry.Write(module, "Verbose", $"Result: {DialogResult}");
+            Telemetry.Write(module, LoggingLevel.Verbose, $"Result: {DialogResult}");
             Hide();
         }
 
         private void EditorHost_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             if (DialogResult != DialogResult.OK && e.CloseReason == CloseReason.UserClosing)
             {
                 if (elementHost1.Child is Chem4Word.ACME.Editor editor
@@ -179,13 +179,13 @@ namespace Chem4Word.Editor.ACME
                             model.ReLabelGuids();
                             CMLConverter cc = new CMLConverter();
                             OutputValue = cc.Export(model);
-                            Telemetry.Write(module, "Verbose", $"Result: {DialogResult}");
+                            Telemetry.Write(module, LoggingLevel.Verbose, $"Result: {DialogResult}");
                             Hide();
                             editor = null;
                             break;
 
                         case DialogResult.No:
-                            Telemetry.Write(module, "Verbose", $"Result: {DialogResult}");
+                            Telemetry.Write(module, LoggingLevel.Verbose, $"Result: {DialogResult}");
                             editor = null;
                             break;
                     }

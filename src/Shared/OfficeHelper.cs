@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -56,13 +56,14 @@ namespace Chem4Word.Shared
 
         public static List<string> GetWinWordSearchPaths()
         {
-            List<string> paths = new List<string>();
-
-            paths.Add($"GetFromEnvironment => '{GetFromEnvironment()}'");
-            paths.Add($"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'");
-            paths.Add($"GetFromRegistryMethod2 => '{GetFromRegistryMethod2()}'");
-            paths.Add($"GetFromRegistryMethod3 => '{GetFromRegistryMethod3()}'");
-            paths.Add($"GetFromKnownPathSearch => '{GetFromKnownPathSearch()}'");
+            List<string> paths = new List<string>
+                                 {
+                                     $"GetFromEnvironment => '{GetFromEnvironment()}'",
+                                     $"GetFromRegistryMethod1 => '{GetFromRegistryMethod1()}'",
+                                     $"GetFromRegistryMethod2 => '{GetFromRegistryMethod2()}'",
+                                     $"GetFromRegistryMethod3 => '{GetFromRegistryMethod3()}'",
+                                     $"GetFromKnownPathSearch => '{GetFromKnownPathSearch()}'"
+                                 };
 
             return paths;
         }
@@ -726,12 +727,25 @@ namespace Chem4Word.Shared
 
             try
             {
-                result = GetFromRegistryMethod1();
+                result = GetFromEnvironment();
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
                 Debugger.Break();
+            }
+
+            if (result == null)
+            {
+                try
+                {
+                    result = GetFromRegistryMethod1();
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception.Message);
+                    Debugger.Break();
+                }
             }
 
             if (result == null)
@@ -765,19 +779,6 @@ namespace Chem4Word.Shared
                 try
                 {
                     result = GetFromKnownPathSearch();
-                }
-                catch (Exception exception)
-                {
-                    Debug.WriteLine(exception.Message);
-                    Debugger.Break();
-                }
-            }
-
-            if (result == null)
-            {
-                try
-                {
-                    result = GetFromEnvironment();
                 }
                 catch (Exception exception)
                 {
@@ -923,7 +924,10 @@ namespace Chem4Word.Shared
 
             if (commandLineArgs.Length >= 1)
             {
-                result = commandLineArgs[0];
+                if (commandLineArgs[0].ToLower().Contains("winword.exe"))
+                {
+                    result = commandLineArgs[0];
+                }
             }
 
             return result;

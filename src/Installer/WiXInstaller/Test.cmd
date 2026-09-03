@@ -1,4 +1,4 @@
-dir bin\x86\Setup\en-US\
+dir bin\x86\Setup\en-us\
 pause
 
 set release=Chem4Word-Setup.3.2.27.Release.23.msi

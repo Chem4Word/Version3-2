@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -43,11 +43,11 @@ namespace Chem4Word.Renderer.OoXmlV4
 
         public bool ChangeSettings(Point topLeft)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
                 _rendererOptions = new OoXmlV4Options(SettingsPath);
 
                 var settings = new OoXmlV4Settings();
@@ -75,20 +75,20 @@ namespace Chem4Word.Renderer.OoXmlV4
 
         public string Render()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string result = null;
 
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
                 _rendererOptions = new OoXmlV4Options(SettingsPath);
 
                 var guid = Properties["Guid"];
                 result = OoXmlFile.CreateFromCml(Cml, guid, _rendererOptions, Telemetry, TopLeft);
                 if (!File.Exists(result))
                 {
-                    Telemetry.Write(module, "Exception", "Structure could not be rendered.");
+                    Telemetry.Write(module, LoggingLevel.Exception, "Structure could not be rendered.");
                     UserInteractions.WarnUser("Sorry this structure could not be rendered.");
                 }
 

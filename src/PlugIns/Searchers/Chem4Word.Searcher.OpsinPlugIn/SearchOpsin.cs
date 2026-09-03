@@ -5,9 +5,9 @@
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
-using Chem4Word.Core;
 using Chem4Word.Core.Helpers;
 using Chem4Word.Core.UI;
+using Chem4Word.Core.UI.Forms;
 using Chem4Word.Model2.Converters.CML;
 using IChem4Word.Contracts;
 using System;
@@ -24,7 +24,7 @@ namespace Chem4Word.Searcher.OpsinPlugIn
     public partial class SearchOpsin : Form
     {
         private static string _product = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-        private static string _class = MethodBase.GetCurrentMethod().DeclaringType?.Name;
+        private static string _class = MethodBase.GetCurrentMethod()?.DeclaringType?.Name;
 
         private const string BaseTemplate = "{0}{1}";
 
@@ -48,12 +48,12 @@ namespace Chem4Word.Searcher.OpsinPlugIn
 
         private void OnClick_SearchButton(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             string searchFor = TextHelper.StripAsciiControlCharacters(SearchFor.Text).Trim();
             string webSafe = TextHelper.NormalizeCharacters(WebUtility.HtmlEncode(searchFor));
 
-            Telemetry.Write(module, "Information", $"User searched for '{searchFor}'");
+            Telemetry.Write(module, LoggingLevel.Search, $"User searched for '{searchFor}'");
 
             display1.Clear();
             LabelInfo.Text = "";
@@ -70,22 +70,37 @@ namespace Chem4Word.Searcher.OpsinPlugIn
                 ApiResult apiResult = HttpHelper.InvokeGet(webCall, headers);
                 if (apiResult.StatusCode == HttpStatusCode.OK)
                 {
-                    CMLConverter cmlConverter = new CMLConverter();
-                    Model2.Model model = cmlConverter.Import(apiResult.Content);
-                    if (model.MeanBondLength < Core.Helpers.Constants.MinimumBondLength - Core.Helpers.Constants.BondLengthTolerance
-                        || model.MeanBondLength > Core.Helpers.Constants.MaximumBondLength + Core.Helpers.Constants.BondLengthTolerance)
+                    if (apiResult.Content.ToLower().Contains("<!doctype html"))
                     {
-                        model.ScaleToAverageBondLength(Core.Helpers.Constants.StandardBondLength);
+                        Telemetry.Write(module, LoggingLevel.Warning, "Showing user html result of web call");
+                        Telemetry.Write(module, LoggingLevel.WarningData, apiResult.Content.Trim());
+
+                        Screen screen = Screen.FromControl(SearchButton);
+                        HtmlViewer viewer = new HtmlViewer(new Point(TopLeft.X + Constants.TopLeftOffset, TopLeft.Y + Constants.TopLeftOffset), screen, "EXTERNAL OPSIN Search Error", apiResult.Content);
+                        viewer.ShowDialog(this);
                     }
+                    else
+                    {
+                        CMLConverter cmlConverter = new CMLConverter();
+                        Model2.Model model = cmlConverter.Import(apiResult.Content);
+                        if (!model.HasValidBondLengths)
+                        {
+                            model.ScaleToAverageBondLength(Constants.StandardBondLength);
+                        }
 
-                    Cml = cmlConverter.Export(model);
+                        Cml = cmlConverter.Export(model);
 
-                    display1.Chemistry = Cml;
-                    ImportButton.Enabled = true;
+                        display1.Chemistry = Cml;
+                        ImportButton.Enabled = true;
+                    }
                 }
                 else
                 {
-                    Telemetry.Write(module, "Warning", $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode}");
+                    if (!string.IsNullOrEmpty(apiResult.Content))
+                    {
+                        Telemetry.Write(module, LoggingLevel.SearchFailureData, apiResult.Content.Trim());
+                    }
+                    Telemetry.Write(module, LoggingLevel.SearchFailure, $"[{(int)apiResult.StatusCode}] {apiResult.StatusCode}");
                     LabelInfo.Text = $"No match for '{searchFor}' found";
                     ImportButton.Enabled = false;
                 }

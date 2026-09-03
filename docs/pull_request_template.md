@@ -3,7 +3,7 @@
 ## Please enter description of what these changes are for
 **Describe the changes being made to the code and why**
 
-## Before submitting this PR for code review, please make sure:
+## After submitting this PR for code review, please make sure:
 - [ ] "Describe the changes being made to the code and why" above has been replaced
 - [ ] All new files have the standard license headers
 - [ ] CodeMaid has been run against all new or updated files

@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -51,5 +51,5 @@ using System.Windows;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.27.9769")]
-[assembly: AssemblyFileVersion("3.2.27.9769")]
+[assembly: AssemblyVersion("3.2.27.9746")]
+[assembly: AssemblyFileVersion("3.2.27.9746")]

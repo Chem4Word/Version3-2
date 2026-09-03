@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ namespace Chem4Word.Library
 
         public void LoadChemistryItems()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 _initializing = true;
@@ -60,12 +60,12 @@ namespace Chem4Word.Library
                     foreach (var chemistryDto in dto)
                     {
                         var obj = new ChemistryObject
-                                  {
-                                      Id = chemistryDto.Id,
-                                      Cml = chemistryDto.Cml,
-                                      Formula = chemistryDto.Formula,
-                                      Name = chemistryDto.Name
-                                  };
+                        {
+                            Id = chemistryDto.Id,
+                            Cml = chemistryDto.Cml,
+                            Formula = chemistryDto.Formula,
+                            Name = chemistryDto.Name
+                        };
 
                         ChemistryItems.Add(obj);
                     }
@@ -84,7 +84,7 @@ namespace Chem4Word.Library
 
         private void ChemistryItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 switch (e.Action)
@@ -115,7 +115,7 @@ namespace Chem4Word.Library
 
         private void DeleteChemistry(IList eOldItems)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_initializing)
@@ -138,7 +138,7 @@ namespace Chem4Word.Library
 
         private void AddNewChemistry(IList eNewItems)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (!_initializing)

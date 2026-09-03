@@ -16,6 +16,8 @@ namespace Chem4Word.Searcher.ChEBIPlugin
         public static int DefaultDisplayOrder = 30;
         public static int DefaultMaximumSearchResults = 20;
 
+        public const double TopLeftOffset = 24;
+
         #endregion Fields
     }
 }

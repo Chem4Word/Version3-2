@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ namespace Chem4Word.Libraries.Database
 
         public static bool SetSqlitePath(IChem4WordTelemetry telemetry)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool result = false;
 
@@ -67,7 +67,7 @@ namespace Chem4Word.Libraries.Database
                     {
                         if (Debugger.IsAttached)
                         {
-                            telemetry.Write(module, "Information", $"Adding {executingPath} to path");
+                            telemetry.Write(module, LoggingLevel.Information, $"Adding {executingPath} to path");
                         }
                         Environment.SetEnvironmentVariable("PATH", executingPath + ";" + path);
                     }
@@ -77,8 +77,8 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception exception)
             {
-                telemetry.Write(module, "Exception", $"{exception.Message}");
-                telemetry.Write(module, "Exception(Data)", $"{exception.StackTrace}");
+                telemetry.Write(module, LoggingLevel.Exception, $"{exception.Message}");
+                telemetry.Write(module, LoggingLevel.ExceptionData, $"{exception.StackTrace}");
             }
 
             return result;
@@ -86,7 +86,7 @@ namespace Chem4Word.Libraries.Database
 
         public static bool CanOpenLibrary(IChem4WordTelemetry telemetry, LibraryOptions options)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool result = false;
 
@@ -111,10 +111,10 @@ namespace Chem4Word.Libraries.Database
                     {
                         string[] message = exception.Message.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         string unique = string.Join(Environment.NewLine, message.Distinct().ToArray());
-                        telemetry.Write(module, "Exception", unique);
+                        telemetry.Write(module, LoggingLevel.Exception, unique);
 
                         string backup = Path.Combine(options.ProgramDataPath, $"{SafeDate.ToIsoFilePrefix(DateTime.UtcNow)} {Constants.LibraryFileName}");
-                        telemetry.Write(module, "Information", "Backing up bad database file");
+                        telemetry.Write(module, LoggingLevel.Information, "Backing up bad database file");
                         File.Copy(libraryTarget, backup);
                         File.Delete(libraryTarget);
                     }
@@ -135,7 +135,7 @@ namespace Chem4Word.Libraries.Database
                             }
                         }
 
-                        telemetry.Write(module, "Exception(Data)", builder.ToString().Trim());
+                        telemetry.Write(module, LoggingLevel.ExceptionData, builder.ToString().Trim());
                     }
                 }
             }
@@ -145,7 +145,7 @@ namespace Chem4Word.Libraries.Database
 
         public static bool CreateSeedDatabase(IChem4WordTelemetry telemetry, LibraryOptions options)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool result = false;
 
@@ -156,7 +156,7 @@ namespace Chem4Word.Libraries.Database
                 // Create seed database if required
                 if (!File.Exists(libraryTarget))
                 {
-                    telemetry.Write(module, "Information", "Copying initial Library database");
+                    telemetry.Write(module, LoggingLevel.Information, "Copying initial Library database");
                     Stream stream = ResourceHelper.GetBinaryResource(Assembly.GetExecutingAssembly(), "EssentialOils.zip");
                     if (stream != null)
                     {
@@ -181,7 +181,7 @@ namespace Chem4Word.Libraries.Database
         /// <param name="options"></param>
         public Library(IChem4WordTelemetry telemetry, LibraryOptions options)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             _telemetry = telemetry;
             _options = options;
@@ -280,7 +280,7 @@ namespace Chem4Word.Libraries.Database
 
         private SQLiteDataReader GetListOfPatches(SQLiteConnection conn)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             SQLiteDataReader result = null;
 
@@ -303,7 +303,7 @@ namespace Chem4Word.Libraries.Database
 
         private SQLiteDataReader GetListOfTablesAndViews(SQLiteConnection conn)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             SQLiteDataReader result = null;
 
@@ -327,7 +327,7 @@ namespace Chem4Word.Libraries.Database
 
         private bool ApplyPatches(SQLiteConnection conn, Version currentVersion)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool result = true;
 
@@ -339,7 +339,7 @@ namespace Chem4Word.Libraries.Database
                     {
                         foreach (string script in patch.Scripts)
                         {
-                            _telemetry.Write(module, "Information", $"Applying {patch.Version} patch '{script}' to database");
+                            _telemetry.Write(module, LoggingLevel.Information, $"Applying {patch.Version} patch '{script}' to database");
                             SQLiteCommand command = new SQLiteCommand(script, conn);
                             command.ExecuteNonQuery();
                         }
@@ -349,7 +349,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                _telemetry.Write(module, "Exception", $"Exception {ex.Message}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception {ex.Message}");
                 result = false;
             }
 
@@ -358,7 +358,7 @@ namespace Chem4Word.Libraries.Database
 
         private void AddPatchRecord(SQLiteConnection conn, Version version)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             try
             {
@@ -380,7 +380,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                _telemetry.Write(module, "Exception", $"Exception {ex.Message}");
+                _telemetry.Write(module, LoggingLevel.Exception, $"Exception {ex.Message}");
             }
         }
 
@@ -390,7 +390,7 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         public Dictionary<string, int> GetLibraryNames()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             Dictionary<string, int> allNames = new Dictionary<string, int>();
 
             Stopwatch sw = new Stopwatch();
@@ -432,14 +432,14 @@ namespace Chem4Word.Libraries.Database
             sw.Stop();
 #if DEBUG
             // Task 810
-            _telemetry.Write(module, "Timing", $"Reading {allNames.Count} Chemical names took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
+            _telemetry.Write(module, LoggingLevel.Timing, $"Reading {allNames.Count} Chemical names took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
 #endif
             return allNames;
         }
 
         private SQLiteDataReader GetAllNames(SQLiteConnection conn)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT DISTINCT Name, ChemistryId");
@@ -461,7 +461,7 @@ namespace Chem4Word.Libraries.Database
         /// </summary>
         public void DeleteAllChemistry()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 using (SQLiteConnection conn = LibraryConnection())
@@ -471,7 +471,7 @@ namespace Chem4Word.Libraries.Database
             }
             catch (Exception ex)
             {
-                _telemetry.Write(module, "Exception", ex.Message);
+                _telemetry.Write(module, LoggingLevel.Exception, ex.Message);
             }
         }
 
@@ -537,7 +537,7 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         public bool ImportCml(string cmlFile, SQLiteTransaction transaction, bool calculateProperties = false)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             bool result = false;
 
@@ -565,7 +565,7 @@ namespace Chem4Word.Libraries.Database
 
                     if (!string.IsNullOrEmpty(outcome))
                     {
-                        _telemetry.Write(module, "Information", outcome);
+                        _telemetry.Write(module, LoggingLevel.Information, outcome);
                     }
 
                     if (model.TotalAtomsCount > 0
@@ -626,7 +626,7 @@ namespace Chem4Word.Libraries.Database
         /// <param name="formula"></param>
         public void UpdateChemistry(long id, string name, string xml, string formula)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 using (SQLiteConnection conn = LibraryConnection())
@@ -671,7 +671,7 @@ namespace Chem4Word.Libraries.Database
         /// <param name="chemistryId"></param>
         public void DeleteChemistry(long chemistryId)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 using (SQLiteConnection conn = LibraryConnection())
@@ -738,7 +738,7 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         public string GetChemistryById(long id)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             string result = null;
 
             try
@@ -792,7 +792,7 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         public long AddChemistry(Model model, string chemistryName, string formula)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             long result;
             try
             {
@@ -884,7 +884,7 @@ namespace Chem4Word.Libraries.Database
         /// <returns></returns>
         public List<ChemistryDataObject> GetAllChemistry()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             List<ChemistryDataObject> results = new List<ChemistryDataObject>();
 
             try
@@ -919,7 +919,7 @@ namespace Chem4Word.Libraries.Database
                 }
 
                 sw.Stop();
-                _telemetry.Write(module, "Timing", $"Reading {results.Count} structures took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
+                _telemetry.Write(module, LoggingLevel.Timing, $"Reading {results.Count} structures took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
             }
             catch (Exception ex)
             {
@@ -982,7 +982,7 @@ namespace Chem4Word.Libraries.Database
 
         public List<LibraryTagDataObject> GetAllTags()
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             List<LibraryTagDataObject> results = new List<LibraryTagDataObject>();
 
             try
@@ -996,7 +996,7 @@ namespace Chem4Word.Libraries.Database
                 }
 
                 sw.Stop();
-                _telemetry.Write(module, "Timing", $"Reading {results.Count} tags took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
+                _telemetry.Write(module, LoggingLevel.Timing, $"Reading {results.Count} tags took {SafeDouble.AsString(sw.ElapsedMilliseconds)}ms");
             }
             catch (Exception ex)
             {
@@ -1113,7 +1113,7 @@ namespace Chem4Word.Libraries.Database
 
         private void AddTags(SQLiteConnection conn, long id, List<string> tags)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 StringBuilder sb = new StringBuilder();

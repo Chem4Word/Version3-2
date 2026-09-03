@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -38,10 +38,10 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void Settings_Load(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
-                Telemetry.Write(module, "Verbose", "Called");
+                Telemetry.Write(module, LoggingLevel.Verbose, "Called");
 
                 if (!PointHelper.PointIsEmpty(TopLeft))
                 {
@@ -63,8 +63,8 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void chkShowImplicitHydrogens_CheckedChanged(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 EditorOptions.ShowHydrogens = chkShowImplicitHydrogens.Checked;
@@ -78,8 +78,8 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void chkColouredAtoms_CheckedChanged(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 EditorOptions.ColouredAtoms = chkColouredAtoms.Checked;
@@ -93,8 +93,8 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void btnSetDefaults_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 DialogResult dr = UserInteractions.AskUserOkCancel("Restore default settings");
@@ -113,8 +113,8 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 EditorOptions.Save();
@@ -137,7 +137,7 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
             try
             {
                 if (_dirty)
@@ -173,8 +173,8 @@ namespace Chem4Word.Editor.ChemDoodleWeb800
 
         private void chkShowCarbons_CheckedChanged(object sender, EventArgs e)
         {
-            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
-            Telemetry.Write(module, "Action", "Triggered");
+            string module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
+            Telemetry.Write(module, LoggingLevel.Action, "Triggered");
             try
             {
                 EditorOptions.ShowCarbons = chkShowCarbons.Checked;

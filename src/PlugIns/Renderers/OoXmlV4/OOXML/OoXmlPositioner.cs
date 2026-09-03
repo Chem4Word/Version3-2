@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 //  Copyright (c) 2026, The .NET Foundation.
-//  This software is released under the Apache License, Version 2.0.
-//  The license and further copyright text can be found in the file LICENSE.md
+//  This software is released under the Apache Licence, Version 2.0.
+//  The licence and further copyright text can be found in the file LICENCE.md
 //  at the root directory of the distribution.
 // ---------------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ using Chem4Word.Renderer.OoXmlV4.Entities;
 using Chem4Word.Renderer.OoXmlV4.Entities.Diagnostic;
 using Chem4Word.Renderer.OoXmlV4.Enums;
 using Chem4Word.Renderer.OoXmlV4.TTF;
+using IChem4Word.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -530,7 +531,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private void DetectCrossingLines()
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var model = Inputs.Model;
 
@@ -543,7 +544,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
                 Outputs.CrossingPoints.Add(crossedBond.Value.CrossingPoint);
             }
             sw.Stop();
-            Inputs.Telemetry.Write(module, "Timing", $"Detection of {model.CrossedBonds.Count} line crossing points took {SafeDouble.AsString0(sw.ElapsedMilliseconds)} ms");
+            Inputs.Telemetry.Write(module, LoggingLevel.Timing, $"Detection of {model.CrossedBonds.Count} line crossing points took {SafeDouble.AsString0(sw.ElapsedMilliseconds)} ms");
         }
 
         private void ProcessMolecule(Molecule mol, Progress pb, ref int molNumber)
@@ -893,7 +894,7 @@ namespace Chem4Word.Renderer.OoXmlV4.OOXML
 
         private void CreateElementCharacters(Atom atom)
         {
-            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod().Name}()";
+            var module = $"{_product}.{_class}.{MethodBase.GetCurrentMethod()?.Name}()";
 
             var atomLabel = atom.SymbolText;
             if (Inputs.Options.ShowCarbons
